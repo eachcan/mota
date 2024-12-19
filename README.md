@@ -91,7 +91,7 @@ namespace myapp.config;
 │   ├── test_parser.cpp  # 语法分析器单元测试
 │   ├── test_lexer.cpp   # 词法分析器单元测试
 │   └── test_generator.cpp # 代码生成器单元测试（计划）
-├── xmake.lua            # CMake 构建脚本
+├── xmake.lua            # xmake 构建脚本
 └── examples/            # 示例文件夹
     └── example.mota     # 示例 Mota 配置文件
 ```
@@ -101,7 +101,7 @@ namespace myapp.config;
 ### 依赖项
 
 - C++20 或更高版本的编译器
-- CMake 2.9.0 或更高版本
+- xmake 2.9.0 或更高版本
 
 ### 克隆项目并构建
 
@@ -123,7 +123,7 @@ xmake run mota -c examples/config.yaml
 
 ### 单元测试
 
-项目包含了单元测试，使用 CMake 构建时自动运行。你可以通过以下命令手动运行测试：
+项目包含了单元测试，使用 xmake 构建时自动运行。你可以通过以下命令手动运行测试：
 
 ```bash
 # 运行测试
@@ -148,4 +148,4 @@ xmake test
 
 如果你有任何问题或建议，可以通过以下方式联系我们：
 
-- 电子邮件：zhangjinshuai@bj-yima.com
+- 电子邮件：eachcan@qq.com
