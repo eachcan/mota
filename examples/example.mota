@@ -1,0 +1,11 @@
+﻿namespace myapp.config;
+
+include "camera_config.mota";
+
+@[file = "camera_config.cbor", level = global, format = cbor]
+struct Camera {
+    int32 cam1Position = 0;
+    optional int32 cam1RefPosition = 0;
+    repeated string params;
+    map<string, Task> tasks = ["task1", "task2"];
+}
