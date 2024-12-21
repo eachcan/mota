@@ -51,7 +51,6 @@ struct AdvancedCamera : struct Camera {
     int32 maxShutterSpeed;
 }
 
-@[file = "camera_basic.cbor", level = product, format = cbor]
 block BasicCamera : block CameraIn {
     bool hasLensCap;
 }

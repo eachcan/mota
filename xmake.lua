@@ -9,7 +9,20 @@ target("mota")
     set_kind("binary")
     add_files("src/*.cpp")
     set_languages("c++20")
+--    set_encodings("utf-8")
+    add_defines( "UNICODE", "_UNICODE")
+    add_cxflags("/execution-charset:utf-8")
 
+add_rules("mode.debug", "mode.release")
+
+for _, file in ipairs(os.files("test/test_*.cpp")) do
+    local name = path.basename(file)
+    target(name)
+        set_kind("binary")
+        set_default(false)
+        add_files("test/" .. name .. ".cpp")
+        add_tests("default")
+end
 --
 -- If you want to known more usage about xmake, please see https://xmake.io
 --

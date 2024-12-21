@@ -3,10 +3,21 @@
 #include <cctype>
 #include <regex>
 
+namespace mota {
+
 Lexer::Lexer(const std::string& input) : input(input), pos(0), line(1), column(1) {}
 
 std::vector<Token> Lexer::tokenize() {
     std::vector<Token> tokens;
+    if (input.empty()) {
+        return tokens;
+    }
+
+    if (input.length() > 3 && input.substr(0, 3) == "\xEF\xBB\xBF") {
+        // 跳过 UTF-8 BOM
+        pos += 3;
+    }
+
     while (pos < input.length()) {
         char currentChar = input[pos];
         if (std::isspace(currentChar)) {
@@ -209,5 +220,25 @@ bool Lexer::isAlpha(char c) {
 }
 
 bool Lexer::isPunctuation(char c) {
-    return c == '{' || c == '}' || c == '(' || c == ')' || c == ';' || c == '=' || c == ',';
+    return c == '{' || c == '}' || c == '(' || c == ')' || c == ';' || c == '=' || c == ',' || c == '[' || c == ']';
 }
+
+// Token 类型的字符串表示
+static const char* TokenTypeStrings[] = {
+    "Keyword",
+    "Identifier",
+    "Constant",
+    "Punctuation",
+    "Operator",
+    "Comment",
+    "AnnotationStart",
+    "AnnotationEnd",
+    "EndOfFile",
+    "Invalid"
+};
+
+const char* tokenTypeToString(TokenType type) {
+    return TokenTypeStrings[static_cast<int>(type)];
+}
+
+}  // namespace mota

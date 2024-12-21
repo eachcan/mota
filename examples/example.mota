@@ -6,8 +6,11 @@ namespace a.b.c;
 
 // 定义枚举类型
 enum MyEnum {
-    A = 0;
+    @[ title = "策略A", desc = "这是一个简单的策略" ]
+    A;
+    @[ title = "策略B" ]
     B;
+    @[ title = "策略C" ]
     C;
 }
 
