@@ -200,18 +200,22 @@ std::vector<Token> Lexer::handleAnnotation() {
         // 添加值 token
         annotationTokens.push_back(valueToken);
 
-        // 如果有逗号，则跳过
+        // 跳过空白字符
+        if (std::isspace(input[pos])) {
+            handleWhitespace();
+        }
+
+        // 如果遇到逗号，添加逗号token
         if (input[pos] == ',') {
             auto punctuation = handlePunctuation();
             annotationTokens.push_back(punctuation);
         }
     }
 
-    // 跳过 ']'
-    advance();
+    // 添加注解结束标记
+    advance();  // 跳过 ']'
     annotationTokens.push_back({TokenType::AnnotationEnd, "]", line, column});
 
-    // 返回注解的所有 Token
     return annotationTokens;
 }
 
@@ -220,7 +224,8 @@ bool Lexer::isAlpha(char c) {
 }
 
 bool Lexer::isPunctuation(char c) {
-    return c == '{' || c == '}' || c == '(' || c == ')' || c == ';' || c == '=' || c == ',' || c == '[' || c == ']';
+    static const std::string punctuations = "{}[]().,;=:";
+    return punctuations.find(c) != std::string::npos;
 }
 
 // Token 类型的字符串表示

@@ -1,4 +1,5 @@
-#include "lexer.h"
+﻿#include "lexer.h"
+#include "parser.h"
 #include <iostream>
 #include <fstream>
 #include <filesystem>
@@ -39,6 +40,16 @@ int main() {
                   << " Value: " << token.value 
                   << " Line: " << token.line 
                   << " Column: " << token.column << std::endl;
+    }
+
+    // 创建语法分析器并进行语法分析
+    Parser parser(tokens);
+    auto fileNode = parser.parseFile();
+
+    // 输出解析结果
+    std::cout << "Parsed file:" << std::endl;
+    for (const auto& decl : fileNode->declarations) {
+        std::cout << decl->name << ": " << decl->comment << std::endl;
     }
 
     return 0;
