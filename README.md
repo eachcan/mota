@@ -183,7 +183,7 @@ mota/
 - [x] 抽象语法树
 - [ ] 代码生成器
 - [ ] 配置验证器
-- [ ] IDE 插件支持
+- [x] IDE 插件支持, [visual studio code](https://github.com/eachcan/mota-vsc-plugin)
 
 ## 贡献指南
 
