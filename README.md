@@ -87,10 +87,12 @@ struct CameraConfig {
 
 2. 运行解析器：
 ```bash
-xmake run mota config.mota
+mota config.mota
 ```
 
-## 详细文档
+## 语法文档
+
+[Mota 语法文档](docs/mota-script-syntax.md)
 
 ### 类型系统
 
