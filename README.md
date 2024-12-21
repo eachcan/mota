@@ -1,150 +1,206 @@
-﻿# Mota 语言解析器与生成器
+# Mota - 现代配置语言解析器与生成器
 
-Mota 是一种自定义的配置文件语言，旨在为开发人员提供灵活、可扩展的方式来定义和管理配置文件，特别是在硬件和嵌入式开发中。它支持结构化的配置文件定义，注解、继承、数据类型、注释等特性，适用于多种输出格式（如 CBOR、JSON、INI 等）。本项目提供了 Mota 语言的解析器和生成器，可以根据 `.mota` 配置文件自动生成相应的 C++ 代码和配置文件处理逻辑。
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![C++](https://img.shields.io/badge/language-C%2B%2B20-blue.svg)](https://en.cppreference.com/w/cpp/20)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://gitlab.bj-yima.com/inspector/architecture/mota)
 
-## 项目目标
+## 简介
 
-1. **语言设计**：定义一种简洁的配置文件语言，支持字段定义、继承、注解、默认值等特性。
-2. **解析器**：将 `.mota` 文件解析为抽象语法树（AST），并提供相应的字段与结构体映射。
-3. **生成器**：根据 AST 生成对应的 C++ 类代码，能够读取和写入配置文件（如 CBOR 格式）。
+Mota 是一个专为工业自动化和嵌入式系统设计的现代配置语言。它提供了强大的类型系统、灵活的注解机制和清晰的模块化设计，使得配置管理变得简单而高效。
 
-## 主要功能
+### 主要特性
 
-- **结构体（Struct）与块（Block）定义**：支持 `struct` 和 `block` 类型，可以包含多种字段和复杂的嵌套关系。
-- **注解（Annotation）**：支持用户自定义注解，用于描述配置文件的格式和元数据（如 `file`, `level`, `format` 等）。
-- **继承（Inheritance）**：支持结构体继承其他结构体或块，块继承其他块。继承时会忽略父级注解。
-- **字段类型**：支持 `int32`, `int64`, `string`, `bool`, `float32`, `bytes` 等基础类型，`map`, `enum`, `repeated` 等复合类型。
-- **注释**：支持行注释和块注释，仅块注释内容会保存并用于代码生成或文档生成。
-- **支持多种格式**：可以输出为不同格式的配置文件（如 CBOR、INI、JSON 等）。
-- **模块化**：支持文件的 `include` 和 `namespace` 机制，便于文件拆分与组织。
+- **强大的类型系统**
+  - 基础类型：`int32`, `int64`, `float32`, `string`, `bool`, `bytes`
+  - 修饰类型：`map`, `repeated`, `optional`
+  - 自定义类型：`struct`, `block`, `enum`
+  - 完整的类型检查和验证
 
-## 语法示例
+- **灵活的注解系统**
+  - 文件级注解：指定输出格式和路径
+  - 字段级注解：添加元数据和验证规则
+  - 枚举值注解：提供额外的描述信息
 
-### 定义结构体和字段
+- **模块化设计**
+  - 命名空间支持：避免名称冲突
+  - 文件包含机制：复用配置定义
+  - 继承系统：共享通用配置
 
-```mota
-@[file = "camera_config.cbor", level = global, format = cbor]
-struct CameraConfig {
-    int32 cam1Position = 0;
-    optional int32 cam1RefPosition = 0;
-    repeated string params;
-    map<string, Task> tasks = ["task1", "task2"];
-}
+- **多格式支持**
+  - CBOR：紧凑的二进制格式
+  - JSON：人类可读的文本格式
+  - INI：简单的键值对格式
+  - 自定义格式扩展
+
+## 快速开始
+
+### 安装
+
+1. 克隆仓库：
+```bash
+git clone git@github.com:eachcan/mota.git
+cd mota
 ```
 
-### 定义枚举类型
-
-```mota
-enum CameraType {
-    DSLR = 0;
-    Mirrorless;
-    PointAndShoot;
-}
+2. 构建项目：
+```bash
+xmake
 ```
 
-### 定义继承
+### 基本用法
 
-```mota
-@[file = "camera_model.cbor", level = product, format = json]
-struct AdvancedCamera : struct Camera {
-    int32 isoRange;
-    int32 maxShutterSpeed;
-}
-
-block BasicCamera : block CameraIn {
-    bool hasLensCap;
-}
-```
-
-### 定义包含其他文件（`include`）
-
-```mota
-include "camera_settings.mota";
-```
-
-### 定义命名空间（`namespace`）
-
+1. 创建 Mota 配置文件 (`config.mota`):
 ```mota
 namespace myapp.config;
+
+// 定义相机类型枚举
+enum CameraType {
+    @[ title = "DSLR相机", desc = "专业单反相机" ]
+    DSLR = 0;
+    @[ title = "无反相机", desc = "专业微单相机" ]
+    Mirrorless = 1;
+}
+
+// 定义相机配置结构
+@[ 
+    file = "camera_config.cbor",
+    level = global,
+    format = cbor 
+]
+struct CameraConfig {
+    /* 相机位置参数 */
+    int32 position = 0;
+    
+    /* 相机类型设置 */
+    CameraType type = DSLR;
+    
+    /* 可选的参考位置 */
+    optional int32 refPosition;
+    
+    /* 相机参数列表 */
+    repeated string params;
+    
+    /* 任务配置映射 */
+    map Task tasks = ["default", "custom"];
+}
 ```
 
-详细的语法规则请见： [Mota 语法](docs/mota-script-syntax.md)
+2. 运行解析器：
+```bash
+xmake run mota config.mota
+```
+
+## 详细文档
+
+### 类型系统
+
+#### 基础类型
+- `int8`: 8位整数
+- `int16`: 16位整数
+- `int32`: 32位整数
+- `int64`: 64位整数
+- `float32`: 32位浮点数
+- `string`: 字符串
+- `bool`: 布尔值
+- `bytes`: 字节数组
+
+#### 自定义类型
+- `block`: 块类型
+- `enum`: 枚举类型
+- `struct`: 结构体类型
+
+#### 修饰符
+- `optional`: 可选字段
+- `repeated`: 数组字段
+- `map`: 映射字段
+
+### 注解系统
+
+注解用于为类型和字段添加元数据：
+
+```mota
+@[
+    file = "config/${name}.cbor",  // 输出文件路径
+    level = global,                // 配置级别
+    format = cbor                  // 输出格式
+]
+```
+
+### 注释系统
+
+支持两种注释风格：
+
+```mota
+// 单行注释：编译时会被忽略
+
+/* 块注释：
+   会被保留用于文档生成
+   支持多行 */
+```
+
+### 继承系统
+
+```mota
+// 基础配置
+struct BaseConfig {
+    int32 version;
+}
+
+// 扩展配置
+struct ExtendedConfig : struct BaseConfig {
+    string name;
+}
+```
 
 ## 项目结构
 
 ```
-/mota
-├── README.md            # 项目的介绍文档
-├── src/                 # 源代码文件夹
-│   ├── lexer.cpp        # 词法分析器实现
-│   ├── parser.cpp       # 语法分析器实现
-│   ├── ast.cpp          # 抽象语法树实现
-│   ├── generator.cpp    # 代码生成器（计划）
-│   └── main.cpp         # 主程序，运行解析器和生成器
-├── include/             # 头文件
-│   ├── lexer.h          # 词法分析器头文件
-│   ├── parser.h         # 语法分析器头文件
-│   ├── ast.h            # 抽象语法树头文件
-│   └── generator.h      # 代码生成器头文件
-├── test/                # 测试文件夹
-│   ├── test_parser.cpp  # 语法分析器单元测试
-│   ├── test_lexer.cpp   # 词法分析器单元测试
-│   └── test_generator.cpp # 代码生成器单元测试（计划）
-├── xmake.lua            # xmake 构建脚本
-└── examples/            # 示例文件夹
-    └── example.mota     # 示例 Mota 配置文件
+mota/
+├── docs/                 # 文档
+│   └── mota-script-syntax.md  # 语法详细说明
+├── src/                  # 源代码
+│   ├── lexer.cpp         # 词法分析器
+│   ├── parser.cpp        # 语法分析器
+│   ├── ast.cpp           # 抽象语法树
+│   └── main.cpp          # 主程序
+├── include/              # 头文件
+│   ├── lexer.h
+│   ├── parser.h
+│   └── ast.h
+├── test/                 # 测试文件
+│   └── test_parser.cpp
+├── examples/             # 示例
+│   └── example.mota
+└── xmake.lua            # 构建配置
 ```
 
-## 编译和使用
+## 开发计划
 
-### 依赖项
+- [x] 词法分析器
+- [x] 语法分析器
+- [x] 抽象语法树
+- [ ] 代码生成器
+- [ ] 配置验证器
+- [ ] IDE 插件支持
 
-- C++20 或更高版本的编译器
-- xmake 2.9.0 或更高版本
+## 贡献指南
 
-### 克隆项目并构建
+1. Fork 本仓库
+2. 创建特性分支 (`git checkout -b feature/amazing-feature`)
+3. 提交更改 (`git commit -m 'Add some amazing feature'`)
+4. 推送到分支 (`git push origin feature/amazing-feature`)
+5. 提交 Pull Request
 
-```bash
-# 克隆项目
-git clone git@gitlab.bj-yima.com:inspector/architecture/mota.git
-cd mota
+## 许可证
 
-# 使用 XMake 配置构建
-xmake
-
-
-# 运行解析器
-xmake run mota examples/example.mota
-
-# 使用配置文件批量运行
-xmake run mota -c examples/config.yaml
-```
-
-### 单元测试
-
-项目包含了单元测试，使用 xmake 构建时自动运行。你可以通过以下命令手动运行测试：
-
-```bash
-# 运行测试
-xmake test
-```
-
-### 示例
-
-项目中包含了 `examples/` 文件夹，其中有一个简单的 `example.mota` 文件，展示了如何使用 Mota 语言定义配置文件。你可以在 `test/` 文件夹中找到相关的单元测试代码。
-
-## 贡献
-
-欢迎为本项目贡献代码或提出建议！以下是贡献的流程：
-
-1. Fork 本仓库。
-2. 创建新的功能分支 (`git checkout -b feature-branch`)。
-3. 提交修改 (`git commit -am 'Add new feature'`)。
-4. 推送到分支 (`git push origin feature-branch`)。
-5. 提交 pull request。
+本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件
 
 ## 联系方式
 
-如果你有任何问题或建议，可以通过以下方式联系我们：
+- 维护者：eachcan
+- 邮箱：eachcan@qq.com
+- 项目主页：[Mota Project](https://github.com/eachcan/mota)
 
-- 电子邮件：eachcan@qq.com
+## 致谢
+
+感谢所有为本项目做出贡献的开发者！
