@@ -58,6 +58,14 @@
         "list": "cpp",
         "unordered_map": "cpp",
         "xhash": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "chrono": "cpp",
+        "forward_list": "cpp",
+        "iomanip": "cpp",
+        "map": "cpp",
+        "ratio": "cpp",
+        "variant": "cpp",
+        "xtree": "cpp",
+        "unordered_set": "cpp"
     }
 }

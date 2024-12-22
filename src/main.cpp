@@ -20,7 +20,7 @@ int main() {
     std::cout << "Current path: " << std::filesystem::current_path() << std::endl;
 
     // 从 examples/example.mota 文件中读取代码
-    std::ifstream file("examples/example.mota", std::ios::binary);
+    std::ifstream file("../../../../examples/example.mota", std::ios::binary);
     if (!file) {
         std::cerr << "Failed to open file." << std::endl;
         return 1;
@@ -49,7 +49,38 @@ int main() {
     // 输出解析结果
     std::cout << "Parsed file:" << std::endl;
     for (const auto& decl : fileNode->declarations) {
-        std::cout << decl->name << ": " << decl->comment << std::endl;
+        if (auto include = std::dynamic_pointer_cast<IncludeDecl>(decl)) {
+            std::cout << "Include: " << include->path << std::endl;
+        } else if (auto ns = std::dynamic_pointer_cast<NamespaceDecl>(decl)) {
+            std::cout << "Namespace: ";
+            for (const auto& part : ns->path) {
+                std::cout << part << ".";
+            }
+            std::cout << std::endl;
+        } else if (auto enumDecl = std::dynamic_pointer_cast<EnumDecl>(decl)) {
+            std::cout << "Enum: " << enumDecl->name << std::endl;
+            for (const auto& value : enumDecl->values) {
+                std::cout << "  " << value->name << std::endl;
+            }
+        } else if (auto structDecl = std::dynamic_pointer_cast<StructDecl>(decl)) {
+            std::cout << "Struct: " << structDecl->name;
+            if (structDecl->hasParent()) {
+                std::cout << " : " << structDecl->parentType << " " << structDecl->parentName;
+            }
+            std::cout << std::endl;
+            for (const auto& field : structDecl->fields) {
+                std::cout << "  " << field->name << std::endl;
+            }
+        } else if (auto blockDecl = std::dynamic_pointer_cast<BlockDecl>(decl)) {
+            std::cout << "Block: " << blockDecl->name;
+            if (blockDecl->hasParent()) {
+                std::cout << " : block " << blockDecl->parentName;
+            }
+            std::cout << std::endl;
+            for (const auto& field : blockDecl->fields) {
+                std::cout << "  " << field->name << std::endl;
+            }
+        }
     }
 
     return 0;

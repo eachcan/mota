@@ -1,37 +1,114 @@
-﻿// 引入其他 Mota 文件
+// 引入其他 Mota 文件
 include "task.mota";
 
 // 定义命名空间
-namespace a.b.c;
+namespace myapp.camera;
 
-// 定义枚举类型
-enum MyEnum {
-    @[ title = "策略A", desc = "这是一个简单的策略" ]
-    A;
-    @[ title = "策略B" ]
-    B;
-    @[ title = "策略C" ]
-    C;
+/* 相机类型枚举
+   用于指定相机的类型和功能 */
+enum CameraType {
+    @[ title = "普通相机", desc = "基础的相机类型" ]
+    Normal = 0;
+    @[ title = "高速相机", desc = "支持高速拍摄的相机" ]
+    HighSpeed = 1;
+    @[ title = "高清相机", desc = "支持4K分辨率的相机" ]
+    HD = 2;
 }
 
-// 定义一个 Block 类型
-block Task {
-    int32 cam1Position = 0;
-    optional int32 cam1RefPosition = 0;
+/* 基础任务块
+   定义了所有任务共有的基本属性 */
+block BaseTask {
+    /* 任务ID */
+    int32 taskId = 0;
+    /* 任务名称 */
+    string name;
+    /* 任务优先级 */
+    int8 priority = 0;
 }
 
-// 定义一个结构体类型，并使用注解指定文件路径和格式
-@[ 
-    file = "${app_path}/${qualifier}-camera.cbor",
-    level = global,
-    format = cbor 
+/* 相机任务块
+   继承自基础任务，添加了相机特有的属性 */
+block CameraTask : BaseTask {
+    /* 相机类型 */
+    CameraType type = Normal;
+    /* 相机位置 */
+    int32 position = 0;
+    /* 参考位置 */
+    optional int32 refPosition;
+}
+
+/* 基础设备结构
+   所有设备的基础配置 */
+@[
+    file = "${app_path}/device-base.cbor",
+    level = "global",
+    format = "cbor"
 ]
-struct Camera {
-    int32 cam1Position;
-    optional int32 cam1RefPosition;
+struct Device {
+    /* 设备ID */
+    int32 id;
+    /* 设备名称 */
+    string name;
+    /* 设备状态 */
+    bool enabled = true;
 }
 
-// 定义一个 map 类型的结构体
-struct TaskConfigs {
-    map Task tasks = ["task1", "task2"];
+/* 相机设备结构
+   继承自基础设备，添加相机特有的配置 */
+@[
+    file = "${app_path}/${qualifier}-camera.cbor",
+    level = "global",
+    format = "cbor"
+]
+struct Camera : Device {
+    /* 相机类型 */
+    CameraType type = Normal;
+    /* 相机位置 */
+    int32 position = 0;
+    /* 参考位置 */
+    optional int32 refPosition;
+}
+
+/* 高级相机设备结构
+   继承自相机设备，添加高级功能配置 */
+@[
+    file = "${app_path}/${qualifier}-advanced-camera.cbor",
+    level = "product",
+    format = "cbor"
+]
+struct AdvancedCamera : Camera {
+    /* 曝光时间 */
+    float32 exposureTime = 1.0;
+    /* ISO感光度 */
+    int32 iso = 100;
+    /* 自动对焦 */
+    bool autoFocus = true;
+}
+
+/* 相机任务配置结构
+   使用block继承来复用任务配置 */
+@[
+    file = "${app_path}/${qualifier}-camera-task.cbor",
+    level = "global",
+    format = "cbor"
+]
+struct CameraTaskConfig : CameraTask {
+    /* 任务超时时间 */
+    int32 timeout = 5000;
+    /* 重试次数 */
+    int8 retryCount = 3;
+    /* 任务参数列表 */
+    repeated string params;
+}
+
+/* 任务映射配置
+   管理多个任务的配置 */
+@[
+    file = "${app_path}/${qualifier}-task-map.cbor",
+    level = "global",
+    format = "cbor"
+]
+struct TaskMap {
+    /* 任务映射表 */
+    map CameraTaskConfig tasks;
 }

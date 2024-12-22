@@ -22,27 +22,40 @@ namespace a.b.c;
 
 ### 2.1 枚举类型 (enum)
 
-枚举类型可以包含元数据注解，为每个枚举值添加额外信息：
+枚举类型可以包含元数据注解，为每个枚举值添加额外信息。枚举值支持显式指定数值，未指定时会从0开始自增：
 
 ```mota
-enum MyEnum {
-    @[ title = "策略A", desc = "这是一个简单的策略" ]
-    A;
-    @[ title = "策略B" ]
-    B;
-    @[ title = "策略C" ]
-    C;
+enum CameraType {
+    @[ title = "普通相机", desc = "基础的相机类型" ]
+    Normal = 0;  // 显式指定值为 0
+    @[ title = "高速相机" ]
+    HighSpeed = 1;  // 显式指定值为 1
+    @[ title = "高清相机" ]
+    HD;  // 自动取值为 2
 }
 ```
 
+枚举值支持以下形式的数值：
+- 十进制整数：`123`
+- 十六进制整数：`0xFF`
+- 二进制整数：`0b1010`
+- 八进制整数：`0777`
+
 ### 2.2 块类型 (block)
 
-块类型用于定义可重用的数据结构：
+块类型用于定义可重用的数据结构，支持继承：
 
 ```mota
-block Task {
-    int32 cam1Position = 0;
-    optional int32 cam1RefPosition = 0;
+block BaseTask {
+    int32 taskId = 0;
+    string name;
+}
+
+// 从 BaseTask 继承
+block CameraTask : BaseTask {
+    int32 position = 0;
+    @[ title = "参考位置", desc = "用于校准的参考点位置" ]
+    optional int32 refPosition;
 }
 ```
 
@@ -50,20 +63,28 @@ block Task {
 - 支持基本数据类型（如 int32）
 - 支持可选字段（optional）
 - 可以设置默认值
+- 支持单继承，且只能继承自其他 block
 
 ### 2.3 结构体类型 (struct)
 
-结构体可以通过注解指定序列化相关的配置：
+结构体可以通过注解指定序列化相关的配置，也支持继承：
 
 ```mota
 @[ 
-    file = "${app_path}/${qualifier}-camera.cbor",
-    level = global,
-    format = cbor 
+    file = "${app_path}/device-base.cbor",
+    level = "global",
+    format = "cbor"
 ]
-struct Camera {
-    int32 cam1Position;
-    optional int32 cam1RefPosition;
+struct Device {
+    int32 id;
+    string name;
+}
+
+// 从 Device 继承
+struct CameraDevice : Device {
+    @[ title = "分辨率", desc = "相机分辨率，单位为像素" ]
+    int32 resolution = 1920;
+    float exposureTime = 1.0;
 }
 ```
 
@@ -71,8 +92,41 @@ struct Camera {
 - 支持文件级注解
 - 支持变量插值（如 ${app_path}）
 - 可以指定序列化格式和配置
+- 支持单继承，可以继承自 struct 或 block
 
-### 2.4 Map 类型
+### 2.4 字段注解
+
+字段注解可以用于为字段添加元数据信息：
+
+```mota
+struct Example {
+    @[ title = "设备ID", desc = "唯一标识设备的ID" ]
+    int32 id;
+    
+    @[ title = "设备名称", 
+       desc = "设备的显示名称",
+       max_length = 32 ]
+    string name;
+    
+    @[ title = "分辨率",
+       desc = "相机分辨率，单位为像素",
+       min = 640,
+       max = 3840 ]
+    int32 resolution = 1920;
+}
+```
+
+字段注解支持的属性：
+- `title`: 字段标题
+- `desc`: 字段描述
+- `max_length`: 字符串最大长度
+- `min`: 数值最小值
+- `max`: 数值最大值
+- `pattern`: 字符串匹配模式（正则表达式）
+- `unit`: 数值单位
+- `format`: 特殊格式（如日期、时间等）
+
+### 2.5 Map 类型
 
 可以在结构体中定义 map 类型的字段：
 
@@ -118,64 +172,82 @@ struct Example {
 - level：级别（如 global）
 - format：序列化格式（如 cbor）
 
-注解可以用于 `enum`、`struct`、`block` 等数据类型， 也可用于字段上，用于描述数据的格式和元数据信息。例如：
+注解可以用于：
+- 枚举类型和枚举值
+- 结构体和块类型
+- 字段
+- 继承关系
+
+### 3.4 继承规则
+
+Mota 支持单继承，遵循以下规则：
+
+1. block 类型：
+   - 只能继承自其他 block
+   - 语法：`block Child : Parent`
+
+2. struct 类型：
+   - 可以继承自 struct 或 block
+   - 语法：`struct Child : Parent`
+
+3. 继承特性：
+   - 子类继承父类的所有字段
+   - 子类可以添加新字段
+   - 子类可以为继承的字段指定新的默认值
+   - 子类不能改变继承字段的类型
+
+### 3.5 注释系统
+Mota 支持两种注释方式：
+
+1. 行注释：使用 `//`
+```mota
+// 这是一个行注释
+```
+
+2. 块注释：使用 `/* */`
+```mota
+/* 这是一个
+   多行块注释 */
+```
+
+### 3.6 默认值
+
+枚举类型支持为枚举值指定默认值：
 
 ```mota
 enum MyEnum {
-    A;
-    B;
-    C;
-    @[ title = "策略A", desc = "这是一个简单的策略" ]
-    A;
-    @[ title = "策略B" ]
-    B;
-    @[ title = "策略C" ]
-    C;
-}
-
-@[ 
-    file = "${app_path}/${qualifier}-camera.cbor",
-    level = global,
-    format = cbor 
-]
-struct Camera {
-    int32 cam1Position;
-    @[ title = "相机1参考位置" ]
-    optional int32 cam1RefPosition;
+    A = 0;
+    B = 1;
+    C = 2;
 }
 ```
 
-### 3.4 注释系统
-Mota 支持两种注释方式：行注释和块注释。
+结构体和块类型支持为字段指定默认值：
 
-#### 行注释
-使用 `//` 开始的行注释在编译时会被丢弃：
 ```mota
-// 这是一个行注释，编译时会被丢弃
-struct MyStruct {
-    int32 value;  // 这个注释也会被丢弃
+struct Example {
+    int32 id = 0;
+    string name = "default";
 }
 ```
 
-#### 块注释
-使用 `/* */` 的块注释会作为字段或类型的注释信息被保留：
+### 3.7 枚举值的显式指定
+
+枚举值支持显式指定数值：
+
 ```mota
-/* 这个注释会作为 MyStruct 的注释被保留 */
-struct MyStruct {
-    /* 这个注释会作为 value 字段的注释被保留 */
-    int32 value;
-    
-    /* 第一个注释会被丢弃 */
-    /* 只有这个注释会被保留，因为它最接近字段 */
-    int64 count;
+enum CameraType {
+    Normal = 0;
+    HighSpeed = 1;
+    HD = 2;
 }
 ```
 
-注意：当存在多个连续的块注释时，只会保留最接近注释对象（字段或类型）的那个注释。
-
-### 3.5 默认值
-- 基本类型可以指定默认值
-- Map 类型可以指定初始键值对
+枚举值支持以下形式的数值：
+- 十进制整数：`123`
+- 十六进制整数：`0xFF`
+- 二进制整数：`0b1010`
+- 八进制整数：`0777`
 
 ## 4. 最佳实践
 
@@ -194,3 +266,8 @@ struct MyStruct {
 - 为枚举值添加描述性注解
 - 为结构体指定序列化配置
 - 使用变量插值使配置更灵活
+
+### 4.4 继承使用
+- 使用继承减少代码重复
+- 避免深度继承
+- 使用继承实现代码复用

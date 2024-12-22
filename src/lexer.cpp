@@ -1,4 +1,4 @@
-﻿#include "lexer.h"
+#include "lexer.h"
 #include <iostream>
 #include <cctype>
 #include <regex>
@@ -118,9 +118,58 @@ Token Lexer::handleIdentifier() {
 // 处理数字常量
 Token Lexer::handleNumber() {
     size_t start = pos;
+    
+    // 检查是否是十六进制、二进制或八进制
+    if (input[pos] == '0' && pos + 1 < input.length()) {
+        char prefix = std::tolower(input[pos + 1]);
+        if (prefix == 'x') {  // 十六进制
+            advance();  // 跳过 '0'
+            advance();  // 跳过 'x'
+            if (pos >= input.length() || !std::isxdigit(input[pos])) {
+                throw std::runtime_error("Invalid hexadecimal number format");
+            }
+            while (pos < input.length() && std::isxdigit(input[pos])) {
+                advance();
+            }
+            return {TokenType::Constant, input.substr(start, pos - start), line, column};
+        }
+        else if (prefix == 'b') {  // 二进制
+            advance();  // 跳过 '0'
+            advance();  // 跳过 'b'
+            if (pos >= input.length() || (input[pos] != '0' && input[pos] != '1')) {
+                throw std::runtime_error("Invalid binary number format");
+            }
+            while (pos < input.length() && (input[pos] == '0' || input[pos] == '1')) {
+                advance();
+            }
+            return {TokenType::Constant, input.substr(start, pos - start), line, column};
+        }
+        else if (std::isdigit(prefix)) {  // 八进制
+            advance();  // 跳过 '0'
+            while (pos < input.length() && input[pos] >= '0' && input[pos] <= '7') {
+                advance();
+            }
+            return {TokenType::Constant, input.substr(start, pos - start), line, column};
+        }
+    }
+    
+    // 处理十进制整数部分
     while (pos < input.length() && std::isdigit(input[pos])) {
         advance();
     }
+    
+    // 处理小数部分
+    if (pos < input.length() && input[pos] == '.') {
+        advance();  // 跳过小数点
+        // 小数点后必须有数字
+        if (!std::isdigit(input[pos])) {
+            throw std::runtime_error("Invalid number format: expected digit after decimal point");
+        }
+        while (pos < input.length() && std::isdigit(input[pos])) {
+            advance();
+        }
+    }
+    
     return {TokenType::Constant, input.substr(start, pos - start), line, column};
 }
 

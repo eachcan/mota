@@ -9,9 +9,9 @@ target("mota")
     set_kind("binary")
     add_files("src/*.cpp")
     set_languages("c++20")
---    set_encodings("utf-8")
+    set_encodings("utf-8")
     add_defines( "UNICODE", "_UNICODE")
-    add_cxflags("/execution-charset:utf-8")
+--    add_cxflags("/execution-charset:utf-8")
 
 add_rules("mode.debug", "mode.release")
 

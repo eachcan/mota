@@ -1,4 +1,4 @@
-﻿#ifndef AST_H
+#ifndef AST_H
 #define AST_H
 
 #include <string>
@@ -125,7 +125,7 @@ public:
 class EnumValueDecl : public Declaration {
 public:
     std::string name;
-    ExprPtr value;
+    int64_t value = 0;  // 默认值为0
     std::vector<Annotation> annotations;
     std::string comment;
 };
@@ -140,12 +140,17 @@ public:
 class StructDecl : public Declaration {
 public:
     std::vector<std::shared_ptr<FieldDecl>> fields;
+    std::string parentType;  // "struct" 或 "block"
+    std::string parentName;  // 父类名称
+    bool hasParent() const { return !parentName.empty(); }
 };
 
 // Block声明
 class BlockDecl : public Declaration {
 public:
     std::vector<std::shared_ptr<FieldDecl>> fields;
+    std::string parentName;  // 父类名称（只能是 block）
+    bool hasParent() const { return !parentName.empty(); }
 };
 
 // 命名空间声明
