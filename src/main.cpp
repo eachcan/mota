@@ -1,87 +1,118 @@
-﻿#include "lexer.h"
+#include "lexer.h"
 #include "parser.h"
+#include "config.h"
+#include "version.h"
 #include <iostream>
 #include <fstream>
 #include <filesystem>
 #include <string>
+#include <cxxopts.hpp>
 #ifdef _WIN32
 #include <windows.h>
 #endif
 
 using namespace mota;
 
-int main() {
-    // 在 Windows 下设置控制台编码为 UTF-8
-#ifdef _WIN32
-    SetConsoleOutputCP(CP_UTF8);  // 设置控制台输出编码为 UTF-8
-#endif
-
-    // 输出当前目录
-    std::cout << "Current path: " << std::filesystem::current_path() << std::endl;
-
-    // 从 examples/example.mota 文件中读取代码
-    std::ifstream file("../../../../examples/example.mota", std::ios::binary);
+void processFile(const std::string& filePath) {
+    // 读取文件
+    std::ifstream file(filePath, std::ios::binary);
     if (!file) {
-        std::cerr << "Failed to open file." << std::endl;
-        return 1;
+        throw std::runtime_error("Failed to open file: " + filePath);
     }
 
     // 读取文件内容
-    std::string input((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    std::string input((std::istreambuf_iterator<char>(file)), 
+                     std::istreambuf_iterator<char>());
 
     // 创建词法分析器并进行词法分析
     Lexer lexer(input);
     std::vector<Token> tokens = lexer.tokenize();
 
-    // 输出每个 token
-    for (const auto& token : tokens) {
-        // 输出 token 的类型和值以及所在行列信息
-        std::cout << "Token: " << tokenTypeToString(token.type) 
-                  << " Value: " << token.value 
-                  << " Line: " << token.line 
-                  << " Column: " << token.column << std::endl;
-    }
-
     // 创建语法分析器并进行语法分析
     Parser parser(tokens);
     auto fileNode = parser.parseFile();
 
-    // 输出解析结果
-    std::cout << "Parsed file:" << std::endl;
-    for (const auto& decl : fileNode->declarations) {
-        if (auto include = std::dynamic_pointer_cast<IncludeDecl>(decl)) {
-            std::cout << "Include: " << include->path << std::endl;
-        } else if (auto ns = std::dynamic_pointer_cast<NamespaceDecl>(decl)) {
-            std::cout << "Namespace: ";
-            for (const auto& part : ns->path) {
-                std::cout << part << ".";
-            }
-            std::cout << std::endl;
-        } else if (auto enumDecl = std::dynamic_pointer_cast<EnumDecl>(decl)) {
-            std::cout << "Enum: " << enumDecl->name << std::endl;
-            for (const auto& value : enumDecl->values) {
-                std::cout << "  " << value->name << std::endl;
-            }
-        } else if (auto structDecl = std::dynamic_pointer_cast<StructDecl>(decl)) {
-            std::cout << "Struct: " << structDecl->name;
-            if (structDecl->hasParent()) {
-                std::cout << " : " << structDecl->parentType << " " << structDecl->parentName;
-            }
-            std::cout << std::endl;
-            for (const auto& field : structDecl->fields) {
-                std::cout << "  " << field->name << std::endl;
-            }
-        } else if (auto blockDecl = std::dynamic_pointer_cast<BlockDecl>(decl)) {
-            std::cout << "Block: " << blockDecl->name;
-            if (blockDecl->hasParent()) {
-                std::cout << " : block " << blockDecl->parentName;
-            }
-            std::cout << std::endl;
-            for (const auto& field : blockDecl->fields) {
-                std::cout << "  " << field->name << std::endl;
+    // 这里可以添加生成代码的逻辑
+    std::cout << "Successfully parsed: " << filePath << std::endl;
+}
+
+int main(int argc, char* argv[]) {
+    // 在 Windows 下设置控制台编码为 UTF-8
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+#endif
+
+    try {
+        // 设置命令行选项
+        cxxopts::Options options("mota", "Mota language processor");
+        
+        options.add_options()
+            ("h,help", "Display this help message")
+            ("version", "Display version information")
+            ("config", "Config file path", cxxopts::value<std::string>())
+            ("dest", "Output directory", cxxopts::value<std::string>())
+            ("input", "Input files", cxxopts::value<std::vector<std::string>>())
+            ;
+
+        options.parse_positional({"input"});
+        options.positional_help("mota_file1 mota_file2 ...");
+
+        auto result = options.parse(argc, argv);
+
+        // 显示帮助信息
+        if (result.count("help")) {
+            std::cout << options.help() << std::endl;
+            return 0;
+        }
+
+        // 显示版本信息
+        if (result.count("version")) {
+            std::cout << "Mota version " << MOTA_VERSION << std::endl;
+            return 0;
+        }
+
+        // 检查配置文件
+        Config config;
+        if (result.count("config")) {
+            std::string configPath = result["config"].as<std::string>();
+            try {
+                config = Config::loadFromFile(configPath);
+            } catch (const std::exception& e) {
+                std::cerr << "Error loading config file: " << e.what() << std::endl;
+                return 1;
             }
         }
-    }
 
-    return 0;
+        // 检查输出目录
+        std::string destDir = ".";
+        if (result.count("dest")) {
+            destDir = result["dest"].as<std::string>();
+            if (!std::filesystem::exists(destDir)) {
+                std::filesystem::create_directories(destDir);
+            }
+        }
+
+        // 处理输入文件
+        if (result.count("input")) {
+            auto files = result["input"].as<std::vector<std::string>>();
+            for (const auto& file : files) {
+                try {
+                    processFile(file);
+                } catch (const std::exception& e) {
+                    std::cerr << "Error processing file " << file << ": " 
+                              << e.what() << std::endl;
+                    return 1;
+                }
+            }
+        } else {
+            std::cerr << "No input files specified." << std::endl;
+            std::cout << options.help() << std::endl;
+            return 1;
+        }
+
+        return 0;
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
+    }
 }

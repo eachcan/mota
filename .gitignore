@@ -1,8 +1,14 @@
-# Xmake cache
-.xmake/
+# Build
 build/
+.xmake/
 
 # MacOS Cache
 .DS_Store
 
+# Windows Cache
+bin/
+third_party/
 .vscode/
+
+# Generated files
+include/version.h

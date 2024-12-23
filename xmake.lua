@@ -3,14 +3,27 @@ add_rules("mode.debug", "mode.release")
 set_version("1.0.0")
 set_project("mota")
 
+add_requires("cxxopts")  -- 添加 cxxopts 依赖
+add_requires("yaml-cpp") -- 添加 yaml-cpp 依赖
+
 add_includedirs("include")
+
+-- 生成版本头文件
+before_build(function (target)
+    local version = target:version()
+    local version_h = io.readfile("include/version.h.in")
+    version_h = version_h:gsub("${VERSION}", version)
+    io.writefile("include/version.h", version_h)
+end)
 
 target("mota")
     set_kind("binary")
     add_files("src/*.cpp")
     set_languages("c++20")
     set_encodings("utf-8")
-    add_defines( "UNICODE", "_UNICODE")
+    add_defines("UNICODE", "_UNICODE")
+    add_packages("cxxopts", "yaml-cpp")  -- 添加包到目标
+    set_installdir(".")
 --    add_cxflags("/execution-charset:utf-8")
 
 add_rules("mode.debug", "mode.release")
@@ -91,4 +104,3 @@ end
 --
 -- @endcode
 --
-
