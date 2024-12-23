@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![C++](https://img.shields.io/badge/language-C%2B%2B20-blue.svg)](https://en.cppreference.com/w/cpp/20)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://gitlab.bj-yima.com/inspector/architecture/mota)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/eachcan/mota)
 
 ## 简介
 
