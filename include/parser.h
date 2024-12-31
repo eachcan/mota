@@ -1,4 +1,4 @@
-#ifndef PARSER_H
+﻿#ifndef PARSER_H
 #define PARSER_H
 
 #include "lexer.h"
@@ -8,12 +8,15 @@
 #include <string>
 #include <stdexcept>
 #include <map>
-
+#include "config.h"
 namespace mota {
 
-class Parser {
+// 文件读取函数声明
+std::string readFile(const std::string& filepath);
+
+class Parser : public std::enable_shared_from_this<Parser> {
 public:
-    Parser(const std::vector<Token>& tokens);
+    Parser(const std::vector<Token>& tokens, std::shared_ptr<Config> config = nullptr);
     
     // 解析整个文件
     std::shared_ptr<FileNode> parseFile();
@@ -91,10 +94,24 @@ private:
     void popNamespace();
     std::string resolveTypeName(const std::string& name);  // 解析类型的完整名称
 
+    // 添加新的成员
+    std::string currentFile;  // 当前正在解析的文件
+    std::shared_ptr<Parser> parentParser;  // 用于追踪包含链
+
+    // 新增方法
+    std::string resolveIncludePath(const std::string& includePath);
+    std::shared_ptr<FileNode> parseIncludedFile(const std::string& filepath);
+
+    std::string getCurrentNamespace();
+    
+    std::shared_ptr<Config> config;
+
+public:    
     class ParseError : public std::runtime_error {
     public:
         ParseError(const std::string& message) : std::runtime_error(message) {}
     };
+
 };
 
 }  // namespace mota

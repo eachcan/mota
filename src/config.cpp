@@ -1,29 +1,13 @@
 #include "config.h"
-#include <stdexcept>
 
 namespace mota {
 
-Config Config::loadFromFile(const std::string& path) {
-    Config config;
-    try {
-        YAML::Node root = YAML::LoadFile(path);
-        if (!root["models"]) {
-            throw std::runtime_error("Missing 'models' section in config file");
-        }
-
-        for (const auto& model : root["models"]) {
-            ModelConfig modelConfig;
-            if (!model["mota"] || !model["model"]) {
-                throw std::runtime_error("Each model must have 'mota' and 'model' fields");
-            }
-            modelConfig.mota = model["mota"].as<std::string>();
-            modelConfig.model = model["model"].as<std::string>();
-            config.models.push_back(modelConfig);
-        }
-    } catch (const YAML::Exception& e) {
-        throw std::runtime_error("Failed to parse config file: " + std::string(e.what()));
+void Config::addSearchPath(const std::string& path) {
+    std::filesystem::path fsPath(path);
+    auto normalizedPath = fsPath.make_preferred().string();
+    if (std::find(searchPaths.begin(), searchPaths.end(), normalizedPath) == searchPaths.end()) {
+        searchPaths.push_back(normalizedPath);
     }
-    return config;
 }
 
-} // namespace mota
+}

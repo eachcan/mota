@@ -4,11 +4,16 @@
 #include <unordered_map>
 #include <string>
 #include <unordered_set>
-#include "parser.h"
+#include <filesystem>
+#include <fstream>
 
 namespace mota {
 
-Parser::Parser(const std::vector<Token>& tokens) : tokens(tokens), current(0) {}
+Parser::Parser(const std::vector<Token>& tokens, std::shared_ptr<Config> config)
+    : tokens(tokens)
+    , current(0)
+    , config(config ? config : std::make_shared<Config>()) 
+{}
 
 bool Parser::isAtEnd() const {
     return current >= tokens.size() - 1;
@@ -106,12 +111,9 @@ void Parser::synchronize()
 }
 
 bool Parser::isDeclaredType(const std::string& name, const std::string& kind) {
-    for (const auto& type : declaredTypes) {
-        if (type.name == name && type.kind == kind) {
-            return true;
-        }
-    }
-    return false;
+    std::string fullName = resolveTypeName(name);
+    return config->isTypeRegistered(fullName) && 
+           config->getTypeKind(fullName) == kind;
 }
 
 bool Parser::isTypeNameUsed(const std::string& name) {
@@ -242,12 +244,26 @@ DeclPtr Parser::parseInclude() {
     Token pathToken = consume(TokenType::Constant, "Expected file path string");
     consume(TokenType::Punctuation, ";", "Expected ';' after include statement");
     
-    auto includeDecl = std::make_shared<IncludeDecl>();
-    includeDecl->path = pathToken.value;
+    std::string includePath = pathToken.value.substr(1, pathToken.value.length() - 2);
+    std::string resolvedPath = resolveIncludePath(includePath);
     
-    // TODO: 解析被包含的文件，获取其中的类型声明
-    // 这里需要递归调用 Parser 来解析被包含的文件
-    // 并将其中的类型添加到 includedTypes 中
+    auto includeDecl = std::make_shared<IncludeDecl>();
+    includeDecl->path = includePath;
+    
+    // 解析被包含的文件
+    auto includedFile = parseIncludedFile(resolvedPath);
+    if (includedFile) {
+        // 将被包含文件中的类型添加到类型表中，保持原始命名空间
+        for (const auto& decl : includedFile->declarations) {
+            if (auto enumDecl = std::dynamic_pointer_cast<EnumDecl>(decl)) {
+                config->registerType(enumDecl->name, "enum", resolvedPath);
+            } else if (auto structDecl = std::dynamic_pointer_cast<StructDecl>(decl)) {
+                config->registerType(structDecl->name, "struct", resolvedPath);
+            } else if (auto blockDecl = std::dynamic_pointer_cast<BlockDecl>(decl)) {
+                config->registerType(blockDecl->name, "block", resolvedPath);
+            }
+        }
+    }
     
     return includeDecl;
 }
@@ -612,37 +628,24 @@ void Parser::popNamespace() {
 }
 
 std::string Parser::resolveTypeName(const std::string& name) {
-    // 如果名称已经包含命名空间（包含点号），直接返回
+    // 如果名称已经包含命名空间，直接返回
     if (name.find('.') != std::string::npos) {
         return name;
     }
     
-    // 检查当前命名空间中是否存在该类型
-    std::string currentNs;
-    for (const auto& ns : currentNamespace) {
-        currentNs += ns + ".";
-    }
+    // 在当前命名空间中查找
+    std::string currentNs = getCurrentNamespace();
     std::string fullName = currentNs + name;
     
-    // 在已声明的类型中查找
-    for (const auto& type : declaredTypes) {
-        if (type.name == fullName) {
-            return fullName;
-        }
+    if (config->isTypeRegistered(fullName)) {
+        return fullName;
     }
     
-    // 在已包含的类型中查找
-    for (const auto& [includedName, nsPath] : includedTypes) {
-        if (includedName == name) {
-            std::string includedFullName;
-            for (const auto& ns : nsPath) {
-                includedFullName += ns + ".";
-            }
-            return includedFullName + name;
-        }
+    // 在全局命名空间中查找
+    if (config->isTypeRegistered(name)) {
+        return name;
     }
     
-    // 如果找不到，返回原始名称
     return name;
 }
 
@@ -678,6 +681,84 @@ TypePtr Parser::parseBasicType() {
     
     basicType->type = it->second;
     return basicType;
+}
+
+std::string Parser::resolveIncludePath(const std::string& includePath) {
+    std::filesystem::path includeFsPath(includePath);
+    
+    // 如果是绝对路径，直接返回
+    if (includeFsPath.is_absolute()) {
+        return includeFsPath.make_preferred().string();
+    }
+    
+    // 从当前文件所在目录开始查找
+    if (!currentFile.empty()) {
+        std::filesystem::path currentFsPath(currentFile);
+        auto tryPath = currentFsPath.parent_path() / includeFsPath;
+        if (std::filesystem::exists(tryPath)) {
+            return tryPath.make_preferred().string();
+        }
+    }
+    
+    // 在搜索路径中查找
+    for (const auto& searchPath : config->getSearchPaths()) {
+        std::filesystem::path searchFsPath(searchPath);
+        auto tryPath = searchFsPath / includeFsPath;
+        if (std::filesystem::exists(tryPath)) {
+            return tryPath.make_preferred().string();
+        }
+    }
+    
+    throw ParseError("Cannot find included file: " + includePath);
+}
+
+std::shared_ptr<FileNode> Parser::parseIncludedFile(const std::string& filepath) {
+    auto state = config->getFileState(filepath);
+    
+    if (state == Config::FileState::Parsing) {
+        throw ParseError("Circular include detected: " + filepath);
+    }
+    
+    if (state == Config::FileState::Parsed) {
+        return nullptr;
+    }
+    
+    config->setFileState(filepath, Config::FileState::Parsing);
+    
+    std::string content = readFile(filepath);
+    Lexer lexer(content);
+    auto tokens = lexer.tokenize();
+    
+    auto subParser = std::make_shared<Parser>(tokens, config);  // 共享同一个 Config
+    subParser->currentFile = filepath;
+    subParser->parentParser = shared_from_this();
+    
+    auto fileNode = subParser->parseFile();
+    
+    config->setFileState(filepath, Config::FileState::Parsed);
+    
+    return fileNode;
+}
+
+std::string Parser::getCurrentNamespace() {
+    std::string ns;
+    for (const auto& part : currentNamespace) {
+        ns += part + ".";
+    }
+    return ns;
+}
+
+// 实现文件读取函数
+std::string readFile(const std::string& filepath) {
+    std::filesystem::path fsPath(filepath);
+    std::ifstream file(fsPath.make_preferred());
+    if (!file.is_open()) {
+        throw Parser::ParseError("Cannot open file: " + fsPath.make_preferred().string());
+    }
+    return std::string(
+        std::istreambuf_iterator<char>(file),
+        std::istreambuf_iterator<char>()
+    );
 }
 
 }  // namespace mota

@@ -1,6 +1,5 @@
-#include "lexer.h"
+﻿#include "lexer.h"
 #include "parser.h"
-#include "config.h"
 #include "version.h"
 #include <iostream>
 #include <fstream>
@@ -69,18 +68,6 @@ int main(int argc, char* argv[]) {
         if (result.count("version")) {
             std::cout << "Mota version " << MOTA_VERSION << std::endl;
             return 0;
-        }
-
-        // 检查配置文件
-        Config config;
-        if (result.count("config")) {
-            std::string configPath = result["config"].as<std::string>();
-            try {
-                config = Config::loadFromFile(configPath);
-            } catch (const std::exception& e) {
-                std::cerr << "Error loading config file: " << e.what() << std::endl;
-                return 1;
-            }
         }
 
         // 检查输出目录
