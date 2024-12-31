@@ -1,4 +1,4 @@
-#include "../include/parser.h"
+﻿#include "../include/parser.h"
 #include <stdexcept>
 #include <iostream>
 #include <unordered_map>
@@ -59,6 +59,14 @@ bool Parser::match(TokenType type) {
     return false;
 }
 
+bool Parser::match(TokenType type, const std::string &value) {
+    if (check(type, value)) {
+        advance();
+        return true;
+    }
+    return false;
+}
+
 Token Parser::consume(TokenType type, const std::string& message) {
     if (check(type)) {
         return advance();
@@ -68,7 +76,6 @@ Token Parser::consume(TokenType type, const std::string& message) {
 
 Token Parser::consume(TokenType type, const std::string &value, const std::string &message)
 {
-    auto token = peek();
     if (check(type, value)) {
         return advance();
     }
@@ -230,31 +237,40 @@ DeclPtr Parser::parseDeclaration() {
 }
 
 DeclPtr Parser::parseInclude() {
-    consume(TokenType::Identifier, "Expected 'include'");
-    Token path = consume(TokenType::Constant, "Expected string literal after 'include'");
-    consume(TokenType::Punctuation, "Expected ';' after include path");
+    consume(TokenType::Identifier, "include", "Expected 'include' keyword");
     
-    auto include = std::make_shared<IncludeDecl>();
-    include->path = path.value;
-    return include;
+    Token pathToken = consume(TokenType::Constant, "Expected file path string");
+    consume(TokenType::Punctuation, ";", "Expected ';' after include statement");
+    
+    auto includeDecl = std::make_shared<IncludeDecl>();
+    includeDecl->path = pathToken.value;
+    
+    // TODO: 解析被包含的文件，获取其中的类型声明
+    // 这里需要递归调用 Parser 来解析被包含的文件
+    // 并将其中的类型添加到 includedTypes 中
+    
+    return includeDecl;
 }
 
 DeclPtr Parser::parseNamespace() {
-    consume(TokenType::Identifier, "Expected 'namespace'");
-    auto ns = std::make_shared<NamespaceDecl>();
+    consume(TokenType::Identifier, "namespace", "Expected 'namespace' keyword");
     
-    do {
-        Token name = consume(TokenType::Identifier, "Expected namespace name");
-        ns->path.push_back(name.value);
-        if (check(TokenType::Punctuation) && peek().value == ".") {
-            advance();  // consume '.'
-        } else {
-            break;
-        }
-    } while (true);
+    auto nsDecl = std::make_shared<NamespaceDecl>();
     
-    consume(TokenType::Punctuation, "Expected ';' after namespace declaration");
-    return ns;
+    // 解析命名空间路径
+    Token name = consume(TokenType::Identifier, "Expected namespace name");
+    nsDecl->path.push_back(name.value);
+    pushNamespace(name.value);
+    
+    while (match(TokenType::Punctuation, ".")) {
+        name = consume(TokenType::Identifier, "Expected namespace name");
+        nsDecl->path.push_back(name.value);
+        pushNamespace(name.value);
+    }
+    
+    consume(TokenType::Punctuation, ";", "Expected ';' after namespace declaration");
+    
+    return nsDecl;
 }
 
 DeclPtr Parser::parseEnum() {
@@ -354,28 +370,26 @@ DeclPtr Parser::parseStruct() {
 }
 
 DeclPtr Parser::parseBlock() {
-    consume(TokenType::Identifier, "block", "Expected 'block'");
+    consume(TokenType::Identifier, "block", "Expected 'block' keyword");
     Token name = consume(TokenType::Identifier, "Expected block name");
     
     auto blockDecl = std::make_shared<BlockDecl>();
     blockDecl->name = name.value;
     
-    // 记录块类型
     addDeclaredType(name.value, "block");
 
-    // 检查是否有继承
-    if (check(TokenType::Punctuation, ":")) {
-        advance();  // consume ':'
+    // 解析继承
+    if (match(TokenType::Punctuation, ":")) {
+        std::string parentName;
+        Token part = consume(TokenType::Identifier, "Expected parent type name");
+        parentName = part.value;
         
-        // 解析父类名称
-        Token parentName = consume(TokenType::Identifier, "Expected parent block name");
-        
-        // 检查父类是否存在
-        if (!isDeclaredType(parentName.value, "block")) {
-            throw ParseError("Parent block '" + parentName.value + "' not found or not a block");
+        while (match(TokenType::Punctuation, ".")) {
+            part = consume(TokenType::Identifier, "Expected parent type name");
+            parentName += "." + part.value;
         }
         
-        blockDecl->parentName = parentName.value;
+        blockDecl->parentName = resolveTypeName(parentName);
     }
     
     consume(TokenType::Punctuation, "{", "Expected '{' after block name");
@@ -423,54 +437,53 @@ std::shared_ptr<FieldDecl> Parser::parseField() {
 }
 
 TypePtr Parser::parseType() {
+    // 检查是否是修饰符
     if (check(TokenType::Identifier)) {
-        Token modifier = advance();
-        if (modifier.value == "optional" || 
-            modifier.value == "map" || 
-            modifier.value == "repeated") {
+        Token token = peek();
+        if (token.value == "optional" || token.value == "repeated" || token.value == "map") {
+            advance(); // consume modifier
+            
             auto modifiedType = std::make_shared<ModifiedTypeNode>();
-            if (modifier.value == "optional") {
+            
+            // 设置修饰符类型
+            if (token.value == "optional") {
                 modifiedType->modifier = ModifiedTypeNode::Modifier::Optional;
-            } else if (modifier.value == "map") {
-                modifiedType->modifier = ModifiedTypeNode::Modifier::Map;
-            } else {
+            } else if (token.value == "repeated") {
                 modifiedType->modifier = ModifiedTypeNode::Modifier::Repeated;
+            } else {
+                modifiedType->modifier = ModifiedTypeNode::Modifier::Map;
             }
+            
+            // 解析基础类型
             modifiedType->baseType = parseType();
+            if (!modifiedType->baseType) {
+                throw ParseError("Expected type after " + token.value);
+            }
+            
             return modifiedType;
         }
+    }
+    
+    // 尝试解析基本类型
+    if (auto basicType = parseBasicType()) {
+        return basicType;
+    }
+    
+    // 如果不是基本类型，那就是自定义类型
+    if (check(TokenType::Identifier)) {
+        Token typeToken = advance();
+        std::string typeName = typeToken.value;
         
-        // 检查是否是基本类型
-        static const std::map<std::string, BasicType> basicTypes = {
-            {"int8", BasicType::Int8},
-            {"int16", BasicType::Int16},
-            {"int32", BasicType::Int32},
-            {"int64", BasicType::Int64},
-            {"float32", BasicType::Float32},
-            {"double64", BasicType::Double64},
-            {"string", BasicType::String},
-            {"bool", BasicType::Bool},
-            {"bytes", BasicType::Bytes}
-        };
-        
-        auto it = basicTypes.find(modifier.value);
-        if (it != basicTypes.end()) {
-            auto basicType = std::make_shared<BasicTypeNode>();
-            basicType->type = it->second;
-            return basicType;
+        std::vector<std::string> namespaces;
+        while (match(TokenType::Punctuation, ".")) {
+            Token nsToken = consume(TokenType::Identifier, "Expected namespace or type name");
+            namespaces.push_back(typeName);
+            typeName = nsToken.value;
         }
         
-        // 自定义类型
         auto customType = std::make_shared<CustomTypeNode>();
-        customType->name = modifier.value;
-        
-        // 检查自定义类型是否存在
-        if (!isDeclaredType(customType->name, "struct") && 
-            !isDeclaredType(customType->name, "block") && 
-            !isDeclaredType(customType->name, "enum")) {
-            throw ParseError("Type '" + customType->name + "' not found");
-        }
-        
+        customType->name = typeName;
+        customType->namespaces = namespaces;
         return customType;
     }
     
@@ -587,5 +600,84 @@ struct DeclaredType {
 };
 
 std::vector<DeclaredType> declaredTypes;
+
+void Parser::pushNamespace(const std::string& ns) {
+    currentNamespace.push_back(ns);
+}
+
+void Parser::popNamespace() {
+    if (!currentNamespace.empty()) {
+        currentNamespace.pop_back();
+    }
+}
+
+std::string Parser::resolveTypeName(const std::string& name) {
+    // 如果名称已经包含命名空间（包含点号），直接返回
+    if (name.find('.') != std::string::npos) {
+        return name;
+    }
+    
+    // 检查当前命名空间中是否存在该类型
+    std::string currentNs;
+    for (const auto& ns : currentNamespace) {
+        currentNs += ns + ".";
+    }
+    std::string fullName = currentNs + name;
+    
+    // 在已声明的类型中查找
+    for (const auto& type : declaredTypes) {
+        if (type.name == fullName) {
+            return fullName;
+        }
+    }
+    
+    // 在已包含的类型中查找
+    for (const auto& [includedName, nsPath] : includedTypes) {
+        if (includedName == name) {
+            std::string includedFullName;
+            for (const auto& ns : nsPath) {
+                includedFullName += ns + ".";
+            }
+            return includedFullName + name;
+        }
+    }
+    
+    // 如果找不到，返回原始名称
+    return name;
+}
+
+TypePtr Parser::parseBasicType() {
+    Token token = peek();
+    auto basicType = std::make_shared<BasicTypeNode>();
+    
+    if (token.type != TokenType::Identifier) {
+        throw ParseError("Expected type name");
+    }
+
+    advance(); // consume the type token
+    
+    // 映射基本类型名称到枚举值
+    static const std::unordered_map<std::string, BasicType> typeMap = {
+        {"int8", BasicType::Int8},
+        {"int16", BasicType::Int16},
+        {"int32", BasicType::Int32},
+        {"int64", BasicType::Int64},
+        {"float32", BasicType::Float32},
+        {"double64", BasicType::Double64},
+        {"string", BasicType::String},
+        {"bool", BasicType::Bool},
+        {"bytes", BasicType::Bytes}
+    };
+    
+    auto it = typeMap.find(token.value);
+    if (it == typeMap.end()) {
+        // 如果不是基本类型，回退token并返回nullptr
+        current--;
+        return nullptr;
+    }
+    
+    basicType->type = it->second;
+    return basicType;
+}
 
 }  // namespace mota

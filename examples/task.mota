@@ -1,0 +1,50 @@
+﻿﻿include "./camera.mota"
+
+// 定义命名空间
+namespace myapp.task;
+
+/* 基础任务块
+   定义了所有任务共有的基本属性 */
+block BaseTask {
+    /* 任务ID */
+    int32 taskId = 0;
+    /* 任务名称 */
+    string name;
+    /* 任务优先级 */
+    int8 priority = 0;
+}
+
+/* 相机任务块
+   继承自基础任务和相机设备 */
+block CameraTask : BaseTask, myapp.camera.Camera {
+    /* 相机类型 */
+    myapp.camera.CameraType type = myapp.camera.CameraType.Normal;
+}
+
+/* 相机任务配置结构
+   使用block继承来复用任务配置 */
+@[
+    file = "${app_path}/${qualifier}-camera-task.cbor",
+    level = "global",
+    format = "cbor"
+]
+struct CameraTaskConfig : CameraTask {
+    /* 任务超时时间 */
+    int32 timeout = 5000;
+    /* 重试次数 */
+    int8 retryCount = 3;
+    /* 任务参数列表 */
+    repeated string params;
+}
+
+/* 任务映射配置
+   管理多个任务的配置 */
+@[
+    file = "${app_path}/${qualifier}-task-map.cbor",
+    level = "global",
+    format = "cbor"
+]
+struct TaskMap {
+    /* 任务映射表 */
+    map CameraTaskConfig tasks;
+}

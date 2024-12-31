@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
+#include <map>
 
 namespace mota {
 
@@ -29,11 +30,15 @@ private:
     };
     std::vector<DeclaredType> declaredTypes;
 
+    std::vector<std::string> currentNamespace;  // 当前命名空间栈
+    std::map<std::string, std::vector<std::string>> includedTypes;  // 记录include的类型及其命名空间
+
     // 工具方法
     Token peek() const;  // 查看当前token
     Token previous() const;  // 查看前一个token
     Token advance();     // 移动到下一个token
     bool match(TokenType type);  // 匹配并消费token
+    bool match(TokenType type, const std::string& value);  // 匹配并消费token
     bool check(TokenType type) const;  // 只检查不消费
     bool check(TokenType type, const std::string& value) const;  // 只检查不消费
     Token consume(TokenType type, const std::string& message);  // 消费并检查
@@ -57,7 +62,6 @@ private:
     // 解析类型
     TypePtr parseType();
     TypePtr parseBasicType();
-    TypePtr parseModifiedType();
     
     // 解析表达式
     ExprPtr parseExpression();
@@ -81,6 +85,11 @@ private:
     bool isFieldNameUsed(const std::string& typeName, const std::string& fieldName);
     void addDeclaredType(const std::string& name, const std::string& kind);
     void addFieldToType(const std::string& typeName, const std::string& fieldName);
+
+    // 辅助方法
+    void pushNamespace(const std::string& ns);
+    void popNamespace();
+    std::string resolveTypeName(const std::string& name);  // 解析类型的完整名称
 
     class ParseError : public std::runtime_error {
     public:

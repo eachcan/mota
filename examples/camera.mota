@@ -1,7 +1,4 @@
-// 引入其他 Mota 文件
-include "task.mota";
-
-// 定义命名空间
+﻿// 定义命名空间
 namespace myapp.camera;
 
 /* 相机类型枚举
@@ -13,28 +10,6 @@ enum CameraType {
     HighSpeed = 1;
     @[ title = "高清相机", desc = "支持4K分辨率的相机" ]
     HD = 2;
-}
-
-/* 基础任务块
-   定义了所有任务共有的基本属性 */
-block BaseTask {
-    /* 任务ID */
-    int32 taskId = 0;
-    /* 任务名称 */
-    string name;
-    /* 任务优先级 */
-    int8 priority = 0;
-}
-
-/* 相机任务块
-   继承自基础任务，添加了相机特有的属性 */
-block CameraTask : BaseTask {
-    /* 相机类型 */
-    CameraType type = Normal;
-    /* 相机位置 */
-    int32 position = 0;
-    /* 参考位置 */
-    optional int32 refPosition;
 }
 
 /* 基础设备结构
@@ -83,32 +58,4 @@ struct AdvancedCamera : Camera {
     int32 iso = 100;
     /* 自动对焦 */
     bool autoFocus = true;
-}
-
-/* 相机任务配置结构
-   使用block继承来复用任务配置 */
-@[
-    file = "${app_path}/${qualifier}-camera-task.cbor",
-    level = "global",
-    format = "cbor"
-]
-struct CameraTaskConfig : CameraTask {
-    /* 任务超时时间 */
-    int32 timeout = 5000;
-    /* 重试次数 */
-    int8 retryCount = 3;
-    /* 任务参数列表 */
-    repeated string params;
-}
-
-/* 任务映射配置
-   管理多个任务的配置 */
-@[
-    file = "${app_path}/${qualifier}-task-map.cbor",
-    level = "global",
-    format = "cbor"
-]
-struct TaskMap {
-    /* 任务映射表 */
-    map CameraTaskConfig tasks;
 }

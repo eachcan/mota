@@ -64,6 +64,14 @@ public:
 class CustomTypeNode : public Type {
 public:
     std::string name;
+    std::vector<std::string> namespaces;  // 完整的命名空间路径
+    std::string getFullName() const {
+        std::string fullName;
+        for (const auto& ns : namespaces) {
+            fullName += ns + "::";
+        }
+        return fullName + name;
+    }
 };
 
 // 修饰类型节点
