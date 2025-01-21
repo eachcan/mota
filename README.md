@@ -93,6 +93,7 @@ mota config.mota
 ## 语法文档
 
 [Mota 语法文档](docs/mota-script-syntax.md)
+[模型定义指南](docs/model-definition.md)
 
 ### 类型系统
 
