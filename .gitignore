@@ -12,3 +12,5 @@ third_party/
 
 # Generated files
 include/version.h
+
+.windsurfrules
