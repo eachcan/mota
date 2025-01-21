@@ -22,6 +22,57 @@ bool IModel::loadFromFile(const QString& filepath, const QString& format) {
     return true;
 }
 
+bool IModel::save() {
+    // 检查是否可写
+    if (!writable()) return false;
+
+    // 获取模型注解
+    auto annotation = modelAnnotation();
+    
+    // 获取保存路径
+    QString path = resolvePath();
+    if (path.isEmpty()) return false;
+    
+    // 确保目标目录存在
+    QFileInfo fileInfo(path);
+    QDir dir = fileInfo.dir();
+    if (!dir.exists()) {
+        if (!dir.mkpath(".")) return false;
+    }
+    
+    // 获取存储格式，如果注解中未指定则使用默认格式
+    QString format = annotation.format;
+    if (format.isEmpty()) format = "cbor";
+    
+    // 检查存储引擎是否可用
+    auto engine = storageEngine(format);
+    if (!engine) return false;
+    
+    return saveToFile(path, format);
+}
+
+bool IModel::load() {
+    // 获取模型注解
+    auto annotation = modelAnnotation();
+    
+    // 获取加载路径
+    QString path = resolvePath();
+    if (path.isEmpty()) return false;
+    
+    // 检查文件是否存在
+    if (!QFileInfo::exists(path)) return false;
+    
+    // 获取存储格式，如果注解中未指定则使用默认格式
+    QString format = annotation.format;
+    if (format.isEmpty()) format = "cbor";
+    
+    // 检查存储引擎是否可用
+    auto engine = storageEngine(format);
+    if (!engine) return false;
+    
+    return loadFromFile(path, format);
+}
+
 bool IModel::writable() const {
     return m_writable;
 }

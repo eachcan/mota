@@ -65,6 +65,8 @@ public:
     virtual void fromCbor(const QCborValue& cbor) = 0;
     
     // 存储接口
+    bool save();    // 根据模型配置自动保存
+    bool load();    // 根据模型配置自动加载
     bool saveToFile(const QString& filepath, const QString& format);
     bool loadFromFile(const QString& filepath, const QString& format);
     
@@ -91,6 +93,9 @@ public:
 
     // 获取模型注解
     virtual ModelAnnotation modelAnnotation() const = 0;
+    
+    // 获取模型注解
+    virtual ModelAnnotation modelAnnotation(const QString& key) const = 0;
     
     // 获取字段值
     virtual QVariant value(const QString& fieldName) const = 0;
