@@ -60,6 +60,8 @@
 对于使用动态选项的选择字段，OPTIONS 类型定义如下：
 
 ```cpp
+// file: options.mota 不要忘记！！！
+
 block OPTIONS {
     string value;    // 选项值
     string text;     // 显示文本
