@@ -1,135 +1,262 @@
 #include "IModel.h"
+#include "ApplicationContext.h"
+#include "IModelValidator.h"
+#include "StorageEngineFactory.h"
+#include <QCoreApplication>
 #include <QDir>
+#include <QFileInfo>
+#include <typeinfo>
+#include <typeindex>
 
-IModel::IModel(Region region)
-    : m_region(region)
-    , m_writable(false)
-{
-}
+namespace ymf {
 
-bool IModel::saveToFile(const QString& filepath, const QString& format) {
-    auto engine = storageEngine(format);
-    if (!engine) return false;
-    return engine->save(filepath.toStdString(), toCbor());
-}
-
-bool IModel::loadFromFile(const QString& filepath, const QString& format) {
-    auto engine = storageEngine(format);
-    if (!engine) return false;
-    QCborValue cbor;
-    if (!engine->load(filepath.toStdString(), cbor)) return false;
-    fromCbor(cbor);
-    return true;
-}
-
-bool IModel::save() {
-    // 检查是否可写
-    if (!writable()) return false;
-
-    // 获取模型注解
-    auto annotation = modelAnnotation();
-    
-    // 获取保存路径
-    QString path = resolvePath();
-    if (path.isEmpty()) return false;
-    
-    // 确保目标目录存在
-    QFileInfo fileInfo(path);
-    QDir dir = fileInfo.dir();
-    if (!dir.exists()) {
-        if (!dir.mkpath(".")) return false;
-    }
-    
-    // 获取存储格式，如果注解中未指定则使用默认格式
-    QString format = annotation.format;
-    if (format.isEmpty()) format = "cbor";
-    
-    // 检查存储引擎是否可用
-    auto engine = storageEngine(format);
-    if (!engine) return false;
-    
-    return saveToFile(path, format);
-}
-
-bool IModel::load() {
-    // 获取模型注解
-    auto annotation = modelAnnotation();
-    
-    // 获取加载路径
-    QString path = resolvePath();
-    if (path.isEmpty()) return false;
-    
-    // 检查文件是否存在
-    if (!QFileInfo::exists(path)) return false;
-    
-    // 获取存储格式，如果注解中未指定则使用默认格式
-    QString format = annotation.format;
-    if (format.isEmpty()) format = "cbor";
-    
-    // 检查存储引擎是否可用
-    auto engine = storageEngine(format);
-    if (!engine) return false;
-    
-    return loadFromFile(path, format);
-}
-
-bool IModel::writable() const {
-    return m_writable;
-}
-
-void IModel::writable(bool writable) {
-    m_writable = writable;
-}
-
-IModel::Region IModel::region() const {
-    return m_region;
-}
-
-void IModel::region(Region region) {
-    m_region = region;
-}
-
-QString IModel::qualifier() const {
-    return m_qualifier;
-}
-
-QString IModel::qualifier(const QString& qualifier) {
-    auto old = m_qualifier;
-    m_qualifier = qualifier;
-    return old;
-}
-
-QString IModel::resolvePath(const QString& qualifier) const {
-    // 获取注解中的文件路径
-    QString path = modelAnnotation().file;
-    if (path.isEmpty()) {
-        // 如果注解中没有指定路径，使用默认路径
-        if (m_region == Region::Product) {
-            path = "${app_path}/settings/${product_dir}/${name}.cbor";
-        } else {
-            path = "${app_path}/settings/${name}.cbor";
+    // 定义一个辅助类，用于安全地转换注解类型
+    class AnnotationTypeHelper {
+    public:
+        // 通用的类型转换模板方法
+        template<typename T>
+        static std::shared_ptr<T> as(const std::shared_ptr<void>& ptr) {
+            if (!ptr) return nullptr;
+            
+            try {
+                // 尝试安全地转换指针类型
+                auto* typedPtr = static_cast<T*>(ptr.get());
+                // 验证转换后的指针是否有效
+                if (!isValidType(typedPtr)) return nullptr;
+                
+                // 创建一个新的共享指针，共享原始指针的引用计数
+                return std::shared_ptr<T>(ptr, typedPtr);
+            } catch (...) {
+                return nullptr;
+            }
         }
+
+    private:
+        // 类型验证函数的主模板（默认实现）
+        template<typename T>
+        static bool isValidType(T* ptr) {
+            // 默认情况下，只检查指针是否为空
+            return ptr != nullptr;
+        }
+        
+        // 为 StorageAnnotation 特化验证函数
+        static bool isValidType(StorageAnnotation* ptr) {
+            if (!ptr) return false;
+            // 验证格式字段是否有效
+            return !ptr->format.isEmpty();
+        }
+        
+        // 为 ScopeAnnotation 特化验证函数
+        static bool isValidType(ScopeAnnotation* ptr) {
+            if (!ptr) return false;
+            // 验证 value 字段是否是有效的 Scope 枚举值
+            return (ptr->value == Scope::Global || ptr->value == Scope::Product);
+        }
+        
+        // 为 WindowAnnotation 特化验证函数
+        static bool isValidType(WindowAnnotation* ptr) {
+            if (!ptr) return false;
+            // 验证 title 字段是否存在
+            return !ptr->title.isNull();
+        }
+    };
+
+    IModel::IModel() 
+        : m_scope(Scope::Global)
+        , m_writable(false)
+    {
     }
 
-    // 替换变量
-    path.replace("${app_path}", QCoreApplication::applicationDirPath());
-    path.replace("${product_dir}", productDir());
-    path.replace("${qualifier}", qualifier.isEmpty() ? m_qualifier : qualifier);
-    path.replace("${name}", modelName());
-
-    // 如果路径不以盘符开头，添加应用目录前缀
-    if (!path.contains(QRegExp("^[A-Za-z]:"))) {
-        path = QDir::cleanPath(QCoreApplication::applicationDirPath() + "/" + path);
+    bool IModel::save() {
+        if (!writable()) return false;
+        
+        // 先保存数据
+        bool success = saveToFile(resolvePath(), "cbor"); // 默认使用 cbor 格式
+        
+        // 如果保存成功且有 context，同步到只读模型
+        if (success && m_context) {
+            ModelInfoIndex key = m_context->makeModelKey(typeid(*this), m_qualifier);
+            m_context->syncModelData(key);
+        }
+        
+        return success;
     }
 
-    return path;
-}
+    bool IModel::load() {
+        return loadFromFile(resolvePath(), "cbor"); // 默认使用 cbor 格式
+    }
 
-QString IModel::productDir() const {
-    return QString();
-}
+    bool IModel::saveToFile(const QString& filepath, const QString& format) {
+        auto engine = storageEngine(format);
+        if (!engine) return false;
+        return engine->save(filepath, toCbor());
+    }
 
-std::shared_ptr<IStorageEngine> IModel::storageEngine(const QString& format) {
-    // TODO: 实现存储引擎工厂，这里应该根据 format 返回对应的存储引擎
-    return nullptr;
-}
+    bool IModel::loadFromFile(const QString& filepath, const QString& format) {
+        auto engine = storageEngine(format);
+        if (!engine) return false;
+        
+        QCborValue data;
+        if (!engine->load(filepath, data)) return false;
+        
+        fromCbor(data);
+        return true;
+    }
+
+    QString IModel::resolvePath() const {
+        // 获取存储注解
+        QString format = "cbor"; // 默认格式
+        QString path = ""; // 默认路径为空
+        
+        // 尝试从注解中获取存储路径和格式
+        auto storageAnnotation = modelStorageAnnotation();
+        if (storageAnnotation) {
+            path = storageAnnotation->path;
+            format = storageAnnotation->format;
+        }
+        
+        QString result = path;
+        
+        // 如果路径为空，使用默认路径
+        if (result.isEmpty()) {
+            // 基本路径：{config}
+            result = configDir();
+            
+            // 如果是产品配置，添加产品目录
+            if (m_scope == Scope::Product) {
+                result = QString("%1/%2").arg(result, productDir());
+            }
+            
+            // 添加模型名
+            result = QString("%1/%2").arg(result, modelName());
+            
+            // 如果有限定符，添加到文件名中
+            if (!m_qualifier.isEmpty()) {
+                result = QString("%1-%2").arg(result, m_qualifier);
+            }
+            
+            // 添加扩展名
+            result = QString("%1.%2").arg(result, format);
+        }
+        
+        // 替换变量
+        result.replace("${app}", appDir());
+        result.replace("${config}", configDir());
+        result.replace("${product}", productDir());
+        result.replace("${model}", modelName());
+        result.replace("${qualifier}", m_qualifier.isEmpty() ? "default" : m_qualifier);
+        
+        // 确保目录存在
+        QFileInfo fileInfo(result);
+        QDir dir = fileInfo.dir();
+        if (!dir.exists()) {
+            dir.mkpath(".");
+        }
+        
+        return result;
+    }
+
+    QString IModel::configDir() const {
+        return QString("%1/config").arg(appDir());
+    }
+
+    QString IModel::appDir() const {
+        return QCoreApplication::applicationDirPath();
+    }
+
+    QString IModel::productDir() const {
+        return m_context->getProductName();
+    }
+
+    bool IModel::writable() const {
+        return m_writable;
+    }
+
+    void IModel::writable(bool writable) {
+        m_writable = writable;
+    }
+
+    Scope IModel::scope() const {
+        return m_scope;
+    }
+
+    void IModel::scope(Scope scope) {
+        m_scope = scope;
+    }
+
+    QString IModel::qualifier() const {
+        return m_qualifier;
+    }
+
+    void IModel::qualifier(const QString& qualifier) {
+        m_qualifier = qualifier;
+    }
+
+    void IModel::setContext(ApplicationContext* context) {
+        m_context = context;
+    }
+
+    ApplicationContext* IModel::context() const {
+        return m_context;
+    }
+
+    std::shared_ptr<StorageAnnotation> IModel::modelStorageAnnotation() const
+    {
+        auto annotations = modelAnnotations();
+        for (const auto& annotation : annotations) {
+            auto result = AnnotationTypeHelper::as<StorageAnnotation>(annotation);
+            if (result) {
+                return result;
+            }
+        }
+        return nullptr;
+    }
+
+    std::shared_ptr<ScopeAnnotation> IModel::modelScopeAnnotation() const
+    {
+        auto annotations = modelAnnotations();
+        for (const auto& annotation : annotations) {
+            auto result = AnnotationTypeHelper::as<ScopeAnnotation>(annotation);
+            if (result) {
+                return result;
+            }
+        }
+        return nullptr;
+    }
+
+    std::shared_ptr<WindowAnnotation> IModel::modelWindowAnnotation() const
+    {
+        auto annotations = modelAnnotations();
+        for (const auto& annotation : annotations) {
+            auto result = AnnotationTypeHelper::as<WindowAnnotation>(annotation);
+            if (result) {
+                return result;
+            }
+        }
+        return nullptr;
+    }
+
+    std::shared_ptr<IStorageEngine> IModel::storageEngine(const QString& format) {
+        return StorageEngineFactory::instance()->getEngine(format);
+    }
+
+    ValidationResult IModel::validate() const {
+        auto validators = m_context ? m_context->getValidators(typeid(*this)) : QList<std::shared_ptr<IModelValidator>>();
+        
+        m_lastValidationResult = ValidationResult::success();
+        
+        for (auto& validator : validators) {
+            auto result = validator->validate(this);
+            if (!result.isValid()) {
+                m_lastValidationResult.addErrors(result);
+            }
+        }
+        
+        return m_lastValidationResult;
+    }
+
+    QList<ValidationError> IModel::validationErrors() const {
+        return m_lastValidationResult.errors();
+    }
+
+} // namespace ymf

@@ -1,130 +1,161 @@
 #pragma once
 
+// @completed
+
 #include "framework_global.h"
 #include <QString>
 #include <QVariant>
 #include <QMap>
 #include <QCborValue>
-#include <QCoreApplication>
 #include <memory>
-#include "StorageEngine.h"
+#include "IStorageEngine.h"
+#include "ValidationResult.h"
 
-class MODULE_EXPORT IModel {
-public:
-    enum class Region {
-        Global,     // 全局配置
-        Product     // 产品相关配置
+#include "model_declares.h"
+
+namespace ymf {
+
+    class ApplicationContext;  // 前向声明
+
+#if defined(FRAMEWORK_LIBRARY)
+#  define MODEL_EXPORT Q_DECL_EXPORT
+#else
+#  define MODEL_EXPORT Q_DECL_IMPORT
+#endif
+
+    class MODEL_EXPORT IModel {
+    public:
+
+        IModel();
+        virtual ~IModel() = default;
+        
+        // 序列化/反序列化接口
+        virtual QCborValue toCbor() const = 0;
+        virtual void fromCbor(const QCborValue& cbor) = 0;
+        
+        // 存储接口
+        bool save();    // 根据模型配置自动保存
+        bool load();    // 根据模型配置自动加载
+        bool saveToFile(const QString& filepath, const QString& format);
+        bool loadFromFile(const QString& filepath, const QString& format);
+        
+        // 模型是否可写
+        bool writable() const;
+        void writable(bool writable);
+        
+        // 获取模型作用域
+        Scope scope() const;
+        void scope(Scope scope);
+        
+        // 获取/设置限定符
+        QString qualifier() const;
+        void qualifier(const QString& qualifier);
+        
+        // 获取/设置 ApplicationContext
+        void setContext(ApplicationContext* context);
+        ApplicationContext* context() const;
+        
+        // 获取所有字段
+        virtual QStringList fields() const = 0;
+        
+        // 获取字段类型
+        virtual QString fieldType(const QString& fieldName) const = 0;
+
+        // 获取模型注解
+        virtual QList<std::shared_ptr<void>> modelAnnotations() const = 0;
+
+        // 获取模型的 StorageAnnotation 注解
+        std::shared_ptr<StorageAnnotation> modelStorageAnnotation() const;
+
+        // 获取模型的 ScopeAnnotation 注解
+        std::shared_ptr<ScopeAnnotation> modelScopeAnnotation() const;
+
+        // 获取模型的 WindowAnnotation 注解
+        std::shared_ptr<WindowAnnotation> modelWindowAnnotation() const;
+
+        // 获取字段注解
+        virtual QList<std::shared_ptr<void>> fieldAnnotations(const QString& fieldName) const = 0;
+
+        // 获取具体的注解
+        template <typename T>
+        std::shared_ptr<T> fieldAnnotation(const QString& fieldName) const;
+
+        // 获取模型的注释
+        virtual QString description() const = 0;
+
+        // 获取字段的注释
+        virtual QString fieldDescription(const QString& fieldName) const = 0;
+        
+        // 获取字段值
+        virtual QVariant value(const QString& fieldName) const = 0;
+        
+        // 设置字段值
+        virtual void value(const QString& fieldName, const QVariant& value) = 0;
+        
+        // 验证模型
+        ValidationResult validate() const;
+
+        // 获取验证错误
+        QList<ValidationError> validationErrors() const;
+        
+    protected:
+        // 获取产品目录
+        virtual QString productDir() const;
+
+        // 获取模型名
+        virtual QString modelName() const = 0;
+        
+        // 获取配置目录
+        QString configDir() const;
+
+        // 获取应用安装目录
+        QString appDir() const;
+
+    private:
+        friend class ApplicationContext;
+
+        // 解析存储路径
+        QString resolvePath() const;
+
+        std::shared_ptr<IStorageEngine> storageEngine(const QString& format);
+
+        Scope m_scope = Scope::Global;
+        bool m_writable = false;
+        QString m_qualifier;
+        ApplicationContext* m_context = nullptr;
+        mutable ValidationResult m_lastValidationResult;    // 缓存的验证结果
     };
 
-    enum class UIType {
-        DrawRectangle,  // 矩形绘制
-        DrawCircle,     // 圆形绘制
-        DrawHLine,      // 水平线绘制
-        DrawVLine,      // 垂直线绘制
-        Range,          // 范围输入
-        Number,         // 数值输入
-        Text,           // 文本输入
-        Switcher,       // 布尔开关
-        Select          // 预定义选项选择
+    // BaseBlock 保持独立
+    class MODEL_EXPORT BaseBlock {
+    public:
+        virtual ~BaseBlock() = default;
+        virtual QCborValue toCbor() const = 0;
+        virtual void fromCbor(const QCborValue& cbor) = 0;
+
+        // 获取块名称
+        virtual QString name() const = 0;
+
+        // 获取所有的字段
+        virtual QStringList fields() const = 0;
+
+        // 获取字段类型
+        virtual QString fieldType(const QString& fieldName) const = 0;
+
+        // 获取字段注解
+        virtual QList<std::shared_ptr<void>> fieldAnnotation(const QString& fieldName) const = 0;
+
+        // 获取块的注释
+        virtual QString description() const = 0;
+
+        // 获取字段的注释
+        virtual QString fieldDescription(const QString& fieldName) const = 0;
+
+        // 获取字段值
+        virtual QVariant value(const QString& fieldName) const = 0;
+
+        // 设置字段值
+        virtual void value(const QString& fieldName, const QVariant& value) = 0;
     };
 
-    struct Option {
-        QString value;      // 选项值
-        QString text;       // 显示文本
-        QString help;       // 帮助文本
-        bool enabled;       // 是否启用
-    };
-
-    // 结构体注解
-    struct ModelAnnotation {
-        QString file;       // 目标文件路径
-        QString level;      // 作用域级别
-        QString format;     // 数据格式
-    };
-
-    // 字段注解
-    struct FieldAnnotation {
-        UIType uiType;                 // UI 渲染类型
-        bool visible;                  // 是否可见
-        QVariant minValue;            // 最小值（数值类型）
-        QVariant maxValue;            // 最大值（数值类型）
-        QString minField;             // 最小值引用字段（范围类型）
-        QString maxField;             // 最大值引用字段（范围类型）
-        int maxLength;                // 最大长度（文本类型）
-        QList<Option> options;        // 选项列表（选择类型）
-        QString optionsField;         // 选项字段引用（选择类型）
-        QString description;          // 字段描述
-        bool isSystem;                // 是否系统字段
-    };
-
-    IModel(Region region = Region::Global);
-    virtual ~IModel() = default;
-    
-    // 序列化/反序列化接口
-    virtual QCborValue toCbor() const = 0;
-    virtual void fromCbor(const QCborValue& cbor) = 0;
-    
-    // 存储接口
-    bool save();    // 根据模型配置自动保存
-    bool load();    // 根据模型配置自动加载
-    bool saveToFile(const QString& filepath, const QString& format);
-    bool loadFromFile(const QString& filepath, const QString& format);
-    
-    // 模型是否可写
-    bool writable() const;
-    void writable(bool writable);
-    
-    // 获取模型作用域
-    Region region() const;
-    void region(Region region);
-    
-    // 获取/设置限定符
-    QString qualifier() const;
-    QString qualifier(const QString& qualifier);
-    
-    // 获取所有字段
-    virtual QStringList fields() const = 0;
-    
-    // 获取字段类型
-    virtual QString fieldType(const QString& fieldName) const = 0;
-    
-    // 获取字段注解
-    virtual FieldAnnotation fieldAnnotation(const QString& fieldName) const = 0;
-
-    // 获取模型注解
-    virtual ModelAnnotation modelAnnotation() const = 0;
-    
-    // 获取模型注解
-    virtual ModelAnnotation modelAnnotation(const QString& key) const = 0;
-    
-    // 获取字段值
-    virtual QVariant value(const QString& fieldName) const = 0;
-    
-    // 设置字段值
-    virtual void value(const QString& fieldName, const QVariant& value) = 0;
-    
-    // 获取实际存储路径
-    QString resolvePath(const QString& qualifier = QString()) const;
-    
-protected:
-    // 获取产品目录
-    virtual QString productDir() const;
-
-    // 获取模型名
-    virtual QString modelName() const = 0;
-    
-private:
-    std::shared_ptr<IStorageEngine> storageEngine(const QString& format);
-
-    Region m_region;                                    // 模型作用域
-    bool m_writable;                                   // 是否可写
-    QString m_qualifier;                               // 限定符
-};
-
-// BaseBlock 保持独立
-class BaseBlock {
-public:
-    virtual ~BaseBlock() = default;
-    virtual QCborValue toCbor() const = 0;
-    virtual void fromCbor(const QCborValue& cbor) = 0;
-};
+} // namespace ymf
