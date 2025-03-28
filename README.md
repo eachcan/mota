@@ -77,7 +77,7 @@ enum CameraType {
 
 // 定义相机配置结构
 @storage(
-    file = "camera_config.cbor",
+    path = "camera_config.cbor",
     format = "cbor" 
 )
 @window(title = "相机配置", desc = "相机配置")
@@ -147,11 +147,12 @@ mota config.mota
 注解用于为类型和字段添加元数据：
 
 ```mota
-@[
-    file = "config/${name}.cbor",  // 输出文件路径
-    level = global,                // 配置级别
-    format = cbor                  // 输出格式
-]
+@storage(
+    path = "config/${name}.cbor",  // 输出文件路径
+    format = "cbor"                // 输出格式
+)
+@window(title = "配置窗口", desc = "配置描述")
+@scope(value = "global")           // 配置级别
 ```
 
 ### 注释系统
