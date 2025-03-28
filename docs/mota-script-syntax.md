@@ -31,7 +31,7 @@ dir = "src/";
 对于 bytes 类型的字段，可以存储为二进制文件，但需要全局指定文件存放路径。文件名会自动生成，文件名会作为相应字段的值，无法手动指定（仅可指定前缀）。
 
 ```mota
-bindir = "${app_path}/config/bindb/";
+bindir = "${app_dir}/config/bindb/";
 ```
 
 ### 1.5 文件结构
@@ -43,7 +43,7 @@ namespace a.b.c;
 
 dir = "src/";
 
-bindir = "${app_path}/config/bindb/";
+bindir = "${app_dir}/config/bindb/";
 
 enum MyType {
     @enumValue(value = "a")
@@ -62,7 +62,7 @@ block MyBlock {
 }
 
 @storage(
-    file = "${app_path}/config/options.cbor",
+    path = "${app_dir}/config/options.cbor",
     format = "cbor"
 )
 @window(title = "我的配置", desc = "这是一个示例配置")
@@ -76,7 +76,6 @@ struct MyStruct {
     @iniGroup(value = "MY_BLOCK")
     MyBlock block;
 }
-```
 
 ## 2. 数据类型
 
@@ -143,7 +142,6 @@ block CameraTask : BaseTask {
 结构体可以通过注解指定序列化相关的配置，也支持继承，但仅能从 block 继承，也不支持多继承：
 
 ```mota
-
 block Device {
     int32 id;
     string name;
@@ -151,8 +149,7 @@ block Device {
 
 // 从 Device 继承
 @storage(
-    file = "${app_path}/device-base.cbor",
-    level = "global",
+    path = "${app_dir}/device-base.cbor",
     format = "cbor"
 )
 @window(title = "相机配置", desc = "相机配置")
@@ -161,12 +158,12 @@ struct CameraDevice : Device {
     @int(min = 0, max = 10000)
     int32 resolution = 1920;
     @float(min = 0.0, max = 100.0)
-    float exposureTime = 1.0;
+    float32 exposureTime = 1.0;
 }
 ```
 
 特点：
-- 支持变量插值（如 ${app_path}）
+- 支持变量插值（如 ${app_dir}）
 - 可以指定序列化格式和配置
 - 支持单继承，可以继承自 block
 
@@ -203,8 +200,7 @@ struct Example {
 
 ```mota
 @storage(
-    file = "${app_path}/device-base.cbor",
-    level = "global",
+    path = "${app_dir}/device-base.cbor",
     format = "cbor"
 )
 @window(title = "相机配置", desc = "相机配置")
@@ -213,7 +209,7 @@ struct CameraDevice : Device {
     @int(min = 0, max = 10000)
     int32 resolution = 1920;
     @float(min = 0.0, max = 100.0)
-    float exposureTime = 1.0;
+    float32 exposureTime = 1.0;
 }
 ```
 
