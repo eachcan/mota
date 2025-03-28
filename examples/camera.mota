@@ -1,61 +1,73 @@
-﻿// 定义命名空间
+// 定义命名空间
 namespace myapp.camera;
 
 /* 相机类型枚举
    用于指定相机的类型和功能 */
 enum CameraType {
-    @[ title = "普通相机", desc = "基础的相机类型" ]
+    @enumValue(title = "普通相机", desc = "基础的相机类型")
     Normal = 0;
-    @[ title = "高速相机", desc = "支持高速拍摄的相机" ]
+    @enumValue(title = "高速相机", desc = "支持高速拍摄的相机")
     HighSpeed = 1;
-    @[ title = "高清相机", desc = "支持4K分辨率的相机" ]
+    @enumValue(title = "高清相机", desc = "支持4K分辨率的相机")
     HD = 2;
 }
 
 /* 基础设备结构
    所有设备的基础配置 */
-@[
-    file = "${app_path}/device-base.cbor",
-    level = "global",
+@storage(
+    path = "${app_dir}/device-base.cbor",
     format = "cbor"
-]
+)
+@window(title = "基础设备", desc = "基础设备配置")
+@scope(value = "global")
 struct Device {
     /* 设备ID */
+    @int(min = 0, max = 10000)
     int32 id;
     /* 设备名称 */
+    @text(max_length = 64)
     string name;
     /* 设备状态 */
+    @switcher()
     bool enabled = true;
 }
 
 /* 相机设备结构
    继承自基础设备，添加相机特有的配置 */
-@[
-    file = "${app_path}/${qualifier}-camera.cbor",
-    level = "global",
+@storage(
+    path = "${app_dir}/${product_config_dir}/camera.cbor",
     format = "cbor"
-]
+)
+@window(title = "相机设备", desc = "相机设备配置")
+@scope(value = "global")
 struct Camera : Device {
     /* 相机类型 */
+    @select()
     CameraType type = Normal;
     /* 相机位置 */
+    @int(min = 0, max = 10000)
     int32 position = 0;
     /* 参考位置 */
+    @int(min = 0, max = 10000)
     optional int32 refPosition;
 }
 
 /* 高级相机设备结构
    继承自相机设备，添加高级功能配置 */
-@[
-    file = "${app_path}/${qualifier}-advanced-camera.cbor",
-    level = "product",
+@storage(
+    path = "${app_dir}/${product_config_dir}/advanced-camera.cbor",
     format = "cbor"
-]
+)
+@window(title = "高级相机", desc = "高级相机配置")
+@scope(value = "product")
 struct AdvancedCamera : Camera {
     /* 曝光时间 */
+    @float(min = 0.0, max = 10.0, step = 0.1)
     float32 exposureTime = 1.0;
     /* ISO感光度 */
+    @int(min = 100, max = 6400, step = 100)
     int32 iso = 100;
     /* 自动对焦 */
+    @switcher()
     bool autoFocus = true;
 }

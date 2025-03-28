@@ -36,6 +36,8 @@ Mota 是一个专为工业自动化和嵌入式系统设计的现代配置语言
 
 ### 安装
 
+#### 自主编译
+
 1. 克隆仓库：
 ```bash
 git clone git@github.com:eachcan/mota.git
@@ -47,31 +49,54 @@ cd mota
 xmake
 ```
 
+#### 使用预编译包
+
+1. 下载 mota
+
+发布地址： https://github.com/eachcan/mota/releases
+
+2. 安装 mota
+
+将 mota.exe 放到你命令行可访问到的地方
+
+
 ### 基本用法
 
 1. 创建 Mota 配置文件 (`config.mota`):
+
 ```mota
 namespace myapp.config;
 
 // 定义相机类型枚举
 enum CameraType {
-    @[ title = "DSLR相机", desc = "专业单反相机" ]
+    @enumValue(title = "DSLR相机", desc = "专业单反相机")
     DSLR = 0;
-    @[ title = "无反相机", desc = "专业微单相机" ]
+    @enumValue(title = "无反相机", desc = "专业微单相机")
     Mirrorless = 1;
 }
 
 // 定义相机配置结构
-@[ 
+@storage(
     file = "camera_config.cbor",
-    level = global,
-    format = cbor 
-]
-struct CameraConfig {
+    format = "cbor" 
+)
+@window(title = "相机配置", desc = "相机配置")
+@scope(value = "product")
+struct CameraList {
+  @iniGroup(value = "AvaiableSn")
+  repeated string availableSn;
+
+  @iniGroup(value = "TASK1_CAM1")
+  CameraConfig task1Cam1;
+}
+
+block CameraConfig {
     /* 相机位置参数 */
+    @int(min = 5, max = 10000)
     int32 position = 0;
     
     /* 相机类型设置 */
+    @select()
     CameraType type = DSLR;
     
     /* 可选的参考位置 */

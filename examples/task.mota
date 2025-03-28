@@ -1,4 +1,4 @@
-﻿﻿include "./camera.mota"
+﻿include "./camera.mota"
 
 // 定义命名空间
 namespace myapp.task;
@@ -7,44 +7,54 @@ namespace myapp.task;
    定义了所有任务共有的基本属性 */
 block BaseTask {
     /* 任务ID */
+    @int(min = 0, max = 10000)
     int32 taskId = 0;
     /* 任务名称 */
+    @text(max_length = 64)
     string name;
     /* 任务优先级 */
+    @int(min = 0, max = 10, desc = "任务优先级，值越大优先级越高")
     int8 priority = 0;
 }
 
 /* 相机任务块
-   继承自基础任务和相机设备 */
-block CameraTask : BaseTask, myapp.camera.Camera {
+   继承自基础任务 */
+block CameraTask : BaseTask {
     /* 相机类型 */
+    @select(desc = "选择相机类型")
     myapp.camera.CameraType type = myapp.camera.CameraType.Normal;
 }
 
 /* 相机任务配置结构
    使用block继承来复用任务配置 */
-@[
-    file = "${app_path}/${qualifier}-camera-task.cbor",
-    level = "global",
+@storage(
+    path = "${app_dir}/${product_config_dir}/camera-task.cbor",
     format = "cbor"
-]
+)
+@window(title = "相机任务配置", desc = "相机任务配置")
+@scope(value = "global")
 struct CameraTaskConfig : CameraTask {
     /* 任务超时时间 */
+    @int(min = 1000, max = 60000, step = 1000, desc = "任务超时时间(毫秒)")
     int32 timeout = 5000;
     /* 重试次数 */
+    @int(min = 0, max = 10, desc = "失败后重试次数")
     int8 retryCount = 3;
     /* 任务参数列表 */
+    @iniGroup(value = "PARAMS")
     repeated string params;
 }
 
 /* 任务映射配置
    管理多个任务的配置 */
-@[
-    file = "${app_path}/${qualifier}-task-map.cbor",
-    level = "global",
+@storage(
+    path = "${app_dir}/${product_config_dir}/task-map.cbor",
     format = "cbor"
-]
+)
+@window(title = "任务映射配置", desc = "管理多个任务的配置")
+@scope(value = "global")
 struct TaskMap {
     /* 任务映射表 */
+    @iniGroup(value = "TASKS")
     map CameraTaskConfig tasks;
 }
