@@ -1,0 +1,128 @@
+namespace yima.ui;
+
+// 基础UI注解
+
+// 整数输入框注解
+annotation Int {
+    int32 min;
+    int32 max;
+    int32 step = 1;
+    string desc = "";
+}
+
+// 浮点数输入框注解
+annotation Float {
+    float64 min;
+    float64 max;
+    float64 step = 0.1;
+    string desc = "";
+}
+
+// 文本输入框注解
+annotation Text {
+    int32 max_length;
+    string desc = "";
+    string pattern = "";
+}
+
+// 开关控件注解
+annotation Switcher {
+    string desc = "";
+}
+
+// 选择框注解
+annotation Select {
+    string desc = "";
+    string enumClass = "";
+    string field = "";
+}
+
+// 枚举值注解
+annotation EnumValue {
+    string title;
+    string desc = "";
+    string value;
+}
+
+// 文件夹选择对话框注解
+annotation FolderDialog {
+    string desc = "";
+}
+
+// 文件选择对话框注解
+annotation FileDialog {
+    string desc = "";
+    string filter = "";
+}
+
+// 颜色选择器注解
+annotation Color {
+    string desc = "";
+    string default_value = "#000000";
+}
+
+// 日期选择器注解
+annotation Date {
+    string desc = "";
+    string format = "yyyy-MM-dd";
+}
+
+// 时间选择器注解
+annotation Time {
+    string desc = "";
+    string format = "HH:mm:ss";
+}
+
+// 分组注解
+annotation IniGroup {
+    string value;
+}
+
+// 绘制矩形注解
+annotation DrawRectangle {
+    string desc = "";
+}
+
+// 绘制圆形注解
+annotation DrawCircle {
+    string desc = "";
+}
+
+// 绘制多边形注解
+annotation DrawPolygon {
+    string desc = "";
+}
+
+// 绘制线段注解
+annotation DrawLine {
+    string desc = "";
+}
+
+// 绘制点注解
+annotation DrawPoint {
+    string desc = "";
+}
+
+// 标签注解
+annotation Label {
+    string text;
+    string desc = "";
+}
+
+// 验证注解
+annotation Validate {
+    string rule;
+    string message = "";
+}
+
+// 提示注解
+annotation Tooltip {
+    string text;
+    int32 duration = 3000;
+}
+
+// 只读注解
+annotation ReadOnly;
+
+// 隐藏注解
+annotation Hidden;

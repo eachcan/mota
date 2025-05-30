@@ -1,0 +1,336 @@
+//@ 任务模块定义
+//@ 本文件定义了任务系统的基本结构和属性
+//@ 版本: 2.0
+
+// 引入相机模块
+include "./camera.mota"
+
+// 定义命名空间
+namespace myapp.task;
+
+/* 
+ * 任务状态枚举
+ * 定义任务的执行状态
+ */
+enum TaskStatus {
+    @enumValue(title = "等待中", desc = "任务已创建但尚未开始执行", value = "waiting")
+    Waiting = 0;
+    @enumValue(title = "执行中", desc = "任务正在执行", value = "running")
+    Running = 1;
+    @enumValue(title = "已完成", desc = "任务已成功完成", value = "completed")
+    Completed = 2;
+    @enumValue(title = "已失败", desc = "任务执行失败", value = "failed")
+    Failed = 3;
+    @enumValue(title = "已取消", desc = "任务被用户或系统取消", value = "canceled")
+    Canceled = 4;
+    @enumValue(title = "已暂停", desc = "任务暂停执行", value = "paused")
+    Paused = 5;
+}
+
+/* 
+ * 任务优先级枚举
+ * 定义任务的执行优先级
+ */
+enum TaskPriority {
+    @enumValue(title = "低", desc = "低优先级任务", value = "low")
+    Low = 0;
+    @enumValue(title = "中", desc = "中等优先级任务", value = "medium")
+    Medium = 1;
+    @enumValue(title = "高", desc = "高优先级任务", value = "high")
+    High = 2;
+    @enumValue(title = "紧急", desc = "紧急优先级任务", value = "urgent")
+    Urgent = 3;
+}
+
+/* 
+ * 任务类型枚举
+ * 定义系统支持的任务类型
+ */
+enum TaskType {
+    @enumValue(title = "相机任务", desc = "与相机相关的任务", value = "camera")
+    Camera = 0;
+    @enumValue(title = "处理任务", desc = "数据处理任务", value = "process")
+    Process = 1;
+    @enumValue(title = "分析任务", desc = "数据分析任务", value = "analysis")
+    Analysis = 2;
+    @enumValue(title = "报告任务", desc = "生成报告的任务", value = "report")
+    Report = 3;
+    @enumValue(title = "系统任务", desc = "系统维护任务", value = "system")
+    System = 4;
+}
+
+/* 
+ * 基础任务块
+ * 定义了所有任务共有的基本属性
+ */
+block BaseTask {
+    /* 任务ID */
+    @int(min = 0, max = 100000, desc = "任务唯一标识符")
+    int32 taskId = 0;
+    
+    /* 任务名称 */
+    @text(max_length = 64, desc = "任务名称")
+    string name = "";
+    
+    /* 任务描述 */
+    @text(max_length = 256, desc = "任务详细描述")
+    string description = "";
+    
+    /* 任务类型 */
+    @select(desc = "任务类型")
+    TaskType type = TaskType.Camera;
+    
+    /* 任务优先级 */
+    @select(desc = "任务优先级，值越大优先级越高")
+    TaskPriority priority = TaskPriority.Medium;
+    
+    /* 创建时间 */
+    @text(max_length = 32, desc = "任务创建时间")
+    string createTime = "";
+    
+    /* 是否启用 */
+    @switcher(desc = "是否启用此任务")
+    bool enabled = true;
+}
+
+/* 
+ * 调度参数块
+ * 定义任务调度相关的参数
+ */
+block ScheduleParams {
+    /* 最大执行时间 */
+    @int(min = 1000, max = 3600000, step = 1000, desc = "最大执行时间(毫秒)")
+    int32 maxExecutionTime = 60000;
+    
+    /* 重试次数 */
+    @int(min = 0, max = 10, desc = "失败后重试次数")
+    int8 retryCount = 3;
+    
+    /* 重试间隔 */
+    @int(min = 1000, max = 60000, step = 1000, desc = "重试间隔(毫秒)")
+    int32 retryInterval = 5000;
+    
+    /* 是否允许并行执行 */
+    @switcher(desc = "是否允许与其他任务并行执行")
+    bool allowParallel = true;
+    
+    /* 依赖任务ID列表 */
+    @iniGroup(value = "DEPENDENCIES")
+    repeated int32 dependencies;
+}
+
+/* 
+ * 相机任务块
+ * 继承自基础任务，添加相机特有的配置
+ */
+block CameraTask : BaseTask {
+    /* 相机类型 */
+    @select(desc = "选择相机类型")
+    myapp.camera.CameraType cameraType = myapp.camera.CameraType.Normal;
+    
+    /* 相机ID */
+    @int(min = 0, max = 100, desc = "相机设备ID")
+    int32 cameraId = 0;
+    
+    /* 图像保存路径 */
+    @folder_dialog(desc = "图像保存路径")
+    string savePath = "${app_dir}/images";
+    
+    /* 图像格式 */
+    @select(desc = "图像保存格式")
+    string imageFormat = "png";  // "jpg", "png", "bmp", "tiff"
+    
+    /* 图像质量 */
+    @int(min = 1, max = 100, desc = "图像质量(1-100)")
+    int32 imageQuality = 90;
+    
+    /* 是否添加时间戳 */
+    @switcher(desc = "文件名是否添加时间戳")
+    bool addTimestamp = true;
+    
+    /* 是否自动曝光 */
+    @switcher(desc = "是否使用自动曝光")
+    bool autoExposure = true;
+}
+
+/* 
+ * 处理任务块
+ * 继承自基础任务，添加数据处理特有的配置
+ */
+block ProcessTask : BaseTask {
+    /* 处理算法 */
+    @select(desc = "选择处理算法")
+    string algorithm = "default";
+    
+    /* 输入路径 */
+    @folder_dialog(desc = "输入数据路径")
+    string inputPath = "${app_dir}/images";
+    
+    /* 输出路径 */
+    @folder_dialog(desc = "输出数据路径")
+    string outputPath = "${app_dir}/processed";
+    
+    /* 处理参数 */
+    @iniGroup(value = "PROCESS_PARAMS")
+    map string params;
+}
+
+/* 
+ * 相机任务配置结构
+ * 使用block继承来复用任务配置
+ */
+@storage(
+    path = "${app_dir}/${product_config_dir}/camera-task.cbor",
+    format = "cbor"
+)
+@window(title = "相机任务配置", desc = "相机任务配置")
+@scope(value = "global")
+struct CameraTaskConfig : CameraTask {
+    /* 任务状态 */
+    @select(desc = "任务当前状态")
+    TaskStatus status = TaskStatus.Waiting;
+    
+    /* 调度参数 */
+    @iniGroup(value = "SCHEDULE")
+    ScheduleParams schedule;
+    
+    /* 触发模式 */
+    @select(desc = "任务触发模式")
+    string triggerMode = "manual";  // "manual", "timer", "event", "continuous"
+    
+    /* 触发间隔(ms) - 仅当触发模式为timer时有效 */
+    @int(min = 100, max = 86400000, step = 100, desc = "触发间隔(毫秒)")
+    int32 triggerInterval = 1000;
+    
+    /* 任务参数列表 */
+    @iniGroup(value = "PARAMS")
+    repeated string params;
+    
+    /* 回调函数 */
+    @text(max_length = 128, desc = "任务完成后的回调函数")
+    string callback = "";
+}
+
+/* 
+ * 处理任务配置结构
+ * 使用block继承来复用任务配置
+ */
+@storage(
+    path = "${app_dir}/${product_config_dir}/process-task.cbor",
+    format = "cbor"
+)
+@window(title = "处理任务配置", desc = "数据处理任务配置")
+@scope(value = "global")
+struct ProcessTaskConfig : ProcessTask {
+    /* 任务状态 */
+    @select(desc = "任务当前状态")
+    TaskStatus status = TaskStatus.Waiting;
+    
+    /* 调度参数 */
+    @iniGroup(value = "SCHEDULE")
+    ScheduleParams schedule;
+    
+    /* 处理模式 */
+    @select(desc = "处理模式")
+    string processMode = "batch";  // "batch", "stream", "single"
+    
+    /* 批处理大小 - 仅当处理模式为batch时有效 */
+    @int(min = 1, max = 1000, desc = "批处理大小")
+    int32 batchSize = 10;
+    
+    /* 是否使用GPU加速 */
+    @switcher(desc = "是否使用GPU加速")
+    bool useGPU = true;
+    
+    /* 线程数 */
+    @int(min = 1, max = 32, desc = "处理线程数")
+    int32 threadCount = 4;
+}
+
+/* 
+ * 任务映射配置
+ * 管理多个任务的配置
+ */
+@storage(
+    path = "${app_dir}/${product_config_dir}/task-map.cbor",
+    format = "cbor"
+)
+@window(title = "任务映射配置", desc = "管理多个任务的配置")
+@scope(value = "global")
+struct TaskMap {
+    /* 任务映射表名称 */
+    @text(max_length = 64, desc = "任务映射表名称")
+    string name = "默认任务映射";
+    
+    /* 任务映射表描述 */
+    @text(max_length = 256, desc = "任务映射表描述")
+    string description = "";
+    
+    /* 相机任务映射表 */
+    @iniGroup(value = "CAMERA_TASKS")
+    map CameraTaskConfig cameraTasks;
+    
+    /* 处理任务映射表 */
+    @iniGroup(value = "PROCESS_TASKS")
+    map ProcessTaskConfig processTasks;
+    
+    /* 全局任务超时时间 */
+    @int(min = 1000, max = 3600000, step = 1000, desc = "全局任务超时时间(毫秒)")
+    int32 globalTimeout = 60000;
+    
+    /* 最大并行任务数 */
+    @int(min = 1, max = 32, desc = "最大并行任务数")
+    int32 maxParallelTasks = 4;
+    
+    /* 任务队列大小 */
+    @int(min = 10, max = 1000, desc = "任务队列大小")
+    int32 queueSize = 100;
+}
+
+/* 
+ * 任务调度器配置
+ * 配置任务调度系统的全局参数
+ */
+@storage(
+    path = "${app_dir}/${product_config_dir}/task-scheduler.cbor",
+    format = "cbor"
+)
+@window(title = "任务调度器配置", desc = "配置任务调度系统的全局参数")
+@scope(value = "global")
+struct TaskSchedulerConfig {
+    /* 调度器名称 */
+    @text(max_length = 64, desc = "调度器名称")
+    string name = "默认调度器";
+    
+    /* 是否启用 */
+    @switcher(desc = "是否启用调度器")
+    bool enabled = true;
+    
+    /* 工作线程数 */
+    @int(min = 1, max = 32, desc = "工作线程数")
+    int32 workerThreads = 4;
+    
+    /* 调度间隔 */
+    @int(min = 10, max = 10000, step = 10, desc = "调度间隔(毫秒)")
+    int32 schedulingInterval = 100;
+    
+    /* 任务映射配置 */
+    @iniGroup(value = "TASK_MAPS")
+    repeated TaskMap taskMaps;
+    
+    /* 日志级别 */
+    @select(desc = "日志级别")
+    string logLevel = "info";  // "debug", "info", "warning", "error"
+    
+    /* 日志路径 */
+    @folder_dialog(desc = "日志保存路径")
+    string logPath = "${app_dir}/logs";
+    
+    /* 统计信息收集 */
+    @switcher(desc = "是否收集任务统计信息")
+    bool collectStatistics = true;
+    
+    /* 统计信息保存路径 */
+    @folder_dialog(desc = "统计信息保存路径")
+    string statisticsPath = "${app_dir}/statistics";
+}

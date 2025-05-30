@@ -6,7 +6,7 @@ set_version("0.1.0")
 add_rules("mode.debug", "mode.release")
 
 -- 设置C++标准
-set_languages("c++17")
+set_languages("c++20")
 
 -- 添加包依赖
 add_requires("qt6core", {optional = true})
@@ -27,11 +27,16 @@ target("mota")
     -- 添加源文件
     add_files("src/*.cpp")
     
-    -- 排除测试文件
+    -- 排除测试文件和add_bom工具
     remove_files("src/test_*.cpp")
+    remove_files("src/add_bom.cpp")
+    remove_files("src/install.cpp")
     
     -- 添加头文件目录
-    add_includedirs("include")
+    add_includedirs("include", "framework")
+    
+    -- 添加依赖包
+    add_packages("cxxopts")
     
     -- Debug模式下添加调试信息
     if is_mode("debug") then
@@ -46,36 +51,24 @@ target("mota")
         set_optimize("fastest")
         set_strip("all")
     end
+    
+    -- 设置输出目录
+    set_targetdir("bin")
 
--- 框架库目标
-target("mota_framework")
-    -- 设置为静态库
-    add_rules("qt.static")
-    
-    -- 添加源文件
-    add_files("framework/*.cpp")
-    
-    -- 添加头文件目录
-    add_includedirs("framework")
-    
-    -- 添加依赖包
-    add_frameworks("QtCore")
-
--- 测试目标
-target("mota_test")
+-- 测试目标：解析器测试
+target("test_parser")
     -- 设置为可执行程序
     set_kind("binary")
     
     -- 添加源文件
-    add_files("test/*.cpp")
-    add_files("src/*.cpp")
-    remove_files("src/main.cpp")
+    add_files("test/test_parser.cpp")
+    add_files("src/lexer.cpp")
+    add_files("src/parser.cpp")
+    add_files("src/ast.cpp")
+    add_files("src/config.cpp")
     
     -- 添加头文件目录
     add_includedirs("include", "framework")
-    
-    -- 添加测试框架
-    add_packages("gtest")
     
     -- 设置输出目录
     set_targetdir("bin")
@@ -83,8 +76,53 @@ target("mota_test")
     -- 添加测试定义
     add_defines("TESTING")
 
+-- 测试目标：生成器测试
+target("test_generator")
+    -- 设置为可执行程序
+    set_kind("binary")
+    
+    -- 添加源文件
+    add_files("test/test_generator.cpp")
+    add_files("src/lexer.cpp")
+    add_files("src/parser.cpp")
+    add_files("src/generator.cpp")
+    add_files("src/ast.cpp")
+    add_files("src/config.cpp")
+    
+    -- 添加头文件目录
+    add_includedirs("include", "framework")
+    
+    -- 添加测试框架 (包括gtest_main)
+    add_packages("gtest", {configs = {main = true}})
+    
+    -- 设置输出目录
+    set_targetdir("bin")
+    
+    -- 添加测试定义
+    add_defines("TESTING")
+    
+-- 添加BOM工具
+target("add_bom")
+    -- 设置为可执行程序
+    set_kind("binary")
+    -- 添加源文件（只添加add_bom.cpp，不包含其他源文件）
+    add_files("src/add_bom.cpp")
+    -- 添加C++17标准支持
+    set_languages("c++17")
+    -- 设置输出目录
+    set_targetdir("bin")
+
 -- 安装配置
 target("install")
+    -- 设置为可执行程序
+    set_kind("binary")
+    -- 添加一个简单的main函数
+    add_files("src/install.cpp")
+    -- 设置输出目录
+    set_targetdir("bin")
+    -- 添加对主目标的依赖
+    add_deps("mota")
+    
     after_build(function (target)
         import("core.project.config")
         

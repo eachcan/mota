@@ -1,0 +1,14 @@
+annotation Storage {
+    string path;
+    string format;
+}
+
+annotation Window {
+    string title;
+    string desc;
+}
+
+annotation Scope {
+    string value;
+}
+
