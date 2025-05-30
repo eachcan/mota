@@ -1,119 +1,103 @@
-﻿#ifndef PARSER_H
-#define PARSER_H
+#pragma once
 
-#include "lexer.h"
 #include "ast.h"
+#include "lexer.h"
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
 #include <stdexcept>
-#include <map>
-#include "config.h"
+
 namespace mota {
+namespace parser {
 
-// 文件读取函数声明
-std::string readFile(const std::string& filepath);
-
-class Parser : public std::enable_shared_from_this<Parser> {
+// 解析错误异常
+class ParseError : public std::runtime_error {
 public:
-    Parser(const std::vector<Token>& tokens, std::shared_ptr<Config> config = nullptr);
+    ParseError(const std::string& message, uint32_t line, uint32_t column)
+        : std::runtime_error(formatMessage(message, line, column)),
+          line_(line),
+          column_(column) {}
     
-    // 解析整个文件
-    std::shared_ptr<FileNode> parseFile();
-
+    uint32_t line() const { return line_; }
+    uint32_t column() const { return column_; }
+    
 private:
-    std::vector<Token> tokens;
-    int current = 0;  // 当前token位置
-
-    // 记录已声明的类型
-    struct DeclaredType {
-        std::string name;
-        std::string kind;  // "struct", "block", "enum"
-        std::vector<std::string> fieldNames;  // 该类型中的字段名
-    };
-    std::vector<DeclaredType> declaredTypes;
-
-    std::vector<std::string> currentNamespace;  // 当前命名空间栈
-    std::map<std::string, std::vector<std::string>> includedTypes;  // 记录include的类型及其命名空间
-
-    // 工具方法
-    Token peek() const;  // 查看当前token
-    Token previous() const;  // 查看前一个token
-    Token advance();     // 移动到下一个token
-    bool match(TokenType type);  // 匹配并消费token
-    bool match(TokenType type, const std::string& value);  // 匹配并消费token
-    bool check(TokenType type) const;  // 只检查不消费
-    bool check(TokenType type, const std::string& value) const;  // 只检查不消费
-    Token consume(TokenType type, const std::string& message);  // 消费并检查
-    Token consume(TokenType type, const std::string& value, const std::string& message);  // 消费并检查
-    bool isAtEnd() const;  // 是否到达结尾
+    static std::string formatMessage(const std::string& message, uint32_t line, uint32_t column) {
+        return "[" + std::to_string(line) + ":" + std::to_string(column) + "] " + message;
+    }
     
-    // 解析声明
-    DeclPtr parseDeclaration();
-    DeclPtr parseInclude();
-    DeclPtr parseNamespace();
-    DeclPtr parseEnum();
-    DeclPtr parseStruct();
-    DeclPtr parseBlock();
-
-    // 解析字段
-    std::shared_ptr<FieldDecl> parseField();
-    
-    // 解析枚举值
-    std::shared_ptr<EnumValueDecl> parseEnumValue();
-    
-    // 解析类型
-    TypePtr parseType();
-    TypePtr parseBasicType();
-    
-    // 解析表达式
-    ExprPtr parseExpression();
-    ExprPtr parseLiteral();
-    ExprPtr parseIdentifier();
-    ExprPtr parseArray();
-    
-    // 解析注解
-    std::vector<Annotation> parseAnnotations();
-    Annotation parseAnnotation();
-    
-    // 解析注释
-    std::string parseComment();
-
-    // 错误处理
-    void synchronize();  // 错误恢复
-    
-    // 类型检查辅助函数
-    bool isDeclaredType(const std::string& name, const std::string& kind);
-    bool isTypeNameUsed(const std::string& name);
-    bool isFieldNameUsed(const std::string& typeName, const std::string& fieldName);
-    void addDeclaredType(const std::string& name, const std::string& kind);
-    void addFieldToType(const std::string& typeName, const std::string& fieldName);
-
-    // 辅助方法
-    void pushNamespace(const std::string& ns);
-    void popNamespace();
-    std::string resolveTypeName(const std::string& name);  // 解析类型的完整名称
-
-    // 添加新的成员
-    std::string currentFile;  // 当前正在解析的文件
-    std::shared_ptr<Parser> parentParser;  // 用于追踪包含链
-
-    // 新增方法
-    std::string resolveIncludePath(const std::string& includePath);
-    std::shared_ptr<FileNode> parseIncludedFile(const std::string& filepath);
-
-    std::string getCurrentNamespace();
-    
-    std::shared_ptr<Config> config;
-
-public:    
-    class ParseError : public std::runtime_error {
-    public:
-        ParseError(const std::string& message) : std::runtime_error(message) {}
-    };
-
+    uint32_t line_;
+    uint32_t column_;
 };
 
-}  // namespace mota
+// 语法分析器
+class Parser {
+public:
+    explicit Parser(lexer::Lexer& lexer) : lexer_(lexer) {}
+    
+    // 解析整个文件
+    std::unique_ptr<ast::Document> parse();
+    
+private:
+    // 辅助方法
+    const lexer::Token& advance();
+    const lexer::Token& peek() const;
+    const lexer::Token& peekNext() const;
+    bool check(lexer::TokenType type) const;
+    bool match(lexer::TokenType type);
+    bool isAtEnd() const;
+    
+    // 错误处理
+    lexer::Token consume(lexer::TokenType type, const std::string& message);
+    ParseError error(const lexer::Token& token, const std::string& message);
+    void synchronize();
+    
+    // 解析方法
+    std::unique_ptr<ast::Node> declaration();
+    std::unique_ptr<ast::Annotation> annotation();
+    std::vector<ast::AnnotationArgument> annotationArguments();
+    ast::AnnotationArgument annotationArgument();
+    std::unique_ptr<ast::Node> typeDeclaration();
+    std::unique_ptr<ast::Struct> structDeclaration();
+    std::unique_ptr<ast::Enum> enumDeclaration();
+    std::unique_ptr<ast::Block> blockDeclaration();
+    std::unique_ptr<ast::Annotation> annotationDeclaration();
+    std::unique_ptr<ast::Type> parseType();
+    std::unique_ptr<ast::Type> primaryType();
+    std::unique_ptr<ast::Type> containerType();
+    std::unique_ptr<ast::Field> fieldDeclaration();
+    std::unique_ptr<ast::EnumValue> enumValueDeclaration();
+    std::unique_ptr<ast::Include> includeDeclaration();
+    std::unique_ptr<ast::Namespace> namespaceDeclaration();
+    
+    // 表达式解析
+    std::unique_ptr<ast::Expr> expression();
+    std::unique_ptr<ast::Expr> assignment();
+    std::unique_ptr<ast::Expr> logicalOr();
+    std::unique_ptr<ast::Expr> logicalAnd();
+    std::unique_ptr<ast::Expr> equality();
+    std::unique_ptr<ast::Expr> comparison();
+    std::unique_ptr<ast::Expr> term();
+    std::unique_ptr<ast::Expr> factor();
+    std::unique_ptr<ast::Expr> unary();
+    std::unique_ptr<ast::Expr> primary();
+    
+    // 实用函数
+    template<typename T, typename... Args>
+    std::unique_ptr<T> makeNode(Args&&... args) {
+        auto node = std::make_unique<T>(std::forward<Args>(args)...);
+        node->location.filename = lexer_.getFilename();
+        node->location.line = previous_.line;
+        node->location.column = previous_.column;
+        return node;
+    }
+    
+    lexer::Lexer& lexer_;
+    lexer::Token previous_;
+    lexer::Token current_;
+    bool hadError_ = false;
+    bool panicMode_ = false;
+};
 
-#endif // PARSER_H
+} // namespace parser
+} // namespace mota

@@ -1,184 +1,289 @@
-﻿#ifndef AST_H
-#define AST_H
+﻿#pragma once
 
 #include <string>
 #include <vector>
-#include <memory>
 #include <map>
+#include <memory>
 #include <variant>
+#include <optional>
 
 namespace mota {
+namespace ast {
 
 // 前向声明
 class Node;
-class Expression;
+class Expr;
 class Type;
+class Annotation;
+class AnnotationArgument;
 class Statement;
-class Declaration;
+class Field;
+class EnumValue;
+class Block;
+class Struct;
+class Enum;
+class Namespace;
+class Include;
 
-using NodePtr = std::shared_ptr<Node>;
-using ExprPtr = std::shared_ptr<Expression>;
-using TypePtr = std::shared_ptr<Type>;
-using StmtPtr = std::shared_ptr<Statement>;
-using DeclPtr = std::shared_ptr<Declaration>;
+// 节点类型
+enum class NodeType {
+    // 表达式
+    Identifier,
+    Literal,
+    BinaryOp,
+    UnaryOp,
+    MemberAccess,
+    
+    // 类型
+    NamedType,
+    ContainerType,
+    OptionalType,
+    
+    // 语句
+    FieldDecl,
+    EnumValueDecl,
+    
+    // 顶层声明
+    AnnotationDecl,
+    BlockDecl,
+    StructDecl,
+    EnumDecl,
+    NamespaceDecl,
+    IncludeDecl,
+    
+    // 其他
+    Annotation,
+    AnnotationArgument,
+};
 
-// 基础节点类型
+// 基础节点类
 class Node {
 public:
     virtual ~Node() = default;
-    int line = 0;
-    int column = 0;
-};
-
-// 注解属性
-struct Annotation {
-    std::map<std::string, std::string> attributes;
-};
-
-// 基本类型
-enum class BasicType {
-    Int8,
-    Int16,
-    Int32,
-    Int64,
-    Float32,
-    Double64,
-    String,
-    Bool,
-    Bytes
-};
-
-// 类型定义
-class Type : public Node {
-public:
-    virtual ~Type() = default;
-};
-
-// 基本类型节点
-class BasicTypeNode : public Type {
-public:
-    BasicType type;
-};
-
-// 自定义类型节点
-class CustomTypeNode : public Type {
-public:
-    std::string name;
-    std::vector<std::string> namespaces;  // 完整的命名空间路径
-    std::string getFullName() const {
-        std::string fullName;
-        for (const auto& ns : namespaces) {
-            fullName += ns + "::";
-        }
-        return fullName + name;
-    }
-};
-
-// 修饰类型节点
-class ModifiedTypeNode : public Type {
-public:
-    enum class Modifier {
-        Optional,
-        Map,
-        Repeated
+    virtual NodeType nodeType() const = 0;
+    
+    // 源代码位置信息
+    struct SourceLocation {
+        std::string filename;
+        uint32_t line = 0;
+        uint32_t column = 0;
     };
-    Modifier modifier;
-    TypePtr baseType;
+    
+    SourceLocation location;
 };
 
 // 表达式基类
-class Expression : public Node {
+class Expr : public Node {
 public:
-    virtual ~Expression() = default;
+    NodeType nodeType() const override { return NodeType::Identifier; }
 };
 
-// 字面量表达式
-class LiteralExpr : public Expression {
+// 标识符
+class Identifier : public Expr {
 public:
-    std::variant<int64_t, double, bool, std::string> value;
-};
-
-// 标识符表达式
-class IdentifierExpr : public Expression {
-public:
+    explicit Identifier(std::string name) : name(std::move(name)) {}
+    
     std::string name;
 };
 
-// 数组表达式
-class ArrayExpr : public Expression {
+// 字面量
+class Literal : public Expr {
 public:
-    std::vector<ExprPtr> elements;
+    using ValueType = std::variant<
+        std::monostate,  // 无值
+        bool,            // 布尔值
+        int64_t,         // 整型
+        double,          // 浮点型
+        std::string      // 字符串
+    >;
+    
+    explicit Literal(ValueType value) : value(std::move(value)) {}
+    
+    ValueType value;
 };
 
-// 声明基类
-class Declaration : public Node {
+// 二元操作符
+class BinaryOp : public Expr {
 public:
-    virtual ~Declaration() = default;
+    enum class Op {
+        Add, Sub, Mul, Div, Mod,
+        Eq, Ne, Lt, Le, Gt, Ge,
+        And, Or, Xor, Shl, Shr
+    };
+    
+    BinaryOp(Op op, std::unique_ptr<Expr> lhs, std::unique_ptr<Expr> rhs)
+        : op(op), lhs(std::move(lhs)), rhs(std::move(rhs)) {}
+    
+    Op op;
+    std::unique_ptr<Expr> lhs;
+    std::unique_ptr<Expr> rhs;
+};
+
+// 一元操作符
+class UnaryOp : public Expr {
+public:
+    enum class Op {
+        Plus, Minus, Not, BitNot
+    };
+    
+    UnaryOp(Op op, std::unique_ptr<Expr> operand)
+        : op(op), operand(std::move(operand)) {}
+    
+    Op op;
+    std::unique_ptr<Expr> operand;
+};
+
+// 成员访问
+class MemberAccess : public Expr {
+public:
+    MemberAccess(std::unique_ptr<Expr> object, std::string member)
+        : object(std::move(object)), member(std::move(member)) {}
+    
+    std::unique_ptr<Expr> object;
+    std::string member;
+};
+
+// 类型基类
+class Type : public Node {
+public:
+    virtual ~Type() = default;
+    NodeType nodeType() const override { return NodeType::NamedType; }
+};
+
+// 命名类型
+class NamedType : public Type {
+public:
+    explicit NamedType(std::string name) : name(std::move(name)) {}
+    
     std::string name;
-    std::vector<Annotation> annotations;
-    std::string comment;
+};
+
+// 容器类型
+class ContainerType : public Type {
+public:
+    enum class Kind {
+        Array,      // repeated
+        Map,        // map
+        Optional    // optional
+    };
+    
+    ContainerType(Kind kind, std::unique_ptr<Type> elementType)
+        : kind(kind), elementType(std::move(elementType)) {}
+    
+    Kind kind;
+    std::unique_ptr<Type> elementType;
+    std::unique_ptr<Type> keyType;  // 仅用于Map
+};
+
+// 注解参数
+class AnnotationArgument {
+public:
+    std::string name;
+    std::unique_ptr<Expr> value;
+};
+
+// 注解
+class Annotation : public Node {
+public:
+    Annotation(std::string name, std::vector<AnnotationArgument> args = {})
+        : name(std::move(name)), arguments(std::move(args)) {}
+    
+    std::string name;
+    std::vector<AnnotationArgument> arguments;
+    
+    NodeType nodeType() const override { return NodeType::Annotation; }
 };
 
 // 字段声明
-class FieldDecl : public Declaration {
+class Field : public Node {
 public:
-    TypePtr type;
+    Field(std::string name, std::unique_ptr<Type> type, std::unique_ptr<Expr> defaultValue = nullptr)
+        : name(std::move(name)), type(std::move(type)), defaultValue(std::move(defaultValue)) {}
+    
     std::string name;
-    ExprPtr defaultValue;
-    std::vector<Annotation> annotations;
-    std::string comment;  // 块注释
+    std::unique_ptr<Type> type;
+    std::unique_ptr<Expr> defaultValue;
+    std::vector<std::unique_ptr<Annotation>> annotations;
+    
+    NodeType nodeType() const override { return NodeType::FieldDecl; }
 };
 
-// 枚举项声明
-class EnumValueDecl : public Declaration {
+// 枚举值
+class EnumValue : public Node {
 public:
+    EnumValue(std::string name, std::unique_ptr<Expr> value = nullptr)
+        : name(std::move(name)), value(std::move(value)) {}
+    
     std::string name;
-    int64_t value = 0;  // 默认值为0
-    std::vector<Annotation> annotations;
-    std::string comment;
+    std::unique_ptr<Expr> value;
+    std::vector<std::unique_ptr<Annotation>> annotations;
+    
+    NodeType nodeType() const override { return NodeType::EnumValueDecl; }
 };
 
-// 枚举声明
-class EnumDecl : public Declaration {
+// 块定义
+class Block : public Node {
 public:
-    std::vector<std::shared_ptr<EnumValueDecl>> values;
+    explicit Block(std::string name) : name(std::move(name)) {}
+    
+    std::string name;
+    std::vector<std::unique_ptr<Field>> fields;
+    std::vector<std::unique_ptr<Annotation>> annotations;
+    
+    NodeType nodeType() const override { return NodeType::BlockDecl; }
 };
 
-// 结构体声明
-class StructDecl : public Declaration {
+// 结构体定义
+class Struct : public Node {
 public:
-    std::vector<std::shared_ptr<FieldDecl>> fields;
-    std::string parentType;  // "struct" 或 "block"
-    std::string parentName;  // 父类名称
-    bool hasParent() const { return !parentName.empty(); }
+    explicit Struct(std::string name) : name(std::move(name)) {}
+    
+    std::string name;
+    std::vector<std::unique_ptr<Field>> fields;
+    std::vector<std::unique_ptr<Annotation>> annotations;
+    
+    NodeType nodeType() const override { return NodeType::StructDecl; }
 };
 
-// Block声明
-class BlockDecl : public Declaration {
+// 枚举定义
+class Enum : public Node {
 public:
-    std::vector<std::shared_ptr<FieldDecl>> fields;
-    std::string parentName;  // 父类名称（只能是 block）
-    bool hasParent() const { return !parentName.empty(); }
+    explicit Enum(std::string name) : name(std::move(name)) {}
+    
+    std::string name;
+    std::vector<std::unique_ptr<EnumValue>> values;
+    std::vector<std::unique_ptr<Annotation>> annotations;
+    
+    NodeType nodeType() const override { return NodeType::EnumDecl; }
 };
 
-// 命名空间声明
-class NamespaceDecl : public Declaration {
+// 命名空间
+class Namespace : public Node {
 public:
-    std::vector<std::string> path;  // 命名空间路径，如 a.b.c
+    explicit Namespace(std::vector<std::string> name) : name(std::move(name)) {}
+    
+    std::vector<std::string> name;  // 完全限定名
+    std::vector<std::unique_ptr<Node>> declarations;
+    
+    NodeType nodeType() const override { return NodeType::NamespaceDecl; }
 };
 
-// Include声明
-class IncludeDecl : public Declaration {
+// 包含声明
+class Include : public Node {
 public:
-    std::string path;  // 包含文件的路径
+    explicit Include(std::string path) : path(std::move(path)) {}
+    
+    std::string path;
+    
+    NodeType nodeType() const override { return NodeType::IncludeDecl; }
 };
 
-// 文件的根节点
-class FileNode : public Node {
+// 文档根节点
+class Document {
 public:
-    std::vector<DeclPtr> declarations;
+    std::vector<std::unique_ptr<Node>> declarations;
+    std::map<std::string, std::string> includes;  // 已包含的文件路径
 };
 
-}  // namespace mota
-
-#endif // AST_H
+} // namespace ast
+} // namespace mota

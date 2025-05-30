@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "framework_global.h"
 #include "IStorageEngine.h"

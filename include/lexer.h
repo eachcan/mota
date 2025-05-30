@@ -1,64 +1,155 @@
-﻿#ifndef LEXER_H
-#define LEXER_H
+#pragma once
 
 #include <string>
 #include <vector>
+#include <cstdint>
+#include <optional>
 
 namespace mota {
+namespace lexer {
 
-// Token 类型
+// 词法单元类型
 enum class TokenType {
-    Keyword,
+    // 文件结束
+    Eof,
+    
+    // 标识符和字面量
     Identifier,
-    Constant,
-    Punctuation,
-    Operator,
-    Comment,
-    AnnotationStart,
-    AnnotationEnd,
-    EndOfFile,
-    Invalid
+    Integer,
+    Float,
+    String,
+    
+    // 关键字
+    Namespace,
+    Include,
+    Struct,
+    Enum,
+    Block,
+    Annotation,
+    
+    // 类型
+    Int8, Int16, Int32, Int64,
+    Float32, Float64,
+    StringType,
+    Bytes,
+    Bool,
+    Repeated,
+    Map,
+    Optional,
+    
+    // 标点符号
+    LeftBrace,      // {
+    RightBrace,     // }
+    LeftParen,      // (
+    RightParen,     // )
+    LeftBracket,    // [
+    RightBracket,   // ]
+    LeftAngle,      // <
+    RightAngle,     // >
+    Semicolon,      // ;
+    Comma,          // ,
+    Dot,            // .
+    Colon,          // :
+    Equal,          // =
+    At,             // @
+    
+    // 操作符
+    Plus,           // +
+    Minus,          // -
+    Star,           // *
+    Slash,          // /
+    Percent,        // %
+    Bang,           // !
+    And,            // &&
+    Or,             // ||
+    Less,           // <
+    Greater,        // >
+    
+    // 布尔值
+    True,           // true
+    False,          // false
+    
+    // 复合操作符
+    EqualEqual,     // ==
+    BangEqual,      // !=
+    LessEqual,      // <=
+    GreaterEqual,   // >=
+    
+    // 注释
+    LineComment,    // //
+    BlockComment,   // /* */
+    UIComment,      // //@
+    
+    // 其他
+    Error
 };
 
-// Token 结构体，用于表示词法单元
+// 词法单元
 struct Token {
-    TokenType type;      // 词法单元类型
-    std::string value;   // 词法单元的值
-    int line;            // 行号
-    int column;          // 列号
+    TokenType type;
+    std::string lexeme;
+    uint32_t line;
+    uint32_t column;
+    
+    // 默认构造函数
+    Token() : type(TokenType::Error), lexeme(""), line(0), column(0) {}
+    
+    Token(TokenType type, std::string lexeme, uint32_t line, uint32_t column)
+        : type(type), lexeme(std::move(lexeme)), line(line), column(column) {}
 };
 
-// 词法分析器类
+// 词法分析器
 class Lexer {
 public:
-    Lexer(const std::string& input);  // 构造函数
-
-    // 分析输入字符串并返回所有的 tokens
-    std::vector<Token> tokenize();    
-
+    explicit Lexer(const std::string& source, const std::string& filename = "");
+    
+    // 获取下一个词法单元
+    Token nextToken();
+    
+    // 查看下一个词法单元但不消费它
+    Token peekToken();
+    
+    // 获取当前行号
+    uint32_t getLine() const { return line_; }
+    
+    // 获取当前列号
+    uint32_t getColumn() const { return current_ - lineStart_ + 1; }
+    
+    // 获取文件名
+    const std::string& getFilename() const { return filename_; }
+    
 private:
-    std::string input;  // 输入的字符串
-    size_t pos;         // 当前处理位置
-    int line;           // 当前行号
-    int column;         // 当前列号
-
-    void advance();              // 向前移动
-    void handleWhitespace();     // 处理空白字符
-    void handleLineComment();    // 处理单行注释
-    Token handleBlockComment();  // 处理块注释
-    Token handleIdentifier();    // 处理标识符
-    Token handleNumber();        // 处理数字常量
-    Token handleString();        // 处理字符串常量
-    Token handlePunctuation();   // 处理标点符号
-    std::vector<Token> handleAnnotation();  // 处理注解
-
-    // 辅助方法
-    bool isAlpha(char c);      // 判断字符是否为字母或下划线
-    bool isPunctuation(char c);  // 判断字符是否为标点符号
+    // 辅助函数
+    char advance();
+    bool match(char expected);
+    char peek() const;
+    char peekNext() const;
+    bool isAtEnd() const;
+    bool isDigit(char c) const;
+    bool isAlpha(char c) const;
+    bool isAlphaNumeric(char c) const;
+    bool isHexDigit(char c) const;
+    void skipWhitespace();
+    
+    // 词法分析辅助函数
+    Token identifierOrKeyword();
+    Token number();
+    Token string();
+    Token lineComment();
+    Token blockComment();
+    Token uiComment();
+    
+    // 源文本和位置信息
+    std::string source_;
+    std::string filename_;
+    size_t start_;
+    size_t current_;
+    uint32_t line_;
+    size_t lineStart_;
+    
+    // 用于peekToken
+    std::optional<Token> lookahead_;
 };
 
-const char* tokenTypeToString(TokenType type);  // Token 类型的字符串表示
-
-}  // namespace mota
-
-#endif  // LEXER_H
+} // namespace lexer
+} // namespace mota

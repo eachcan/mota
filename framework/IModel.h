@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 // @completed
 
@@ -156,6 +156,29 @@ namespace ymf {
 
         // 设置字段值
         virtual void value(const QString& fieldName, const QVariant& value) = 0;
+    };
+
+    // 注解接口
+    class MODEL_EXPORT IAnnotation {
+    public:
+        virtual ~IAnnotation() = default;
+
+        // 获取注解名称
+        virtual QString name() const = 0;
+
+        // 获取注解的参数
+        virtual QList<std::shared_ptr<void>> arguments() const = 0;
+
+        // 获取注解的参数
+        template <typename T>
+        std::shared_ptr<T> argument(const QString& name) const;
+
+        // 获取注解的参数名称
+        QStringList argumentNames() const;
+
+        // 获取注解的参数值
+        template <typename T>
+        T argumentValue(const QString& name) const;
     };
 
 } // namespace ymf

@@ -1,0 +1,172 @@
+{
+  "Include Statement": {
+    "prefix": "include",
+    "body": [
+      "include \"$1.mota\";"
+    ],
+    "description": "包含其他 Mota 文件"
+  },
+  "Namespace Declaration": {
+    "prefix": "namespace",
+    "body": [
+      "namespace ${1:name};"
+    ],
+    "description": "定义命名空间"
+  },
+  "Directory Setting": {
+    "prefix": "dir",
+    "body": [
+      "dir = \"${1:path}/\";"
+    ],
+    "description": "定义输出目录"
+  },
+  "Binary Directory Setting": {
+    "prefix": "bindir",
+    "body": [
+      "bindir = \"${1:path}/\";"
+    ],
+    "description": "定义二进制文件输出目录"
+  },
+  "Enum Definition": {
+    "prefix": "enum",
+    "body": [
+      "enum ${1:EnumName} {",
+      "\t${2:FIRST} = 0;",
+      "\t${3:SECOND} = 1;",
+      "\t${4:THIRD} = 2;",
+      "}"
+    ],
+    "description": "定义枚举类型"
+  },
+  "Struct Definition": {
+    "prefix": "struct",
+    "body": [
+      "struct ${1:StructName} {",
+      "\t${2:int32} ${3:field} = ${4:0};",
+      "\t$0",
+      "}"
+    ],
+    "description": "定义结构体"
+  },
+  "Block Definition": {
+    "prefix": "block",
+    "body": [
+      "block ${1:BlockName} {",
+      "\t${2:int32} ${3:field} = ${4:0};",
+      "\t$0",
+      "}"
+    ],
+    "description": "定义块"
+  },
+  "Annotation Definition": {
+    "prefix": "annotation",
+    "body": [
+      "annotation ${1:AnnotationName} {",
+      "\t${2:int32} ${3:field};",
+      "\t$0",
+      "}"
+    ],
+    "description": "定义注解"
+  },
+  "Simple Annotation": {
+    "prefix": "@",
+    "body": [
+      "@${1:AnnotationName}"
+    ],
+    "description": "简单注解"
+  },
+  "Annotation with Parameters": {
+    "prefix": "@(",
+    "body": [
+      "@${1:AnnotationName}(${2:param} = ${3:value})"
+    ],
+    "description": "带参数的注解"
+  },
+  "Optional Field": {
+    "prefix": "optional",
+    "body": [
+      "optional ${1:type} ${2:name};"
+    ],
+    "description": "可选字段"
+  },
+  "Map Field": {
+    "prefix": "map",
+    "body": [
+      "map ${1:type} ${2:name};"
+    ],
+    "description": "映射字段"
+  },
+  "Repeated Field": {
+    "prefix": "repeated",
+    "body": [
+      "repeated ${1:type} ${2:name};"
+    ],
+    "description": "重复字段（数组）"
+  },
+  "Storage Annotation": {
+    "prefix": "@Storage",
+    "body": [
+      "@Storage(",
+      "\tpath = \"${1:path}\",",
+      "\tformat = \"${2|cbor,json,ini|}\"",
+      ")"
+    ],
+    "description": "存储注解"
+  },
+  "Window Annotation": {
+    "prefix": "@Window",
+    "body": [
+      "@Window(title = \"${1:标题}\", desc = \"${2:描述}\")"
+    ],
+    "description": "窗口注解"
+  },
+  "Int Annotation": {
+    "prefix": "@Int",
+    "body": [
+      "@Int(min = ${1:0}, max = ${2:100}, step = ${3:1})"
+    ],
+    "description": "整数注解"
+  },
+  "Float Annotation": {
+    "prefix": "@Float",
+    "body": [
+      "@Float(min = ${1:0.0}, max = ${2:1.0}, step = ${3:0.1})"
+    ],
+    "description": "浮点数注解"
+  },
+  "Text Annotation": {
+    "prefix": "@Text",
+    "body": [
+      "@Text(max_length = ${1:64})"
+    ],
+    "description": "文本注解"
+  },
+  "Switcher Annotation": {
+    "prefix": "@Switcher",
+    "body": [
+      "@Switcher(desc = \"${1:描述}\")"
+    ],
+    "description": "开关注解"
+  },
+  "Select Annotation": {
+    "prefix": "@Select",
+    "body": [
+      "@Select(desc = \"${1:描述}\", enumClass = ${2:EnumName})"
+    ],
+    "description": "选择注解"
+  },
+  "EnumValue Annotation": {
+    "prefix": "@EnumValue",
+    "body": [
+      "@EnumValue(title = \"${1:标题}\", value = \"${2:值}\")"
+    ],
+    "description": "枚举值注解"
+  },
+  "IniGroup Annotation": {
+    "prefix": "@IniGroup",
+    "body": [
+      "@IniGroup(value = \"${1:分组名}\")"
+    ],
+    "description": "INI分组注解"
+  }
+}

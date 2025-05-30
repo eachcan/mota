@@ -1,268 +1,290 @@
-// 定义命名空间
-namespace myapp.vision;
+// 引入UI注解
+include "yima-ui.mota";
+include "yima.mota";
 
 // 引入相机和任务定义
-include "./camera.mota";
-include "./task.mota";
+include "camera.mota";
+include "task.mota";
+
+// 定义命名空间
+namespace example.vision;
+
 
 /* 
  * 视觉系统配置示例
  * 这个文件展示了 Mota 在工业视觉系统中的应用
  */
 
-// 图像分辨率枚举
+/* 
+ * 图像分辨率枚举
+ * 定义支持的图像分辨率类型
+ */
 enum Resolution {
-    @enumValue(title = "标准清晰度", desc = "720p分辨率", value = "sd")
+    @yima.ui.EnumValue(title = "标准清晰度", desc = "720p分辨率(1280x720)", value = "sd")
     SD = 0;
-    @enumValue(title = "高清", desc = "1080p分辨率", value = "hd")
+    @yima.ui.EnumValue(title = "高清", desc = "1080p分辨率(1920x1080)", value = "hd")
     HD = 1;
-    @enumValue(title = "超高清", desc = "4K分辨率", value = "uhd")
+    @yima.ui.EnumValue(title = "超高清", desc = "4K分辨率(3840x2160)", value = "uhd")
     UHD = 2;
 }
 
-// 图像格式枚举
+/* 
+ * 图像格式枚举
+ * 定义支持的图像文件格式
+ */
 enum ImageFormat {
-    @enumValue(title = "JPEG格式", desc = "有损压缩格式", value = "jpeg")
+    @yima.ui.EnumValue(title = "JPEG格式", desc = "有损压缩格式", value = "jpeg")
     JPEG = 0;
-    @enumValue(title = "PNG格式", desc = "无损压缩格式", value = "png")
+    @yima.ui.EnumValue(title = "PNG格式", desc = "无损压缩格式", value = "png")
     PNG = 1;
-    @enumValue(title = "BMP格式", desc = "无压缩位图格式", value = "bmp")
+    @yima.ui.EnumValue(title = "BMP格式", desc = "无压缩位图格式", value = "bmp")
     BMP = 2;
-    @enumValue(title = "RAW格式", desc = "原始图像数据", value = "raw")
-    RAW = 3;
+    @yima.ui.EnumValue(title = "TIFF格式", desc = "支持多页和多种压缩的格式", value = "tiff")
+    TIFF = 3;
 }
 
-// 矩形区域定义
+/* 
+ * 矩形区域定义
+ * 用于定义图像中的矩形检测区域
+ */
 block Rectangle {
-    @int(min = 0, max = 10000, desc = "左上角X坐标")
+    @yima.ui.Int(min = 0, max = 10000, desc = "左上角X坐标")
     int32 x = 0;
     
-    @int(min = 0, max = 10000, desc = "左上角Y坐标")
+    @yima.ui.Int(min = 0, max = 10000, desc = "左上角Y坐标")
     int32 y = 0;
     
-    @int(min = 1, max = 10000, desc = "宽度")
+    @yima.ui.Int(min = 1, max = 10000, desc = "宽度")
     int32 width = 100;
     
-    @int(min = 1, max = 10000, desc = "高度")
+    @yima.ui.Int(min = 1, max = 10000, desc = "高度")
     int32 height = 100;
 }
 
-// 圆形区域定义
+/* 
+ * 圆形区域定义
+ * 用于定义图像中的圆形检测区域
+ */
 block Circle {
-    @int(min = 0, max = 10000, desc = "中心点X坐标")
+    @yima.ui.Int(min = 0, max = 10000, desc = "中心点X坐标")
     int32 centerX = 0;
     
-    @int(min = 0, max = 10000, desc = "中心点Y坐标")
+    @yima.ui.Int(min = 0, max = 10000, desc = "中心点Y坐标")
     int32 centerY = 0;
     
-    @int(min = 1, max = 5000, desc = "半径")
+    @yima.ui.Int(min = 1, max = 5000, desc = "半径")
     int32 radius = 50;
 }
 
-// 检测区域定义
+/* 
+ * 检测区域定义
+ * 可以是矩形或圆形区域
+ */
 block DetectionRegion {
-    @select(desc = "区域类型")
+    @yima.ui.Select(desc = "区域类型")
     string type = "rectangle";  // "rectangle" 或 "circle"
     
-    @draw_rectangle(desc = "矩形区域")
+    @yima.ui.DrawRectangle(desc = "矩形区域")
     optional Rectangle rectangle;
     
-    @draw_circle(desc = "圆形区域")
+    @yima.ui.DrawCircle(desc = "圆形区域")
     optional Circle circle;
 }
 
-// 图像处理参数
+/* 
+ * 图像处理参数
+ * 定义图像处理的基本参数
+ */
 block ImageProcessingParams {
-    @float(min = 0.0, max = 5.0, step = 0.1, desc = "亮度调整")
+    @yima.ui.Float(min = 0.0, max = 5.0, step = 0.1, desc = "亮度调整")
     float32 brightness = 1.0;
     
-    @float(min = 0.0, max = 5.0, step = 0.1, desc = "对比度调整")
+    @yima.ui.Float(min = 0.0, max = 5.0, step = 0.1, desc = "对比度调整")
     float32 contrast = 1.0;
     
-    @float(min = 0.0, max = 5.0, step = 0.1, desc = "饱和度调整")
+    @yima.ui.Float(min = 0.0, max = 5.0, step = 0.1, desc = "饱和度调整")
     float32 saturation = 1.0;
     
-    @int(min = 0, max = 100, desc = "锐化程度")
+    @yima.ui.Int(min = 0, max = 100, desc = "锐化程度")
     int32 sharpness = 0;
     
-    @bool(desc = "是否应用高斯模糊")
+    @yima.ui.Switcher(desc = "是否应用高斯模糊")
     bool applyGaussianBlur = false;
     
-    @int(min = 1, max = 31, step = 2, desc = "高斯模糊核大小")
+    @yima.ui.Int(min = 1, max = 31, step = 2, desc = "高斯模糊核大小")
     int32 gaussianKernelSize = 3;
 }
 
-// 阈值设置
+/* 
+ * 阈值设置
+ * 定义图像二值化的阈值参数
+ */
 block ThresholdSettings {
-    @int(min = 0, max = 255, desc = "最小阈值")
+    @yima.ui.Int(min = 0, max = 255, desc = "最小阈值")
     int32 minThreshold = 50;
     
-    @int(min = 0, max = 255, desc = "最大阈值")
+    @yima.ui.Int(min = 0, max = 255, desc = "最大阈值")
     int32 maxThreshold = 200;
     
-    @select(desc = "阈值类型")
+    @yima.ui.Select(desc = "阈值类型")
     string thresholdType = "binary";  // "binary", "binary_inv", "trunc", "tozero", "tozero_inv"
 }
 
-// 缺陷检测配置
-@storage(
-    path = "${app_dir}/defect-detection.cbor",
+/* 
+ * 缺陷检测配置
+ * 配置缺陷检测算法参数
+ */
+@yima.Storage(
+    path = "${app_dir}/config/defect-detection.cbor",
     format = "cbor"
 )
-@window(title = "缺陷检测配置", desc = "配置缺陷检测算法参数")
-@scope(value = "product")
+@yima.Window(title = "缺陷检测配置", desc = "配置缺陷检测算法参数")
+@yima.Scope(value = "product")
 struct DefectDetectionConfig {
-    @text(max_length = 64, desc = "配置名称")
+    @yima.ui.Text(max_length = 64, desc = "配置名称")
     string name = "默认缺陷检测";
     
-    @select(desc = "使用的相机")
-    myapp.camera.CameraType cameraType = myapp.camera.CameraType.HD;
+    @yima.ui.Select(desc = "使用的相机")
+    example.camera.CameraType cameraType = example.camera.CameraType.HD;
     
-    @select(desc = "图像分辨率")
+    @yima.ui.Select(desc = "图像分辨率")
     Resolution resolution = Resolution.HD;
     
-    @select(desc = "图像格式")
+    @yima.ui.Select(desc = "图像格式")
     ImageFormat format = ImageFormat.PNG;
     
-    @int(min = 1, max = 100, desc = "检测灵敏度")
+    @yima.ui.Int(min = 1, max = 100, desc = "检测灵敏度")
     int32 sensitivity = 50;
     
     // 检测区域列表
-    @iniGroup(value = "DETECTION_REGIONS")
+    @yima.ui.IniGroup("DETECTION_REGIONS")
     repeated DetectionRegion regions;
     
     // 图像处理参数
-    @iniGroup(value = "IMAGE_PROCESSING")
+    @yima.ui.IniGroup("IMAGE_PROCESSING")
     ImageProcessingParams imageProcessing;
     
     // 阈值设置
-    @iniGroup(value = "THRESHOLD")
+    @yima.ui.IniGroup("THRESHOLD")
     ThresholdSettings threshold;
     
     // 缺陷类型及其对应的处理参数
-    @iniGroup(value = "DEFECT_TYPES")
+    @yima.ui.IniGroup("DEFECT_TYPES")
     map string defectTypes = ["scratch", "dent", "discoloration"];
     
     // 是否保存检测结果图像
-    @bool(desc = "保存检测结果图像")
+    @yima.ui.Switcher(desc = "保存检测结果图像")
     bool saveResultImage = true;
     
     // 保存路径
-    @folder_dialog(desc = "结果保存路径")
+    @yima.ui.FolderDialog(desc = "结果保存路径")
     string savePath = "${app_dir}/results";
 }
 
-// 相机校准配置
-@storage(
-    path = "${app_dir}/camera-calibration.cbor",
+/* 
+ * 相机校准配置
+ * 配置相机校准参数
+ */
+@yima.Storage(
+    path = "${app_dir}/config/camera-calibration.cbor",
     format = "cbor"
 )
-@window(title = "相机校准配置", desc = "配置相机校准参数")
-@scope(value = "product")
+@yima.Window(title = "相机校准配置", desc = "配置相机校准参数")
+@yima.Scope(value = "product")
 struct CameraCalibrationConfig {
-    @text(max_length = 64, desc = "配置名称")
+    @yima.ui.Text(max_length = 64, desc = "配置名称")
     string name = "默认校准配置";
     
-    @select(desc = "校准图案类型")
+    @yima.ui.Select(desc = "校准图案类型")
     string patternType = "chessboard";  // "chessboard", "circles", "asymmetric_circles"
     
-    @int(min = 3, max = 20, desc = "棋盘格宽度")
+    @yima.ui.Int(min = 3, max = 20, desc = "棋盘格宽度")
     int32 boardWidth = 9;
     
-    @int(min = 3, max = 20, desc = "棋盘格高度")
+    @yima.ui.Int(min = 3, max = 20, desc = "棋盘格高度")
     int32 boardHeight = 6;
     
-    @float(min = 1.0, max = 100.0, step = 0.1, desc = "棋盘格方格大小(mm)")
+    @yima.ui.Float(min = 1.0, max = 100.0, step = 0.1, desc = "棋盘格方格大小(mm)")
     float32 squareSize = 25.0;
     
-    @int(min = 5, max = 50, desc = "校准图像数量")
+    @yima.ui.Int(min = 5, max = 50, desc = "校准图像数量")
     int32 imageCount = 10;
     
-    @bool(desc = "是否修正畸变")
+    @yima.ui.Switcher(desc = "是否修正畸变")
     bool fixDistortion = true;
     
-    @bool(desc = "是否修正主点")
+    @yima.ui.Switcher(desc = "是否修正主点")
     bool fixPrincipalPoint = false;
     
-    @bool(desc = "是否使用切向畸变系数")
+    @yima.ui.Switcher(desc = "是否使用切向畸变系数")
     bool useTangentialDistortion = true;
     
-    @bool(desc = "是否固定纵横比")
+    @yima.ui.Switcher(desc = "是否固定纵横比")
     bool fixAspectRatio = false;
-    
-    // 内参矩阵初始值
-    @float(min = 0.0, max = 10000.0, desc = "焦距X")
-    float32 focalLengthX = 1000.0;
-    
-    @float(min = 0.0, max = 10000.0, desc = "焦距Y")
-    float32 focalLengthY = 1000.0;
-    
-    @float(min = 0.0, max = 10000.0, desc = "主点X")
-    float32 principalPointX = 320.0;
-    
-    @float(min = 0.0, max = 10000.0, desc = "主点Y")
-    float32 principalPointY = 240.0;
 }
 
-// 视觉系统主配置
-@storage(
-    path = "${app_dir}/vision-system.cbor",
+/* 
+ * 视觉系统主配置
+ * 视觉系统的主要配置结构
+ */
+@yima.Storage(
+    path = "${app_dir}/config/vision-system.cbor",
     format = "cbor"
 )
-@window(title = "视觉系统配置", desc = "视觉系统主配置")
-@scope(value = "global")
+@yima.Window(title = "视觉系统配置", desc = "视觉系统主配置")
+@yima.Scope(value = "global")
 struct VisionSystemConfig {
-    @text(max_length = 64, desc = "系统名称")
+    @yima.ui.Text(max_length = 64, desc = "系统名称")
     string name = "工业视觉检测系统";
     
-    @bool(desc = "系统启用状态")
+    @yima.ui.Switcher(desc = "系统启用状态")
     bool enabled = true;
     
     // 系统中使用的相机列表
-    @iniGroup(value = "CAMERAS")
-    repeated myapp.camera.Camera cameras;
+    @yima.ui.IniGroup("CAMERAS")
+    repeated example.camera.Camera cameras;
     
     // 缺陷检测配置
-    @iniGroup(value = "DEFECT_DETECTION")
+    @yima.ui.IniGroup("DEFECT_DETECTION")
     DefectDetectionConfig defectDetection;
     
     // 相机校准配置
-    @iniGroup(value = "CAMERA_CALIBRATION")
+    @yima.ui.IniGroup("CAMERA_CALIBRATION")
     CameraCalibrationConfig cameraCalibration;
     
     // 任务配置映射
-    @iniGroup(value = "TASKS")
-    myapp.task.TaskMap taskMap;
+    @yima.ui.IniGroup("TASKS")
+    example.task.TaskMap taskMap;
     
     // 日志配置
-    @iniGroup(value = "LOGGING")
+    @yima.ui.IniGroup("LOGGING")
     struct {
-        @bool(desc = "是否启用日志")
+        @yima.ui.Switcher(desc = "是否启用日志")
         bool enabled = true;
         
-        @select(desc = "日志级别")
+        @yima.ui.Select(desc = "日志级别")
         string level = "info";  // "debug", "info", "warning", "error"
         
-        @folder_dialog(desc = "日志保存路径")
+        @yima.ui.FolderDialog(desc = "日志保存路径")
         string path = "${app_dir}/logs";
         
-        @int(min = 1, max = 365, desc = "日志保留天数")
+        @yima.ui.Int(min = 1, max = 365, desc = "日志保留天数")
         int32 retentionDays = 30;
     } logging;
     
     // 系统参数
-    @iniGroup(value = "SYSTEM")
+    @yima.ui.IniGroup("SYSTEM")
     struct {
-        @int(min = 1, max = 64, desc = "工作线程数")
+        @yima.ui.Int(min = 1, max = 64, desc = "工作线程数")
         int32 threadCount = 4;
         
-        @int(min = 1, max = 10000, desc = "队列大小")
+        @yima.ui.Int(min = 1, max = 10000, desc = "队列大小")
         int32 queueSize = 100;
         
-        @int(min = 1000, max = 60000, desc = "超时时间(ms)")
+        @yima.ui.Int(min = 1000, max = 60000, desc = "超时时间(ms)")
         int32 timeout = 5000;
         
-        @bool(desc = "是否启用GPU加速")
+        @yima.ui.Switcher(desc = "是否启用GPU加速")
         bool enableGPU = true;
     } system;
 }

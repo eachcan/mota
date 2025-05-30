@@ -1,298 +1,404 @@
-﻿#include "lexer.h"
-#include <iostream>
+#include "lexer.h"
 #include <cctype>
-#include <regex>
+#include <unordered_map>
+#include <stdexcept>
 
 namespace mota {
+namespace lexer {
 
-Lexer::Lexer(const std::string& input) : input(input), pos(0), line(1), column(1) {}
-
-std::vector<Token> Lexer::tokenize() {
-    std::vector<Token> tokens;
-    if (input.empty()) {
-        return tokens;
-    }
-
-    if (input.length() > 3 && input.substr(0, 3) == "\xEF\xBB\xBF") {
-        // 跳过 UTF-8 BOM
-        pos += 3;
-    }
-
-    while (pos < input.length()) {
-        char currentChar = input[pos];
-        if (std::isspace(currentChar)) {
-            handleWhitespace();
-            continue;
-        }
-        if (currentChar == '/' && input[pos + 1] == '/') {
-            // 跳过单行注释
-            handleLineComment();
-            continue;
-        }
-        if (currentChar == '/' && input[pos + 1] == '*') {
-            // 处理块注释，作为注解Token保存
-            tokens.push_back(handleBlockComment());
-            continue;
-        }
-        if (isAlpha(currentChar)) {
-            tokens.push_back(handleIdentifier());
-            continue;
-        }
-        if (std::isdigit(currentChar)) {
-            tokens.push_back(handleNumber());
-            continue;
-        }
-        if (currentChar == '"') {
-            tokens.push_back(handleString());
-            continue;
-        }
-        if (isPunctuation(currentChar)) {
-            tokens.push_back(handlePunctuation());
-            continue;
-        }
-        if (currentChar == '@' && input[pos + 1] == '[') {
-            auto tokensAnnotation = handleAnnotation();
-            tokens.insert(tokens.end(), tokensAnnotation.begin(), tokensAnnotation.end());
-            continue;
-        }
-
-        tokens.push_back({TokenType::Invalid, std::string(1, currentChar), line, column});
-        advance();
-    }
-    tokens.push_back({TokenType::EndOfFile, "", line, column});
-    return tokens;
-}
-
-void Lexer::advance() {
-    pos++;
-    column++;
-}
-
-void Lexer::handleWhitespace() {
-    char currentChar = input[pos];
-    if (currentChar == '\n') {
-        line++;
-        column = 1;
-    }
-    advance();
-}
-
-// 跳过单行注释
-void Lexer::handleLineComment() {
-    while (pos < input.length() && input[pos] != '\n') {
-        advance();
-    }
-}
-
-// 处理块注释，将注释作为 Token 存储
-Token Lexer::handleBlockComment() {
-    size_t start = pos;
-    advance();  // 跳过第一个 '/'
-    advance();  // 跳过第二个 '*'
-    while (pos < input.length()) {
-        if (input[pos] == '*' && input[pos + 1] == '/') {
-            advance();  // 跳过 '*'
-            advance();  // 跳过 '/'
-            break;
-        }
-        advance();
-    }
-
-    std::string commentText = input.substr(start, pos - start);
-    // 去除每行开头的空格和星号
-    commentText = std::regex_replace(commentText, std::regex("(^|\\n)\\s*\\*"), "$1");
-
-    return {TokenType::Comment, commentText, line, column};
-}
-
-// 处理标识符
-Token Lexer::handleIdentifier() {
-    size_t start = pos;
-    while (pos < input.length() && (std::isalnum(input[pos]) || input[pos] == '_')) {
-        advance();
-    }
-    std::string value = input.substr(start, pos - start);
-    return {TokenType::Identifier, value, line, column};
-}
-
-// 处理数字常量
-Token Lexer::handleNumber() {
-    size_t start = pos;
+// 关键字映射
+static const std::unordered_map<std::string, TokenType> keywords = {
+    // 类型关键字
+    {"int8", TokenType::Int8},
+    {"int16", TokenType::Int16},
+    {"int32", TokenType::Int32},
+    {"int64", TokenType::Int64},
+    {"float32", TokenType::Float32},
+    {"float64", TokenType::Float64},
+    {"string", TokenType::StringType},
+    {"bytes", TokenType::Bytes},
+    {"bool", TokenType::Bool},
     
-    // 检查是否是十六进制、二进制或八进制
-    if (input[pos] == '0' && pos + 1 < input.length()) {
-        char prefix = std::tolower(input[pos + 1]);
-        if (prefix == 'x') {  // 十六进制
-            advance();  // 跳过 '0'
-            advance();  // 跳过 'x'
-            if (pos >= input.length() || !std::isxdigit(input[pos])) {
-                throw std::runtime_error("Invalid hexadecimal number format");
-            }
-            while (pos < input.length() && std::isxdigit(input[pos])) {
-                advance();
-            }
-            return {TokenType::Constant, input.substr(start, pos - start), line, column};
-        }
-        else if (prefix == 'b') {  // 二进制
-            advance();  // 跳过 '0'
-            advance();  // 跳过 'b'
-            if (pos >= input.length() || (input[pos] != '0' && input[pos] != '1')) {
-                throw std::runtime_error("Invalid binary number format");
-            }
-            while (pos < input.length() && (input[pos] == '0' || input[pos] == '1')) {
-                advance();
-            }
-            return {TokenType::Constant, input.substr(start, pos - start), line, column};
-        }
-        else if (std::isdigit(prefix)) {  // 八进制
-            advance();  // 跳过 '0'
-            while (pos < input.length() && input[pos] >= '0' && input[pos] <= '7') {
-                advance();
-            }
-            return {TokenType::Constant, input.substr(start, pos - start), line, column};
-        }
+    // 容器类型
+    {"repeated", TokenType::Repeated},
+    {"map", TokenType::Map},
+    {"optional", TokenType::Optional},
+    
+    // 声明关键字
+    {"namespace", TokenType::Namespace},
+    {"include", TokenType::Include},
+    {"struct", TokenType::Struct},
+    {"enum", TokenType::Enum},
+    {"block", TokenType::Block},
+    {"annotation", TokenType::Annotation}
+};
+
+Lexer::Lexer(const std::string& source, const std::string& filename)
+    : source_(source),
+      filename_(filename),
+      start_(0),
+      current_(0),
+      line_(1),
+      lineStart_(0) {}
+
+Token Lexer::nextToken() {
+    // 如果有lookahead token，先返回它
+    if (lookahead_.has_value()) {
+        Token token = lookahead_.value();
+        lookahead_.reset();
+        return token;
     }
     
-    // 处理十进制整数部分
-    while (pos < input.length() && std::isdigit(input[pos])) {
+    skipWhitespace();
+    start_ = current_;
+    
+    if (isAtEnd()) {
+        return Token(TokenType::Eof, "", line_, getColumn());
+    }
+    
+    char c = advance();
+    
+    // 处理标识符和关键字
+    if (isAlpha(c) || c == '_') {
+        return identifierOrKeyword();
+    }
+    
+    // 处理数字
+    if (isDigit(c)) {
+        return number();
+    }
+    
+    // 处理字符串
+    if (c == '"') {
+        return string();
+    }
+    
+    // 处理注释
+    if (c == '/') {
+        if (peek() == '/') {
+            // 检查是否是UI注释
+            advance(); // 消耗第二个'/'
+            if (peek() == '@') {
+                return uiComment();
+            } else {
+                // 回退一步，让lineComment方法处理
+                current_--;
+                return lineComment();
+            }
+        } else if (peek() == '*') {
+            return blockComment();
+        }
+        return Token(TokenType::Slash, "/", line_, getColumn() - 1);
+    }
+    
+    // 处理其他单字符和复合操作符
+    switch (c) {
+        case '{': return Token(TokenType::LeftBrace, "{", line_, getColumn());
+        case '}': return Token(TokenType::RightBrace, "}", line_, getColumn());
+        case '(': return Token(TokenType::LeftParen, "(", line_, getColumn());
+        case ')': return Token(TokenType::RightParen, ")", line_, getColumn());
+        case '[': return Token(TokenType::LeftBracket, "[", line_, getColumn());
+        case ']': return Token(TokenType::RightBracket, "]", line_, getColumn());
+        
+        // 复合操作符
+        case '<': 
+            if (match('=')) {
+                return Token(TokenType::LessEqual, "<=", line_, getColumn() - 2);
+            }
+            return Token(TokenType::Less, "<", line_, getColumn() - 1);  // 使用Less而不是LeftAngle
+            
+        case '>': 
+            if (match('=')) {
+                return Token(TokenType::GreaterEqual, ">=", line_, getColumn() - 2);
+            }
+            return Token(TokenType::Greater, ">", line_, getColumn() - 1);  // 使用Greater而不是RightAngle
+            
+        case '=': 
+            if (match('=')) {
+                return Token(TokenType::EqualEqual, "==", line_, getColumn() - 2);
+            }
+            return Token(TokenType::Equal, "=", line_, getColumn() - 1);
+            
+        case '!': 
+            if (match('=')) {
+                return Token(TokenType::BangEqual, "!=", line_, getColumn() - 2);
+            }
+            // 支持单独的'!'操作符
+            return Token(TokenType::Bang, "!", line_, getColumn() - 1);
+            
+        case ';': return Token(TokenType::Semicolon, ";", line_, getColumn());
+        case ',': return Token(TokenType::Comma, ",", line_, getColumn());
+        case '.': return Token(TokenType::Dot, ".", line_, getColumn());
+        
+        // 逻辑操作符
+        case '&': 
+            if (match('&')) {
+                return Token(TokenType::And, "&&", line_, getColumn() - 2);
+            }
+            return Token(TokenType::Error, "Unexpected character '&'", line_, getColumn() - 1);
+            
+        case '|': 
+            if (match('|')) {
+                return Token(TokenType::Or, "||", line_, getColumn() - 2);
+            }
+            return Token(TokenType::Error, "Unexpected character '|'", line_, getColumn() - 1);
+        case ':': return Token(TokenType::Colon, ":", line_, getColumn());
+        case '@': return Token(TokenType::At, "@", line_, getColumn());
+        case '+': return Token(TokenType::Plus, "+", line_, getColumn());
+        case '-': return Token(TokenType::Minus, "-", line_, getColumn());
+        case '*': return Token(TokenType::Star, "*", line_, getColumn());
+        case '%': return Token(TokenType::Percent, "%", line_, getColumn());
+    }
+    
+    // 未识别的字符
+    return Token(TokenType::Error, std::string("Unexpected character '") + c + "'", line_, getColumn() - 1);
+}
+
+Token Lexer::peekToken() {
+    if (!lookahead_.has_value()) {
+        lookahead_ = nextToken();
+    }
+    return lookahead_.value();
+}
+
+char Lexer::advance() {
+    return source_[current_++];
+}
+
+bool Lexer::match(char expected) {
+    if (isAtEnd() || source_[current_] != expected) {
+        return false;
+    }
+    current_++;
+    return true;
+}
+
+char Lexer::peek() const {
+    return isAtEnd() ? '\0' : source_[current_];
+}
+
+char Lexer::peekNext() const {
+    return (current_ + 1 >= source_.length()) ? '\0' : source_[current_ + 1];
+}
+
+bool Lexer::isAtEnd() const {
+    return current_ >= source_.length();
+}
+
+bool Lexer::isDigit(char c) const {
+    return c >= '0' && c <= '9';
+}
+
+bool Lexer::isAlpha(char c) const {
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+}
+
+bool Lexer::isAlphaNumeric(char c) const {
+    return isAlpha(c) || isDigit(c);
+}
+
+bool Lexer::isHexDigit(char c) const {
+    return isDigit(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+}
+
+void Lexer::skipWhitespace() {
+    while (true) {
+        char c = peek();
+        switch (c) {
+            case ' ':
+            case '\t':
+            case '\r':
+                advance();
+                break;
+            case '\n':
+                line_++;
+                lineStart_ = current_ + 1;
+                advance();
+                break;
+            default:
+                return;
+        }
+    }
+}
+
+Token Lexer::identifierOrKeyword() {
+    while (isAlphaNumeric(peek()) || peek() == '_') {
+        advance();
+    }
+    
+    std::string text = source_.substr(start_, current_ - start_);
+    auto it = keywords.find(text);
+    TokenType type = (it != keywords.end()) ? it->second : TokenType::Identifier;
+    
+    return Token(type, text, line_, getColumn() - text.length());
+}
+
+Token Lexer::number() {
+    bool isFloat = false;
+    
+    // 先检查是否是0开头，可能是十六进制或二进制数字
+    if (source_[start_] == '0') {
+        // 如果是0x或者0X开头，则是十六进制数字
+        if (current_ < source_.length() - 1 && (source_[start_ + 1] == 'x' || source_[start_ + 1] == 'X')) {
+            current_ = start_ + 2; // 跳过'0x'或'0X'
+            
+            // 至少需要一个十六进制数字
+            if (current_ >= source_.length() || !isHexDigit(source_[current_])) {
+                return Token(TokenType::Error, "Invalid hexadecimal number", line_, getColumn());
+            }
+            
+            // 消耗所有十六进制数字
+            while (current_ < source_.length() && isHexDigit(source_[current_])) {
+                current_++;
+            }
+            
+            std::string text = source_.substr(start_, current_ - start_);
+            return Token(TokenType::Integer, text, line_, getColumn() - text.length());
+        }
+        
+        // 如果是0b或者0B开头，则是二进制数字
+        if (current_ < source_.length() - 1 && (source_[start_ + 1] == 'b' || source_[start_ + 1] == 'B')) {
+            current_ = start_ + 2; // 跳过'0b'或'0B'
+            
+            // 至少需要一个二进制数字
+            if (current_ >= source_.length() || (source_[current_] != '0' && source_[current_] != '1')) {
+                return Token(TokenType::Error, "Invalid binary number", line_, getColumn());
+            }
+            
+            // 消耗所有二进制数字
+            while (current_ < source_.length() && (source_[current_] == '0' || source_[current_] == '1')) {
+                current_++;
+            }
+            
+            std::string text = source_.substr(start_, current_ - start_);
+            return Token(TokenType::Integer, text, line_, getColumn() - text.length());
+        }
+    }
+    
+    // 处理普通数字（整数或浮点数）
+    while (isDigit(peek())) {
         advance();
     }
     
     // 处理小数部分
-    if (pos < input.length() && input[pos] == '.') {
-        advance();  // 跳过小数点
-        // 小数点后必须有数字
-        if (!std::isdigit(input[pos])) {
-            throw std::runtime_error("Invalid number format: expected digit after decimal point");
-        }
-        while (pos < input.length() && std::isdigit(input[pos])) {
+    if (peek() == '.' && isDigit(peekNext())) {
+        isFloat = true;
+        advance(); // 消耗点号
+        
+        while (isDigit(peek())) {
             advance();
         }
     }
     
-    return {TokenType::Constant, input.substr(start, pos - start), line, column};
-}
-
-// 处理字符串常量
-Token Lexer::handleString() {
-    size_t start = pos;
-    advance();  // skip opening quote
-    while (pos < input.length() && input[pos] != '"') {
-        advance();
-    }
-    advance();  // skip closing quote
-
-    std::string value = input.substr(start, pos - start);
-    // 去掉转义
-    value = std::regex_replace(value, std::regex("\\\\\""), "\"");
-
-    return {TokenType::Constant, value, line, column};
-}
-
-// 处理标点符号
-Token Lexer::handlePunctuation() {
-    char currentChar = input[pos];
-    std::string value(1, currentChar);
-    advance();
-    return {TokenType::Punctuation, value, line, column};
-}
-
-// 处理注解
-std::vector<Token> Lexer::handleAnnotation() {
-    size_t start = pos;
-    advance();  // 跳过 '@'
-    advance();  // 跳过 '['
-
-    // 先返回 AnnotationStart
-    std::vector<Token> annotationTokens;
-    annotationTokens.push_back({TokenType::AnnotationStart, "@[", line, column});
-
-    // 开始解析注解内容，直到遇到 "]"
-    while (pos < input.length() && input[pos] != ']') {
-        // 跳过空白字符
-        if (std::isspace(input[pos])) {
-            handleWhitespace();
-            continue;
-        }
-
-        // 解析 key (标识符)
-        if (isAlpha(input[pos])) {
-            Token keyToken = handleIdentifier(); // 处理 key
-            annotationTokens.push_back(keyToken);
-        }
-        // 跳过空白字符
-        if (std::isspace(input[pos])) {
-            handleWhitespace();
-        }
-
-        // 跳过 '='
-        if (input[pos] == '=') {
-            auto punctuation = handlePunctuation();
-            annotationTokens.push_back(punctuation);
-        }
-
-        // 跳过空白字符
-        if (std::isspace(input[pos])) {
-            handleWhitespace();
-        }
-
-        // 解析 value (可能是标识符、字符串或数字)
-        Token valueToken;
-        if (isAlpha(input[pos])) {
-            valueToken = handleIdentifier(); // 处理标识符类型的值
-        } else if (input[pos] == '"') {
-            valueToken = handleString(); // 处理字符串类型的值
-        } else if (isdigit(input[pos]) || input[pos] == '-') {
-            valueToken = handleNumber(); // 处理数字类型的值
+    // 处理指数部分
+    if (peek() == 'e' || peek() == 'E') {
+        isFloat = true;
+        advance(); // 消耗'e'或'E'
+        
+        if (peek() == '+' || peek() == '-') {
+            advance(); // 消耗符号
         }
         
-        // 添加值 token
-        annotationTokens.push_back(valueToken);
-
-        // 跳过空白字符
-        if (std::isspace(input[pos])) {
-            handleWhitespace();
+        if (!isDigit(peek())) {
+            return Token(TokenType::Error, "Invalid number format", line_, getColumn());
         }
-
-        // 如果遇到逗号，添加逗号token
-        if (input[pos] == ',') {
-            auto punctuation = handlePunctuation();
-            annotationTokens.push_back(punctuation);
+        
+        while (isDigit(peek())) {
+            advance();
         }
     }
-
-    // 添加注解结束标记
-    advance();  // 跳过 ']'
-    annotationTokens.push_back({TokenType::AnnotationEnd, "]", line, column});
-
-    return annotationTokens;
+    
+    std::string text = source_.substr(start_, current_ - start_);
+    return Token(
+        isFloat ? TokenType::Float : TokenType::Integer,
+        text,
+        line_,
+        getColumn() - text.length()
+    );
 }
 
-bool Lexer::isAlpha(char c) {
-    return std::isalpha(c) || c == '_';
+Token Lexer::string() {
+    std::string value;
+    
+    while (peek() != '"' && !isAtEnd()) {
+        if (peek() == '\n') {
+            line_++;
+            lineStart_ = current_ + 1;
+        } else if (peek() == '\\') {
+            advance(); // 消耗反斜杠
+            
+            switch (peek()) {
+                case '"': value += '"'; break;
+                case '\\': value += '\\'; break;
+                case 'n': value += '\n'; break;
+                case 'r': value += '\r'; break;
+                case 't': value += '\t'; break;
+                default:
+                    return Token(TokenType::Error, "Invalid escape sequence", line_, getColumn());
+            }
+        } else {
+            value += peek();
+        }
+        
+        advance();
+    }
+    
+    if (isAtEnd()) {
+        return Token(TokenType::Error, "Unterminated string", line_, getColumn());
+    }
+    
+    // 消耗结束的双引号
+    advance();
+    
+    return Token(TokenType::String, value, line_, getColumn() - value.length() - 2);
 }
 
-bool Lexer::isPunctuation(char c) {
-    static const std::string punctuations = "{}[]().,;=:";
-    return punctuations.find(c) != std::string::npos;
+Token Lexer::lineComment() {
+    advance(); // 消耗第二个'/'
+    
+    while (peek() != '\n' && !isAtEnd()) {
+        advance();
+    }
+    
+    std::string text = source_.substr(start_, current_ - start_);
+    return Token(TokenType::LineComment, text, line_, getColumn() - text.length());
 }
 
-// Token 类型的字符串表示
-static const char* TokenTypeStrings[] = {
-    "Keyword",
-    "Identifier",
-    "Constant",
-    "Punctuation",
-    "Operator",
-    "Comment",
-    "AnnotationStart",
-    "AnnotationEnd",
-    "EndOfFile",
-    "Invalid"
-};
-
-const char* tokenTypeToString(TokenType type) {
-    return TokenTypeStrings[static_cast<int>(type)];
+Token Lexer::uiComment() {
+    advance(); // 消耗'@'
+    
+    while (peek() != '\n' && !isAtEnd()) {
+        advance();
+    }
+    
+    std::string text = source_.substr(start_, current_ - start_);
+    return Token(TokenType::UIComment, text, line_, getColumn() - text.length());
 }
 
-}  // namespace mota
+Token Lexer::blockComment() {
+    advance(); // 消耗第二个'/'
+    advance(); // 消耗'*'
+    
+    uint32_t startLine = line_;
+    
+    while (!isAtEnd()) {
+        if (peek() == '*' && peekNext() == '/') {
+            advance(); // 消耗'*'
+            advance(); // 消耗'/'
+            break;
+        }
+        
+        if (peek() == '\n') {
+            line_++;
+            lineStart_ = current_ + 1;
+        }
+        
+        advance();
+    }
+    
+    std::string text = source_.substr(start_, current_ - start_);
+    return Token(TokenType::BlockComment, text, startLine, 0);
+}
+
+} // namespace lexer
+} // namespace mota

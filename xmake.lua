@@ -6,7 +6,12 @@ set_version("0.1.0")
 add_rules("mode.debug", "mode.release")
 
 -- 设置C++标准
-set_languages("c++17")
+set_languages("c++20")
+
+-- 设置UTF-8编码
+add_defines("_UNICODE", "UNICODE")
+add_cxxflags("/utf-8")
+add_cxflags("/utf-8")
 
 -- 添加包依赖
 add_requires("qt6core", {optional = true})
@@ -27,11 +32,11 @@ target("mota")
     -- 添加源文件
     add_files("src/*.cpp")
     
-    -- 排除测试文件
-    remove_files("src/test_*.cpp")
-    
     -- 添加头文件目录
-    add_includedirs("include")
+    add_includedirs("include", "framework")
+    
+    -- 添加依赖包
+    add_packages("cxxopts")
     
     -- Debug模式下添加调试信息
     if is_mode("debug") then
@@ -46,36 +51,24 @@ target("mota")
         set_optimize("fastest")
         set_strip("all")
     end
+    
+    -- 设置输出目录
+    set_targetdir("bin")
 
--- 框架库目标
-target("mota_framework")
-    -- 设置为静态库
-    add_rules("qt.static")
-    
-    -- 添加源文件
-    add_files("framework/*.cpp")
-    
-    -- 添加头文件目录
-    add_includedirs("framework")
-    
-    -- 添加依赖包
-    add_frameworks("QtCore")
-
--- 测试目标
-target("mota_test")
+-- 测试目标：词法分析器测试
+target("test_lexer")
     -- 设置为可执行程序
     set_kind("binary")
     
     -- 添加源文件
-    add_files("test/*.cpp")
-    add_files("src/*.cpp")
-    remove_files("src/main.cpp")
+    add_files("test/test_lexer.cpp")
+    add_files("src/lexer.cpp")
     
     -- 添加头文件目录
     add_includedirs("include", "framework")
     
-    -- 添加测试框架
-    add_packages("gtest")
+    -- 添加Google Test依赖
+    add_packages("gtest", {configs = {main = true}})
     
     -- 设置输出目录
     set_targetdir("bin")
@@ -83,26 +76,40 @@ target("mota_test")
     -- 添加测试定义
     add_defines("TESTING")
 
--- 安装配置
-target("install")
-    after_build(function (target)
-        import("core.project.config")
+-- 测试目标：解析器测试
+target("test_parser")
+    -- 设置为可执行程序
+    set_kind("binary")
+    
+    -- 添加源文件
+    add_files("test/test_parser.cpp")
+    add_files("src/lexer.cpp")
+    add_files("src/parser.cpp")
+    
+    -- 添加头文件目录
+    add_includedirs("include", "framework")
+    
+    -- 添加Google Test依赖
+    add_packages("gtest", {configs = {main = true}})
+    
+    -- 设置输出目录
+    set_targetdir("bin")
+    
+    -- 添加测试定义
+    add_defines("TESTING")
+
+-- 添加一个测试组，方便一键运行所有测试
+target("test")
+    set_kind("phony")
+    on_run(function ()
+        -- 构建所有测试
+        os.exec("xmake build test_lexer")
+        os.exec("xmake build test_parser")
         
-        -- 使用 path.join 来处理路径
-        local function install_file(src, dst)
-            os.cp(path.join("$(projectdir)", src), 
-                 path.join("$(installdir)", dst))
-        end
+        -- 运行所有测试
+        print("\nRunning lexer tests...")
+        os.exec("xmake run test_lexer")
         
-        -- 复制可执行文件
-        install_file("bin/mota.exe", "bin")
-        
-        -- 复制头文件
-        install_file("include/*.h", "include")
-        
-        -- 复制框架文件
-        install_file("framework/*.h", "include/framework")
-        
-        -- 复制示例
-        install_file("examples/*.mota", "examples")
+        print("\nRunning parser tests...")
+        os.exec("xmake run test_parser")
     end)
