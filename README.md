@@ -489,28 +489,6 @@ struct ExtendedConfig : struct BaseConfig {
 }
 ```
 
-## 项目结构
-
-```
-mota/
-├── docs/                 # 文档
-│   └── mota-script-syntax.md  # 语法详细说明
-├── src/                  # 源代码
-│   ├── lexer.cpp         # 词法分析器
-│   ├── parser.cpp        # 语法分析器
-│   ├── ast.cpp           # 抽象语法树
-│   └── main.cpp          # 主程序
-├── include/              # 头文件
-│   ├── lexer.h
-│   ├── parser.h
-│   └── ast.h
-├── test/                 # 测试文件
-│   └── test_parser.cpp
-├── examples/             # 示例
-│   └── example.mota
-└── xmake.lua            # 构建配置
-```
-
 ## 开发计划
 
 - [x] 词法分析器
@@ -519,14 +497,6 @@ mota/
 - [ ] 代码生成器
 - [ ] 配置验证器
 - [x] IDE 插件支持, [visual studio code](https://github.com/eachcan/mota-vsc-plugin)
-
-## 贡献指南
-
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/amazing-feature`)
-3. 提交更改 (`git commit -m 'Add some amazing feature'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 提交 Pull Request
 
 ## 许可证
 
@@ -538,6 +508,3 @@ mota/
 - 邮箱：eachcan@qq.com
 - 项目主页：[Mota Project](https://github.com/eachcan/mota)
 
-## 致谢
-
-感谢所有为本项目做出贡献的开发者！
