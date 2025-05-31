@@ -1,0 +1,46 @@
+// 块类型示例
+namespace examples.blocks;
+
+// 引入标准注解库
+include "yima.mota";
+
+// 定义块
+block CameraConfig {
+    // 相机位置参数
+    @yima.ui.Int(min = 0, max = 10000, step = 1, desc = "X轴坐标")
+    int32 x = 0;
+    
+    @yima.ui.Int(min = 0, max = 10000, step = 1, desc = "Y轴坐标")
+    int32 y = 0;
+    
+    // 相机类型
+    @yima.ui.Select(desc = "相机类型")
+    string type = "AreaScan";
+    
+    // 曝光时间 (微秒)
+    @yima.ui.Float(min = 10.0, max = 100000.0, step = 100.0, desc = "曝光时间")
+    float64 exposure = 1000.0;
+    
+    // 是否启用触发模式
+    @yima.ui.Switcher(desc = "启用硬件触发")
+    bool triggerEnabled = false;
+}
+
+// 定义系统信息块
+block SystemInfo {
+    @yima.ui.Text(desc = "系统名称")
+    string name = "Default System";
+    
+    @yima.ui.Text(desc = "系统版本")
+    string version = "1.0.0";
+}
+
+// 使用块
+@yima.Window(title = "视觉系统配置")
+struct VisionSystem {
+    // 相机列表
+    repeated CameraConfig cameras;
+    
+    // 系统信息
+    SystemInfo info;
+}

@@ -1,0 +1,5 @@
+CompileFlags:
+  Add: [
+    "-isystem", "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/include",
+    "-isystem", "C:/Program Files (x86)/Windows Kits/10/Include/10.0.22621.0/ucrt"
+  ]

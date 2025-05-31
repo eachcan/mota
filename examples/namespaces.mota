@@ -1,0 +1,58 @@
+// 命名空间示例
+namespace examples.namespaces;
+
+// 引入标准注解库
+include "yima.mota";
+
+// 基本命名空间使用
+namespace examples.namespaces.basic {
+    // 基本配置结构体
+    @yima.Window(title = "基本配置")
+    struct BasicConfig {
+        @yima.ui.Text(desc = "名称")
+        string name = "默认配置";
+        
+        @yima.ui.Int(desc = "版本", min = 1)
+        int32 version = 1;
+    }
+}
+
+// 嵌套命名空间
+namespace examples.namespaces.advanced {
+    // 高级配置块
+    block AdvancedSettings {
+        @yima.ui.Switcher(desc = "启用高级功能")
+        bool enableAdvancedFeatures = false;
+        
+        @yima.ui.Float(desc = "精度", min = 0.1, max = 10.0)
+        float64 precision = 1.0;
+    }
+    
+    // 高级配置结构体
+    @yima.Window(title = "高级配置")
+    struct AdvancedConfig {
+        // 引用基本配置
+        examples.namespaces.basic.BasicConfig basicConfig;
+        
+        // 高级设置
+        AdvancedSettings settings;
+    }
+}
+
+// 使用完全限定名称
+namespace examples.namespaces.usage {
+    // 系统配置
+    @yima.Window(title = "系统配置")
+    @yima.Storage(path = "config/system.cbor", format = "cbor")
+    struct SystemConfig {
+        // 基本配置
+        examples.namespaces.basic.BasicConfig basic;
+        
+        // 高级配置
+        examples.namespaces.advanced.AdvancedConfig advanced;
+        
+        // 本地设置
+        @yima.ui.Text(desc = "系统ID")
+        string systemId = "SYS-001";
+    }
+}
