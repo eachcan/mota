@@ -5,31 +5,10 @@
 #include <QList>
 
 namespace ymf {
-
-    // 模型注解
-    struct StorageAnnotation { // 应用于 Model，表示数据的存储路径和格式
-        QString path;
-        QString format = "cbor";
-    };
-
-    struct WindowAnnotation { // 应用于 Model，表示配置窗口的标题和描述
-        QString title;      // 标题
-        QString description; // 描述
-    };
-
     enum class Scope {
         Global,     // 全局配置
         Product,    // 产品配置
     };
-
-    struct ScopeAnnotation { // 应用于 Model，表示配置的作用域
-        Scope value;
-
-        ScopeAnnotation() = default;
-        ScopeAnnotation(const ScopeAnnotation &other) = default;
-        ScopeAnnotation(Scope value) : value(value) {}
-    };
-
     // 字段注解
     enum class FormType { // 用于字段，表示 UI 渲染类型
         DrawRectangle,  // 矩形绘制
@@ -50,9 +29,6 @@ namespace ymf {
         FolderSelect,    // 文件夹选择
     };
 
-    struct IniGroupAnnotation { // 用于字段，仅在 struct 级别下有效
-        QString value;
-    };
 
     struct Option { // 用于选择类型字段
         QVariant value;      // 选项值
