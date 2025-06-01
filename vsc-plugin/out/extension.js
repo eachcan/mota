@@ -32,8 +32,10 @@ function activate(context) {
     };
     // 创建语言客户端并启动
     client = new node_1.LanguageClient('motaLanguageServer', 'Mota Language Server', serverOptions, clientOptions);
-    // 启动客户端
+    // 启动客户端并输出调试信息
+    console.log('Starting Mota Language Server...');
     client.start();
+    console.log('Mota Language Server started.');
 }
 exports.activate = activate;
 function deactivate() {
