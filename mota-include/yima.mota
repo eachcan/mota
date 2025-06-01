@@ -12,3 +12,6 @@ annotation Scope {
     string value;
 }
 
+annotation IniGroup {
+    string value;
+}

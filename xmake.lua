@@ -14,14 +14,13 @@ add_cxxflags("/utf-8")
 add_cxflags("/utf-8")
 
 -- 添加包依赖
-add_requires("qt6core", {optional = true})
 add_requires("gtest")
 add_requires("cxxopts")
 
 -- 主要目标：编译器
 target("mota")
     -- 设置为可执行程序
-    set_kind("binary")
+    add_rules("qt.shared")
     -- 生成版本头文件
     before_build(function (target)
         local version = target:version()
@@ -33,7 +32,8 @@ target("mota")
     add_files("src/*.cpp")
     
     -- 添加头文件目录
-    add_includedirs("include", "framework")
+    add_includedirs("include", "framework", "mota-include/cpp")
+    add_frameworks("QtCore", "QtGui", "QtWidgets")
     
     -- 添加依赖包
     add_packages("cxxopts")
