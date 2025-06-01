@@ -1,0 +1,39 @@
+{
+  "version": "1.0",
+  "encoding": "UTF-8 with BOM",
+  "templates": {
+    "header": "header.template",
+    "block": "block.template",
+    "struct": "struct.template",
+    "enum": "enum.template",
+    "field_types": "field_types.template"
+  },
+  "output": {
+    "extension": ".h",
+    "directory": "../mota-include/cpp"
+  },
+  "namespace": {
+    "default": "yima",
+    "enable": true
+  },
+  "type_mapping": {
+    "int8": "int8_t",
+    "int16": "int16_t",
+    "int32": "int32_t",
+    "int64": "int64_t",
+    "uint8": "uint8_t",
+    "uint16": "uint16_t",
+    "uint32": "uint32_t",
+    "uint64": "uint64_t",
+    "float32": "float",
+    "float64": "double",
+    "string": "QString",
+    "bool": "bool",
+    "bytes": "QByteArray"
+  },
+  "accessor_format": {
+    "getter_prefix": "get",
+    "setter_prefix": "set",
+    "pascal_case": true
+  }
+}

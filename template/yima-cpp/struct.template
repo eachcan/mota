@@ -1,0 +1,65 @@
+// {{STRUCT_NAME}}结构体
+{{STRUCT_ANNOTATIONS}}
+class {{STRUCT_NAME}} : public IModel {
+public:
+    {{STRUCT_NAME}}() = default;
+    {{CONSTRUCTOR}}
+    
+    // 实现IModel接口
+    QCborValue toCbor() const override {
+        QCborMap map;
+        {{SERIALIZE_FIELDS}}
+        return map;
+    }
+    
+    void fromCbor(const QCborValue& cbor) override {
+        QCborMap map = cbor.toMap();
+        {{DESERIALIZE_FIELDS}}
+    }
+    
+    QString name() const override {
+        return "{{STRUCT_NAME}}";
+    }
+    
+    QStringList fields() const override {
+        return QStringList(){{FIELD_NAMES}};
+    }
+    
+    QString fieldType(const QString& fieldName) const override {
+        {{FIELD_TYPE_LOGIC}}
+        return QString();
+    }
+    
+    QList<std::shared_ptr<void>> fieldAnnotation(const QString& fieldName) const override {
+        {{FIELD_ANNOTATION_LOGIC}}
+        return QList<std::shared_ptr<void>>();
+    }
+    
+    QString description() const override {
+        return "{{DESCRIPTION}}";
+    }
+    
+    QString fieldDescription(const QString& fieldName) const override {
+        {{FIELD_DESCRIPTION_LOGIC}}
+        return QString();
+    }
+    
+    QVariant value(const QString& fieldName) const override {
+        {{VALUE_GETTER_LOGIC}}
+        return QVariant();
+    }
+    
+    void value(const QString& fieldName, const QVariant& value) override {
+        {{VALUE_SETTER_LOGIC}}
+        // 注意：复合类型需要单独处理
+    }
+    
+    // 特定于{{STRUCT_NAME}}的访问器
+    {{ACCESSORS}}
+    
+private:
+    {{PRIVATE_FIELDS}}
+    
+    // 变更通知
+    void notifyChange();
+};

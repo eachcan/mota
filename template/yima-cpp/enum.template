@@ -1,0 +1,32 @@
+// {{ENUM_NAME}}枚举
+enum class {{ENUM_NAME}} {
+    {{ENUM_VALUES}}
+};
+
+// {{ENUM_NAME}}辅助函数
+namespace {{ENUM_NAME}}Helper {
+    // 将枚举值转换为字符串
+    inline QString toString({{ENUM_NAME}} value) {
+        switch (value) {
+            {{ENUM_TO_STRING_CASES}}
+            default:
+                return QString();
+        }
+    }
+    
+    // 将字符串转换为枚举值
+    inline {{ENUM_NAME}} fromString(const QString& str) {
+        {{STRING_TO_ENUM_LOGIC}}
+        return {{ENUM_NAME}}::{{DEFAULT_ENUM_VALUE}};
+    }
+    
+    // 获取所有枚举值的字符串表示
+    inline QStringList allValues() {
+        return QStringList() {{ENUM_STRING_VALUES}};
+    }
+    
+    // 获取所有枚举值的UI显示名称
+    inline QStringList allDisplayNames() {
+        return QStringList() {{ENUM_DISPLAY_NAMES}};
+    }
+}
