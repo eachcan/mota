@@ -6,16 +6,16 @@ include "yima.mota";
 
 // 日志级别枚举
 enum LogLevel {
-    @yima.ui.EnumValue(value = "debug", desc = "详细的调试信息")
+    @EnumValue(value = "debug", desc = "详细的调试信息")
     DEBUG = 0;
     
-    @yima.ui.EnumValue(value = "info", desc = "一般信息")
+    @EnumValue(value = "info", desc = "一般信息")
     INFO = 1;
     
-    @yima.ui.EnumValue(value = "warning", desc = "警告信息")
+    @EnumValue(value = "warning", desc = "警告信息")
     WARNING = 2;
     
-    @yima.ui.EnumValue(value = "error", desc = "错误信息")
+    @EnumValue(value = "error", desc = "错误信息")
     ERROR = 3;
 }
 
@@ -29,14 +29,14 @@ enum HttpStatus {
 }
 
 // 使用枚举
-@yima.Window(title = "日志条目")
+@Window(title = "日志条目")
 struct LogEntry {
-    @yima.ui.Text(desc = "日志消息")
+    @Text(desc = "日志消息")
     string message = "";
     
-    @yima.ui.Select(desc = "日志级别")
+    @Select(desc = "日志级别")
     LogLevel level = LogLevel.INFO;
     
-    @yima.ui.Int(desc = "时间戳")
+    @Int(desc = "时间戳")
     int64 timestamp = 0;
 }

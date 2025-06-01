@@ -6,33 +6,33 @@ include "yima.mota";
 
 // 主题颜色块
 block ThemeColor {
-    @yima.ui.Int(min = 0, max = 255, desc = "红色分量")
+    @Int(min = 0, max = 255, desc = "红色分量")
     int32 r = 64;
     
-    @yima.ui.Int(min = 0, max = 255, desc = "绿色分量")
+    @Int(min = 0, max = 255, desc = "绿色分量")
     int32 g = 120;
     
-    @yima.ui.Int(min = 0, max = 255, desc = "蓝色分量")
+    @Int(min = 0, max = 255, desc = "蓝色分量")
     int32 b = 212;
     
-    @yima.ui.Int(min = 0, max = 255, desc = "透明度")
+    @Int(min = 0, max = 255, desc = "透明度")
     int32 a = 255;
 }
 
 // 基本存储配置
-@yima.Storage(
+@Storage(
     path = "config/user_prefs.cbor",
     format = "cbor"
 )
-@yima.Window(title = "用户首选项")
+@Window(title = "用户首选项")
 struct UserPreferences {
-    @yima.ui.Text(desc = "用户名")
+    @Text(desc = "用户名")
     string username = "guest";
     
-    @yima.ui.Switcher(desc = "深色模式")
+    @Switcher(desc = "深色模式")
     bool darkMode = false;
     
-    @yima.ui.Int(min = 12, max = 32, desc = "字体大小")
+    @Int(min = 12, max = 32, desc = "字体大小")
     int32 fontSize = 14;
     
     // 主题颜色
@@ -40,19 +40,19 @@ struct UserPreferences {
 }
 
 // 多格式存储示例
-@yima.Storage(
+@Storage(
     path = "config/settings.json",
     format = "json"
 )
-@yima.Window(title = "应用设置")
+@Window(title = "应用设置")
 struct AppSettings {
-    @yima.ui.Text(desc = "语言")
+    @Text(desc = "语言")
     string language = "zh-CN";
     
-    @yima.ui.Switcher(desc = "自动更新")
+    @Switcher(desc = "自动更新")
     bool autoUpdate = true;
     
     // 最近文件列表
-    @yima.ui.Text(desc = "最近文件")
+    @Text(desc = "最近文件")
     repeated string recentFiles;
 }

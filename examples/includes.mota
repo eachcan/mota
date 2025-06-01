@@ -12,63 +12,63 @@ include "examples/blocks.mota";
 
 // 窗口设置块
 block WindowSettings {
-    @yima.ui.Int(min = 640, max = 3840, desc = "窗口宽度")
+    @Int(min = 640, max = 3840, desc = "窗口宽度")
     int32 width = 1024;
     
-    @yima.ui.Int(min = 480, max = 2160, desc = "窗口高度")
+    @Int(min = 480, max = 2160, desc = "窗口高度")
     int32 height = 768;
     
-    @yima.ui.Switcher(desc = "全屏模式")
+    @Switcher(desc = "全屏模式")
     bool fullscreen = false;
 }
 
 // 调试设置块
 block DebugSettings {
-    @yima.ui.Switcher(desc = "启用调试工具")
+    @Switcher(desc = "启用调试工具")
     bool enableDebugTools = true;
     
-    @yima.ui.Switcher(desc = "显示帧率")
+    @Switcher(desc = "显示帧率")
     bool showFPS = true;
     
-    @yima.ui.Text(desc = "日志级别")
+    @Text(desc = "日志级别")
     string logLevel = "verbose";
 }
 
 // 旧版配置
-@yima.Window(title = "旧版配置")
+@Window(title = "旧版配置")
 struct OldAppConfig {
-    @yima.ui.Text(desc = "应用名称")
+    @Text(desc = "应用名称")
     string appName = "My App v1";
     
-    @yima.ui.Text(desc = "版本")
+    @Text(desc = "版本")
     string version = "1.0.0";
 }
 
 // 新版本配置
-@yima.Window(title = "新版配置")
+@Window(title = "新版配置")
 struct NewAppConfig {
-    @yima.ui.Text(desc = "应用名称")
+    @Text(desc = "应用名称")
     string appName = "My App v2";
     
-    @yima.ui.Text(desc = "版本")
+    @Text(desc = "版本")
     string version = "2.0.0";
 }
 
 // 启动配置
-@yima.Window(title = "启动配置")
+@Window(title = "启动配置")
 struct StartupConfig {
     // 应用程序启动时显示欢迎界面
-    @yima.ui.Switcher(desc = "显示欢迎界面")
+    @Switcher(desc = "显示欢迎界面")
     bool showWelcome = true;
     
     // 自动检查更新
-    @yima.ui.Switcher(desc = "自动检查更新")
+    @Switcher(desc = "自动检查更新")
     bool checkForUpdates = true;
 }
 
 // 使用包含文件中的类型
-@yima.Storage(path = "config/app.cbor", format = "cbor")
-@yima.Window(title = "应用配置")
+@Storage(path = "config/app.cbor", format = "cbor")
+@Window(title = "应用配置")
 struct AppConfig {
     // 窗口设置
     WindowSettings window;
@@ -77,7 +77,7 @@ struct AppConfig {
     DebugSettings debug;
     
     // 从 enums.mota 导入的类型
-    @yima.ui.Select(desc = "日志级别")
+    @Select(desc = "日志级别")
     examples.enums.LogLevel logLevel = examples.enums.LogLevel.INFO;
     
     // 包含其他配置块

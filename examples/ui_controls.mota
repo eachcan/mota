@@ -6,79 +6,79 @@ include "yima.mota";
 
 // 性别枚举
 enum Gender {
-    @yima.ui.EnumValue(value = "male", desc = "男")
+    @EnumValue(value = "male", desc = "男")
     MALE = 0;
     
-    @yima.ui.EnumValue(value = "female", desc = "女")
+    @EnumValue(value = "female", desc = "女")
     FEMALE = 1;
     
-    @yima.ui.EnumValue(value = "other", desc = "其他")
+    @EnumValue(value = "other", desc = "其他")
     OTHER = 2;
 }
 
 // 国家枚举
 enum Country {
-    @yima.ui.EnumValue(value = "cn", desc = "中国")
+    @EnumValue(value = "cn", desc = "中国")
     CHINA = 0;
     
-    @yima.ui.EnumValue(value = "us", desc = "美国")
+    @EnumValue(value = "us", desc = "美国")
     USA = 1;
     
-    @yima.ui.EnumValue(value = "jp", desc = "日本")
+    @EnumValue(value = "jp", desc = "日本")
     JAPAN = 2;
     
-    @yima.ui.EnumValue(value = "eu", desc = "欧洲")
+    @EnumValue(value = "eu", desc = "欧洲")
     EUROPE = 3;
 }
 
 // 表单配置
-@yima.Window(title = "用户注册", desc = "新用户注册表单")
+@Window(title = "用户注册", desc = "新用户注册表单")
 struct RegistrationForm {
     // 文本输入
-    @yima.ui.Text(desc = "用户名", max_length = 32)
+    @Text(desc = "用户名", max_length = 32)
     string username = "";
     
     // 密码输入 (使用普通文本框，实际应用中可以实现密码框)
-    @yima.ui.Text(desc = "密码", pattern = "^.{8,}$")
+    @Text(desc = "密码", pattern = "^.{8,}$")
     string password = "";
     
     // 数字输入
-    @yima.ui.Int(desc = "年龄", min = 18, max = 120, step = 1)
+    @Int(desc = "年龄", min = 18, max = 120, step = 1)
     int32 age = 18;
     
     // 音量 (使用数字输入框，实际应用中可以实现滑块)
-    @yima.ui.Int(desc = "音量", min = 0, max = 100, step = 5)
+    @Int(desc = "音量", min = 0, max = 100, step = 5)
     int32 volume = 50;
     
     // 下拉选择
-    @yima.ui.Select(desc = "国家/地区")
+    @Select(desc = "国家/地区")
     Country country = Country.CHINA;
     
     // 多选框 (使用开关控件)
-    @yima.ui.Switcher(desc = "订阅新闻简报")
+    @Switcher(desc = "订阅新闻简报")
     bool subscribe = true;
     
     // 性别选择
-    @yima.ui.Select(desc = "性别")
+    @Select(desc = "性别")
     Gender gender = Gender.MALE;
     
     // 出生日期 (使用文本输入，实际应用中可以实现日期选择器)
-    @yima.ui.Text(desc = "出生日期", pattern = "^\\d{4}-\\d{2}-\\d{2}$")
+    @Text(desc = "出生日期", pattern = "^\\d{4}-\\d{2}-\\d{2}$")
     string birthDate = "";
     
     // 提醒时间 (使用文本输入，实际应用中可以实现时间选择器)
-    @yima.ui.Text(desc = "提醒时间", pattern = "^\\d{2}:\\d{2}$")
+    @Text(desc = "提醒时间", pattern = "^\\d{2}:\\d{2}$")
     string reminderTime = "";
     
     // 主题颜色 (使用文本输入，实际应用中可以实现颜色选择器)
-    @yima.ui.Text(desc = "主题颜色", pattern = "^#[0-9A-Fa-f]{6}$")
+    @Text(desc = "主题颜色", pattern = "^#[0-9A-Fa-f]{6}$")
     string themeColor = "#1890ff";
     
     // 头像路径 (使用文本输入，实际应用中可以实现文件上传)
-    @yima.ui.Text(desc = "头像路径")
+    @Text(desc = "头像路径")
     string avatar = "";
     
     // 开关
-    @yima.ui.Switcher(desc = "启用通知")
+    @Switcher(desc = "启用通知")
     bool notificationsEnabled = true;
 }
