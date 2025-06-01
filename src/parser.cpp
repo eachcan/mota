@@ -1,6 +1,4 @@
 #include "parser.h"
-#include <sstream>
-#include <algorithm>
 #include <iostream>
 
 namespace mota {

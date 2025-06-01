@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <memory>
 #include <sstream>
 #include <windows.h>
 #include <fcntl.h>
@@ -52,7 +53,9 @@ TEST_F(ParserTest, ParseSimpleStruct) {
     EXPECT_EQ(structDecl->name, "Person");
     ASSERT_EQ(structDecl->fields.size(), 2);
     EXPECT_EQ(structDecl->fields[0]->name, "name");
+    EXPECT_EQ(((NamedType*)(structDecl->fields[0]->type.get()))->name, "string");
     EXPECT_EQ(structDecl->fields[1]->name, "age");
+    EXPECT_EQ(((NamedType*)(structDecl->fields[1]->type.get()))->name, "int32");
 }
 
 // 测试枚举解析

@@ -1,5 +1,4 @@
 -- 设置项目名称和版本
-set_project("mota")
 set_version("0.1.0")
 
 -- 添加构建模式
@@ -62,7 +61,11 @@ target("test_lexer")
     
     -- 添加源文件
     add_files("test/test_lexer.cpp")
-    add_files("src/lexer.cpp")
+    add_files("src/lexer_core.cpp")
+    add_files("src/lexer_utils.cpp")
+    add_files("src/lexer_tokens.cpp")
+    add_files("src/lexer_literals.cpp")
+    add_files("src/lexer_comments.cpp")
     
     -- 添加头文件目录
     add_includedirs("include", "framework")
@@ -83,7 +86,11 @@ target("test_parser")
     
     -- 添加源文件
     add_files("test/test_parser.cpp")
-    add_files("src/lexer.cpp")
+    add_files("src/lexer_core.cpp")
+    add_files("src/lexer_utils.cpp")
+    add_files("src/lexer_tokens.cpp")
+    add_files("src/lexer_literals.cpp")
+    add_files("src/lexer_comments.cpp")
     add_files("src/parser.cpp")
     
     -- 添加头文件目录

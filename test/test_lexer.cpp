@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-#include <sstream>
 #include "lexer.h"
 
 using namespace mota::lexer;
@@ -325,7 +324,7 @@ TEST_F(LexerTest, ComplexStructure) {
     }
     
     // 验证关键的词法单元
-    ASSERT_GT(tokens.size(), 20); // 至少应该有这么多词法单元
+    ASSERT_EQ(tokens.size(), 49); // 至少应该有这么多词法单元
     
     // 验证第一个注解
     EXPECT_EQ(tokens[0].type, TokenType::At);
@@ -363,15 +362,38 @@ TEST_F(LexerTest, ComplexStructure) {
 
 // 测试错误处理
 TEST_F(LexerTest, ErrorHandling) {
+    std::cout << "\n===== ErrorHandling Test Begin =====" << std::endl;
+
     // 测试无效的十六进制数字
-    std::string source1 = "0xG";
+    std::string source1 = "0xfG 0xH 0x 0G";
+    std::cout << "\nTesting source1: '" << source1 << "'" << std::endl;
     auto tokens1 = tokenize(source1);
     
-    std::cout << "\nInvalid Hex tokens:" << std::endl;
+    std::cout << "Invalid Hex tokens:" << std::endl;
     for (size_t i = 0; i < tokens1.size(); ++i) {
         std::cout << i << ": " << static_cast<int>(tokens1[i].type) 
                   << " '" << tokens1[i].lexeme << "'" << std::endl;
     }
+
+    std::cout << "Expected tokens1.size() == 4, got " << tokens1.size() << std::endl;
+    if (tokens1.size() > 0) {
+        std::cout << "Expected tokens1[0].type == Error(" << static_cast<int>(TokenType::Error) << "), got " 
+                  << static_cast<int>(tokens1[0].type) << std::endl;
+        std::cout << "Expected tokens1[0].lexeme == 'Invalid hexadecimal number: 0xfG', got '" 
+                  << tokens1[0].lexeme << "'" << std::endl;
+    }
+    if (tokens1.size() > 1) {
+        std::cout << "Expected tokens1[1].type == Error(" << static_cast<int>(TokenType::Error) << "), got " 
+                  << static_cast<int>(tokens1[1].type) << std::endl;
+        std::cout << "Expected tokens1[1].lexeme == 'Invalid hexadecimal number: 0xH', got '" 
+                  << tokens1[1].lexeme << "'" << std::endl;
+    }
+
+    ASSERT_EQ(tokens1.size(), 4);
+    ASSERT_EQ(tokens1[0].type, TokenType::Error);
+    ASSERT_EQ(tokens1[0].lexeme, "Invalid hexadecimal number: 0xfG");
+    ASSERT_EQ(tokens1[1].type, TokenType::Error);
+    ASSERT_EQ(tokens1[1].lexeme, "Invalid hexadecimal number: 0xH");
     
     // 根据词法分析器的实际行为，它可能返回一个错误标记或者将其分解为多个标记
     bool foundErrorTokenHex = false;
@@ -384,15 +406,19 @@ TEST_F(LexerTest, ErrorHandling) {
     EXPECT_TRUE(foundErrorTokenHex || tokens1.size() > 0);
     
     // 测试无效的二进制数字
-    std::string source2 = "0b102";
+    std::string source2 = "0b102 0b201 0b";
+    std::cout << "\nTesting source2: '" << source2 << "'" << std::endl;
     auto tokens2 = tokenize(source2);
     
-    std::cout << "\nInvalid Binary tokens:" << std::endl;
+    std::cout << "Invalid Binary tokens:" << std::endl;
     for (size_t i = 0; i < tokens2.size(); ++i) {
         std::cout << i << ": " << static_cast<int>(tokens2[i].type) 
                   << " '" << tokens2[i].lexeme << "'" << std::endl;
     }
-    
+
+    std::cout << "Expected tokens2.size() == 3, got " << tokens2.size() << std::endl;
+
+    ASSERT_EQ(tokens2.size(), 3);
     // 根据词法分析器的实际行为，它可能返回一个错误标记或者将其分解为多个标记
     bool foundErrorTokenBin = false;
     for (const auto& token : tokens2) {
@@ -401,23 +427,27 @@ TEST_F(LexerTest, ErrorHandling) {
             break;
         }
     }
-    EXPECT_TRUE(foundErrorTokenBin || tokens2.size() > 0);
+    EXPECT_TRUE(foundErrorTokenBin || tokens2.size() == 2);
     
     // 测试未结束的字符串
     std::string source3 = "\"unclosed string";
+    std::cout << "\nTesting source3: '" << source3 << "'" << std::endl;
     auto tokens3 = tokenize(source3);
     
-    std::cout << "\nUnclosed String tokens:" << std::endl;
+    std::cout << "Unclosed String tokens:" << std::endl;
     for (size_t i = 0; i < tokens3.size(); ++i) {
         std::cout << i << ": " << static_cast<int>(tokens3[i].type) 
                   << " '" << tokens3[i].lexeme << "'" << std::endl;
     }
     
+    std::cout << "Expected at least one Error token in tokens3" << std::endl;
+
     // 根据词法分析器的实际行为，它可能返回一个错误标记或者将其分解为多个标记
     bool foundErrorTokenStr = false;
     for (const auto& token : tokens3) {
         if (token.type == TokenType::Error) {
             foundErrorTokenStr = true;
+            std::cout << "Found Error token in tokens3: '" << token.lexeme << "'" << std::endl;
             break;
         }
     }
@@ -425,23 +455,29 @@ TEST_F(LexerTest, ErrorHandling) {
     
     // 测试未结束的块注释
     std::string source4 = "/* unclosed comment";
+    std::cout << "\nTesting source4: '" << source4 << "'" << std::endl;
     auto tokens4 = tokenize(source4);
     
-    std::cout << "\nUnclosed Comment tokens:" << std::endl;
+    std::cout << "Unclosed Comment tokens:" << std::endl;
     for (size_t i = 0; i < tokens4.size(); ++i) {
         std::cout << i << ": " << static_cast<int>(tokens4[i].type) 
                   << " '" << tokens4[i].lexeme << "'" << std::endl;
     }
     
+    std::cout << "Expected at least one Error token in tokens4" << std::endl;
+
     // 根据词法分析器的实际行为，它可能返回一个错误标记或者将其分解为多个标记
     bool foundErrorTokenComment = false;
     for (const auto& token : tokens4) {
         if (token.type == TokenType::Error) {
             foundErrorTokenComment = true;
+            std::cout << "Found Error token in tokens4: '" << token.lexeme << "'" << std::endl;
             break;
         }
     }
     EXPECT_TRUE(foundErrorTokenComment || tokens4.size() > 0);
+
+    std::cout << "===== ErrorHandling Test End =====" << std::endl;
 }
 
 // 测试边界情况
