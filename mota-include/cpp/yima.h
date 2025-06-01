@@ -1,14 +1,12 @@
 #pragma once
 
-#include "IModel.h"
+#include "IAnnotation.h"
+#include "IBlock.h"
 #include <QString>
 #include <QStringList>
 #include <QVariant>
 
 using namespace ymf;
-
-class IAnnotation;
-class IBlock;
 
 class StorageAnnotation : public IAnnotation {
 public:
