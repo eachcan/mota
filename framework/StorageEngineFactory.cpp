@@ -18,7 +18,7 @@ namespace ymf {
         return s_instance;
     }
 
-    std::shared_ptr<IStorageEngine> StorageEngineFactory::getEngine(const QString& format) {
+    QSharedPointer<IStorageEngine> StorageEngineFactory::getEngine(const QString& format) {
         if (format.isEmpty() || !supportsFormat(format)) {
             return m_engines.value("cbor");
         }
@@ -26,7 +26,7 @@ namespace ymf {
         return m_engines.value(format);
     }
 
-    void StorageEngineFactory::registerEngine(const QString& format, std::shared_ptr<IStorageEngine> engine) {
+    void StorageEngineFactory::registerEngine(const QString& format, QSharedPointer<IStorageEngine> engine) {
         if (engine && !format.isEmpty()) {
             m_engines[format] = engine;
         }

@@ -148,7 +148,7 @@ namespace ymf {
         return m_context;
     }
 
-    std::shared_ptr<StorageAnnotation> IModel::modelStorageAnnotation() const
+    QSharedPointer<StorageAnnotation> IModel::modelStorageAnnotation() const
     {
         auto annotations = modelAnnotations();
         for (const auto& annotation : annotations) {
@@ -160,7 +160,7 @@ namespace ymf {
         return nullptr;
     }
 
-    std::shared_ptr<ScopeAnnotation> IModel::modelScopeAnnotation() const
+    QSharedPointer<ScopeAnnotation> IModel::modelScopeAnnotation() const
     {
         auto annotations = modelAnnotations();
         for (const auto& annotation : annotations) {
@@ -172,7 +172,7 @@ namespace ymf {
         return nullptr;
     }
 
-    std::shared_ptr<WindowAnnotation> IModel::modelWindowAnnotation() const
+    QSharedPointer<WindowAnnotation> IModel::modelWindowAnnotation() const
     {
         auto annotations = modelAnnotations();
         for (const auto& annotation : annotations) {
@@ -184,12 +184,12 @@ namespace ymf {
         return nullptr;
     }
 
-    std::shared_ptr<IStorageEngine> IModel::storageEngine(const QString& format) {
+    QSharedPointer<IStorageEngine> IModel::storageEngine(const QString& format) {
         return StorageEngineFactory::instance()->getEngine(format);
     }
 
     ValidationResult IModel::validate() const {
-        auto validators = m_context ? m_context->getValidators(typeid(*this)) : QList<std::shared_ptr<IModelValidator>>();
+        auto validators = m_context ? m_context->getValidators(typeid(*this)) : QList<QSharedPointer<IModelValidator>>();
         
         m_lastValidationResult = ValidationResult::success();
         

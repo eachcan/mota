@@ -30,9 +30,9 @@ public:
         return QString();
     }
     
-    QList<std::shared_ptr<void>> fieldAnnotation(const QString& fieldName) const override {
+    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
         {{FIELD_ANNOTATION_LOGIC}}
-        return QList<std::shared_ptr<void>>();
+        return QList<QSharedPointer<void>>();
     }
     
     QString description() const override {

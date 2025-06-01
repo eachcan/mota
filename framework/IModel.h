@@ -12,7 +12,6 @@
 #include "ValidationResult.h"
 
 #include "IAnnotation.h"
-#include "IBlock.h"
 #include "yima.h"
 
 #include "model_declares.h"
@@ -66,22 +65,22 @@ namespace ymf {
         virtual QString fieldOriginTypeName(const QString& fieldName) const = 0;
 
         // 获取模型注解
-        virtual QList<std::shared_ptr<IAnnotation>> modelAnnotations() const = 0;
+        virtual QList<QSharedPointer<IAnnotation>> modelAnnotations() const = 0;
 
         // 获取模型的 StorageAnnotation 注解
-        std::shared_ptr<StorageAnnotation> modelStorageAnnotation() const;
+        QSharedPointer<StorageAnnotation> modelStorageAnnotation() const;
 
         // 获取模型的 ScopeAnnotation 注解
-        std::shared_ptr<ScopeAnnotation> modelScopeAnnotation() const;
+        QSharedPointer<ScopeAnnotation> modelScopeAnnotation() const;
 
         // 获取模型的 WindowAnnotation 注解
-        std::shared_ptr<WindowAnnotation> modelWindowAnnotation() const;
+        QSharedPointer<WindowAnnotation> modelWindowAnnotation() const;
 
         // 获取字段注解
-        virtual QList<std::shared_ptr<void>> fieldAnnotations(const QString& fieldName) const = 0;
+        virtual QList<QSharedPointer<void>> fieldAnnotations(const QString& fieldName) const = 0;
 
         // 获取具体的注解
-        std::shared_ptr<IAnnotation> fieldAnnotation(const QString& fieldName) const;
+        QSharedPointer<IAnnotation> fieldAnnotation(const QString& fieldName) const;
 
         // 获取模型的注释
         virtual QString description() const = 0;
@@ -101,9 +100,12 @@ namespace ymf {
         // 获取验证错误
         QList<ValidationError> validationErrors() const;
         
-    protected:
         // 获取产品目录
-        virtual QString productDir() const;
+        QString productDir() const;
+
+        void productDir(const QString& dir);
+        
+    protected:
 
         // 获取模型名
         virtual QString modelName() const = 0;
@@ -120,12 +122,13 @@ namespace ymf {
         // 解析存储路径
         QString resolvePath() const;
 
-        std::shared_ptr<IStorageEngine> storageEngine(const QString& format);
+        QSharedPointer<IStorageEngine> storageEngine(const QString& format);
 
-        Scope m_scope = Scope::Global;
-        bool m_writable = false;
-        QString m_qualifier;
-        ApplicationContext* m_context = nullptr;
-        mutable ValidationResult m_lastValidationResult;    // 缓存的验证结果
+        Scope _scope = Scope::Global;
+        bool _writable = false;
+        QString _qualifier;
+        QString _productDir;
+        ApplicationContext* _context = nullptr;
+        mutable ValidationResult _lastValidationResult;    // 缓存的验证结果
     };
 } // namespace ymf

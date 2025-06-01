@@ -8,14 +8,6 @@
     "enum": "enum.template",
     "field_types": "field_types.template"
   },
-  "output": {
-    "extension": ".h",
-    "directory": "../mota-include/cpp"
-  },
-  "namespace": {
-    "default": "yima",
-    "enable": true
-  },
   "type_mapping": {
     "int8": "int8_t",
     "int16": "int16_t",

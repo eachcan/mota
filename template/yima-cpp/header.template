@@ -7,6 +7,7 @@
 #include <QStringList>
 #include <QVariant>
 #include <QVector>
+#include <QSharedPointer>
 #include <memory>
 
 #include "framework/iblock.h"

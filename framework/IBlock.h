@@ -33,7 +33,7 @@ namespace ymf {
                 virtual QString fieldType(const QString& fieldName) const = 0;
         
                 // 获取字段注解
-                virtual QList<std::shared_ptr<void>> fieldAnnotation(const QString& fieldName) const = 0;
+                virtual QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const = 0;
         
                 // 获取块的注释
                 virtual QString description() const = 0;

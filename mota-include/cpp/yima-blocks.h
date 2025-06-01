@@ -49,8 +49,8 @@ public:
         return QString();
     }
     
-    QList<std::shared_ptr<void>> fieldAnnotation(const QString& fieldName) const override {
-        return QList<std::shared_ptr<void>>();
+    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+        return QList<QSharedPointer<void>>();
     }
     
     QString description() const override {
@@ -135,8 +135,8 @@ public:
         return QString();
     }
     
-    QList<std::shared_ptr<void>> fieldAnnotation(const QString& fieldName) const override {
-        return QList<std::shared_ptr<void>>();
+    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+        return QList<QSharedPointer<void>>();
     }
     
     QString description() const override {
@@ -239,8 +239,8 @@ public:
         return QString();
     }
     
-    QList<std::shared_ptr<void>> fieldAnnotation(const QString& fieldName) const override {
-        return QList<std::shared_ptr<void>>();
+    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+        return QList<QSharedPointer<void>>();
     }
     
     QString description() const override {
@@ -341,8 +341,8 @@ public:
         return QString();
     }
     
-    QList<std::shared_ptr<void>> fieldAnnotation(const QString& fieldName) const override {
-        return QList<std::shared_ptr<void>>();
+    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+        return QList<QSharedPointer<void>>();
     }
     
     QString description() const override {
@@ -454,8 +454,8 @@ public:
         return QString();
     }
     
-    QList<std::shared_ptr<void>> fieldAnnotation(const QString& fieldName) const override {
-        return QList<std::shared_ptr<void>>();
+    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+        return QList<QSharedPointer<void>>();
     }
     
     QString description() const override {
@@ -573,8 +573,8 @@ public:
         return QString();
     }
     
-    QList<std::shared_ptr<void>> fieldAnnotation(const QString& fieldName) const override {
-        return QList<std::shared_ptr<void>>();
+    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+        return QList<QSharedPointer<void>>();
     }
     
     QString description() const override {
@@ -663,8 +663,8 @@ public:
         return QString();
     }
     
-    QList<std::shared_ptr<void>> fieldAnnotation(const QString& fieldName) const override {
-        return QList<std::shared_ptr<void>>();
+    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+        return QList<QSharedPointer<void>>();
     }
     
     QString description() const override {
