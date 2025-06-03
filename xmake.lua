@@ -91,7 +91,10 @@ target("test_parser")
     add_files("src/lexer_tokens.cpp")
     add_files("src/lexer_literals.cpp")
     add_files("src/lexer_comments.cpp")
-    add_files("src/parser.cpp")
+    add_files("src/parser_core.cpp")
+    add_files("src/parser_declarations.cpp")
+    add_files("src/parser_types.cpp")
+    add_files("src/parser_expressions.cpp")
     
     -- 添加头文件目录
     add_includedirs("include", "framework")
