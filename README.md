@@ -349,16 +349,16 @@ include "config/network.mota";
 ```mota
 // 基础配置
 struct BaseConfig {
-    string name;
-    string description;
+    int32 version;
 }
 
 // 扩展配置
-struct ExtendedConfig : BaseConfig {
-    int32 timeout = 5000;
-    repeated string options;
+struct ExtendedConfig : struct BaseConfig {
+    string name;
 }
 ```
+
+> **注意：枚举（enum）和注解（annotation）都不支持继承。**
 
 ## 📂 项目结构
 
