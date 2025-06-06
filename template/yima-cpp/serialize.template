@@ -1,0 +1,1 @@
+        map[QLatin1String("{{FIELD_NAME}}")] = QCborValue::fromVariant(QVariant::fromValue({{PRIVATE_FIELD_NAME}})); 

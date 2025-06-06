@@ -6,7 +6,11 @@
     "block": "block.template",
     "struct": "struct.template",
     "enum": "enum.template",
-    "field_types": "field_types.template"
+    "annotation": "annotation.template",
+    "field_types": "field_types.template",
+    "accessor": "accessor.template",
+    "serialize": "serialize.template",
+    "deserialize": "deserialize.template"
   },
   "type_mapping": {
     "int8": "int8_t",
@@ -27,6 +31,48 @@
     "getter_prefix": "get",
     "setter_prefix": "set",
     "pascal_case": true
+  },
+  "identifier_format": {
+    "style": "pascal_case",
+    "prefix": {
+    },
+    "suffix": {
+      "block": "Block",
+      "struct": "",
+      "enum": "Enum",
+      "annotation": "Annotation"
+    }
+  },
+  "field_type_templates": {
+    "int8": "INT",
+    "int16": "INT", 
+    "int32": "INT",
+    "int64": "INT",
+    "uint8": "INT",
+    "uint16": "INT", 
+    "uint32": "INT",
+    "uint64": "INT",
+    "float32": "FLOAT",
+    "float64": "FLOAT",
+    "string": "STRING",
+    "bool": "BOOL",
+    "bytes": "BYTES",
+    "repeated": "ARRAY",
+    "custom": "COMPLEX"
+  },
+  "template_variables": {
+    "CLASS_NAME": "{{TYPE_NAME}}{{TYPE_SUFFIX}}",
+    "PRIVATE_FIELD_NAME": "{{FIELD_NAME}}_",
+    "FIELD_NAME_PASCAL": "{{FIELD_NAME | pascal_case}}",
+    "FIELD_NAME_CAMEL": "{{FIELD_NAME | camel_case}}",
+    "FIELD_TYPE_MAPPED": "{{FIELD_TYPE | map_type}}",
+    "SERIALIZE_TEMPLATE": "{{FIELD_TYPE | field_template}}_SERIALIZE",
+    "DESERIALIZE_TEMPLATE": "{{FIELD_TYPE | field_template}}_DESERIALIZE"
+  },
+  "type_interface_mapping": {
+    "block": "IBlock",
+    "struct": "IModel", 
+    "annotation": "IAnnotation"
   },
   "file_path": [
     {

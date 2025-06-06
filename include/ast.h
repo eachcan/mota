@@ -148,7 +148,7 @@ public:
 class Type : public Node {
 public:
     virtual ~Type() = default;
-    NodeType nodeType() const override { return NodeType::NamedType; }
+    virtual std::string toString() const = 0;
 };
 
 // 命名类型
@@ -157,6 +157,9 @@ public:
     explicit NamedType(std::string name) : name(std::move(name)) {}
     
     std::string name;
+    
+    std::string toString() const override { return name; }
+    NodeType nodeType() const override { return NodeType::NamedType; }
 };
 
 // 容器类型
@@ -174,6 +177,17 @@ public:
     Kind kind;
     std::unique_ptr<Type> elementType;
     std::unique_ptr<Type> keyType;  // 仅用于Map
+    
+    std::string toString() const override {
+        switch(kind) {
+            case Kind::Array: return "repeated " + elementType->toString();
+            case Kind::Optional: return "optional " + elementType->toString();
+            case Kind::Map: return "map " + elementType->toString();
+            default: return "unknown";
+        }
+    }
+    
+    NodeType nodeType() const override { return NodeType::ContainerType; }
 };
 
 // 注解参数

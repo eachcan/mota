@@ -1,10 +1,10 @@
 // {{BLOCK_NAME}}块
-class {{BLOCK_NAME}} : public IBlock {
+class MODEL_EXPORT {{CLASS_NAME}} : public {{INTERFACE_NAME}} {
 public:
-    {{BLOCK_NAME}}() = default;
+    {{CLASS_NAME}}() = default;
     {{CONSTRUCTOR}}
     
-    // 实现IBlock接口
+    // 实现{{INTERFACE_NAME}}接口
     QCborValue toCbor() const override {
         QCborMap map;
         {{SERIALIZE_FIELDS}}
@@ -21,12 +21,11 @@ public:
     }
     
     QStringList fields() const override {
-        return QStringList(){{FIELD_NAMES}};
+        return QStringList{{{FIELD_NAMES}}};
     }
     
     QString fieldType(const QString& fieldName) const override {
         {{FIELD_TYPE_LOGIC}}
-        return QString();
     }
     
     QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
@@ -45,12 +44,10 @@ public:
     
     QVariant value(const QString& fieldName) const override {
         {{VALUE_GETTER_LOGIC}}
-        return QVariant();
     }
     
     void value(const QString& fieldName, const QVariant& value) override {
         {{VALUE_SETTER_LOGIC}}
-        // 注意：复合类型需要单独处理
     }
     
     // 特定于{{BLOCK_NAME}}的访问器

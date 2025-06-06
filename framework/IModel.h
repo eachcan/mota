@@ -12,7 +12,7 @@
 #include "ValidationResult.h"
 
 #include "IAnnotation.h"
-#include "yima.h"
+#include "IBlock.h"
 
 #include "model_declares.h"
 
@@ -46,10 +46,6 @@ namespace ymf {
         bool writable() const;
         void writable(bool writable);
         
-        // 获取模型作用域
-        Scope scope() const;
-        void scope(Scope scope);
-        
         // 获取/设置限定符
         QString qualifier() const;
         void qualifier(const QString& qualifier);
@@ -66,15 +62,6 @@ namespace ymf {
 
         // 获取模型注解
         virtual QList<QSharedPointer<IAnnotation>> modelAnnotations() const = 0;
-
-        // 获取模型的 StorageAnnotation 注解
-        QSharedPointer<StorageAnnotation> modelStorageAnnotation() const;
-
-        // 获取模型的 ScopeAnnotation 注解
-        QSharedPointer<ScopeAnnotation> modelScopeAnnotation() const;
-
-        // 获取模型的 WindowAnnotation 注解
-        QSharedPointer<WindowAnnotation> modelWindowAnnotation() const;
 
         // 获取字段注解
         virtual QList<QSharedPointer<void>> fieldAnnotations(const QString& fieldName) const = 0;

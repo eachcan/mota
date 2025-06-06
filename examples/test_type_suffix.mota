@@ -1,0 +1,66 @@
+// 测试类型后缀功能
+namespace examples.type_suffix;
+
+// 定义基础块类型
+block User {
+    string name;
+    int32 age;
+    string email;
+}
+
+block Profile {
+    string bio;
+    string avatar;
+    repeated string tags;
+}
+
+// 定义结构体，包含其他自定义类型字段
+struct UserProfile {
+    // 这里的User应该生成为UserBlock类型
+    User user;
+    
+    // 这里的Profile应该生成为ProfileBlock类型
+    Profile profile;
+    
+    // 数组类型也应该正确处理
+    repeated User friends;
+    
+    // 基本类型保持不变
+    string description;
+    bool isActive;
+}
+
+// 定义注解
+annotation UserValidator {
+    string pattern;
+    int32 minLength;
+    int32 maxLength;
+}
+
+// 定义枚举
+enum UserRole {
+    Admin = 1;
+    Moderator = 2;
+    User = 3;
+    Guest = 4;
+}
+
+// 包含所有类型的复合结构
+struct ComplexSystem {
+    // 块类型字段（应生成为 UserBlock, ProfileBlock）
+    User mainUser;
+    repeated Profile userProfiles;
+    
+    // 枚举类型字段（应生成为 UserRoleEnum）
+    UserRole defaultRole;
+    repeated UserRole allowedRoles;
+    
+    // 基本类型字段
+    string systemName;
+    int32 maxUsers;
+    bool isEnabled;
+    
+    // 注解使用示例
+    @UserValidator(pattern = "^[a-zA-Z0-9]+$", minLength = 3, maxLength = 20)
+    string username;
+} 

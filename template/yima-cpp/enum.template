@@ -1,12 +1,12 @@
 // {{ENUM_NAME}}枚举
-enum class {{ENUM_NAME}} {
+enum class {{CLASS_NAME}} {
     {{ENUM_VALUES}}
 };
 
 // {{ENUM_NAME}}辅助函数
-namespace {{ENUM_NAME}}Helper {
+namespace {{CLASS_NAME}}Helper {
     // 将枚举值转换为字符串
-    inline QString toString({{ENUM_NAME}} value) {
+    inline QString toString({{CLASS_NAME}} value) {
         switch (value) {
             {{ENUM_TO_STRING_CASES}}
             default:
@@ -15,9 +15,9 @@ namespace {{ENUM_NAME}}Helper {
     }
     
     // 将字符串转换为枚举值
-    inline {{ENUM_NAME}} fromString(const QString& str) {
+    inline {{CLASS_NAME}} fromString(const QString& str) {
         {{STRING_TO_ENUM_LOGIC}}
-        return {{ENUM_NAME}}::{{DEFAULT_ENUM_VALUE}};
+        return {{CLASS_NAME}}::{{DEFAULT_ENUM_VALUE}};
     }
     
     // 获取所有枚举值的字符串表示

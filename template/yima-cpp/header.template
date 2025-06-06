@@ -10,9 +10,9 @@
 #include <QSharedPointer>
 #include <memory>
 
-#include "framework/iblock.h"
-#include "framework/imodel.h"
-#include "framework/iannotation.h"
+#include "framework/IBlock.h"
+#include "framework/IModel.h"
+#include "framework/IAnnotation.h"
 
 // 此文件由 Mota 代码生成器自动生成
 // 生成时间: {{GENERATION_TIME}}

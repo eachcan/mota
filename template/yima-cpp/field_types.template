@@ -1,52 +1,52 @@
 # 基本类型字段序列化模板
 # 整数类型 (int8, int16, int32, int64)
 [INT_SERIALIZE]
-map.insert(QLatin1String("{{FIELD_NAME}}"), QCborValue(get{{FIELD_NAME_PASCAL}}()));
+map.insert(QLatin1String("{{FIELD_NAME}}"), QCborValue({{GETTER_NAME}}()));
 
 [INT_DESERIALIZE]
-set{{FIELD_NAME_PASCAL}}(static_cast<{{FIELD_TYPE}}>(map.value(QLatin1String("{{FIELD_NAME}}")).toInteger()));
+{{SETTER_NAME}}(static_cast<{{FIELD_TYPE_MAPPED}}>(map.value(QLatin1String("{{FIELD_NAME}}")).toInteger()));
 
 # 浮点类型 (float32, float64)
 [FLOAT_SERIALIZE]
-map.insert(QLatin1String("{{FIELD_NAME}}"), QCborValue(get{{FIELD_NAME_PASCAL}}()));
+map.insert(QLatin1String("{{FIELD_NAME}}"), QCborValue({{GETTER_NAME}}()));
 
 [FLOAT_DESERIALIZE]
-set{{FIELD_NAME_PASCAL}}(static_cast<{{FIELD_TYPE}}>(map.value(QLatin1String("{{FIELD_NAME}}")).toDouble()));
+{{SETTER_NAME}}(static_cast<{{FIELD_TYPE_MAPPED}}>(map.value(QLatin1String("{{FIELD_NAME}}")).toDouble()));
 
 # 字符串类型 (string)
 [STRING_SERIALIZE]
-map.insert(QLatin1String("{{FIELD_NAME}}"), QCborValue(get{{FIELD_NAME_PASCAL}}()));
+map.insert(QLatin1String("{{FIELD_NAME}}"), QCborValue({{GETTER_NAME}}()));
 
 [STRING_DESERIALIZE]
-set{{FIELD_NAME_PASCAL}}(map.value(QLatin1String("{{FIELD_NAME}}")).toString());
+{{SETTER_NAME}}(map.value(QLatin1String("{{FIELD_NAME}}")).toString());
 
 # 布尔类型 (bool)
 [BOOL_SERIALIZE]
-map.insert(QLatin1String("{{FIELD_NAME}}"), QCborValue(get{{FIELD_NAME_PASCAL}}()));
+map.insert(QLatin1String("{{FIELD_NAME}}"), QCborValue({{GETTER_NAME}}()));
 
 [BOOL_DESERIALIZE]
-set{{FIELD_NAME_PASCAL}}(map.value(QLatin1String("{{FIELD_NAME}}")).toBool());
+{{SETTER_NAME}}(map.value(QLatin1String("{{FIELD_NAME}}")).toBool());
 
 # 二进制数据类型 (bytes)
 [BYTES_SERIALIZE]
-map.insert(QLatin1String("{{FIELD_NAME}}"), QCborValue(get{{FIELD_NAME_PASCAL}}()));
+map.insert(QLatin1String("{{FIELD_NAME}}"), QCborValue({{GETTER_NAME}}()));
 
 [BYTES_DESERIALIZE]
-set{{FIELD_NAME_PASCAL}}(map.value(QLatin1String("{{FIELD_NAME}}")).toByteArray());
+{{SETTER_NAME}}(map.value(QLatin1String("{{FIELD_NAME}}")).toByteArray());
 
 # 复合类型字段序列化模板
 [COMPLEX_SERIALIZE]
-map.insert(QLatin1String("{{FIELD_NAME}}"), get{{FIELD_NAME_PASCAL}}().toCbor());
+map.insert(QLatin1String("{{FIELD_NAME}}"), {{GETTER_NAME}}().toCbor());
 
 [COMPLEX_DESERIALIZE]
-{{FIELD_TYPE}} {{FIELD_NAME}};
+{{FIELD_TYPE_MAPPED}} {{FIELD_NAME}};
 {{FIELD_NAME}}.fromCbor(map.value(QLatin1String("{{FIELD_NAME}}")));
-set{{FIELD_NAME_PASCAL}}({{FIELD_NAME}});
+{{SETTER_NAME}}({{FIELD_NAME}});
 
 # 数组类型字段序列化模板
 [ARRAY_SERIALIZE]
 QCborArray {{FIELD_NAME}}Array;
-for (const auto& item : get{{FIELD_NAME_PASCAL}}()) {
+for (const auto& item : {{GETTER_NAME}}()) {
     {{FIELD_NAME}}Array.append(item.toCbor());
 }
 map.insert(QLatin1String("{{FIELD_NAME}}"), {{FIELD_NAME}}Array);
@@ -59,12 +59,12 @@ for (const auto& itemValue : {{FIELD_NAME}}Array) {
     item.fromCbor(itemValue);
     {{FIELD_NAME}}.append(item);
 }
-set{{FIELD_NAME_PASCAL}}({{FIELD_NAME}});
+{{SETTER_NAME}}({{FIELD_NAME}});
 
 # 基本类型数组序列化模板
 [BASIC_ARRAY_SERIALIZE]
 QCborArray {{FIELD_NAME}}Array;
-for (const auto& item : get{{FIELD_NAME_PASCAL}}()) {
+for (const auto& item : {{GETTER_NAME}}()) {
     {{FIELD_NAME}}Array.append(QCborValue(item));
 }
 map.insert(QLatin1String("{{FIELD_NAME}}"), {{FIELD_NAME}}Array);
@@ -75,12 +75,12 @@ QVector<{{ITEM_TYPE}}> {{FIELD_NAME}};
 for (const auto& itemValue : {{FIELD_NAME}}Array) {
     {{FIELD_NAME}}.append(static_cast<{{ITEM_TYPE}}>(itemValue.to{{CONVERT_METHOD}}()));
 }
-set{{FIELD_NAME_PASCAL}}({{FIELD_NAME}});
+{{SETTER_NAME}}({{FIELD_NAME}});
 
 # 映射类型字段序列化模板
 [MAP_SERIALIZE]
 QCborMap {{FIELD_NAME}}Map;
-for (auto it = get{{FIELD_NAME_PASCAL}}().constBegin(); it != get{{FIELD_NAME_PASCAL}}().constEnd(); ++it) {
+for (auto it = {{GETTER_NAME}}().constBegin(); it != {{GETTER_NAME}}().constEnd(); ++it) {
     {{FIELD_NAME}}Map.insert(QLatin1String(it.key().toUtf8().constData()), it.value().toCbor());
 }
 map.insert(QLatin1String("{{FIELD_NAME}}"), {{FIELD_NAME}}Map);
@@ -93,26 +93,26 @@ for (auto it = {{FIELD_NAME}}Map.constBegin(); it != {{FIELD_NAME}}Map.constEnd(
     value.fromCbor(it.value());
     {{FIELD_NAME}}.insert(QString::fromUtf8(it.key().toUtf8()), value);
 }
-set{{FIELD_NAME_PASCAL}}({{FIELD_NAME}});
+{{SETTER_NAME}}({{FIELD_NAME}});
 
 # 可选类型字段序列化模板
 [OPTIONAL_SERIALIZE]
 if (has{{FIELD_NAME_PASCAL}}()) {
-    map.insert(QLatin1String("{{FIELD_NAME}}"), get{{FIELD_NAME_PASCAL}}().toCbor());
+    map.insert(QLatin1String("{{FIELD_NAME}}"), {{GETTER_NAME}}().toCbor());
 }
 
 [OPTIONAL_DESERIALIZE]
 if (map.contains(QLatin1String("{{FIELD_NAME}}"))) {
-    {{FIELD_TYPE}} {{FIELD_NAME}};
+    {{FIELD_TYPE_MAPPED}} {{FIELD_NAME}};
     {{FIELD_NAME}}.fromCbor(map.value(QLatin1String("{{FIELD_NAME}}")));
-    set{{FIELD_NAME_PASCAL}}({{FIELD_NAME}});
+    {{SETTER_NAME}}({{FIELD_NAME}});
 } else {
     clear{{FIELD_NAME_PASCAL}}();
 }
 
 # 枚举类型字段序列化模板
 [ENUM_SERIALIZE]
-map.insert(QLatin1String("{{FIELD_NAME}}"), QCborValue(static_cast<int>(get{{FIELD_NAME_PASCAL}}())));
+map.insert(QLatin1String("{{FIELD_NAME}}"), QCborValue(static_cast<int>({{GETTER_NAME}}())));
 
 [ENUM_DESERIALIZE]
-set{{FIELD_NAME_PASCAL}}(static_cast<{{FIELD_TYPE}}>(map.value(QLatin1String("{{FIELD_NAME}}")).toInteger()));
+{{SETTER_NAME}}(static_cast<{{FIELD_TYPE_MAPPED}}>(map.value(QLatin1String("{{FIELD_NAME}}")).toInteger()));

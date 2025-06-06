@@ -1,0 +1,25 @@
+// {{ANNOTATION_NAME}}注解
+class MODEL_EXPORT {{CLASS_NAME}} : public {{INTERFACE_NAME}} {
+public:
+    {{CLASS_NAME}}() = default;
+    {{CONSTRUCTOR}}
+    
+    // 实现{{INTERFACE_NAME}}接口
+    QString name() const override {
+        return "{{ANNOTATION_NAME}}";
+    }
+    
+    QVariant argument(const QString& argumentName) const override {
+        {{ARGUMENT_GETTER_LOGIC}}
+    }
+    
+    QStringList argumentNames() const override {
+        return QStringList{{{ARGUMENT_NAMES}}};
+    }
+    
+    // 特定于{{ANNOTATION_NAME}}的访问器
+    {{ACCESSORS}}
+    
+private:
+    {{PRIVATE_FIELDS}}
+}; 

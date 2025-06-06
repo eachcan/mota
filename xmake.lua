@@ -1,5 +1,5 @@
 -- 设置项目名称和版本
-set_version("0.1.0")
+set_version("0.2.0")
 
 -- 添加构建模式
 add_rules("mode.debug", "mode.release")
@@ -20,7 +20,7 @@ set_encodings("utf-8")
 -- 主要目标：编译器
 target("mota")
     -- 设置为可执行程序
-    add_rules("qt.shared")
+    set_kind("binary")
     -- 生成版本头文件
     before_build(function (target)
         local version = target:version()
@@ -132,5 +132,17 @@ target("test_syntax_checker")
     add_files("test/test_syntax_checker.cpp")
     add_includedirs("include")
     add_files("src/*.cpp")
+    remove_files("src/main.cpp")  -- 排除主程序的main函数
     add_packages("gtest")
+    set_encodings("utf-8")
+
+-- 生成器测试
+target("test_generator")
+    set_kind("binary")
+    add_files("test/test_generator.cpp")
+    add_files("src/lexer_*.cpp")
+    add_files("src/parser_*.cpp")  
+    add_files("src/generator.cpp")
+    add_includedirs("include")
+    add_packages("gtest", {configs = {main = true}})
     set_encodings("utf-8")

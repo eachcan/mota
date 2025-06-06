@@ -1,0 +1,27 @@
+namespace example;
+
+annotation Range {
+    int32 min;
+    int32 max;
+    string desc;
+}
+
+enum Priority {
+    Low;
+    Medium;
+    High;
+}
+
+block Config {
+    string name;
+    bool enabled = true;
+    Priority priority;
+}
+
+block Task {
+    string title;
+    string description;
+    bool completed = false;
+    repeated string tags;
+    Config config;
+} 
