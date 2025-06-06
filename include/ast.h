@@ -183,7 +183,7 @@ public:
 };
 
 // 注解
-class Annotation : public Node {
+class Annotation : public Expr {
 public:
     Annotation(std::string name, std::vector<AnnotationArgument> args = {})
         : name(std::move(name)), arguments(std::move(args)) {}

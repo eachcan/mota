@@ -27,5 +27,12 @@
     "getter_prefix": "get",
     "setter_prefix": "set",
     "pascal_case": true
-  }
+  },
+  "file_path": [
+    {
+      "path": "{{NAMESPACE}}/{{FILE_NAME}}.h",  // 完整的文件路径为 {{OUTPUT_DIR}}/{{NAMESPACE}}/{{FILE_NAME}}.h
+                                                // NAMESPACE 中的 . 会被替换为 /
+      "type": "file", // 以整个 .mota 文件为单位， 生成一个文件。支持的类型有： file, enum, struct, block, annotation
+    }
+  ]
 }

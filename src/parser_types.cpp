@@ -14,7 +14,11 @@ std::unique_ptr<ast::Type> Parser::parseType() {
 
 std::unique_ptr<ast::Type> Parser::primaryType() {
     std::cout << "primaryType() 开始解析，当前token: " << peek().lexeme << ", 类型: " << static_cast<int>(peek().type) << std::endl;
-    
+    // 允许 identifier 作为类型（包括注解名）
+    if (check(lexer::TokenType::Identifier)) {
+        auto ident = advance();
+        return makeNode<ast::NamedType>(ident.lexeme);
+    }
     return containerType();
 }
 
