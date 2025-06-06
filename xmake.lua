@@ -15,6 +15,7 @@ add_cxflags("/utf-8")
 -- 添加包依赖
 add_requires("gtest")
 add_requires("cxxopts")
+set_encodings("utf-8")
 
 -- 主要目标：编译器
 target("mota")
@@ -53,6 +54,7 @@ target("mota")
     
     -- 设置输出目录
     set_targetdir("bin")
+    
 
 -- 测试目标：词法分析器测试
 target("test_lexer")
@@ -123,3 +125,12 @@ target("test")
         print("\nRunning parser tests...")
         os.exec("xmake run test_parser")
     end)
+
+-- syntax_checker 测试
+target("test_syntax_checker")
+    set_kind("binary")
+    add_files("test/test_syntax_checker.cpp")
+    add_includedirs("include")
+    add_files("src/*.cpp")
+    add_packages("gtest")
+    set_encodings("utf-8")

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "ast.h"
 #include "lexer.h"
@@ -61,7 +61,7 @@ private:
     std::unique_ptr<ast::Struct> structDeclaration();
     std::unique_ptr<ast::Enum> enumDeclaration();
     std::unique_ptr<ast::Block> blockDeclaration();
-    std::unique_ptr<ast::Annotation> annotationDeclaration();
+    std::unique_ptr<ast::AnnotationDecl> annotationDeclaration();
     std::unique_ptr<ast::Type> parseType();
     std::unique_ptr<ast::Type> primaryType();
     std::unique_ptr<ast::Type> containerType();

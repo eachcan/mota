@@ -1,4 +1,4 @@
-#include "parser.h"
+﻿#include "parser.h"
 #include <iostream>
 
 namespace mota {
@@ -15,11 +15,36 @@ std::unique_ptr<ast::Type> Parser::parseType() {
 std::unique_ptr<ast::Type> Parser::primaryType() {
     std::cout << "primaryType() 开始解析，当前token: " << peek().lexeme << ", 类型: " << static_cast<int>(peek().type) << std::endl;
     // 允许 identifier 作为类型（包括注解名）
-    if (check(lexer::TokenType::Identifier)) {
+    bool isIdent = check(lexer::TokenType::Identifier);
+    std::cout << "primaryType() check(Identifier) 结果: " << (isIdent ? "true" : "false") << std::endl;
+    if (isIdent) {
         auto ident = advance();
+        std::cout << "primaryType() 成功解析identifier类型: " << ident.lexeme << std::endl;
         return makeNode<ast::NamedType>(ident.lexeme);
     }
-    return containerType();
+    
+    // 解析基本类型
+    auto token = advance();
+    std::cout << "primaryType() 尝试解析基本类型，token: " << token.lexeme << ", 类型: " << static_cast<int>(token.type) << std::endl;
+    
+    switch (token.type) {
+        case lexer::TokenType::Int8:
+        case lexer::TokenType::Int16:
+        case lexer::TokenType::Int32:
+        case lexer::TokenType::Int64:
+        case lexer::TokenType::Float32:
+        case lexer::TokenType::Float64:
+        case lexer::TokenType::Bool:
+        case lexer::TokenType::StringType:
+        case lexer::TokenType::Bytes:
+            std::cout << "primaryType() 成功解析基本类型: " << token.lexeme << std::endl;
+            return makeNode<ast::NamedType>(token.lexeme);
+        default:
+            // 无效类型
+            std::cout << "primaryType() 无效类型，准备抛出异常" << std::endl;
+            error(token, "Expected type");
+            throw ParseError("Expected type", token.line, token.column);
+    }
 }
 
 std::unique_ptr<ast::Type> Parser::containerType() {
@@ -50,35 +75,8 @@ std::unique_ptr<ast::Type> Parser::containerType() {
         
         return containerType;
     } else {
-        // 解析基本类型
-        auto token = advance();
-        
-        switch (token.type) {
-            case lexer::TokenType::Int8:
-            case lexer::TokenType::Int16:
-            case lexer::TokenType::Int32:
-            case lexer::TokenType::Int64:
-            case lexer::TokenType::Float32:
-            case lexer::TokenType::Float64:
-            case lexer::TokenType::Bool:
-            case lexer::TokenType::StringType:
-            case lexer::TokenType::Bytes:
-                return makeNode<ast::NamedType>(token.lexeme);
-            case lexer::TokenType::Identifier:
-                // 用户定义类型
-                // 如果是无效类型（例如测试中的 invalid_type），应该抛出异常
-                if (token.lexeme == "invalid_type") {
-                    error(token, "Invalid type: " + token.lexeme);
-                    // 直接抛出异常，确保测试可以捕获到它
-                    throw ParseError("Invalid type: " + token.lexeme, token.line, token.column);
-                }
-                return makeNode<ast::NamedType>(token.lexeme);
-            default:
-                // 无效类型
-                error(token, "Unexpected token, expected type");
-                // 直接抛出异常，确保测试可以捕获到它
-                throw ParseError("Unexpected token, expected type", token.line, token.column);
-        }
+        // 解析基本类型或用户定义类型
+        return primaryType();
     }
 }
 

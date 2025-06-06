@@ -1,4 +1,4 @@
-#include "parser.h"
+﻿#include "parser.h"
 #include <iostream>
 
 namespace mota {
@@ -157,7 +157,11 @@ std::unique_ptr<ast::Struct> Parser::structDeclaration() {
     
     // 解析结构体名称
     std::string name = consume(lexer::TokenType::Identifier, "Expected struct name").lexeme;
-    
+    std::string baseName;
+    // 解析继承
+    if (consume(lexer::TokenType::Colon)) {
+        baseName = consume(lexer::TokenType::Identifier, "Expected base block name after ':'").lexeme;
+    }
     // 解析结构体体
     consume(lexer::TokenType::LeftBrace, "Expected '{' after struct name");
     
@@ -196,7 +200,7 @@ std::unique_ptr<ast::Struct> Parser::structDeclaration() {
     consume(lexer::TokenType::RightBrace, "Expected '}' (right brace) after struct body");
     
     // 先创建 Struct 对象，然后再添加字段
-    auto structNode = makeNode<ast::Struct>(name);
+    auto structNode = makeNode<ast::Struct>(name, baseName);
     structNode->fields = std::move(fields);
     return structNode;
 }
@@ -257,7 +261,11 @@ std::unique_ptr<ast::Block> Parser::blockDeclaration() {
     
     // 解析块名称
     std::string name = consume(lexer::TokenType::Identifier, "Expected block name").lexeme;
-    
+    std::string baseName;
+    // 解析继承
+    if (consume(lexer::TokenType::Colon)) {
+        baseName = consume(lexer::TokenType::Identifier, "Expected base block name after ':'").lexeme;
+    }
     // 解析块体
     consume(lexer::TokenType::LeftBrace, "Expected '{' after block name");
     
@@ -292,12 +300,12 @@ std::unique_ptr<ast::Block> Parser::blockDeclaration() {
     consume(lexer::TokenType::RightBrace, "Expected '}' after block body");
     
     // 先创建 Block 对象，然后再添加字段
-    auto blockNode = makeNode<ast::Block>(name);
+    auto blockNode = makeNode<ast::Block>(name, baseName);
     blockNode->fields = std::move(fields);
     return blockNode;
 }
 
-std::unique_ptr<ast::Annotation> Parser::annotationDeclaration() {
+std::unique_ptr<ast::AnnotationDecl> Parser::annotationDeclaration() {
     auto nowToken = peek();
     std::cout << "annotationDeclaration() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
     // 解析注解名称（支持带点的命名空间）
@@ -329,9 +337,9 @@ std::unique_ptr<ast::Annotation> Parser::annotationDeclaration() {
         error(previous_, "Expected '}' after annotation body but reached end of file");
     }
     consume(lexer::TokenType::RightBrace, "Expected '}' after annotation body");
-    // 创建 Annotation 对象
-    auto annotationNode = makeNode<ast::Annotation>(name);
-    // TODO: 需要在 AST 结构中为 annotation 存储 fields
+    // 创建 AnnotationDecl 对象
+    auto annotationNode = makeNode<ast::AnnotationDecl>(name);
+    annotationNode->fields = std::move(fields);
     return annotationNode;
 }
 

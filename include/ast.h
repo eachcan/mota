@@ -15,6 +15,7 @@ class Node;
 class Expr;
 class Type;
 class Annotation;
+class AnnotationDecl;
 class AnnotationArgument;
 class Statement;
 class Field;
@@ -224,9 +225,10 @@ public:
 // 块定义
 class Block : public Node {
 public:
-    explicit Block(std::string name) : name(std::move(name)) {}
+    explicit Block(std::string name, std::string baseName = "") : name(std::move(name)), baseName(std::move(baseName)) {}
     
     std::string name;
+    std::string baseName; // 继承的父 block 名称
     std::vector<std::unique_ptr<Field>> fields;
     std::vector<std::unique_ptr<Annotation>> annotations;
     
@@ -236,13 +238,25 @@ public:
 // 结构体定义
 class Struct : public Node {
 public:
-    explicit Struct(std::string name) : name(std::move(name)) {}
+    explicit Struct(std::string name, std::string baseName = "") : name(std::move(name)), baseName(std::move(baseName)) {}
     
     std::string name;
+    std::string baseName; // 继承的父 block 名称（仅 struct 支持继承 block）
     std::vector<std::unique_ptr<Field>> fields;
     std::vector<std::unique_ptr<Annotation>> annotations;
     
     NodeType nodeType() const override { return NodeType::StructDecl; }
+};
+
+// 注解声明
+class AnnotationDecl : public Node {
+public:
+    explicit AnnotationDecl(std::string name) : name(std::move(name)) {}
+    
+    std::string name;
+    std::vector<std::unique_ptr<Field>> fields;  // 注解字段
+    
+    NodeType nodeType() const override { return NodeType::AnnotationDecl; }
 };
 
 // 枚举定义
