@@ -13,15 +13,15 @@ std::unique_ptr<ast::Document> Parser::parse() {
     // 消耗第一个词法单元
     current_ = lexer_.nextToken();
     
+    // 跳过开头的注释
+    while (!isAtEnd() && (current_.type == lexer::TokenType::LineComment || 
+                          current_.type == lexer::TokenType::BlockComment ||
+                          current_.type == lexer::TokenType::UIComment)) {
+        current_ = lexer_.nextToken();
+    }
+    
     // 解析所有声明
     while (!isAtEnd()) {
-        // 跳过所有注释 token
-        while (current_.type == lexer::TokenType::LineComment ||
-               current_.type == lexer::TokenType::BlockComment ||
-               current_.type == lexer::TokenType::UIComment) {
-            current_ = lexer_.nextToken();
-        }
-        if (isAtEnd()) break; // 修正：如果跳过注释后到达结尾，直接退出循环
         auto decl = declaration();
         if (decl) {
             std::cout << "声明解析成功，添加到文档: token类型 = " << static_cast<int>(current_.type) 
@@ -44,6 +44,13 @@ lexer::Token Parser::advance() {
     
     if (!isAtEnd()) {
         current_ = lexer_.nextToken();
+        
+        // 自动跳过注释
+        while (!isAtEnd() && (current_.type == lexer::TokenType::LineComment || 
+                              current_.type == lexer::TokenType::BlockComment ||
+                              current_.type == lexer::TokenType::UIComment)) {
+            current_ = lexer_.nextToken();
+        }
     }
     
     return previous_;

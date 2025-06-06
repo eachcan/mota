@@ -14,6 +14,13 @@ std::unique_ptr<ast::Type> Parser::parseType() {
 
 std::unique_ptr<ast::Type> Parser::primaryType() {
     std::cout << "primaryType() 开始解析，当前token: " << peek().lexeme << ", 类型: " << static_cast<int>(peek().type) << std::endl;
+    
+    // 处理容器类型（允许嵌套）
+    if (check(lexer::TokenType::Optional) || check(lexer::TokenType::Repeated) || check(lexer::TokenType::Map)) {
+        std::cout << "primaryType() 检测到容器类型，递归调用containerType()" << std::endl;
+        return containerType();
+    }
+    
     // 允许 identifier 作为类型（包括注解名）
     bool isIdent = check(lexer::TokenType::Identifier);
     std::cout << "primaryType() check(Identifier) 结果: " << (isIdent ? "true" : "false") << std::endl;

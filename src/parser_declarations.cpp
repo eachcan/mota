@@ -344,25 +344,37 @@ std::unique_ptr<ast::AnnotationDecl> Parser::annotationDeclaration() {
 }
 
 std::unique_ptr<ast::Field> Parser::fieldDeclaration() {
+    std::cout << "fieldDeclaration() 开始解析，当前token: " << peek().lexeme << ", 类型: " << static_cast<int>(peek().type) << std::endl;
+    
     // 解析类型
     if (!check(lexer::TokenType::Identifier) &&
         !check(lexer::TokenType::Int8) && !check(lexer::TokenType::Int16) && !check(lexer::TokenType::Int32) && !check(lexer::TokenType::Int64) &&
         !check(lexer::TokenType::Float32) && !check(lexer::TokenType::Float64) &&
         !check(lexer::TokenType::StringType) && !check(lexer::TokenType::Bytes) && !check(lexer::TokenType::Bool) &&
         !check(lexer::TokenType::Repeated) && !check(lexer::TokenType::Map) && !check(lexer::TokenType::Optional)) {
+        std::cout << "fieldDeclaration() 类型检查失败，当前token: " << peek().lexeme << ", 类型: " << static_cast<int>(peek().type) << std::endl;
         error(peek(), "Expected type");
     }
+    
+    std::cout << "fieldDeclaration() 类型检查通过，开始解析类型" << std::endl;
     auto type = parseType();
+    std::cout << "fieldDeclaration() 类型解析完成，当前token: " << peek().lexeme << ", 类型: " << static_cast<int>(peek().type) << std::endl;
+    
     // 解析字段名
+    std::cout << "fieldDeclaration() 开始解析字段名" << std::endl;
     std::string name = consume(lexer::TokenType::Identifier, "Expected field name").lexeme;
+    std::cout << "fieldDeclaration() 字段名解析完成: " << name << ", 当前token: " << peek().lexeme << ", 类型: " << static_cast<int>(peek().type) << std::endl;
     
     // 解析可选的初始值
     std::unique_ptr<ast::Expr> initializer = nullptr;
     if (consume(lexer::TokenType::Equal)) {
+        std::cout << "fieldDeclaration() 发现初始值，开始解析" << std::endl;
         initializer = expression();
     }
     
+    std::cout << "fieldDeclaration() 开始解析分号" << std::endl;
     consume(lexer::TokenType::Semicolon, "Expected ';' after field declaration");
+    std::cout << "fieldDeclaration() 解析完成" << std::endl;
     
     // 调整参数顺序为 name, type, initializer
     return makeNode<ast::Field>(name, std::move(type), std::move(initializer));
