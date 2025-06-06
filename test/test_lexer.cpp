@@ -1,5 +1,6 @@
 ﻿#include <gtest/gtest.h>
 #include "lexer.h"
+#include <windows.h>
 
 using namespace mota::lexer;
 
@@ -218,12 +219,12 @@ TEST_F(LexerTest, KeywordsAndIdentifiers) {
     }
     
     // 验证所有关键字
-    std::vector<TokenType> expectedTypes = {
-        TokenType::Struct,
-        TokenType::Enum,
-        TokenType::Namespace,
-        TokenType::Include,
-        TokenType::Annotation
+    std::vector<mota::lexer::TokenType> expectedTypes = {
+        mota::lexer::TokenType::Struct,
+        mota::lexer::TokenType::Enum,
+        mota::lexer::TokenType::Namespace,
+        mota::lexer::TokenType::Include,
+        mota::lexer::TokenType::Annotation
     };
     
     for (size_t i = 0; i < expectedTypes.size(); i++) {
@@ -635,6 +636,7 @@ TEST_F(LexerTest, SpecialSyntax) {
 }
 
 int main(int argc, char** argv) {
+    SetConsoleOutputCP(CP_UTF8);
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
