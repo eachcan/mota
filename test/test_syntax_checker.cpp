@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <iostream>
+#include <windows.h>
 
 using namespace mota;
 
@@ -327,6 +328,7 @@ TEST_F(SyntaxCheckerTest, DuplicateAnnotationFieldName) {
 }
 
 int main(int argc, char** argv) {
+    SetConsoleOutputCP(CP_UTF8);
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 } 
