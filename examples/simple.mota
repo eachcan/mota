@@ -1,3 +1,5 @@
+include "yima.mota";
+
 namespace example;
 
 annotation Range {
@@ -18,7 +20,7 @@ block Config {
     Priority priority;
 }
 
-block Task {
+struct Task {
     string title;
     string description;
     bool completed = false;

@@ -130,6 +130,59 @@ std::vector<std::string> findMotaFiles(const std::string& directory) {
     return motaFiles;
 }
 
+std::string getExecutableDirectory() {
+    // 获取可执行文件的完整路径
+    char buffer[MAX_PATH];
+    DWORD length = GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    if (length == 0) {
+        return "."; // 如果获取失败，返回当前目录
+    }
+    
+    // 提取目录部分
+    fs::path exePath(buffer);
+    return exePath.parent_path().string();
+}
+
+std::string findTemplateDirectory(const std::string& lang) {
+    // 确定模板子目录名称
+    std::string templateSubDir;
+    if (lang.empty()) {
+        templateSubDir = "yima-cpp";
+    } else {
+        templateSubDir = lang;
+    }
+    
+    // 获取可执行文件所在目录
+    std::string exeDir = getExecutableDirectory();
+    
+    // 候选路径列表：从可执行文件目录及其上级目录查找
+    std::vector<std::string> candidatePaths = {
+        // 当前工作目录的template目录（兼容性）
+        ("template/" + templateSubDir),
+        // 可执行文件同级的template目录
+        (fs::path(exeDir) / "template" / templateSubDir).string(),
+        // 可执行文件上级目录的template目录
+        (fs::path(exeDir) / ".." / "template" / templateSubDir).string(),
+        // 默认路径
+        "template/yima-cpp"
+    };
+    
+    // 查找第一个存在的模板目录
+    for (const auto& path : candidatePaths) {
+        fs::path templatePath(path);
+        if (fs::exists(templatePath) && fs::is_directory(templatePath)) {
+            // 检查是否包含config.json5文件
+            fs::path configPath = templatePath / "config.json5";
+            if (fs::exists(configPath)) {
+                return templatePath.string();
+            }
+        }
+    }
+    
+    // 如果都没找到，返回第一个候选路径（让后续处理报错）
+    return candidatePaths[0];
+}
+
 bool processMotaFile(const std::string& inputFile, const std::string& outputDir, const std::string& templateDir) {
     // 读取输入文件
     std::ifstream file(inputFile);
@@ -287,12 +340,7 @@ int main(int argc, char* argv[]) {
     }
     
     // 确定模板目录
-    std::string templateDir = "template/";
-    if (options.lang.empty()) {
-        templateDir = "template/yima-cpp";
-    } else {
-        templateDir = "template/" + options.lang;
-    }
+    std::string templateDir = findTemplateDirectory(options.lang);
     std::cout << "templateDir: " << templateDir << std::endl;
     
     // 处理每个文件

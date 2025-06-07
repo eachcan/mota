@@ -16,3 +16,4 @@ include/version.h
 .windsurfrules
 
 compile_commands.json
+mota-install/
