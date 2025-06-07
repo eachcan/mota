@@ -5,58 +5,72 @@ namespace examples.basic;
 include "yima.mota";
 
 // 基本类型示例
-@Window(title = "基本类型示例")
+@yima.Window(title = "基本类型示例")
 struct BasicTypes {
     // 整数类型
-    @Int(desc = "8位整数")
+    @yima.Int(desc = "8位整数")
     int8 int8Value = -128;
     
-    @Int(desc = "16位整数")
+    @yima.Int(desc = "16位整数")
     int16 int16Value = 32767;
     
-    @Int(desc = "32位整数")
+    @yima.Int(desc = "32位整数")
     int32 int32Value = 2147483647;
     
-    @Int(desc = "64位整数")
+    @yima.Int(desc = "64位整数")
     int64 int64Value = 9223372036854775807;
     
     // 浮点类型
-    @Float(desc = "32位浮点数")
+    @yima.Float(desc = "32位浮点数")
     float32 float32Value = 3.14;
     
-    @Float(desc = "64位浮点数")
+    @yima.Float(desc = "64位浮点数")
     float64 float64Value = 3.141592653589793;
     
     // 布尔类型
-    @Switcher(desc = "布尔值")
+    @yima.Switcher(desc = "布尔值")
     bool boolValue = true;
     
     // 字符串类型
-    @Text(desc = "字符串")
+    @yima.Text(desc = "字符串")
     string stringValue = "Hello, Mota!";
 }
 
 // 容器类型示例
-@Window(title = "容器类型示例")
+@yima.Window(title = "容器类型示例")
 struct ContainerTypes {
-    // 数组类型
-    repeated int32 numbers = [1, 2, 3, 4, 5];
-    repeated string names = ["Alice", "Bob", "Charlie"];
+    // 数组类型（不使用初始化器）
+    @yima.Text(desc = "数字列表")
+    repeated int32 numbers;
+    
+    @yima.Text(desc = "名称列表")
+    repeated string names;
     
     // 可选类型
+    @yima.Text(desc = "中间名")
     optional string middleName;
+    
+    @yima.Int(desc = "年龄", min = 0, max = 150)
     optional int32 age = 25;  // 带默认值的可选字段
 }
 
 // 学生成绩示例
-@Window(title = "学生成绩")
+@yima.Window(title = "学生成绩")
 struct StudentScores {
     // 学生信息
+    @yima.Text(desc = "学生姓名")
     string studentName = "";
+    
+    @yima.Int(desc = "学生ID", min = 1)
     int32 studentId = 0;
     
     // 各科目成绩
+    @yima.Int(desc = "数学成绩", min = 0, max = 100)
     int32 mathScore = 0;
+    
+    @yima.Int(desc = "英语成绩", min = 0, max = 100)
     int32 englishScore = 0;
+    
+    @yima.Int(desc = "科学成绩", min = 0, max = 100)
     int32 scienceScore = 0;
 }

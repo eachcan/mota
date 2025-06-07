@@ -341,22 +341,17 @@ int main(int argc, char* argv[]) {
     
     // 确定模板目录
     std::string templateDir = findTemplateDirectory(options.lang);
-    std::cout << "templateDir: " << templateDir << std::endl;
     
     // 处理每个文件
     int successCount = 0;
     int totalCount = filesToProcess.size();
     
-    std::cout << "Processing " << totalCount << " file(s)..." << std::endl;
-    
     for (const auto& file : filesToProcess) {
-        std::cout << "Processing: " << file << std::endl;
         if (processMotaFile(file, options.outputDir, templateDir)) {
             successCount++;
         }
     }
     
-    std::cout << std::endl;
     std::cout << "Completed: " << successCount << "/" << totalCount << " files processed successfully." << std::endl;
     
     if (successCount == totalCount) {

@@ -15,7 +15,7 @@
 #include "framework/IAnnotation.h"
 
 // 此文件由 Mota 代码生成器自动生成
-// 生成时间: 2025-06-06 20:13:12
+// 生成时间: 2025-06-07 22:31:46
 // 源文件: unknown.mota
 
 using namespace ymf;
@@ -61,8 +61,21 @@ public:
         return QLatin1String("");
     }
     
-    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+    QList<QSharedPointer<IAnnotation>> annotations() const override {
         
+        return QList<QSharedPointer<IAnnotation>>();
+    }
+    
+    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+        if (fieldName == QLatin1String("name")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("age")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("email")) {
+            return QList<QSharedPointer<void>>();
+        }
         return QList<QSharedPointer<void>>();
     }
     
@@ -85,17 +98,16 @@ public:
     void value(const QString& fieldName, const QVariant& value) override {
         if (fieldName == QLatin1String("name")) {
             name_ = value.value<QString>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("age")) {
             age_ = value.value<int32_t>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("email")) {
             email_ = value.value<QString>();
-            return true;
+            return;
         }
-        return false;
     }
     
     // 特定于User的访问器
@@ -145,10 +157,10 @@ public:
         map.insert(QLatin1String("bio"), QCborValue(getBio()));
         map.insert(QLatin1String("avatar"), QCborValue(getAvatar()));
         QCborArray tagsArray;
-for (const auto& item : getTags()) {
-    tagsArray.append(QCborValue(item));
-}
-map.insert(QLatin1String("tags"), tagsArray);
+        for (const auto& item : getTags()) {
+            tagsArray.append(QCborValue(item));
+        }
+        map.insert(QLatin1String("tags"), tagsArray);
         return map;
     }
     
@@ -157,11 +169,11 @@ map.insert(QLatin1String("tags"), tagsArray);
         setBio(map.value(QLatin1String("bio")).toString());
         setAvatar(map.value(QLatin1String("avatar")).toString());
         QCborArray tagsArray = map.value(QLatin1String("tags")).toArray();
-QVector<QString> tags;
-for (const auto& itemValue : tagsArray) {
-    tags.append(static_cast<QString>(itemValue.toString()));
-}
-setTags(tags);
+        QVector<QString> tags;
+        for (const auto& itemValue : tagsArray) {
+            tags.append(static_cast<QString>(itemValue.toString()));
+        }
+        setTags(tags);
     }
     
     QString name() const override {
@@ -179,8 +191,21 @@ setTags(tags);
         return QLatin1String("");
     }
     
-    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+    QList<QSharedPointer<IAnnotation>> annotations() const override {
         
+        return QList<QSharedPointer<IAnnotation>>();
+    }
+    
+    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+        if (fieldName == QLatin1String("bio")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("avatar")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("tags")) {
+            return QList<QSharedPointer<void>>();
+        }
         return QList<QSharedPointer<void>>();
     }
     
@@ -203,17 +228,16 @@ setTags(tags);
     void value(const QString& fieldName, const QVariant& value) override {
         if (fieldName == QLatin1String("bio")) {
             bio_ = value.value<QString>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("avatar")) {
             avatar_ = value.value<QString>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("tags")) {
             tags_ = value.value<QVector<QString>>();
-            return true;
+            return;
         }
-        return false;
     }
     
     // 特定于Profile的访问器
@@ -264,10 +288,10 @@ public:
         map.insert(QLatin1String("user"), getUser().toCbor());
         map.insert(QLatin1String("profile"), getProfile().toCbor());
         QCborArray friendsArray;
-for (const auto& item : getFriends()) {
-    friendsArray.append(item.toCbor());
-}
-map.insert(QLatin1String("friends"), friendsArray);
+        for (const auto& item : getFriends()) {
+            friendsArray.append(item.toCbor());
+        }
+        map.insert(QLatin1String("friends"), friendsArray);
         map.insert(QLatin1String("description"), QCborValue(getDescription()));
         map.insert(QLatin1String("isActive"), QCborValue(getIsActive()));
         return map;
@@ -276,19 +300,19 @@ map.insert(QLatin1String("friends"), friendsArray);
     void fromCbor(const QCborValue& cbor) override {
         QCborMap map = cbor.toMap();
         UserBlock user;
-user.fromCbor(map.value(QLatin1String("user")));
-setUser(user);
+        user.fromCbor(map.value(QLatin1String("user")));
+        setUser(user);
         ProfileBlock profile;
-profile.fromCbor(map.value(QLatin1String("profile")));
-setProfile(profile);
+        profile.fromCbor(map.value(QLatin1String("profile")));
+        setProfile(profile);
         QCborArray friendsArray = map.value(QLatin1String("friends")).toArray();
-QVector<UserBlock> friends;
-for (const auto& itemValue : friendsArray) {
-    UserBlock item;
-    item.fromCbor(itemValue);
-    friends.append(item);
-}
-setFriends(friends);
+        QVector<UserBlock> friends;
+        for (const auto& itemValue : friendsArray) {
+            UserBlock item;
+            item.fromCbor(itemValue);
+            friends.append(item);
+        }
+        setFriends(friends);
         setDescription(map.value(QLatin1String("description")).toString());
         setIsActive(map.value(QLatin1String("isActive")).toBool());
     }
@@ -306,8 +330,27 @@ setFriends(friends);
         return QLatin1String("");
     }
     
-    QList<QSharedPointer<void>> fieldAnnotations(const QString& fieldName) const override {
+    QList<QSharedPointer<IAnnotation>> annotations() const override {
         
+        return QList<QSharedPointer<IAnnotation>>();
+    }
+    
+    QList<QSharedPointer<void>> fieldAnnotations(const QString& fieldName) const override {
+        if (fieldName == QLatin1String("user")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("profile")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("friends")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("description")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("isActive")) {
+            return QList<QSharedPointer<void>>();
+        }
         return QList<QSharedPointer<void>>();
     }
     
@@ -332,25 +375,24 @@ setFriends(friends);
     void value(const QString& fieldName, const QVariant& value) override {
         if (fieldName == QLatin1String("user")) {
             user_ = value.value<UserBlock>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("profile")) {
             profile_ = value.value<ProfileBlock>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("friends")) {
             friends_ = value.value<QVector<UserBlock>>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("description")) {
             description_ = value.value<QString>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("isActive")) {
             isActive_ = value.value<bool>();
-            return true;
+            return;
         }
-        return false;
     }
     
     // 特定于UserProfile的访问器
@@ -521,6 +563,42 @@ namespace UserRoleHelper {
     inline QStringList allDisplayNames() {
         return QStringList() << "Admin" << "Moderator" << "User" << "Guest";
     }
+    
+    // 获取整个枚举的注解
+    inline QList<QSharedPointer<IAnnotation>> annotations() {
+        
+        return QList<QSharedPointer<IAnnotation>>();
+    }
+    
+    // 获取特定枚举值的注解
+    inline QList<QSharedPointer<IAnnotation>> valueAnnotations(UserRole value) {
+        switch (value) {
+            case UserRole::Admin:
+                return QList<QSharedPointer<IAnnotation>>();
+            case UserRole::Moderator:
+                return QList<QSharedPointer<IAnnotation>>();
+            case UserRole::User:
+                return QList<QSharedPointer<IAnnotation>>();
+            case UserRole::Guest:
+                return QList<QSharedPointer<IAnnotation>>();
+            default:
+                return QList<QSharedPointer<IAnnotation>>();
+        }
+    }
+    
+    // 获取特定枚举值的注解（通过字符串）
+    inline QList<QSharedPointer<IAnnotation>> valueAnnotations(const QString& valueName) {
+        if (valueName == "Admin") {
+            return QList<QSharedPointer<IAnnotation>>();
+        } else if (valueName == "Moderator") {
+            return QList<QSharedPointer<IAnnotation>>();
+        } else if (valueName == "User") {
+            return QList<QSharedPointer<IAnnotation>>();
+        } else if (valueName == "Guest") {
+            return QList<QSharedPointer<IAnnotation>>();
+        }
+        return QList<QSharedPointer<IAnnotation>>();
+    }
 }
 
 
@@ -536,16 +614,16 @@ public:
         QCborMap map;
         map.insert(QLatin1String("mainUser"), getMainUser().toCbor());
         QCborArray userProfilesArray;
-for (const auto& item : getUserProfiles()) {
-    userProfilesArray.append(item.toCbor());
-}
-map.insert(QLatin1String("userProfiles"), userProfilesArray);
-        map.insert(QLatin1String("defaultRole"), getDefaultRole().toCbor());
+        for (const auto& item : getUserProfiles()) {
+            userProfilesArray.append(item.toCbor());
+        }
+        map.insert(QLatin1String("userProfiles"), userProfilesArray);
+        map.insert(QLatin1String("defaultRole"), QCborValue(static_cast<int>(getDefaultRole())));
         QCborArray allowedRolesArray;
-for (const auto& item : getAllowedRoles()) {
-    allowedRolesArray.append(item.toCbor());
-}
-map.insert(QLatin1String("allowedRoles"), allowedRolesArray);
+        for (const auto& item : getAllowedRoles()) {
+            allowedRolesArray.append(item.toCbor());
+        }
+        map.insert(QLatin1String("allowedRoles"), allowedRolesArray);
         map.insert(QLatin1String("systemName"), QCborValue(getSystemName()));
         map.insert(QLatin1String("maxUsers"), QCborValue(getMaxUsers()));
         map.insert(QLatin1String("isEnabled"), QCborValue(getIsEnabled()));
@@ -556,27 +634,25 @@ map.insert(QLatin1String("allowedRoles"), allowedRolesArray);
     void fromCbor(const QCborValue& cbor) override {
         QCborMap map = cbor.toMap();
         UserBlock mainUser;
-mainUser.fromCbor(map.value(QLatin1String("mainUser")));
-setMainUser(mainUser);
+        mainUser.fromCbor(map.value(QLatin1String("mainUser")));
+        setMainUser(mainUser);
         QCborArray userProfilesArray = map.value(QLatin1String("userProfiles")).toArray();
-QVector<ProfileBlock> userProfiles;
-for (const auto& itemValue : userProfilesArray) {
-    ProfileBlock item;
-    item.fromCbor(itemValue);
-    userProfiles.append(item);
-}
-setUserProfiles(userProfiles);
-        UserRole defaultRole;
-defaultRole.fromCbor(map.value(QLatin1String("defaultRole")));
-setDefaultRole(defaultRole);
+        QVector<ProfileBlock> userProfiles;
+        for (const auto& itemValue : userProfilesArray) {
+            ProfileBlock item;
+            item.fromCbor(itemValue);
+            userProfiles.append(item);
+        }
+        setUserProfiles(userProfiles);
+        setDefaultRole(static_cast<UserRole>(map.value(QLatin1String("defaultRole")).toInteger()));
         QCborArray allowedRolesArray = map.value(QLatin1String("allowedRoles")).toArray();
-QVector<UserRole> allowedRoles;
-for (const auto& itemValue : allowedRolesArray) {
-    UserRole item;
-    item.fromCbor(itemValue);
-    allowedRoles.append(item);
-}
-setAllowedRoles(allowedRoles);
+        QVector<UserRole> allowedRoles;
+        for (const auto& itemValue : allowedRolesArray) {
+            UserRole item;
+            item.fromCbor(itemValue);
+            allowedRoles.append(item);
+        }
+        setAllowedRoles(allowedRoles);
         setSystemName(map.value(QLatin1String("systemName")).toString());
         setMaxUsers(static_cast<int32_t>(map.value(QLatin1String("maxUsers")).toInteger()));
         setIsEnabled(map.value(QLatin1String("isEnabled")).toBool());
@@ -599,8 +675,36 @@ setAllowedRoles(allowedRoles);
         return QLatin1String("");
     }
     
-    QList<QSharedPointer<void>> fieldAnnotations(const QString& fieldName) const override {
+    QList<QSharedPointer<IAnnotation>> annotations() const override {
         
+        return QList<QSharedPointer<IAnnotation>>();
+    }
+    
+    QList<QSharedPointer<void>> fieldAnnotations(const QString& fieldName) const override {
+        if (fieldName == QLatin1String("mainUser")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("userProfiles")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("defaultRole")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("allowedRoles")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("systemName")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("maxUsers")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("isEnabled")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("username")) {
+            return QList<QSharedPointer<void>>();
+        }
         return QList<QSharedPointer<void>>();
     }
     
@@ -628,37 +732,36 @@ setAllowedRoles(allowedRoles);
     void value(const QString& fieldName, const QVariant& value) override {
         if (fieldName == QLatin1String("mainUser")) {
             mainUser_ = value.value<UserBlock>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("userProfiles")) {
             userProfiles_ = value.value<QVector<ProfileBlock>>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("defaultRole")) {
             defaultRole_ = value.value<UserRole>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("allowedRoles")) {
             allowedRoles_ = value.value<QVector<UserRole>>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("systemName")) {
             systemName_ = value.value<QString>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("maxUsers")) {
             maxUsers_ = value.value<int32_t>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("isEnabled")) {
             isEnabled_ = value.value<bool>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("username")) {
             username_ = value.value<QString>();
-            return true;
+            return;
         }
-        return false;
     }
     
     // 特定于ComplexSystem的访问器

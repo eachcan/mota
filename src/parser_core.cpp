@@ -5,8 +5,6 @@ namespace mota {
 namespace parser {
 
 std::unique_ptr<ast::Document> Parser::parse() {
-    std::cout << "Parser::parse()" << std::endl;
-    
     // 创建文档节点
     auto document = std::make_unique<ast::Document>();
     
@@ -24,11 +22,8 @@ std::unique_ptr<ast::Document> Parser::parse() {
     while (!isAtEnd()) {
         auto decl = declaration();
         if (decl) {
-            std::cout << "声明解析成功，添加到文档: token类型 = " << static_cast<int>(current_.type) 
-                      << ", 是否结束 = " << (isAtEnd() ? "true" : "false") << std::endl;
             document->declarations.push_back(std::move(decl));
         } else {
-            std::cout << "声明解析失败，跳过..." << std::endl;
             throw ParseError("Declaration expected", current_.line, current_.column);
             break;
         }

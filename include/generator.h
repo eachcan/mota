@@ -163,6 +163,7 @@ private:
     std::string generateFieldTypeLogicFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields);
     std::string generateValueGetterLogicFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields);
     std::string generateValueSetterLogicFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields);
+    std::string generateFieldAnnotationLogicFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields);
     std::string generateArgumentGetterLogicFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields);
     std::string generateArgumentNamesFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields);
     

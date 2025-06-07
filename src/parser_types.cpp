@@ -7,32 +7,23 @@ namespace parser {
 // ===== 类型解析 =====
 
 std::unique_ptr<ast::Type> Parser::parseType() {
-    std::cout << "parseType() 开始解析，当前token: " << peek().lexeme << ", 类型: " << static_cast<int>(peek().type) << std::endl;
-    
     return containerType();
 }
 
 std::unique_ptr<ast::Type> Parser::primaryType() {
-    std::cout << "primaryType() 开始解析，当前token: " << peek().lexeme << ", 类型: " << static_cast<int>(peek().type) << std::endl;
-    
     // 处理容器类型（允许嵌套）
     if (check(lexer::TokenType::Optional) || check(lexer::TokenType::Repeated) || check(lexer::TokenType::Map)) {
-        std::cout << "primaryType() 检测到容器类型，递归调用containerType()" << std::endl;
         return containerType();
     }
     
     // 允许 identifier 作为类型（包括注解名）
-    bool isIdent = check(lexer::TokenType::Identifier);
-    std::cout << "primaryType() check(Identifier) 结果: " << (isIdent ? "true" : "false") << std::endl;
-    if (isIdent) {
+    if (check(lexer::TokenType::Identifier)) {
         auto ident = advance();
-        std::cout << "primaryType() 成功解析identifier类型: " << ident.lexeme << std::endl;
         return makeNode<ast::NamedType>(ident.lexeme);
     }
     
     // 解析基本类型
     auto token = advance();
-    std::cout << "primaryType() 尝试解析基本类型，token: " << token.lexeme << ", 类型: " << static_cast<int>(token.type) << std::endl;
     
     switch (token.type) {
         case lexer::TokenType::Int8:
@@ -44,7 +35,7 @@ std::unique_ptr<ast::Type> Parser::primaryType() {
         case lexer::TokenType::Bool:
         case lexer::TokenType::StringType:
         case lexer::TokenType::Bytes:
-            std::cout << "primaryType() 成功解析基本类型: " << token.lexeme << std::endl;
+    
             return makeNode<ast::NamedType>(token.lexeme);
         default:
             // 无效类型
@@ -55,7 +46,6 @@ std::unique_ptr<ast::Type> Parser::primaryType() {
 }
 
 std::unique_ptr<ast::Type> Parser::containerType() {
-    std::cout << "containerType() 开始解析，当前token: " << peek().lexeme << ", 类型: " << static_cast<int>(peek().type) << std::endl;
     
     if (consume(lexer::TokenType::Optional)) {
         // 解析可选类型

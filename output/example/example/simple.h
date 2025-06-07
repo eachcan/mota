@@ -15,7 +15,7 @@
 #include "framework/IAnnotation.h"
 
 // 此文件由 Mota 代码生成器自动生成
-// 生成时间: 2025-06-06 20:13:12
+// 生成时间: 2025-06-07 22:31:42
 // 源文件: unknown.mota
 
 using namespace ymf;
@@ -124,6 +124,38 @@ namespace PriorityHelper {
     inline QStringList allDisplayNames() {
         return QStringList() << "Low" << "Medium" << "High";
     }
+    
+    // 获取整个枚举的注解
+    inline QList<QSharedPointer<IAnnotation>> annotations() {
+        
+        return QList<QSharedPointer<IAnnotation>>();
+    }
+    
+    // 获取特定枚举值的注解
+    inline QList<QSharedPointer<IAnnotation>> valueAnnotations(Priority value) {
+        switch (value) {
+            case Priority::Low:
+                return QList<QSharedPointer<IAnnotation>>();
+            case Priority::Medium:
+                return QList<QSharedPointer<IAnnotation>>();
+            case Priority::High:
+                return QList<QSharedPointer<IAnnotation>>();
+            default:
+                return QList<QSharedPointer<IAnnotation>>();
+        }
+    }
+    
+    // 获取特定枚举值的注解（通过字符串）
+    inline QList<QSharedPointer<IAnnotation>> valueAnnotations(const QString& valueName) {
+        if (valueName == "Low") {
+            return QList<QSharedPointer<IAnnotation>>();
+        } else if (valueName == "Medium") {
+            return QList<QSharedPointer<IAnnotation>>();
+        } else if (valueName == "High") {
+            return QList<QSharedPointer<IAnnotation>>();
+        }
+        return QList<QSharedPointer<IAnnotation>>();
+    }
 }
 
 
@@ -138,7 +170,7 @@ public:
         QCborMap map;
         map.insert(QLatin1String("name"), QCborValue(getName()));
         map.insert(QLatin1String("enabled"), QCborValue(getEnabled()));
-        map.insert(QLatin1String("priority"), getPriority().toCbor());
+        map.insert(QLatin1String("priority"), QCborValue(static_cast<int>(getPriority())));
         return map;
     }
     
@@ -146,9 +178,7 @@ public:
         QCborMap map = cbor.toMap();
         setName(map.value(QLatin1String("name")).toString());
         setEnabled(map.value(QLatin1String("enabled")).toBool());
-        Priority priority;
-priority.fromCbor(map.value(QLatin1String("priority")));
-setPriority(priority);
+        setPriority(static_cast<Priority>(map.value(QLatin1String("priority")).toInteger()));
     }
     
     QString name() const override {
@@ -166,8 +196,21 @@ setPriority(priority);
         return QLatin1String("");
     }
     
-    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+    QList<QSharedPointer<IAnnotation>> annotations() const override {
         
+        return QList<QSharedPointer<IAnnotation>>();
+    }
+    
+    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+        if (fieldName == QLatin1String("name")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("enabled")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("priority")) {
+            return QList<QSharedPointer<void>>();
+        }
         return QList<QSharedPointer<void>>();
     }
     
@@ -190,17 +233,16 @@ setPriority(priority);
     void value(const QString& fieldName, const QVariant& value) override {
         if (fieldName == QLatin1String("name")) {
             name_ = value.value<QString>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("enabled")) {
             enabled_ = value.value<bool>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("priority")) {
             priority_ = value.value<Priority>();
-            return true;
+            return;
         }
-        return false;
     }
     
     // 特定于Config的访问器
@@ -238,23 +280,24 @@ private:
 };
 
 
-// Task块
-class MODEL_EXPORT TaskBlock : public IBlock {
+// Task结构体
+
+class MODEL_EXPORT TaskModel : public IModel {
 public:
-    TaskBlock() = default;
+    TaskModel() = default;
     
     
-    // 实现IBlock接口
+    // 实现IModel接口
     QCborValue toCbor() const override {
         QCborMap map;
         map.insert(QLatin1String("title"), QCborValue(getTitle()));
         map.insert(QLatin1String("description"), QCborValue(getDescription()));
         map.insert(QLatin1String("completed"), QCborValue(getCompleted()));
         QCborArray tagsArray;
-for (const auto& item : getTags()) {
-    tagsArray.append(QCborValue(item));
-}
-map.insert(QLatin1String("tags"), tagsArray);
+        for (const auto& item : getTags()) {
+            tagsArray.append(QCborValue(item));
+        }
+        map.insert(QLatin1String("tags"), tagsArray);
         map.insert(QLatin1String("config"), getConfig().toCbor());
         return map;
     }
@@ -265,25 +308,21 @@ map.insert(QLatin1String("tags"), tagsArray);
         setDescription(map.value(QLatin1String("description")).toString());
         setCompleted(map.value(QLatin1String("completed")).toBool());
         QCborArray tagsArray = map.value(QLatin1String("tags")).toArray();
-QVector<QString> tags;
-for (const auto& itemValue : tagsArray) {
-    tags.append(static_cast<QString>(itemValue.toString()));
-}
-setTags(tags);
+        QVector<QString> tags;
+        for (const auto& itemValue : tagsArray) {
+            tags.append(static_cast<QString>(itemValue.toString()));
+        }
+        setTags(tags);
         ConfigBlock config;
-config.fromCbor(map.value(QLatin1String("config")));
-setConfig(config);
-    }
-    
-    QString name() const override {
-        return "Task";
+        config.fromCbor(map.value(QLatin1String("config")));
+        setConfig(config);
     }
     
     QStringList fields() const override {
         return QStringList{QLatin1String("title"), QLatin1String("description"), QLatin1String("completed"), QLatin1String("tags"), QLatin1String("config")};
     }
     
-    QString fieldType(const QString& fieldName) const override {
+    QString fieldOriginTypeName(const QString& fieldName) const override {
         if (fieldName == QLatin1String("title")) return QLatin1String("string");
         if (fieldName == QLatin1String("description")) return QLatin1String("string");
         if (fieldName == QLatin1String("completed")) return QLatin1String("bool");
@@ -292,13 +331,32 @@ setConfig(config);
         return QLatin1String("");
     }
     
-    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+    QList<QSharedPointer<IAnnotation>> annotations() const override {
         
+        return QList<QSharedPointer<IAnnotation>>();
+    }
+    
+    QList<QSharedPointer<void>> fieldAnnotations(const QString& fieldName) const override {
+        if (fieldName == QLatin1String("title")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("description")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("completed")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("tags")) {
+            return QList<QSharedPointer<void>>();
+        }
+        if (fieldName == QLatin1String("config")) {
+            return QList<QSharedPointer<void>>();
+        }
         return QList<QSharedPointer<void>>();
     }
     
     QString description() const override {
-        return "Generated from block Task";
+        return "Generated from struct Task";
     }
     
     QString fieldDescription(const QString& fieldName) const override {
@@ -318,25 +376,24 @@ setConfig(config);
     void value(const QString& fieldName, const QVariant& value) override {
         if (fieldName == QLatin1String("title")) {
             title_ = value.value<QString>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("description")) {
             description_ = value.value<QString>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("completed")) {
             completed_ = value.value<bool>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("tags")) {
             tags_ = value.value<QVector<QString>>();
-            return true;
+            return;
         }
         if (fieldName == QLatin1String("config")) {
             config_ = value.value<ConfigBlock>();
-            return true;
+            return;
         }
-        return false;
     }
     
     // 特定于Task的访问器
@@ -385,12 +442,20 @@ setConfig(config);
         config_ = value;
     } 
     
+protected:
+    QString modelName() const override {
+        return "Task";
+    }
+    
 private:
     QString title_;
     QString description_;
     bool completed_;
     QVector<QString> tags_;
     ConfigBlock config_;
+    
+    // 变更通知
+    void notifyChange();
 };
 
 

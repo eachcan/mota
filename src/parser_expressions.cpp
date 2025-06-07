@@ -7,16 +7,11 @@ namespace parser {
 // ===== 表达式解析 =====
 
 std::unique_ptr<ast::Expr> Parser::expression() {
-    auto nowToken = peek();
-    std::cout << "expression() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
-    
     // 表达式是字面量和操作符的组合
     return assignment();
 }
 
 std::unique_ptr<ast::Expr> Parser::assignment() {
-    auto nowToken = peek();
-    std::cout << "assignment() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
     
     auto expr = logicalOr();
     
@@ -47,8 +42,6 @@ std::unique_ptr<ast::Expr> Parser::assignment() {
 }
 
 std::unique_ptr<ast::Expr> Parser::logicalOr() {
-    auto nowToken = peek();
-    std::cout << "logicalOr() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
     
     auto expr = logicalAnd();
     
@@ -66,8 +59,6 @@ std::unique_ptr<ast::Expr> Parser::logicalOr() {
 }
 
 std::unique_ptr<ast::Expr> Parser::logicalAnd() {
-    auto nowToken = peek();
-    std::cout << "logicalAnd() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
     
     auto expr = equality();
     
@@ -85,8 +76,6 @@ std::unique_ptr<ast::Expr> Parser::logicalAnd() {
 }
 
 std::unique_ptr<ast::Expr> Parser::equality() {
-    auto nowToken = peek();
-    std::cout << "equality() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
     
     auto expr = comparison();
     
@@ -113,7 +102,7 @@ std::unique_ptr<ast::Expr> Parser::equality() {
 
 std::unique_ptr<ast::Expr> Parser::comparison() {
     auto nowToken = peek();
-    std::cout << "comparison() 检查比较操作符，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
+
     
     auto expr = term();
     
@@ -154,8 +143,6 @@ std::unique_ptr<ast::Expr> Parser::comparison() {
 }
 
 std::unique_ptr<ast::Expr> Parser::term() {
-    auto nowToken = peek();
-    std::cout << "term() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
     
     auto expr = factor();
     
@@ -181,8 +168,6 @@ std::unique_ptr<ast::Expr> Parser::term() {
 }
 
 std::unique_ptr<ast::Expr> Parser::factor() {
-    auto nowToken = peek();
-    std::cout << "factor() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
     
     auto expr = unary();
     
@@ -219,8 +204,6 @@ std::unique_ptr<ast::Expr> Parser::factor() {
 }
 
 std::unique_ptr<ast::Expr> Parser::unary() {
-    auto nowToken = peek();
-    std::cout << "unary() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
     
     if (consume(lexer::TokenType::Bang) || consume(lexer::TokenType::Minus)) {
         auto op = previous_;
@@ -240,8 +223,6 @@ std::unique_ptr<ast::Expr> Parser::unary() {
 }
 
 std::unique_ptr<ast::Expr> Parser::primary() {
-    auto nowToken = peek();
-    std::cout << "primary() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
     
     if (consume(lexer::TokenType::False)) {
         return makeNode<ast::Literal>(false);

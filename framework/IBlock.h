@@ -31,6 +31,9 @@ namespace ymf {
         
                 // 获取字段类型
                 virtual QString fieldType(const QString& fieldName) const = 0;
+
+                // 获取块注解
+                virtual QList<QSharedPointer<IAnnotation>> annotations() const = 0;
         
                 // 获取字段注解
                 virtual QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const = 0;

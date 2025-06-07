@@ -652,6 +652,15 @@ TemplateVars Generator::buildTemplateVars(const std::string& typeName, const std
     vars["ARGUMENT_GETTER_LOGIC"] = generateFromTemplate("ARGUMENT_GETTER_LOGIC", fields);
     vars["ARGUMENT_NAMES"] = generateFromTemplate("ARGUMENT_NAMES", fields);
     
+    // 添加模型和块注解逻辑 - 从模板变量获取或留空
+    auto modelAnnotationIt = config_.templateVariables.find("MODEL_ANNOTATION_LOGIC");
+    vars["MODEL_ANNOTATION_LOGIC"] = (modelAnnotationIt != config_.templateVariables.end()) ? 
+        renderTemplate(modelAnnotationIt->second, vars) : "";
+    
+    auto blockAnnotationIt = config_.templateVariables.find("BLOCK_ANNOTATION_LOGIC");
+    vars["BLOCK_ANNOTATION_LOGIC"] = (blockAnnotationIt != config_.templateVariables.end()) ? 
+        renderTemplate(blockAnnotationIt->second, vars) : "";
+    
     // 为循环语法准备字段数据
     std::string fieldsData;
     for (size_t i = 0; i < fields.size(); ++i) {
@@ -697,6 +706,8 @@ std::string Generator::generateFromTemplate(const std::string& templateType, con
         return generateValueGetterLogicFromTemplate(fields);
     } else if (templateType == "VALUE_SETTER_LOGIC") {
         return generateValueSetterLogicFromTemplate(fields);
+    } else if (templateType == "FIELD_ANNOTATION_LOGIC") {
+        return generateFieldAnnotationLogicFromTemplate(fields);
     } else if (templateType == "ARGUMENT_GETTER_LOGIC") {
         return generateArgumentGetterLogicFromTemplate(fields);
     } else if (templateType == "ARGUMENT_NAMES") {
@@ -943,6 +954,28 @@ std::string Generator::generateValueSetterLogicFromTemplate(const std::vector<st
     return result;
 }
 
+std::string Generator::generateFieldAnnotationLogicFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields) {
+    // 从配置中获取字段注解逻辑模板
+    auto fieldAnnotationTemplateIt = config_.templateVariables.find("FIELD_ANNOTATION_LOGIC_TEMPLATE");
+    std::string fieldAnnotationTemplate = (fieldAnnotationTemplateIt != config_.templateVariables.end()) ? 
+        fieldAnnotationTemplateIt->second : "return QList<QSharedPointer<void>>();";
+    
+    std::string result;
+    for (const auto& field : fields) {
+        if (!result.empty()) result += "\n        ";
+        
+        TemplateVars fieldVars;
+        fieldVars["FIELD_NAME"] = field->name;
+        fieldVars["FIELD_TYPE"] = field->type->toString();
+        fieldVars["FIELD_TYPE_MAPPED"] = mapTypeFromConfig(field->type->toString());
+        
+        result += "if (fieldName == QLatin1String(\"" + field->name + "\")) {\n";
+        result += "            " + renderTemplate(fieldAnnotationTemplate, fieldVars) + "\n";
+        result += "        }";
+    }
+    return result;
+}
+
 std::string Generator::generateArgumentGetterLogicFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields) {
     std::string result;
     for (const auto& field : fields) {
@@ -1131,6 +1164,42 @@ std::string Generator::generateEnum(const ast::Enum& enumNode) {
     vars["DEFAULT_ENUM_VALUE"] = enumNode.values.empty() ? "" : enumNode.values[0]->name;
     vars["ENUM_STRING_VALUES"] = stringValues;
     vars["ENUM_DISPLAY_NAMES"] = displayNames;
+    
+    // 生成枚举注解相关的代码 - 从模板变量获取或留空
+    auto enumAnnotationIt = config_.templateVariables.find("ENUM_ANNOTATION_LOGIC");
+    vars["ENUM_ANNOTATION_LOGIC"] = (enumAnnotationIt != config_.templateVariables.end()) ? 
+        renderTemplate(enumAnnotationIt->second, vars) : "";
+    
+    // 生成枚举值注解的switch cases
+    std::string enumValueAnnotationCases;
+    std::string enumValueAnnotationByNameLogic;
+    
+    // 从配置中获取枚举值注解模板
+    auto enumValueAnnotationTemplateIt = config_.templateVariables.find("ENUM_VALUE_ANNOTATION_TEMPLATE");
+    std::string enumValueAnnotationTemplate = (enumValueAnnotationTemplateIt != config_.templateVariables.end()) ? 
+        enumValueAnnotationTemplateIt->second : "return QList<QSharedPointer<IAnnotation>>();";
+    
+    for (size_t i = 0; i < enumNode.values.size(); ++i) {
+        const auto& enumValue = enumNode.values[i];
+        
+        TemplateVars enumValueVars;
+        enumValueVars["ENUM_VALUE_NAME"] = enumValue->name;
+        enumValueVars["ENUM_CLASS_NAME"] = className;
+        
+        // 为每个枚举值生成注解case
+        if (i > 0) enumValueAnnotationCases += "\n            ";
+        enumValueAnnotationCases += "case " + className + "::" + enumValue->name + ":\n";
+        enumValueAnnotationCases += "                " + renderTemplate(enumValueAnnotationTemplate, enumValueVars);
+        
+        // 为按名称查找生成逻辑
+        if (i > 0) enumValueAnnotationByNameLogic += " else ";
+        enumValueAnnotationByNameLogic += "if (valueName == \"" + enumValue->name + "\") {\n";
+        enumValueAnnotationByNameLogic += "            " + renderTemplate(enumValueAnnotationTemplate, enumValueVars) + "\n";
+        enumValueAnnotationByNameLogic += "        }";
+    }
+    
+    vars["ENUM_VALUE_ANNOTATION_CASES"] = enumValueAnnotationCases;
+    vars["ENUM_VALUE_ANNOTATION_BY_NAME_LOGIC"] = enumValueAnnotationByNameLogic;
     
     return renderTemplate(enumTemplate, vars);
 }

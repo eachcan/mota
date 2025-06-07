@@ -29,4 +29,25 @@ namespace {{CLASS_NAME}}Helper {
     inline QStringList allDisplayNames() {
         return QStringList() {{ENUM_DISPLAY_NAMES}};
     }
+    
+    // 获取整个枚举的注解
+    inline QList<QSharedPointer<IAnnotation>> annotations() {
+        {{ENUM_ANNOTATION_LOGIC}}
+        return QList<QSharedPointer<IAnnotation>>();
+    }
+    
+    // 获取特定枚举值的注解
+    inline QList<QSharedPointer<IAnnotation>> valueAnnotations({{CLASS_NAME}} value) {
+        switch (value) {
+            {{ENUM_VALUE_ANNOTATION_CASES}}
+            default:
+                return QList<QSharedPointer<IAnnotation>>();
+        }
+    }
+    
+    // 获取特定枚举值的注解（通过字符串）
+    inline QList<QSharedPointer<IAnnotation>> valueAnnotations(const QString& valueName) {
+        {{ENUM_VALUE_ANNOTATION_BY_NAME_LOGIC}}
+        return QList<QSharedPointer<IAnnotation>>();
+    }
 }

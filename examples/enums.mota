@@ -5,21 +5,23 @@ namespace examples.enums;
 include "yima.mota";
 
 // 日志级别枚举
+@yima.Window(title = "日志级别")
 enum LogLevel {
-    @EnumValue(value = "debug", desc = "详细的调试信息")
+    @yima.EnumValue(value = "debug", desc = "详细的调试信息")
     DEBUG = 0;
     
-    @EnumValue(value = "info", desc = "一般信息")
+    @yima.EnumValue(value = "info", desc = "一般信息")
     INFO = 1;
     
-    @EnumValue(value = "warning", desc = "警告信息")
+    @yima.EnumValue(value = "warning", desc = "警告信息")
     WARNING = 2;
     
-    @EnumValue(value = "error", desc = "错误信息")
+    @yima.EnumValue(value = "error", desc = "错误信息")
     ERROR = 3;
 }
 
 // HTTP状态码枚举
+@yima.Window(title = "HTTP状态码")
 enum HttpStatus {
     OK = 200;
     BAD_REQUEST = 400;
@@ -29,14 +31,14 @@ enum HttpStatus {
 }
 
 // 使用枚举
-@Window(title = "日志条目")
+@yima.Window(title = "日志条目")
 struct LogEntry {
-    @Text(desc = "日志消息")
+    @yima.Text(desc = "日志消息")
     string message = "";
     
-    @Select(desc = "日志级别")
-    LogLevel level = LogLevel.INFO;
+    @yima.Select(desc = "日志级别")
+    LogLevel level = 1;  // 使用数字值而不是枚举引用
     
-    @Int(desc = "时间戳")
+    @yima.Int(desc = "时间戳")
     int64 timestamp = 0;
 }

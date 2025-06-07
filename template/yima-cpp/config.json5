@@ -78,7 +78,12 @@
     "FIELD_NAME_CAMEL": "{{FIELD_NAME | camel_case}}",
     "FIELD_TYPE_MAPPED": "{{FIELD_TYPE | map_type}}",
     "SERIALIZE_TEMPLATE": "{{FIELD_TYPE | field_template}}_SERIALIZE",
-    "DESERIALIZE_TEMPLATE": "{{FIELD_TYPE | field_template}}_DESERIALIZE"
+    "DESERIALIZE_TEMPLATE": "{{FIELD_TYPE | field_template}}_DESERIALIZE",
+    "MODEL_ANNOTATION_LOGIC": "",
+    "BLOCK_ANNOTATION_LOGIC": "",
+    "ENUM_ANNOTATION_LOGIC": "",
+    "FIELD_ANNOTATION_LOGIC_TEMPLATE": "return QList<QSharedPointer<void>>();",
+    "ENUM_VALUE_ANNOTATION_TEMPLATE": "return QList<QSharedPointer<IAnnotation>>();"
   },
   "type_interface_mapping": {
     "block": "IBlock",

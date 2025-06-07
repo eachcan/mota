@@ -6,80 +6,80 @@ include "yima.mota";
 
 // 基础形状块
 block BaseShape {
-    @Text(desc = "名称")
+    @yima.Text(desc = "名称")
     string name = "Shape";
     
-    @Text(desc = "填充颜色")
+    @yima.Text(desc = "填充颜色")
     string fillColor = "#FFFFFF";
     
-    @Text(desc = "边框颜色")
+    @yima.Text(desc = "边框颜色")
     string strokeColor = "#000000";
     
-    @Float(min = 0.1, max = 10.0, step = 0.1, desc = "边框宽度")
+    @yima.Float(min = 0.1, max = 10.0, step = 0.1, desc = "边框宽度")
     float32 strokeWidth = 1.0;
 }
 
 // 矩形块 - 继承自 BaseShape
 block RectangleShape : BaseShape {
-    @Float(min = 1.0, max = 1000.0, step = 1.0, desc = "宽度")
+    @yima.Float(min = 1.0, max = 1000.0, step = 1.0, desc = "宽度")
     float32 width = 100.0;
     
-    @Float(min = 1.0, max = 1000.0, step = 1.0, desc = "高度")
+    @yima.Float(min = 1.0, max = 1000.0, step = 1.0, desc = "高度")
     float32 height = 100.0;
     
     // 面积计算结果
-    @Float(desc = "面积")
+    @yima.Float(desc = "面积")
     float32 area = 0.0;
 }
 
 // 圆形块 - 继承自 BaseShape
 block CircleShape : BaseShape {
-    @Float(min = 1.0, max = 500.0, step = 1.0, desc = "半径")
+    @yima.Float(min = 1.0, max = 500.0, step = 1.0, desc = "半径")
     float32 radius = 50.0;
     
     // 面积计算结果
-    @Float(desc = "面积")
+    @yima.Float(desc = "面积")
     float32 area = 0.0;
 }
 
 // 线段块
 block LineShape {
     // 起点
-    @Float(desc = "起点X")
+    @yima.Float(desc = "起点X")
     float32 startX = 0.0;
     
-    @Float(desc = "起点Y")
+    @yima.Float(desc = "起点Y")
     float32 startY = 0.0;
     
     // 终点
-    @Float(desc = "终点X")
+    @yima.Float(desc = "终点X")
     float32 endX = 100.0;
     
-    @Float(desc = "终点Y")
+    @yima.Float(desc = "终点Y")
     float32 endY = 100.0;
     
     // 线条属性
-    @Text(desc = "线条颜色")
+    @yima.Text(desc = "线条颜色")
     string lineColor = "#000000";
     
-    @Float(min = 0.1, max = 10.0, step = 0.1, desc = "线条宽度")
+    @yima.Float(min = 0.1, max = 10.0, step = 0.1, desc = "线条宽度")
     float32 lineWidth = 1.0;
 }
 
 // 文本块
 block TextShape : BaseShape {
-    @Text(desc = "文本内容")
+    @yima.Text(desc = "文本内容")
     string text = "";
     
-    @Text(desc = "字体")
+    @yima.Text(desc = "字体")
     string fontFamily = "Arial";
     
-    @Int(min = 8, max = 72, step = 1, desc = "字号")
+    @yima.Int(min = 8, max = 72, step = 1, desc = "字号")
     int32 fontSize = 12;
 }
 
 // 图形编辑器配置
-@Window(title = "图形编辑器")
+@yima.Window(title = "图形编辑器")
 struct DrawingConfig {
     // 矩形配置
     RectangleShape rectangle;

@@ -61,7 +61,7 @@ namespace ymf {
         virtual QString fieldOriginTypeName(const QString& fieldName) const = 0;
 
         // 获取模型注解
-        virtual QList<QSharedPointer<IAnnotation>> modelAnnotations() const = 0;
+        virtual QList<QSharedPointer<IAnnotation>> annotations() const = 0;
 
         // 获取字段注解
         virtual QList<QSharedPointer<void>> fieldAnnotations(const QString& fieldName) const = 0;

@@ -13,8 +13,6 @@ std::unique_ptr<ast::Node> Parser::declaration() {
            check(lexer::TokenType::UIComment)) {
         advance();
     }
-    auto firstToken = peek();
-    std::cout << "declaration() 开始解析，当前token: " << firstToken.lexeme << ", 类型: " << static_cast<int>(firstToken.type) << std::endl;
     
     std::unique_ptr<ast::Node> node;
     
@@ -22,9 +20,7 @@ std::unique_ptr<ast::Node> Parser::declaration() {
     std::vector<std::unique_ptr<ast::Annotation>> annotations;
     while (check(lexer::TokenType::At)) {
         // 不捕获异常，让异常传递给测试用例
-        std::cout << "declaration() 开始解析注解" << std::endl;
         auto ann = annotation();
-        std::cout << "declaration() 解析到注解: " << ann->name << std::endl;
         annotations.push_back(std::move(ann));
     }
     
@@ -77,24 +73,20 @@ std::unique_ptr<ast::Node> Parser::declaration() {
 
 std::unique_ptr<ast::Annotation> Parser::annotation() {
     auto nowToken = peek();
-    std::cout << "annotation() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
     
     // 消耗 @ 符号
     if (nowToken.type == lexer::TokenType::At) {
         advance();
-        std::cout << "annotation() 消耗了 @ 符号" << std::endl;
     }
     
     // 解析注解名称（标识符或带点的路径）
     std::string name;
     name = consume(lexer::TokenType::Identifier, "Expected annotation name").lexeme;
-    std::cout << "annotation() 解析到注解名称的第一部分: " << name << std::endl;
     
     while (consume(lexer::TokenType::Dot)) {
         name += ".";
         auto identToken = consume(lexer::TokenType::Identifier, "Expected identifier after '.'");
         name += identToken.lexeme;
-        std::cout << "annotation() 解析到注解名称的下一部分: " << identToken.lexeme << ", 当前完整名称: " << name << std::endl;
     }
     
     // 解析注解参数
@@ -108,26 +100,19 @@ std::unique_ptr<ast::Annotation> Parser::annotation() {
 }
 
 std::vector<ast::AnnotationArgument> Parser::annotationArguments() {
-    auto nowToken = peek();
-    std::cout << "annotationArguments() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
-    
     std::vector<ast::AnnotationArgument> args;
     
     if (!check(lexer::TokenType::RightParen)) {
         do {
             auto arg = annotationArgument();
-            std::cout << "annotationArguments() 解析到一个参数: " << arg.name << " = [value]" << std::endl;
             args.push_back(std::move(arg));
         } while (consume(lexer::TokenType::Comma));
     }
     
-    std::cout << "annotationArguments() 共解析到 " << args.size() << " 个参数" << std::endl;
     return args;
 }
 
 ast::AnnotationArgument Parser::annotationArgument() {
-    auto nowToken = peek();
-    std::cout << "annotationArgument() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
     std::string name;
     std::unique_ptr<ast::Expr> value;
     if (check(lexer::TokenType::Identifier)) {
@@ -147,13 +132,10 @@ ast::AnnotationArgument Parser::annotationArgument() {
         name = "value";
         value = expression();
     }
-    std::cout << "annotationArgument() 解析到参数名称: " << name << std::endl;
     return ast::AnnotationArgument{name, std::move(value)};
 }
 
 std::unique_ptr<ast::Struct> Parser::structDeclaration() {
-    auto nowToken = peek();
-    std::cout << "structDeclaration() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
     
     // 解析结构体名称
     std::string name = consume(lexer::TokenType::Identifier, "Expected struct name").lexeme;
@@ -206,8 +188,6 @@ std::unique_ptr<ast::Struct> Parser::structDeclaration() {
 }
 
 std::unique_ptr<ast::Enum> Parser::enumDeclaration() {
-    auto nowToken = peek();
-    std::cout << "enumDeclaration() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
     
     // 解析枚举名称
     std::string name = consume(lexer::TokenType::Identifier, "Expected enum name").lexeme;
@@ -256,8 +236,6 @@ std::unique_ptr<ast::Enum> Parser::enumDeclaration() {
 }
 
 std::unique_ptr<ast::Block> Parser::blockDeclaration() {
-    auto nowToken = peek();
-    std::cout << "blockDeclaration() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
     
     // 解析块名称
     std::string name = consume(lexer::TokenType::Identifier, "Expected block name").lexeme;
@@ -306,8 +284,6 @@ std::unique_ptr<ast::Block> Parser::blockDeclaration() {
 }
 
 std::unique_ptr<ast::AnnotationDecl> Parser::annotationDeclaration() {
-    auto nowToken = peek();
-    std::cout << "annotationDeclaration() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
     // 解析注解名称（支持带点的命名空间）
     std::string name = consume(lexer::TokenType::Identifier, "Expected annotation name").lexeme;
     while (consume(lexer::TokenType::Dot)) {
@@ -344,45 +320,33 @@ std::unique_ptr<ast::AnnotationDecl> Parser::annotationDeclaration() {
 }
 
 std::unique_ptr<ast::Field> Parser::fieldDeclaration() {
-    std::cout << "fieldDeclaration() 开始解析，当前token: " << peek().lexeme << ", 类型: " << static_cast<int>(peek().type) << std::endl;
-    
     // 解析类型
     if (!check(lexer::TokenType::Identifier) &&
         !check(lexer::TokenType::Int8) && !check(lexer::TokenType::Int16) && !check(lexer::TokenType::Int32) && !check(lexer::TokenType::Int64) &&
         !check(lexer::TokenType::Float32) && !check(lexer::TokenType::Float64) &&
         !check(lexer::TokenType::StringType) && !check(lexer::TokenType::Bytes) && !check(lexer::TokenType::Bool) &&
         !check(lexer::TokenType::Repeated) && !check(lexer::TokenType::Map) && !check(lexer::TokenType::Optional)) {
-        std::cout << "fieldDeclaration() 类型检查失败，当前token: " << peek().lexeme << ", 类型: " << static_cast<int>(peek().type) << std::endl;
         error(peek(), "Expected type");
     }
     
-    std::cout << "fieldDeclaration() 类型检查通过，开始解析类型" << std::endl;
     auto type = parseType();
-    std::cout << "fieldDeclaration() 类型解析完成，当前token: " << peek().lexeme << ", 类型: " << static_cast<int>(peek().type) << std::endl;
     
     // 解析字段名
-    std::cout << "fieldDeclaration() 开始解析字段名" << std::endl;
     std::string name = consume(lexer::TokenType::Identifier, "Expected field name").lexeme;
-    std::cout << "fieldDeclaration() 字段名解析完成: " << name << ", 当前token: " << peek().lexeme << ", 类型: " << static_cast<int>(peek().type) << std::endl;
     
     // 解析可选的初始值
     std::unique_ptr<ast::Expr> initializer = nullptr;
     if (consume(lexer::TokenType::Equal)) {
-        std::cout << "fieldDeclaration() 发现初始值，开始解析" << std::endl;
         initializer = expression();
     }
     
-    std::cout << "fieldDeclaration() 开始解析分号" << std::endl;
     consume(lexer::TokenType::Semicolon, "Expected ';' after field declaration");
-    std::cout << "fieldDeclaration() 解析完成" << std::endl;
     
     // 调整参数顺序为 name, type, initializer
     return makeNode<ast::Field>(name, std::move(type), std::move(initializer));
 }
 
 std::unique_ptr<ast::EnumValue> Parser::enumValueDeclaration() {
-    auto nowToken = peek();
-    std::cout << "enumValueDeclaration() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
     
     // 解析枚举值名称
     std::string name = consume(lexer::TokenType::Identifier, "Expected enum value name").lexeme;
@@ -399,8 +363,6 @@ std::unique_ptr<ast::EnumValue> Parser::enumValueDeclaration() {
 }
 
 std::unique_ptr<ast::Include> Parser::includeDeclaration() {
-    auto nowToken = peek();
-    std::cout << "includeDeclaration() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
     
     // 解析包含路径
     auto path = consume(lexer::TokenType::String, "Expected string after 'include'");
@@ -410,8 +372,6 @@ std::unique_ptr<ast::Include> Parser::includeDeclaration() {
 }
 
 std::unique_ptr<ast::Namespace> Parser::namespaceDeclaration() {
-    auto nowToken = peek();
-    std::cout << "namespaceDeclaration() 开始解析，当前token: " << nowToken.lexeme << ", 类型: " << static_cast<int>(nowToken.type) << std::endl;
     
     // 解析命名空间路径
     std::string fullPath;

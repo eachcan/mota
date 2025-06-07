@@ -28,6 +28,11 @@ public:
         {{FIELD_TYPE_LOGIC}}
     }
     
+    QList<QSharedPointer<IAnnotation>> annotations() const override {
+        {{BLOCK_ANNOTATION_LOGIC}}
+        return QList<QSharedPointer<IAnnotation>>();
+    }
+    
     QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
         {{FIELD_ANNOTATION_LOGIC}}
         return QList<QSharedPointer<void>>();

@@ -147,6 +147,150 @@ target("test_generator")
     add_packages("gtest", {configs = {main = true}})
     set_encodings("utf-8")
 
+-- 安装目标：生成完整的安装包
+target("install")
+    set_kind("phony")
+    on_run(function ()
+        import("core.project.config")
+        import("lib.detect.find_tool")
+        
+        -- 确保主程序已构建
+        print("Building mota.exe...")
+        os.exec("xmake build mota")
+        
+        -- 创建安装目录
+        local install_dir = "mota-install"
+        print("Creating install directory: " .. install_dir)
+        os.rm(install_dir)  -- 清理旧的安装目录
+        os.mkdir(install_dir)
+        
+        -- 复制主程序
+        print("Copying mota.exe...")
+        os.cp("bin/mota.exe", install_dir .. "/")
+        
+        -- 复制相关DLL（如果存在）
+        print("Copying DLL files...")
+        local dll_patterns = {"*.dll", "Qt*.dll", "msvcp*.dll", "vcruntime*.dll"}
+        for _, pattern in ipairs(dll_patterns) do
+            local dll_files = os.files("bin/" .. pattern)
+            for _, dll_file in ipairs(dll_files) do
+                local filename = path.filename(dll_file)
+                print("  Copying " .. filename)
+                os.cp(dll_file, install_dir .. "/" .. filename)
+            end
+        end
+        
+        -- 检查系统DLL依赖（Windows）
+        if is_plat("windows") then
+            print("Checking for system DLL dependencies...")
+            -- 可以使用dependency walker或类似工具来检查依赖
+            -- 这里我们手动复制一些常见的运行时库
+            local system_paths = {
+                "C:/Windows/System32/",
+                "C:/Windows/SysWOW64/",
+                os.getenv("VCINSTALLDIR") and (os.getenv("VCINSTALLDIR") .. "Redist/MSVC/*/x64/Microsoft.VC*.CRT/"),
+                os.getenv("PROGRAMFILES") and (os.getenv("PROGRAMFILES") .. "/Microsoft Visual Studio/*/VC/Redist/MSVC/*/x64/Microsoft.VC*.CRT/")
+            }
+            
+            local runtime_dlls = {
+                "msvcp140.dll",
+                "vcruntime140.dll", 
+                "vcruntime140_1.dll",
+                "api-ms-win-crt-runtime-l1-1-0.dll"
+            }
+            
+            for _, dll in ipairs(runtime_dlls) do
+                for _, sys_path in ipairs(system_paths) do
+                    if sys_path then
+                        local dll_path = sys_path .. dll
+                        if os.isfile(dll_path) then
+                            print("  Copying system DLL: " .. dll)
+                            os.cp(dll_path, install_dir .. "/" .. dll)
+                            break
+                        end
+                    end
+                end
+            end
+        end
+        
+        -- 复制mota-include目录
+        print("Copying mota-include directory...")
+        os.cp("mota-include", install_dir .. "/mota-include")
+        
+        -- 复制template目录
+        print("Copying template directory...")
+        os.cp("template", install_dir .. "/template")
+        
+        -- 复制examples目录
+        print("Copying examples directory...")
+        os.cp("examples", install_dir .. "/examples")
+        
+        -- 复制README和LICENSE
+        print("Copying documentation...")
+        if os.isfile("README.md") then
+            os.cp("README.md", install_dir .. "/README.md")
+        end
+        if os.isfile("LICENSE") then
+            os.cp("LICENSE", install_dir .. "/LICENSE")
+        end
+
+        local project = import("core.project.project")
+        -- 创建安装说明文件
+        print("Creating installation guide...")
+        local install_guide = [[
+# Mota 安装包
+
+这是 Mota 编译器的完整安装包。
+
+## 目录结构
+
+- `mota.exe` - 主程序
+- `*.dll` - 运行时依赖库
+- `mota-include/` - 内置类型定义文件
+- `template/` - 代码生成模板
+- `examples/` - 示例文件
+
+## 使用方法
+
+1. 将整个目录复制到您希望安装的位置
+2. 可以将 mota.exe 所在目录添加到系统 PATH 环境变量中
+3. 运行 `mota.exe --help` 查看使用说明
+
+## 示例
+
+```bash
+# 编译示例文件
+mota.exe examples/simple.mota
+
+# 指定输出目录
+mota.exe examples/simple.mota -o my_output
+
+# 查看帮助
+mota.exe --help
+```
+
+## 版本信息
+
+版本: ]] .. project:version() .. [[
+
+构建时间: ]] .. os.date("%Y-%m-%d %H:%M:%S") .. [[
+
+]]
+        
+        io.writefile(install_dir .. "/INSTALL.md", install_guide)
+        
+        print("\n✅ Installation package created successfully!")
+        print("📁 Location: " .. path.absolute(install_dir))
+        print("📦 Contents:")
+        print("   - mota.exe (main executable)")
+        print("   - Runtime DLL files")
+        print("   - mota-include/ (built-in type definitions)")
+        print("   - template/ (code generation templates)")
+        print("   - examples/ (example files)")
+        print("   - Documentation files")
+        print("\n🚀 You can now distribute the '" .. install_dir .. "' directory as a complete installation package.")
+    end)
+
 -- 打包目标：生成压缩包
 target("package")
     set_kind("phony")
@@ -155,9 +299,10 @@ target("package")
         print("Creating installation package...")
         os.exec("xmake run install")
         
+        local project = import("core.project.project")
         -- 创建压缩包
         local install_dir = "mota-install"
-        local package_name = "mota-v0.2.0-windows-x64.zip"
+        local package_name = "mota-v" .. project:version() .. "-windows-x64.zip"
         
         print("\nCreating ZIP package...")
         
@@ -251,7 +396,8 @@ target("installer")
         local ret = os.exec(nsis_cmd)
         
         -- 检查安装程序是否实际生成，而不依赖返回值
-        local installer_file = "installer/mota-installer-v0.2.0.exe"
+        local project = import("core.project.project")
+        local installer_file = "installer/mota-installer-v" .. project:version() .. ".exe"
         if os.isfile(installer_file) then
             print("✅ Windows installer created successfully!")
             print("📦 Installer: " .. installer_file)
@@ -264,7 +410,7 @@ target("installer")
             end
             
             -- 移动到项目根目录
-            local final_name = "mota-installer-v0.2.0.exe"
+            local final_name = "mota-installer-v" .. project:version() .. ".exe"
             os.cp(installer_file, final_name)
             print("📁 Final location: " .. path.absolute(final_name))
             

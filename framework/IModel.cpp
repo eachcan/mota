@@ -150,8 +150,8 @@ namespace ymf {
 
     QSharedPointer<StorageAnnotation> IModel::modelStorageAnnotation() const
     {
-        auto annotations = modelAnnotations();
-        for (const auto& annotation : annotations) {
+        auto modelAnnotations = annotations();
+        for (const auto& annotation : modelAnnotations) {
             auto result = AnnotationTypeHelper::as<StorageAnnotation>(annotation);
             if (result) {
                 return result;
@@ -162,8 +162,8 @@ namespace ymf {
 
     QSharedPointer<ScopeAnnotation> IModel::modelScopeAnnotation() const
     {
-        auto annotations = modelAnnotations();
-        for (const auto& annotation : annotations) {
+        auto modelAnnotations = annotations();
+        for (const auto& annotation : modelAnnotations) {
             auto result = AnnotationTypeHelper::as<ScopeAnnotation>(annotation);
             if (result) {
                 return result;
@@ -174,8 +174,8 @@ namespace ymf {
 
     QSharedPointer<WindowAnnotation> IModel::modelWindowAnnotation() const
     {
-        auto annotations = modelAnnotations();
-        for (const auto& annotation : annotations) {
+        auto modelAnnotations = annotations();
+        for (const auto& annotation : modelAnnotations) {
             auto result = AnnotationTypeHelper::as<WindowAnnotation>(annotation);
             if (result) {
                 return result;
