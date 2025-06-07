@@ -1,0 +1,58 @@
+// 存储配置示例
+namespace examples.storage;
+
+// 引入标准注解库
+include "yima.mota";
+
+// 主题颜色块
+block ThemeColor {
+    @Int(min = 0, max = 255, desc = "红色分量")
+    int32 r = 64;
+    
+    @Int(min = 0, max = 255, desc = "绿色分量")
+    int32 g = 120;
+    
+    @Int(min = 0, max = 255, desc = "蓝色分量")
+    int32 b = 212;
+    
+    @Int(min = 0, max = 255, desc = "透明度")
+    int32 a = 255;
+}
+
+// 基本存储配置
+@Storage(
+    path = "config/user_prefs.cbor",
+    format = "cbor"
+)
+@Window(title = "用户首选项")
+struct UserPreferences {
+    @Text(desc = "用户名")
+    string username = "guest";
+    
+    @Switcher(desc = "深色模式")
+    bool darkMode = false;
+    
+    @Int(min = 12, max = 32, desc = "字体大小")
+    int32 fontSize = 14;
+    
+    // 主题颜色
+    ThemeColor primaryColor;
+}
+
+// 多格式存储示例
+@Storage(
+    path = "config/settings.json",
+    format = "json"
+)
+@Window(title = "应用设置")
+struct AppSettings {
+    @Text(desc = "语言")
+    string language = "zh-CN";
+    
+    @Switcher(desc = "自动更新")
+    bool autoUpdate = true;
+    
+    // 最近文件列表
+    @Text(desc = "最近文件")
+    repeated string recentFiles;
+}

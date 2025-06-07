@@ -9,58 +9,6 @@
 #include <typeindex>
 
 namespace ymf {
-
-    // 定义一个辅助类，用于安全地转换注解类型
-    class AnnotationTypeHelper {
-    public:
-        // 通用的类型转换模板方法
-        template<typename T>
-        static std::shared_ptr<T> as(const std::shared_ptr<void>& ptr) {
-            if (!ptr) return nullptr;
-            
-            try {
-                // 尝试安全地转换指针类型
-                auto* typedPtr = static_cast<T*>(ptr.get());
-                // 验证转换后的指针是否有效
-                if (!isValidType(typedPtr)) return nullptr;
-                
-                // 创建一个新的共享指针，共享原始指针的引用计数
-                return std::shared_ptr<T>(ptr, typedPtr);
-            } catch (...) {
-                return nullptr;
-            }
-        }
-
-    private:
-        // 类型验证函数的主模板（默认实现）
-        template<typename T>
-        static bool isValidType(T* ptr) {
-            // 默认情况下，只检查指针是否为空
-            return ptr != nullptr;
-        }
-        
-        // 为 StorageAnnotation 特化验证函数
-        static bool isValidType(StorageAnnotation* ptr) {
-            if (!ptr) return false;
-            // 验证格式字段是否有效
-            return !ptr->format.isEmpty();
-        }
-        
-        // 为 ScopeAnnotation 特化验证函数
-        static bool isValidType(ScopeAnnotation* ptr) {
-            if (!ptr) return false;
-            // 验证 value 字段是否是有效的 Scope 枚举值
-            return (ptr->value == Scope::Global || ptr->value == Scope::Product);
-        }
-        
-        // 为 WindowAnnotation 特化验证函数
-        static bool isValidType(WindowAnnotation* ptr) {
-            if (!ptr) return false;
-            // 验证 title 字段是否存在
-            return !ptr->title.isNull();
-        }
-    };
-
     IModel::IModel() 
         : m_scope(Scope::Global)
         , m_writable(false)
@@ -200,7 +148,7 @@ namespace ymf {
         return m_context;
     }
 
-    std::shared_ptr<StorageAnnotation> IModel::modelStorageAnnotation() const
+    QSharedPointer<StorageAnnotation> IModel::modelStorageAnnotation() const
     {
         auto annotations = modelAnnotations();
         for (const auto& annotation : annotations) {
@@ -212,7 +160,7 @@ namespace ymf {
         return nullptr;
     }
 
-    std::shared_ptr<ScopeAnnotation> IModel::modelScopeAnnotation() const
+    QSharedPointer<ScopeAnnotation> IModel::modelScopeAnnotation() const
     {
         auto annotations = modelAnnotations();
         for (const auto& annotation : annotations) {
@@ -224,7 +172,7 @@ namespace ymf {
         return nullptr;
     }
 
-    std::shared_ptr<WindowAnnotation> IModel::modelWindowAnnotation() const
+    QSharedPointer<WindowAnnotation> IModel::modelWindowAnnotation() const
     {
         auto annotations = modelAnnotations();
         for (const auto& annotation : annotations) {
@@ -236,12 +184,12 @@ namespace ymf {
         return nullptr;
     }
 
-    std::shared_ptr<IStorageEngine> IModel::storageEngine(const QString& format) {
+    QSharedPointer<IStorageEngine> IModel::storageEngine(const QString& format) {
         return StorageEngineFactory::instance()->getEngine(format);
     }
 
     ValidationResult IModel::validate() const {
-        auto validators = m_context ? m_context->getValidators(typeid(*this)) : QList<std::shared_ptr<IModelValidator>>();
+        auto validators = m_context ? m_context->getValidators(typeid(*this)) : QList<QSharedPointer<IModelValidator>>();
         
         m_lastValidationResult = ValidationResult::success();
         

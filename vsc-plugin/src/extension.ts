@@ -49,8 +49,10 @@ export function activate(context: ExtensionContext) {
     clientOptions
   );
 
-  // 启动客户端
+  // 启动客户端并输出调试信息
+  console.log('Starting Mota Language Server...');
   client.start();
+  console.log('Mota Language Server started.');
 }
 
 export function deactivate(): Thenable<void> | undefined {

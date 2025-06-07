@@ -1,0 +1,63 @@
+// {{STRUCT_NAME}}结构体
+{{STRUCT_ANNOTATIONS}}
+class MODEL_EXPORT {{CLASS_NAME}} : {{INHERITANCE_DECLARATION}} {
+public:
+    {{CLASS_NAME}}() = default;
+    {{CONSTRUCTOR}}
+    
+    // 实现{{INTERFACE_NAME}}接口
+    QCborValue toCbor() const override {
+        QCborMap map;
+        {{SERIALIZE_FIELDS}}
+        return map;
+    }
+    
+    void fromCbor(const QCborValue& cbor) override {
+        QCborMap map = cbor.toMap();
+        {{DESERIALIZE_FIELDS}}
+    }
+    
+    QStringList fields() const override {
+        return QStringList{{{FIELD_NAMES}}};
+    }
+    
+    QString fieldOriginTypeName(const QString& fieldName) const override {
+        {{FIELD_TYPE_LOGIC}}
+    }
+    
+    QList<QSharedPointer<IAnnotation>> fieldAnnotations(const QString& fieldName) const override {
+        {{FIELD_ANNOTATION_LOGIC}}
+        return QList<QSharedPointer<IAnnotation>>();
+    }
+    
+    QString description() const override {
+        return "{{DESCRIPTION}}";
+    }
+    
+    QString fieldDescription(const QString& fieldName) const override {
+        {{FIELD_DESCRIPTION_LOGIC}}
+        return QString();
+    }
+    
+    QVariant value(const QString& fieldName) const override {
+        {{VALUE_GETTER_LOGIC}}
+    }
+    
+    bool value(const QString& fieldName, const QVariant& value) override {
+        {{VALUE_SETTER_LOGIC}}
+    }
+    
+    // 特定于{{STRUCT_NAME}}的访问器
+    {{ACCESSORS}}
+    
+protected:
+    QString modelName() const override {
+        return "{{STRUCT_NAME}}";
+    }
+    
+private:
+    {{PRIVATE_FIELDS}}
+    
+    // 变更通知
+    void notifyChange();
+};

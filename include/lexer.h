@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 #include <vector>
@@ -14,55 +14,55 @@ enum class TokenType {
     Eof,
     
     // 标识符和字面量
-    Identifier,
+    Identifier, // 1
     Integer,
     Float,
     String,
     
     // 关键字
-    Namespace,
+    Namespace,// 5
     Include,
     Struct,
     Enum,
     Block,
-    Annotation,
+    Annotation, // 10
     
     // 类型
     Int8, Int16, Int32, Int64,
-    Float32, Float64,
+    Float32, Float64, // 15
     StringType,
     Bytes,
     Bool,
-    Repeated,
+    Repeated, // 20
     Map,
     Optional,
     
     // 标点符号
     LeftBrace,      // {
     RightBrace,     // }
-    LeftParen,      // (
+    LeftParen,      // ( 25
     RightParen,     // )
     LeftBracket,    // [
     RightBracket,   // ]
     LeftAngle,      // <
-    RightAngle,     // >
+    RightAngle,     // > 30
     Semicolon,      // ;
     Comma,          // ,
     Dot,            // .
-    Colon,          // :
-    Equal,          // =
+    Colon,          // : 
+    Equal,          // = 35
     At,             // @
     
     // 操作符
     Plus,           // +
     Minus,          // -
     Star,           // *
-    Slash,          // /
+    Slash,          // / 40
     Percent,        // %
     Bang,           // !
     And,            // &&
     Or,             // ||
-    Less,           // <
+    Less,           // < 45
     Greater,        // >
     
     // 布尔值
@@ -71,14 +71,14 @@ enum class TokenType {
     
     // 复合操作符
     EqualEqual,     // ==
-    BangEqual,      // !=
+    BangEqual,      // != 50
     LessEqual,      // <=
     GreaterEqual,   // >=
     
     // 注释
     LineComment,    // //
     BlockComment,   // /* */
-    UIComment,      // //@
+    UIComment,      // //@ 55
     
     // 其他
     Error

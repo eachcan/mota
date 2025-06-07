@@ -30,7 +30,8 @@ mota [OPTIONS] [FILE] [...]
 
 Options:
   -h, --help      显示帮助信息
-  -v, --version   显示版本信息
+  -V, --version   显示版本信息
+  -v, --verbose   显示详细信息
   -i, --include-path PATH
                   添加包含路径，可以指定多次。如果使用了 mota-config.json，本参数会在 mota-config.json 的 include_paths 基础上增加。
   -o, --output-dir PATH

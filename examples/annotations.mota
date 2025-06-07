@@ -1,0 +1,57 @@
+// 注解系统示例
+namespace examples.annotations;
+
+// 引入标准注解库
+include "yima.mota";
+
+// 存储配置注解
+@Storage(
+    path = "config/app.cbor", 
+    format = "cbor"
+)
+// 窗口配置注解
+@Window(
+    title = "应用配置", 
+    desc = "应用程序的全局配置"
+)
+struct AppConfig {
+    // 文本输入框
+    @Text(desc = "应用的显示名称")
+    string appName = "My App";
+    
+    // 整数输入框
+    @Int(desc = "最大并发连接数", min = 1, max = 1000, step = 1)
+    int32 maxConnections = 100;
+    
+    // 开关控件
+    @Switcher(desc = "是否启用日志记录")
+    bool enableLogging = true;
+    
+    // 下拉选择框
+    @Select(desc = "选择日志级别")
+    string logLevel = "INFO";
+}
+
+// 显示设置配置
+@Window(title = "显示设置")
+struct DisplayConfig {
+    // 界面缩放
+    @Int(desc = "调整界面元素大小", min = 80, max = 200, step = 10)
+    int32 uiScale = 100;
+    
+    // 主题选择
+    @Text(desc = "选择界面主题")
+    string theme = "system";
+}
+
+// 网络设置配置
+@Window(title = "网络设置")
+struct NetworkConfig {
+    // API地址
+    @Text(desc = "后端服务地址")
+    string apiEndpoint = "https://api.example.com";
+    
+    // 请求超时
+    @Int(desc = "API 请求超时时间(秒)", min = 1, max = 60)
+    int32 requestTimeout = 30;
+}

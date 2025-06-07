@@ -1,0 +1,100 @@
+{
+  "version": "1.0",
+  "encoding": "UTF-8 with BOM",
+  "templates": {
+    "header": "header.template",
+    "block": "block.template",
+    "struct": "struct.template",
+    "enum": "enum.template",
+    "annotation": "annotation.template",
+    "field_types": "field_types.template",
+    "accessor": "accessor.template",
+    "serialize": "serialize.template",
+    "deserialize": "deserialize.template"
+  },
+  "type_mapping": {
+    "int8": "int8_t",
+    "int16": "int16_t",
+    "int32": "int32_t",
+    "int64": "int64_t",
+    "uint8": "uint8_t",
+    "uint16": "uint16_t",
+    "uint32": "uint32_t",
+    "uint64": "uint64_t",
+    "float32": "float",
+    "float64": "double",
+    "string": "QString",
+    "bool": "bool",
+    "bytes": "QByteArray"
+  },
+  "accessor_format": {
+    "getter_prefix": "get",
+    "setter_prefix": "set",
+    "pascal_case": true
+  },
+  "identifier_format": {
+    "style": "pascal_case",
+    "prefix": {
+    },
+    "suffix": {
+      "block": "Block",
+      "struct": "Model",
+      "enum": "",
+      "annotation": "Annotation"
+    }
+  },
+  "namespace_format": {
+    "separator": "::",
+    "style": "snake_case"
+  },
+  "inheritance_format": {
+    "single_inheritance": "{{BASE_CLASS}}",
+    "multiple_inheritance": "{{BASE_CLASSES | join(', ')}}",
+    "interface_inheritance": "{{INTERFACES | join(', ')}}",
+    "combined_inheritance": "{{BASE_CLASSES | join(', ')}}{{#HAS_INTERFACES}}, {{INTERFACES | join(', ')}}{{/HAS_INTERFACES}}",
+    "inheritance_keyword": "public"
+  },
+  "field_type_templates": {
+    "int8": "INT",
+    "int16": "INT", 
+    "int32": "INT",
+    "int64": "INT",
+    "uint8": "INT",
+    "uint16": "INT", 
+    "uint32": "INT",
+    "uint64": "INT",
+    "float32": "FLOAT",
+    "float64": "FLOAT",
+    "string": "STRING",
+    "bool": "BOOL",
+    "bytes": "BYTES",
+    "repeated": "ARRAY",
+    "custom": "COMPLEX"
+  },
+  "template_variables": {
+    "CLASS_NAME": "{{TYPE_NAME}}{{TYPE_SUFFIX}}",
+    "PRIVATE_FIELD_NAME": "{{FIELD_NAME}}_",
+    "FIELD_NAME_PASCAL": "{{FIELD_NAME | pascal_case}}",
+    "FIELD_NAME_CAMEL": "{{FIELD_NAME | camel_case}}",
+    "FIELD_TYPE_MAPPED": "{{FIELD_TYPE | map_type}}",
+    "SERIALIZE_TEMPLATE": "{{FIELD_TYPE | field_template}}_SERIALIZE",
+    "DESERIALIZE_TEMPLATE": "{{FIELD_TYPE | field_template}}_DESERIALIZE"
+  },
+  "type_interface_mapping": {
+    "block": "IBlock",
+    "struct": "IModel", 
+    "annotation": "IAnnotation"
+  },
+  "file_path": [
+    {
+      "path": "{{NAMESPACE | namespace_path}}/{{FILE_NAME}}.h",
+      "type": "file"
+    }
+  ],
+  "loop_syntax": {
+    "start_tag": "{{#each",
+    "end_tag": "{{/each}}",
+    "item_variable": "item",
+    "index_variable": "index"
+  }
+}

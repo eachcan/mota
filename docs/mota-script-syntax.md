@@ -181,6 +181,8 @@ annotation MyAnnotation;
 int32 id = 0;
 ```
 
+> **注意：注解（annotation）不支持继承。**
+
 ## 4. 枚举
 
 你可以使用以下方式定义一个枚举：
@@ -219,6 +221,8 @@ struct MyStruct {
     MyEnum myEnum = A;
 }
 ```
+
+> **注意：枚举（enum）不支持继承。**
 
 ## 5. 块
 

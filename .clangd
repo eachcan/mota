@@ -1,0 +1,21 @@
+CompileFlags:
+  Remove: [-fms-compatibility-version=19, -fms-extensions]
+  Add: [
+    "-std=c++20",
+    "-DQT_CORE_LIB",
+    "-DQT_GUI_LIB",
+    "-DQT_WIDGETS_LIB",
+    "-DUNICODE",
+    "-D_UNICODE",
+    "-DNDEBUG",
+    "-ID:/Qt/6.8.2/msvc2022_64/include",
+    "-ID:/Qt/6.8.2/msvc2022_64/include/QtCore",
+    "-ID:/Qt/6.8.2/msvc2022_64/include/QtGui",
+    "-ID:/Qt/6.8.2/msvc2022_64/include/QtWidgets"
+  ]
+
+  CompilationDatabase: .vscode/
+
+Index:
+  Background: true
+  StandardLibrary: true

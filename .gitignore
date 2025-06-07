@@ -14,3 +14,6 @@ third_party/
 include/version.h
 
 .windsurfrules
+
+compile_commands.json
+mota-install/

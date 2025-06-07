@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "ast.h"
 #include "lexer.h"
@@ -40,12 +40,12 @@ public:
     
 private:
     // 辅助方法
-    const lexer::Token& advance();
-    const lexer::Token& peek() const;
-    const lexer::Token& peekNext() const;
-    bool check(lexer::TokenType type) const;
-    bool match(lexer::TokenType type);
-    bool isAtEnd() const;
+    lexer::Token advance(); // 查看当前token然后下一个
+    lexer::Token peek() const; // 查看当前token
+    lexer::Token peekNext() const; // 下一个token 并查看
+    bool check(lexer::TokenType type) const; // 查看当前 token 并检查是否为type
+    bool consume(lexer::TokenType type); // 如果当前token是type，则移到下一个token
+    bool isAtEnd() const; // 检查是否到达文件末尾
     
     // 错误处理
     lexer::Token consume(lexer::TokenType type, const std::string& message);
@@ -61,7 +61,7 @@ private:
     std::unique_ptr<ast::Struct> structDeclaration();
     std::unique_ptr<ast::Enum> enumDeclaration();
     std::unique_ptr<ast::Block> blockDeclaration();
-    std::unique_ptr<ast::Annotation> annotationDeclaration();
+    std::unique_ptr<ast::AnnotationDecl> annotationDeclaration();
     std::unique_ptr<ast::Type> parseType();
     std::unique_ptr<ast::Type> primaryType();
     std::unique_ptr<ast::Type> containerType();

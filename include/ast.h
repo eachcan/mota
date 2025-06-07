@@ -15,6 +15,7 @@ class Node;
 class Expr;
 class Type;
 class Annotation;
+class AnnotationDecl;
 class AnnotationArgument;
 class Statement;
 class Field;
@@ -28,7 +29,7 @@ class Include;
 // 节点类型
 enum class NodeType {
     // 表达式
-    Identifier,
+    Identifier, 
     Literal,
     BinaryOp,
     UnaryOp,
@@ -147,7 +148,7 @@ public:
 class Type : public Node {
 public:
     virtual ~Type() = default;
-    NodeType nodeType() const override { return NodeType::NamedType; }
+    virtual std::string toString() const = 0;
 };
 
 // 命名类型
@@ -156,6 +157,9 @@ public:
     explicit NamedType(std::string name) : name(std::move(name)) {}
     
     std::string name;
+    
+    std::string toString() const override { return name; }
+    NodeType nodeType() const override { return NodeType::NamedType; }
 };
 
 // 容器类型
@@ -173,6 +177,17 @@ public:
     Kind kind;
     std::unique_ptr<Type> elementType;
     std::unique_ptr<Type> keyType;  // 仅用于Map
+    
+    std::string toString() const override {
+        switch(kind) {
+            case Kind::Array: return "repeated " + elementType->toString();
+            case Kind::Optional: return "optional " + elementType->toString();
+            case Kind::Map: return "map " + elementType->toString();
+            default: return "unknown";
+        }
+    }
+    
+    NodeType nodeType() const override { return NodeType::ContainerType; }
 };
 
 // 注解参数
@@ -183,7 +198,7 @@ public:
 };
 
 // 注解
-class Annotation : public Node {
+class Annotation : public Expr {
 public:
     Annotation(std::string name, std::vector<AnnotationArgument> args = {})
         : name(std::move(name)), arguments(std::move(args)) {}
@@ -224,9 +239,10 @@ public:
 // 块定义
 class Block : public Node {
 public:
-    explicit Block(std::string name) : name(std::move(name)) {}
+    explicit Block(std::string name, std::string baseName = "") : name(std::move(name)), baseName(std::move(baseName)) {}
     
     std::string name;
+    std::string baseName; // 继承的父 block 名称
     std::vector<std::unique_ptr<Field>> fields;
     std::vector<std::unique_ptr<Annotation>> annotations;
     
@@ -236,13 +252,25 @@ public:
 // 结构体定义
 class Struct : public Node {
 public:
-    explicit Struct(std::string name) : name(std::move(name)) {}
+    explicit Struct(std::string name, std::string baseName = "") : name(std::move(name)), baseName(std::move(baseName)) {}
     
     std::string name;
+    std::string baseName; // 继承的父 block 名称（仅 struct 支持继承 block）
     std::vector<std::unique_ptr<Field>> fields;
     std::vector<std::unique_ptr<Annotation>> annotations;
     
     NodeType nodeType() const override { return NodeType::StructDecl; }
+};
+
+// 注解声明
+class AnnotationDecl : public Node {
+public:
+    explicit AnnotationDecl(std::string name) : name(std::move(name)) {}
+    
+    std::string name;
+    std::vector<std::unique_ptr<Field>> fields;  // 注解字段
+    
+    NodeType nodeType() const override { return NodeType::AnnotationDecl; }
 };
 
 // 枚举定义

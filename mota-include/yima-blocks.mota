@@ -1,0 +1,43 @@
+namespace yima;
+
+block Point {
+    int16 x;
+    int16 y;
+}
+
+block Rectangle {
+    int16 width;
+    int16 height;
+    int16 x;
+    int16 y;
+}
+
+block Circle {
+    int16 radius;
+    int16 x;
+    int16 y;
+}
+
+block Ellipse {
+    Point center;
+    int16 width;
+    int16 height;
+    float32 rotation;
+}
+
+block Arc {
+    Point center;
+    int16 radius;
+    float32 startAngle;
+    float32 endAngle;
+    float32 rotation;
+}
+
+block Polygon {
+    repeated Point points;
+}
+
+block Line {
+    Point start;
+    Point end;
+}

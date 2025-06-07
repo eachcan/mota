@@ -1,0 +1,31 @@
+#pragma once
+
+#include <QCborMap>
+#include <QCborArray>
+#include <QCborValue>
+#include <QString>
+#include <QStringList>
+#include <QVariant>
+#include <QVector>
+#include <QSharedPointer>
+#include <memory>
+
+#include "framework/IBlock.h"
+#include "framework/IModel.h"
+#include "framework/IAnnotation.h"
+
+// 此文件由 Mota 代码生成器自动生成
+// 生成时间: {{GENERATION_TIME}}
+// 源文件: {{SOURCE_FILE}}
+
+using namespace ymf;
+
+{{#HAS_NAMESPACE}}
+namespace {{NAMESPACE}} {
+{{/HAS_NAMESPACE}}
+
+{{CONTENT}}
+
+{{#HAS_NAMESPACE}}
+} // namespace {{NAMESPACE}}
+{{/HAS_NAMESPACE}}
