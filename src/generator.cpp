@@ -1355,27 +1355,19 @@ std::string Generator::generateFile(const ast::Document& document) {
                 std::string targetString = replacementRule.substr(arrowPos + 2);
                 
                 // 替换所有源字符
-                for (size_t i = 0; i < formattedNamespace.length(); ++i) {
-                    if (formattedNamespace.substr(i, sourceChar.length()) == sourceChar) {
-                        formattedNamespace.replace(i, sourceChar.length(), targetString);
-                        i += targetString.length() - 1;
-                    }
+                size_t pos = 0;
+                while ((pos = formattedNamespace.find(sourceChar, pos)) != std::string::npos) {
+                    formattedNamespace.replace(pos, sourceChar.length(), targetString);
+                    pos += targetString.length();
                 }
             }
         } else {
-            // 回退到原来的逻辑，但使用配置的分隔符
-            if (config_.namespaceFormat.separator == "::") {
-                std::replace(formattedNamespace.begin(), formattedNamespace.end(), '.', ':');
-                // 将单个冒号替换为双冒号
-                size_t pos = 0;
-                while ((pos = formattedNamespace.find(":", pos)) != std::string::npos) {
-                    if (pos + 1 < formattedNamespace.length() && formattedNamespace[pos + 1] != ':') {
-                        formattedNamespace.replace(pos, 1, "::");
-                        pos += 2;
-                    } else {
-                        pos++;
-                    }
-                }
+            // 回退到原来的逻辑：将点替换为双冒号
+            std::string separator = config_.namespaceFormat.separator.empty() ? "::" : config_.namespaceFormat.separator;
+            size_t pos = 0;
+            while ((pos = formattedNamespace.find(".", pos)) != std::string::npos) {
+                formattedNamespace.replace(pos, 1, separator);
+                pos += separator.length();
             }
         }
         
@@ -1757,7 +1749,49 @@ std::string Generator::generateEnumValuesFromTemplate(const ast::Enum& enumNode)
         
         TemplateVars enumValueVars;
         enumValueVars["ENUM_VALUE_NAME"] = enumNode.values[i]->name;
-        enumValueVars["ENUM_VALUE_INDEX"] = std::to_string(i);
+        
+        // 使用枚举的实际值，如果没有指定值则使用索引
+        if (enumNode.values[i]->value) {
+            // 获取枚举值的字面量
+            if (enumNode.values[i]->value->nodeType() == ast::NodeType::Literal) {
+                auto literal = static_cast<const ast::Literal*>(enumNode.values[i]->value.get());
+                if (std::holds_alternative<int64_t>(literal->value)) {
+                    int64_t actualValue = std::get<int64_t>(literal->value);
+                    enumValueVars["ENUM_VALUE_INDEX"] = std::to_string(actualValue);
+                } else if (std::holds_alternative<double>(literal->value)) {
+                    double actualValue = std::get<double>(literal->value);
+                    enumValueVars["ENUM_VALUE_INDEX"] = std::to_string(static_cast<int>(actualValue));
+                } else if (std::holds_alternative<std::string>(literal->value)) {
+                    enumValueVars["ENUM_VALUE_INDEX"] = std::to_string(i);
+                } else if (std::holds_alternative<bool>(literal->value)) {
+                    enumValueVars["ENUM_VALUE_INDEX"] = std::to_string(i);
+                } else {
+                    enumValueVars["ENUM_VALUE_INDEX"] = std::to_string(i);
+                }
+            } else if (enumNode.values[i]->value->nodeType() == ast::NodeType::UnaryOp) {
+                // 处理一元操作符（如负数）
+                auto unaryOp = static_cast<const ast::UnaryOp*>(enumNode.values[i]->value.get());
+                if (unaryOp->op == ast::UnaryOp::Op::Minus && unaryOp->operand && 
+                    unaryOp->operand->nodeType() == ast::NodeType::Literal) {
+                    auto literal = static_cast<const ast::Literal*>(unaryOp->operand.get());
+                    if (std::holds_alternative<int64_t>(literal->value)) {
+                        int64_t actualValue = -std::get<int64_t>(literal->value);
+                        enumValueVars["ENUM_VALUE_INDEX"] = std::to_string(actualValue);
+                    } else if (std::holds_alternative<double>(literal->value)) {
+                        double actualValue = -std::get<double>(literal->value);
+                        enumValueVars["ENUM_VALUE_INDEX"] = std::to_string(static_cast<int>(actualValue));
+                    } else {
+                        enumValueVars["ENUM_VALUE_INDEX"] = std::to_string(i);
+                    }
+                } else {
+                    enumValueVars["ENUM_VALUE_INDEX"] = std::to_string(i);
+                }
+            } else {
+                enumValueVars["ENUM_VALUE_INDEX"] = std::to_string(i);
+            }
+        } else {
+            enumValueVars["ENUM_VALUE_INDEX"] = std::to_string(i);
+        }
         
         result += renderTemplate(enumValueTemplate, enumValueVars);
     }

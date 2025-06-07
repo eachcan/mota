@@ -76,13 +76,16 @@ public:
 // 表达式基类
 class Expr : public Node {
 public:
-    NodeType nodeType() const override { return NodeType::Identifier; }
+    // 纯虚函数，强制子类实现
+    NodeType nodeType() const override = 0;
 };
 
 // 标识符
 class Identifier : public Expr {
 public:
     explicit Identifier(std::string name) : name(std::move(name)) {}
+    
+    NodeType nodeType() const override { return NodeType::Identifier; }
     
     std::string name;
 };
@@ -100,6 +103,8 @@ public:
     
     explicit Literal(ValueType value) : value(std::move(value)) {}
     
+    NodeType nodeType() const override { return NodeType::Literal; }
+    
     ValueType value;
 };
 
@@ -114,6 +119,8 @@ public:
     
     BinaryOp(Op op, std::unique_ptr<Expr> lhs, std::unique_ptr<Expr> rhs)
         : op(op), lhs(std::move(lhs)), rhs(std::move(rhs)) {}
+    
+    NodeType nodeType() const override { return NodeType::BinaryOp; }
     
     Op op;
     std::unique_ptr<Expr> lhs;
@@ -130,6 +137,8 @@ public:
     UnaryOp(Op op, std::unique_ptr<Expr> operand)
         : op(op), operand(std::move(operand)) {}
     
+    NodeType nodeType() const override { return NodeType::UnaryOp; }
+    
     Op op;
     std::unique_ptr<Expr> operand;
 };
@@ -139,6 +148,8 @@ class MemberAccess : public Expr {
 public:
     MemberAccess(std::unique_ptr<Expr> object, std::string member)
         : object(std::move(object)), member(std::move(member)) {}
+    
+    NodeType nodeType() const override { return NodeType::MemberAccess; }
     
     std::unique_ptr<Expr> object;
     std::string member;

@@ -35,7 +35,7 @@ protected:
         generator_ = std::make_unique<generator::Generator>(templateDir_);
         
         // 加载配置
-        std::string configPath = templateDir_ + "/generator_config.json5";
+        std::string configPath = templateDir_ + "/config.json5";
         generator_->loadConfig(configPath); // 总是返回true（使用默认配置）
     }
     
@@ -99,9 +99,15 @@ TEST_F(GeneratorTest, GenerateSimpleBlock) {
 TEST_F(GeneratorTest, GenerateEnum) {
     std::string source = R"(
         enum Color {
-            Red;
-            Green;
-            Blue;
+            Red = 0;
+            Green = 1;
+            Blue = 2;
+        }
+        
+        enum Status {
+            Unknown = -1;
+            Active = 1;
+            Inactive = 0;
         }
     )";
     
@@ -112,9 +118,14 @@ TEST_F(GeneratorTest, GenerateEnum) {
     
     // 检查生成的代码包含期望的内容
     EXPECT_TRUE(result.find("Color") != std::string::npos);
-    EXPECT_TRUE(result.find("Red") != std::string::npos);
-    EXPECT_TRUE(result.find("Green") != std::string::npos);
-    EXPECT_TRUE(result.find("Blue") != std::string::npos);
+    EXPECT_TRUE(result.find("Red = 0") != std::string::npos);
+    EXPECT_TRUE(result.find("Green = 1") != std::string::npos);
+    EXPECT_TRUE(result.find("Blue = 2") != std::string::npos);
+    
+    EXPECT_TRUE(result.find("Status") != std::string::npos);
+    EXPECT_TRUE(result.find("Unknown = -1") != std::string::npos);
+    EXPECT_TRUE(result.find("Active = 1") != std::string::npos);
+    EXPECT_TRUE(result.find("Inactive = 0") != std::string::npos);
     
     std::cout << "Generated enum code:\n" << result << std::endl;
 }

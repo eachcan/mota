@@ -20,7 +20,7 @@
 
 
 // 此文件由 Mota 代码生成器自动生成
-// 生成时间: 2025-06-07 23:37:43
+// 生成时间: 2025-06-08 00:40:40
 // 源文件: unknown.mota
 
 using namespace ymf;
@@ -76,9 +76,8 @@ namespace GenderHelper {
     
     // 获取整个枚举的注解
     inline QList<QSharedPointer<IAnnotation>> annotations() {
-        QList<QSharedPointer<IAnnotation>> result;
-        return result;
-        return QList<QSharedPointer<IAnnotation>>();
+                QList<QSharedPointer<IAnnotation>> result;
+                return result;
     }
     
     // 获取特定枚举值的注解
@@ -107,17 +106,17 @@ namespace GenderHelper {
     // 获取特定枚举值的注解（通过字符串）
     inline QList<QSharedPointer<IAnnotation>> valueAnnotations(const QString& valueName) {
         if (valueName == "MALE") {
-            QList<QSharedPointer<IAnnotation>> result;
-            // TODO: 创建 yima.EnumValue 注解实例
-            return result;
+                QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.EnumValue 注解实例
+                return result;
         } else if (valueName == "FEMALE") {
-            QList<QSharedPointer<IAnnotation>> result;
-            // TODO: 创建 yima.EnumValue 注解实例
-            return result;
+                QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.EnumValue 注解实例
+                return result;
         } else if (valueName == "OTHER") {
-            QList<QSharedPointer<IAnnotation>> result;
-            // TODO: 创建 yima.EnumValue 注解实例
-            return result;
+                QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.EnumValue 注解实例
+                return result;
         }
         return QList<QSharedPointer<IAnnotation>>();
     }
@@ -176,9 +175,8 @@ namespace CountryHelper {
     
     // 获取整个枚举的注解
     inline QList<QSharedPointer<IAnnotation>> annotations() {
-        QList<QSharedPointer<IAnnotation>> result;
-        return result;
-        return QList<QSharedPointer<IAnnotation>>();
+                QList<QSharedPointer<IAnnotation>> result;
+                return result;
     }
     
     // 获取特定枚举值的注解
@@ -212,21 +210,21 @@ namespace CountryHelper {
     // 获取特定枚举值的注解（通过字符串）
     inline QList<QSharedPointer<IAnnotation>> valueAnnotations(const QString& valueName) {
         if (valueName == "CHINA") {
-            QList<QSharedPointer<IAnnotation>> result;
-            // TODO: 创建 yima.EnumValue 注解实例
-            return result;
+                QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.EnumValue 注解实例
+                return result;
         } else if (valueName == "USA") {
-            QList<QSharedPointer<IAnnotation>> result;
-            // TODO: 创建 yima.EnumValue 注解实例
-            return result;
+                QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.EnumValue 注解实例
+                return result;
         } else if (valueName == "JAPAN") {
-            QList<QSharedPointer<IAnnotation>> result;
-            // TODO: 创建 yima.EnumValue 注解实例
-            return result;
+                QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.EnumValue 注解实例
+                return result;
         } else if (valueName == "EUROPE") {
-            QList<QSharedPointer<IAnnotation>> result;
-            // TODO: 创建 yima.EnumValue 注解实例
-            return result;
+                QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.EnumValue 注解实例
+                return result;
         }
         return QList<QSharedPointer<IAnnotation>>();
     }

@@ -32,8 +32,7 @@ namespace {{CLASS_NAME}}Helper {
     
     // 获取整个枚举的注解
     inline QList<QSharedPointer<IAnnotation>> annotations() {
-        {{ENUM_ANNOTATION_LOGIC}}
-        return QList<QSharedPointer<IAnnotation>>();
+{{ENUM_ANNOTATION_LOGIC}}
     }
     
     // 获取特定枚举值的注解

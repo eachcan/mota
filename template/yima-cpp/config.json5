@@ -136,7 +136,7 @@
     "DEFAULT_CONVERT_METHOD": "Variant",
     "REPEATED_KEYWORD": "repeated",
     "NAMESPACE_PATH_SEPARATOR": "/",
-    "NAMESPACE_SEPARATOR_REPLACEMENT": ".->:",
+    "NAMESPACE_SEPARATOR_REPLACEMENT": ".->::",
     "ARGUMENT_NAME_VARIABLE": "argumentName",
     "FIELD_NAME_VARIABLE": "fieldName",
     

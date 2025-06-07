@@ -485,8 +485,16 @@ std::vector<SyntaxDiagnostic> SyntaxChecker::checkWithExternalAnnotations(const 
     for (const auto& pair : inheritanceMap) {
         std::set<std::string> visited;
         std::string current = pair.first;
+        bool hasCircle = false;
         
-        while (!current.empty() && visited.find(current) == visited.end()) {
+        while (!current.empty()) {
+            if (visited.find(current) != visited.end()) {
+                // 只有当循环包含起始类型时，才是真正的循环继承
+                if (current == pair.first) {
+                    hasCircle = true;
+                }
+                break;
+            }
             visited.insert(current);
             auto it = inheritanceMap.find(current);
             if (it != inheritanceMap.end()) {
@@ -496,7 +504,7 @@ std::vector<SyntaxDiagnostic> SyntaxChecker::checkWithExternalAnnotations(const 
             }
         }
         
-        if (!current.empty() && visited.find(current) != visited.end()) {
+        if (hasCircle) {
             diagnostics.push_back({
                 SyntaxDiagnostic::Level::Error,
                 "检测到循环继承: " + pair.first,

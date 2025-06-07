@@ -362,6 +362,9 @@ bool processMotaFile(const std::string& inputFile, const std::string& outputDir,
             }
         };
         
+        // 先收集当前文件本身的注解
+        collectAnnotations(*document);
+        
         // 处理当前文件的include
         for (const auto& decl : document->declarations) {
             if (decl->nodeType() == mota::ast::NodeType::IncludeDecl) {

@@ -19,7 +19,7 @@
 
 
 // 此文件由 Mota 代码生成器自动生成
-// 生成时间: 2025-06-07 23:43:29
+// 生成时间: 2025-06-08 00:40:40
 // 源文件: unknown.mota
 
 using namespace ymf;
@@ -131,9 +131,8 @@ namespace PriorityHelper {
     
     // 获取整个枚举的注解
     inline QList<QSharedPointer<IAnnotation>> annotations() {
-        QList<QSharedPointer<IAnnotation>> result;
-        return result;
-        return QList<QSharedPointer<IAnnotation>>();
+                QList<QSharedPointer<IAnnotation>> result;
+                return result;
     }
     
     // 获取特定枚举值的注解
@@ -159,14 +158,14 @@ namespace PriorityHelper {
     // 获取特定枚举值的注解（通过字符串）
     inline QList<QSharedPointer<IAnnotation>> valueAnnotations(const QString& valueName) {
         if (valueName == "Low") {
-            QList<QSharedPointer<IAnnotation>> result;
-            return result;
+                QList<QSharedPointer<IAnnotation>> result;
+                return result;
         } else if (valueName == "Medium") {
-            QList<QSharedPointer<IAnnotation>> result;
-            return result;
+                QList<QSharedPointer<IAnnotation>> result;
+                return result;
         } else if (valueName == "High") {
-            QList<QSharedPointer<IAnnotation>> result;
-            return result;
+                QList<QSharedPointer<IAnnotation>> result;
+                return result;
         }
         return QList<QSharedPointer<IAnnotation>>();
     }
