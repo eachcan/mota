@@ -25,9 +25,9 @@ public:
         {{FIELD_TYPE_LOGIC}}
     }
     
-    QList<QSharedPointer<void>> fieldAnnotations(const QString& fieldName) const override {
+    QList<QSharedPointer<IAnnotation>> fieldAnnotations(const QString& fieldName) const override {
         {{FIELD_ANNOTATION_LOGIC}}
-        return QList<QSharedPointer<void>>();
+        return QList<QSharedPointer<IAnnotation>>();
     }
     
     QString description() const override {
@@ -43,7 +43,7 @@ public:
         {{VALUE_GETTER_LOGIC}}
     }
     
-    void value(const QString& fieldName, const QVariant& value) override {
+    bool value(const QString& fieldName, const QVariant& value) override {
         {{VALUE_SETTER_LOGIC}}
     }
     

@@ -456,7 +456,7 @@ TemplateVars Generator::buildTemplateVars(const std::string& typeName, const std
     // 描述信息
     vars["DESCRIPTION"] = "Generated from " + typeKind + " " + typeName;
     
-    // 注解信息（可以根据需要扩展）
+    // TODO: 注解信息（可以根据需要扩展）
     vars["STRUCT_ANNOTATIONS"] = "";
     vars["BLOCK_ANNOTATIONS"] = "";
     vars["ANNOTATION_ANNOTATIONS"] = "";

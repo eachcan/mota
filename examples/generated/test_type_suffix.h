@@ -15,13 +15,13 @@
 #include "framework/IAnnotation.h"
 
 // 此文件由 Mota 代码生成器自动生成
-// 生成时间: 2025-06-06 19:48:45
+// 生成时间: 2025-06-06 20:13:12
 // 源文件: unknown.mota
 
 using namespace ymf;
 
 
-namespace examples::type_suffix {
+namespace examples.type_suffix {
 
 
 // User块
@@ -253,9 +253,9 @@ private:
 
 // UserProfile结构体
 
-class MODEL_EXPORT UserProfile : public ProfileBlock, public IModel {
+class MODEL_EXPORT UserProfileModel : public IModel {
 public:
-    UserProfile() = default;
+    UserProfileModel() = default;
     
     
     // 实现IModel接口
@@ -473,7 +473,7 @@ private:
 }; 
 
 // UserRole枚举
-enum class UserRoleEnum {
+enum class UserRole {
     Admin = 0,
     Moderator = 1,
     User = 2,
@@ -481,17 +481,17 @@ enum class UserRoleEnum {
 };
 
 // UserRole辅助函数
-namespace UserRoleEnumHelper {
+namespace UserRoleHelper {
     // 将枚举值转换为字符串
-    inline QString toString(UserRoleEnum value) {
+    inline QString toString(UserRole value) {
         switch (value) {
-            case UserRoleEnum::Admin:
+            case UserRole::Admin:
                 return "Admin";
-            case UserRoleEnum::Moderator:
+            case UserRole::Moderator:
                 return "Moderator";
-            case UserRoleEnum::User:
+            case UserRole::User:
                 return "User";
-            case UserRoleEnum::Guest:
+            case UserRole::Guest:
                 return "Guest";
             default:
                 return QString();
@@ -499,17 +499,17 @@ namespace UserRoleEnumHelper {
     }
     
     // 将字符串转换为枚举值
-    inline UserRoleEnum fromString(const QString& str) {
+    inline UserRole fromString(const QString& str) {
         if (str == "Admin") {
-            return UserRoleEnum::Admin;
+            return UserRole::Admin;
         } else if (str == "Moderator") {
-            return UserRoleEnum::Moderator;
+            return UserRole::Moderator;
         } else if (str == "User") {
-            return UserRoleEnum::User;
+            return UserRole::User;
         } else if (str == "Guest") {
-            return UserRoleEnum::Guest;
+            return UserRole::Guest;
         }
-        return UserRoleEnum::Admin;
+        return UserRole::Admin;
     }
     
     // 获取所有枚举值的字符串表示
@@ -526,9 +526,9 @@ namespace UserRoleEnumHelper {
 
 // ComplexSystem结构体
 
-class MODEL_EXPORT ComplexSystem : public IModel {
+class MODEL_EXPORT ComplexSystemModel : public IModel {
 public:
-    ComplexSystem() = default;
+    ComplexSystemModel() = default;
     
     
     // 实现IModel接口
@@ -566,13 +566,13 @@ for (const auto& itemValue : userProfilesArray) {
     userProfiles.append(item);
 }
 setUserProfiles(userProfiles);
-        UserRoleEnum defaultRole;
+        UserRole defaultRole;
 defaultRole.fromCbor(map.value(QLatin1String("defaultRole")));
 setDefaultRole(defaultRole);
         QCborArray allowedRolesArray = map.value(QLatin1String("allowedRoles")).toArray();
-QVector<UserRoleEnum> allowedRoles;
+QVector<UserRole> allowedRoles;
 for (const auto& itemValue : allowedRolesArray) {
-    UserRoleEnum item;
+    UserRole item;
     item.fromCbor(itemValue);
     allowedRoles.append(item);
 }
@@ -635,11 +635,11 @@ setAllowedRoles(allowedRoles);
             return true;
         }
         if (fieldName == QLatin1String("defaultRole")) {
-            defaultRole_ = value.value<UserRoleEnum>();
+            defaultRole_ = value.value<UserRole>();
             return true;
         }
         if (fieldName == QLatin1String("allowedRoles")) {
-            allowedRoles_ = value.value<QVector<UserRoleEnum>>();
+            allowedRoles_ = value.value<QVector<UserRole>>();
             return true;
         }
         if (fieldName == QLatin1String("systemName")) {
@@ -681,20 +681,20 @@ setAllowedRoles(allowedRoles);
     } 
 
         // defaultRole字段的访问器
-    UserRoleEnum getDefaultRole() const {
+    UserRole getDefaultRole() const {
         return defaultRole_;
     }
     
-    void setDefaultRole(const UserRoleEnum& value) {
+    void setDefaultRole(const UserRole& value) {
         defaultRole_ = value;
     } 
 
         // allowedRoles字段的访问器
-    QVector<UserRoleEnum> getAllowedRoles() const {
+    QVector<UserRole> getAllowedRoles() const {
         return allowedRoles_;
     }
     
-    void setAllowedRoles(const QVector<UserRoleEnum>& value) {
+    void setAllowedRoles(const QVector<UserRole>& value) {
         allowedRoles_ = value;
     } 
 
@@ -742,8 +742,8 @@ protected:
 private:
     UserBlock mainUser_;
     QVector<ProfileBlock> userProfiles_;
-    UserRoleEnum defaultRole_;
-    QVector<UserRoleEnum> allowedRoles_;
+    UserRole defaultRole_;
+    QVector<UserRole> allowedRoles_;
     QString systemName_;
     int32_t maxUsers_;
     bool isEnabled_;

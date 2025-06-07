@@ -15,7 +15,7 @@ struct Options {
     std::vector<std::string> includePaths;
     std::string outputDir = "output";
     std::string sourceDir = ".";
-    std::string lang = "cpp";
+    std::string lang = "";
     std::string configPath;
     std::vector<std::string> files;
     bool showHelp = false;
@@ -29,7 +29,8 @@ void showHelp() {
     std::cout << std::endl;
     std::cout << "Options:" << std::endl;
     std::cout << "  -h, --help      显示帮助信息" << std::endl;
-    std::cout << "  -v, --version   显示版本信息" << std::endl;
+    std::cout << "  -V, --version   显示版本信息" << std::endl;
+    std::cout << "  -v, --verbose   显示详细信息" << std::endl;
     std::cout << "  -i, --include-path PATH" << std::endl;
     std::cout << "                  添加包含路径，可以指定多次。如果使用了 mota-config.json，本参数会在 mota-config.json 的 include_paths 基础上增加。" << std::endl;
     std::cout << "  -o, --output-dir PATH" << std::endl;
@@ -168,7 +169,7 @@ bool processMotaFile(const std::string& inputFile, const std::string& outputDir,
         mota::generator::Generator generator(templateDir);
         
         // 加载配置
-        std::string configPath = templateDir + "/generator_config.json5";
+        std::string configPath = templateDir + "/config.json5";
         generator.loadConfig(configPath);
         
         // 生成代码
@@ -184,6 +185,7 @@ bool processMotaFile(const std::string& inputFile, const std::string& outputDir,
         
         // 根据输入文件名生成输出文件名
         fs::path inputPath(inputFile);
+        // TODO: 根据配置文件中的 file_path 生成输出文件名
         std::string outputFile = (fs::path(outputDir) / inputPath.stem()).string() + ".h";
         
         std::ofstream outFile(outputFile);
@@ -259,10 +261,13 @@ int main(int argc, char* argv[]) {
     }
     
     // 确定模板目录
-    std::string templateDir = "template/yima-cpp";
-    if (options.lang == "cpp") {
+    std::string templateDir = "template/";
+    if (options.lang.empty()) {
         templateDir = "template/yima-cpp";
+    } else {
+        templateDir = "template/" + options.lang;
     }
+    std::cout << "templateDir: " << templateDir << std::endl;
     
     // 处理每个文件
     int successCount = 0;

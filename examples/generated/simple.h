@@ -15,7 +15,7 @@
 #include "framework/IAnnotation.h"
 
 // 此文件由 Mota 代码生成器自动生成
-// 生成时间: 2025-06-06 20:12:28
+// 生成时间: 2025-06-06 20:13:12
 // 源文件: unknown.mota
 
 using namespace ymf;

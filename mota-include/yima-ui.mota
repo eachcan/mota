@@ -1,3 +1,5 @@
+namespace yima;
+
 // 整数输入框注解
 annotation Int {
     int32 min;
