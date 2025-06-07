@@ -21,20 +21,43 @@ struct GeneratorConfig {
     std::unordered_map<std::string, std::string> fieldTypeTemplates;
     std::unordered_map<std::string, std::string> templateVariables;
     std::unordered_map<std::string, std::string> typeInterfaceMapping;
+    
     struct {
         std::string getterPrefix;
         std::string setterPrefix;
         bool pascalCase;
     } accessorFormat;
+    
     struct {
         std::string style;
         std::unordered_map<std::string, std::string> prefix;
         std::unordered_map<std::string, std::string> suffix;
     } identifierFormat;
+    
+    struct {
+        std::string separator;
+        std::string style;
+    } namespaceFormat;
+    
+    struct {
+        std::string singleInheritance;
+        std::string multipleInheritance;
+        std::string interfaceInheritance;
+        std::string combinedInheritance;
+        std::string inheritanceKeyword;
+    } inheritanceFormat;
+    
     struct {
         std::string path;
         std::string type;
     } filePath;
+    
+    struct {
+        std::string startTag;
+        std::string endTag;
+        std::string itemVariable;
+        std::string indexVariable;
+    } loopSyntax;
 };
 
 // 代码生成器
@@ -99,17 +122,22 @@ private:
     std::string formatTypeName(const std::string& name, const std::string& type);
     std::string toPascalCase(const std::string& str);
     std::string toCamelCase(const std::string& str);
+    std::string toSnakeCase(const std::string& str);
     std::string getCurrentTimestamp();
     std::string extractNamespace(const ast::Document& document);
     std::string extractFileName(const std::string& filePath);
     
-    // 模板条件处理
+    // 模板处理
+    std::string processLoops(const std::string& content, const TemplateVars& vars);
+    std::string expandLoop(const std::string& loopContent, const std::string& collectionData, 
+                          const std::string& itemName, const std::string& indexName);
     std::string processConditionals(const std::string& content, const TemplateVars& vars);
-    std::string processRepeats(const std::string& content, const TemplateVars& vars);
-    
-    // 新的模板处理函数
     std::string processTemplateFunctions(const std::string& content, const TemplateVars& vars);
     std::string applyTemplateFunction(const std::string& value, const std::string& function);
+    
+    // 新增的模板函数
+    std::string formatNamespacePath(const std::string& namespaceStr);
+    std::string joinStrings(const std::string& value, const std::string& separator);
     
     // 基于配置的类型处理
     std::string mapTypeFromConfig(const std::string& motaType);
@@ -117,9 +145,12 @@ private:
     std::string getTypeSuffix(const std::string& type);
     std::string getInterfaceName(const std::string& type);
     std::string getFieldTemplate(const std::string& motaType);
+    std::string getTypeKind(const std::string& typeName);
     
     // 统一的模板变量构建
-    TemplateVars buildTemplateVars(const std::string& typeName, const std::string& typeKind, const std::vector<std::unique_ptr<ast::Field>>& fields);
+    TemplateVars buildTemplateVars(const std::string& typeName, const std::string& typeKind, 
+                                  const std::vector<std::unique_ptr<ast::Field>>& fields,
+                                  const std::string& baseName = "");
     TemplateVars buildFieldTemplateVars(const ast::Field& field);
     
     // 基于模板的代码生成

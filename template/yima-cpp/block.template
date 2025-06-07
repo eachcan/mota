@@ -1,5 +1,5 @@
 // {{BLOCK_NAME}}块
-class MODEL_EXPORT {{CLASS_NAME}} : public {{INTERFACE_NAME}} {
+class MODEL_EXPORT {{CLASS_NAME}} : {{INHERITANCE_DECLARATION}} {
 public:
     {{CLASS_NAME}}() = default;
     {{CONSTRUCTOR}}

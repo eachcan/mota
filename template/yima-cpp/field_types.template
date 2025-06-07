@@ -116,3 +116,10 @@ map.insert(QLatin1String("{{FIELD_NAME}}"), QCborValue(static_cast<int>({{GETTER
 
 [ENUM_DESERIALIZE]
 {{SETTER_NAME}}(static_cast<{{FIELD_TYPE_MAPPED}}>(map.value(QLatin1String("{{FIELD_NAME}}")).toInteger()));
+
+# 遍历语法示例 - 字段列表生成
+[FIELD_LIST_EXAMPLE]
+# 使用遍历语法生成字段列表
+{{#each FIELDS as field}}
+    QLatin1String("{{field}}"){{#if index}}, {{/if}}
+{{/each}}

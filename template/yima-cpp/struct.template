@@ -1,6 +1,6 @@
 // {{STRUCT_NAME}}结构体
 {{STRUCT_ANNOTATIONS}}
-class MODEL_EXPORT {{CLASS_NAME}} : public {{INTERFACE_NAME}} {
+class MODEL_EXPORT {{CLASS_NAME}} : {{INHERITANCE_DECLARATION}} {
 public:
     {{CLASS_NAME}}() = default;
     {{CONSTRUCTOR}}

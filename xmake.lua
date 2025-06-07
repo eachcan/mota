@@ -146,3 +146,4 @@ target("test_generator")
     add_includedirs("include")
     add_packages("gtest", {configs = {main = true}})
     set_encodings("utf-8")
+

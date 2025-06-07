@@ -170,7 +170,9 @@ bool processMotaFile(const std::string& inputFile, const std::string& outputDir,
         
         // 加载配置
         std::string configPath = templateDir + "/config.json5";
-        generator.loadConfig(configPath);
+        if (!generator.loadConfig(configPath)) {
+            std::cerr << "Warning: Failed to load config file, using defaults" << std::endl;
+        }
         
         // 生成代码
         std::string generatedCode = generator.generateFile(*document);
@@ -180,13 +182,36 @@ bool processMotaFile(const std::string& inputFile, const std::string& outputDir,
             return false;
         }
         
-        // 确保输出目录存在
-        fs::create_directories(outputDir);
-        
-        // 根据输入文件名生成输出文件名
+        // 根据配置文件生成输出文件路径
         fs::path inputPath(inputFile);
-        // TODO: 根据配置文件中的 file_path 生成输出文件名
-        std::string outputFile = (fs::path(outputDir) / inputPath.stem()).string() + ".h";
+        std::string fileName = inputPath.stem().string();
+        
+        // 提取命名空间信息
+        std::string namespaceStr = "";
+        for (const auto& node : document->declarations) {
+            if (node->nodeType() == mota::ast::NodeType::NamespaceDecl) {
+                auto namespaceNode = static_cast<const mota::ast::Namespace*>(node.get());
+                for (size_t i = 0; i < namespaceNode->name.size(); ++i) {
+                    if (i > 0) namespaceStr += ".";
+                    namespaceStr += namespaceNode->name[i];
+                }
+                break;
+            }
+        }
+        
+        // 构建输出路径
+        std::string outputFile = outputDir;
+        if (!namespaceStr.empty()) {
+            // 将命名空间的点替换为路径分隔符
+            std::string namespacePath = namespaceStr;
+            std::replace(namespacePath.begin(), namespacePath.end(), '.', '/');
+            outputFile = (fs::path(outputDir) / namespacePath / (fileName + ".h")).string();
+        } else {
+            outputFile = (fs::path(outputDir) / (fileName + ".h")).string();
+        }
+        
+        // 确保输出目录存在
+        fs::create_directories(fs::path(outputFile).parent_path());
         
         std::ofstream outFile(outputFile);
         if (outFile.is_open()) {
@@ -226,9 +251,10 @@ int main(int argc, char* argv[]) {
         std::cout << "Auto-loading config: mota-config.json" << std::endl;
     }
     
-    // TODO: 处理配置文件
+    // 处理配置文件
     if (!options.configPath.empty()) {
-        std::cout << "Note: Config file support is not implemented yet: " << options.configPath << std::endl;
+        std::cout << "Using config file: " << options.configPath << std::endl;
+        // 配置文件的处理现在在 processMotaFile 函数中进行
     }
     
     // 确定要处理的文件列表

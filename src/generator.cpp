@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <chrono>
 #include <iomanip>
+#include <regex>
 
 namespace mota {
 namespace generator {
@@ -165,6 +166,17 @@ bool Generator::parseConfig(const std::string& content) {
     config_.identifierFormat.prefix = extractObjectValues("prefix");
     config_.identifierFormat.suffix = extractObjectValues("suffix");
     
+    // 解析命名空间格式
+    config_.namespaceFormat.separator = extractStringValue("separator");
+    config_.namespaceFormat.style = extractStringValue("style");
+    
+    // 解析继承格式
+    config_.inheritanceFormat.singleInheritance = extractStringValue("single_inheritance");
+    config_.inheritanceFormat.multipleInheritance = extractStringValue("multiple_inheritance");
+    config_.inheritanceFormat.interfaceInheritance = extractStringValue("interface_inheritance");
+    config_.inheritanceFormat.combinedInheritance = extractStringValue("combined_inheritance");
+    config_.inheritanceFormat.inheritanceKeyword = extractStringValue("inheritance_keyword");
+    
     // 解析文件路径配置
     config_.filePath.path = extractStringValue("path");
     config_.filePath.type = extractStringValue("type");
@@ -177,6 +189,12 @@ bool Generator::parseConfig(const std::string& content) {
     
     // 解析类型接口映射
     config_.typeInterfaceMapping = extractObjectValues("type_interface_mapping");
+    
+    // 解析循环语法配置
+    config_.loopSyntax.startTag = extractStringValue("start_tag");
+    config_.loopSyntax.endTag = extractStringValue("end_tag");
+    config_.loopSyntax.itemVariable = extractStringValue("item_variable");
+    config_.loopSyntax.indexVariable = extractStringValue("index_variable");
     
     return true;
 }
@@ -205,6 +223,9 @@ std::string Generator::loadTemplate(const std::string& templateName) {
 std::string Generator::renderTemplate(const std::string& templateContent, const TemplateVars& vars) {
     std::string result = templateContent;
     
+    // 处理循环语句
+    result = processLoops(result, vars);
+    
     // 处理条件语句
     result = processConditionals(result, vars);
     
@@ -218,6 +239,76 @@ std::string Generator::renderTemplate(const std::string& templateContent, const 
         while ((pos = result.find(placeholder, pos)) != std::string::npos) {
             result.replace(pos, placeholder.length(), pair.second);
             pos += pair.second.length();
+        }
+    }
+    
+    return result;
+}
+
+std::string Generator::processLoops(const std::string& content, const TemplateVars& vars) {
+    std::string result = content;
+    
+    // 查找循环语法 {{#each COLLECTION as ITEM}}...{{/each}}
+    std::regex loopRegex(R"(\{\{#each\s+(\w+)\s+as\s+(\w+)(?:\s+with\s+(\w+))?\}\}(.*?)\{\{/each\}\})");
+    std::smatch match;
+    
+    while (std::regex_search(result, match, loopRegex)) {
+        std::string collectionName = match[1].str();
+        std::string itemName = match[2].str();
+        std::string indexName = match[3].str();
+        std::string loopContent = match[4].str();
+        
+        // 查找集合数据
+        auto collectionIt = vars.find(collectionName);
+        if (collectionIt != vars.end()) {
+            std::string expandedContent = expandLoop(loopContent, collectionIt->second, itemName, indexName);
+            result.replace(match.position(), match.length(), expandedContent);
+        } else {
+            // 如果找不到集合，移除整个循环块
+            result.replace(match.position(), match.length(), "");
+        }
+    }
+    
+    return result;
+}
+
+std::string Generator::expandLoop(const std::string& loopContent, const std::string& collectionData, 
+                                 const std::string& itemName, const std::string& indexName) {
+    // 这里简化处理，假设集合数据是以分隔符分隔的字符串
+    // 在实际实现中，应该支持更复杂的数据结构
+    std::vector<std::string> items;
+    std::stringstream ss(collectionData);
+    std::string item;
+    
+    while (std::getline(ss, item, '|')) {
+        items.push_back(item);
+    }
+    
+    std::string result;
+    for (size_t i = 0; i < items.size(); ++i) {
+        std::string iterationContent = loopContent;
+        
+        // 替换项目变量
+        std::string itemPlaceholder = "{{" + itemName + "}}";
+        size_t pos = 0;
+        while ((pos = iterationContent.find(itemPlaceholder, pos)) != std::string::npos) {
+            iterationContent.replace(pos, itemPlaceholder.length(), items[i]);
+            pos += items[i].length();
+        }
+        
+        // 替换索引变量（如果提供）
+        if (!indexName.empty()) {
+            std::string indexPlaceholder = "{{" + indexName + "}}";
+            pos = 0;
+            while ((pos = iterationContent.find(indexPlaceholder, pos)) != std::string::npos) {
+                iterationContent.replace(pos, indexPlaceholder.length(), std::to_string(i));
+                pos += std::to_string(i).length();
+            }
+        }
+        
+        result += iterationContent;
+        if (i < items.size() - 1) {
+            result += "\n";
         }
     }
     
@@ -318,6 +409,8 @@ std::string Generator::applyTemplateFunction(const std::string& value, const std
         return toPascalCase(value);
     } else if (function == "camel_case") {
         return toCamelCase(value);
+    } else if (function == "snake_case") {
+        return toSnakeCase(value);
     } else if (function == "map_type") {
         return mapTypeFromConfig(value);
     } else if (function == "field_template") {
@@ -326,9 +419,74 @@ std::string Generator::applyTemplateFunction(const std::string& value, const std
         return getTypeSuffix(value);
     } else if (function == "interface_name") {
         return getInterfaceName(value);
+    } else if (function == "namespace_path") {
+        return formatNamespacePath(value);
+    } else if (function.substr(0, 4) == "join") {
+        // 处理 join 函数，例如 join(', ')
+        size_t parenStart = function.find('(');
+        size_t parenEnd = function.find(')', parenStart);
+        if (parenStart != std::string::npos && parenEnd != std::string::npos) {
+            std::string separator = function.substr(parenStart + 1, parenEnd - parenStart - 1);
+            // 移除引号
+            if (separator.front() == '\'' || separator.front() == '"') {
+                separator = separator.substr(1, separator.length() - 2);
+            }
+            return joinStrings(value, separator);
+        }
     }
     
     return value; // 如果函数不存在，返回原值
+}
+
+std::string Generator::toSnakeCase(const std::string& str) {
+    if (str.empty()) return str;
+    
+    std::string result;
+    for (size_t i = 0; i < str.length(); ++i) {
+        char c = str[i];
+        if (std::isupper(c) && i > 0) {
+            result += '_';
+        }
+        result += std::tolower(c);
+    }
+    
+    return result;
+}
+
+std::string Generator::formatNamespacePath(const std::string& namespaceStr) {
+    if (namespaceStr.empty()) return "";
+    
+    std::string result = namespaceStr;
+    
+    // 根据配置的分隔符替换
+    if (config_.namespaceFormat.separator == "::") {
+        // C++ 风格，将 . 替换为 /
+        std::replace(result.begin(), result.end(), '.', '/');
+    } else if (config_.namespaceFormat.separator == ".") {
+        // Java 风格，将 . 替换为 /
+        std::replace(result.begin(), result.end(), '.', '/');
+    }
+    
+    return result;
+}
+
+std::string Generator::joinStrings(const std::string& value, const std::string& separator) {
+    // 简化实现，假设 value 是以 | 分隔的字符串
+    std::vector<std::string> parts;
+    std::stringstream ss(value);
+    std::string part;
+    
+    while (std::getline(ss, part, '|')) {
+        parts.push_back(part);
+    }
+    
+    std::string result;
+    for (size_t i = 0; i < parts.size(); ++i) {
+        if (i > 0) result += separator;
+        result += parts[i];
+    }
+    
+    return result;
 }
 
 std::string Generator::mapTypeFromConfig(const std::string& motaType) {
@@ -411,13 +569,18 @@ std::string Generator::getFieldTemplate(const std::string& motaType) {
     // 检查是否是已定义的自定义类型
     auto typeIt = typeContext_.find(motaType);
     if (typeIt != typeContext_.end()) {
-        return "COMPLEX";
+        if (typeIt->second == "enum") {
+            return "ENUM"; // 枚举类型
+        }
+        return "COMPLEX"; // 其他复合类型
     }
     
     return "COMPLEX"; // 默认为复合类型
 }
 
-TemplateVars Generator::buildTemplateVars(const std::string& typeName, const std::string& typeKind, const std::vector<std::unique_ptr<ast::Field>>& fields) {
+TemplateVars Generator::buildTemplateVars(const std::string& typeName, const std::string& typeKind, 
+                                         const std::vector<std::unique_ptr<ast::Field>>& fields,
+                                         const std::string& baseName) {
     TemplateVars vars;
     
     // 基础类型信息
@@ -426,6 +589,42 @@ TemplateVars Generator::buildTemplateVars(const std::string& typeName, const std
     vars["TYPE_SUFFIX"] = getTypeSuffix(typeKind);
     vars["INTERFACE_NAME"] = getInterfaceName(typeKind);
     vars["CLASS_NAME"] = formatTypeNameFromConfig(typeName, typeKind);
+    
+    // 继承信息
+    if (!baseName.empty()) {
+        vars["HAS_BASE_CLASS"] = "true";
+        vars["BASE_CLASS"] = formatTypeNameFromConfig(baseName, getTypeKind(baseName));
+        vars["BASE_CLASSES"] = vars["BASE_CLASS"]; // 单继承情况
+        
+        // 构建完整的继承声明
+        std::string inheritanceDecl = config_.inheritanceFormat.inheritanceKeyword + " " + vars["BASE_CLASS"];
+        
+        // 添加接口
+        std::string interfaceName = getInterfaceName(typeKind);
+        if (!interfaceName.empty()) {
+            vars["HAS_INTERFACES"] = "true";
+            vars["INTERFACES"] = interfaceName;
+            inheritanceDecl += ", " + config_.inheritanceFormat.inheritanceKeyword + " " + interfaceName;
+        }
+        
+        vars["INHERITANCE_DECLARATION"] = inheritanceDecl;
+    } else {
+        vars["HAS_BASE_CLASS"] = "";
+        vars["BASE_CLASS"] = "";
+        vars["BASE_CLASSES"] = "";
+        
+        // 只有接口继承
+        std::string interfaceName = getInterfaceName(typeKind);
+        if (!interfaceName.empty()) {
+            vars["HAS_INTERFACES"] = "true";
+            vars["INTERFACES"] = interfaceName;
+            vars["INHERITANCE_DECLARATION"] = config_.inheritanceFormat.inheritanceKeyword + " " + interfaceName;
+        } else {
+            vars["HAS_INTERFACES"] = "";
+            vars["INTERFACES"] = "";
+            vars["INHERITANCE_DECLARATION"] = "";
+        }
+    }
     
     // 根据类型设置特定的名称变量
     if (typeKind == "struct") {
@@ -453,15 +652,31 @@ TemplateVars Generator::buildTemplateVars(const std::string& typeName, const std
     vars["ARGUMENT_GETTER_LOGIC"] = generateFromTemplate("ARGUMENT_GETTER_LOGIC", fields);
     vars["ARGUMENT_NAMES"] = generateFromTemplate("ARGUMENT_NAMES", fields);
     
+    // 为循环语法准备字段数据
+    std::string fieldsData;
+    for (size_t i = 0; i < fields.size(); ++i) {
+        if (i > 0) fieldsData += "|";
+        fieldsData += fields[i]->name;
+    }
+    vars["FIELDS"] = fieldsData;
+    
     // 描述信息
     vars["DESCRIPTION"] = "Generated from " + typeKind + " " + typeName;
     
-    // TODO: 注解信息（可以根据需要扩展）
+    // 注解信息（可以根据需要扩展）
     vars["STRUCT_ANNOTATIONS"] = "";
     vars["BLOCK_ANNOTATIONS"] = "";
     vars["ANNOTATION_ANNOTATIONS"] = "";
     
     return vars;
+}
+
+std::string Generator::getTypeKind(const std::string& typeName) {
+    auto it = typeContext_.find(typeName);
+    if (it != typeContext_.end()) {
+        return it->second;
+    }
+    return "block"; // 默认类型
 }
 
 std::string Generator::generateFromTemplate(const std::string& templateType, const std::vector<std::unique_ptr<ast::Field>>& fields) {
@@ -553,14 +768,49 @@ std::string Generator::generateDeserializeFieldsFromTemplate(const std::vector<s
 TemplateVars Generator::buildFieldTemplateVars(const ast::Field& field) {
     TemplateVars vars;
     
+    // 基础字段信息
     vars["FIELD_NAME"] = field.name;
     vars["FIELD_TYPE"] = field.type->toString();
     vars["FIELD_TYPE_MAPPED"] = mapTypeFromConfig(field.type->toString());
-    vars["PRIVATE_FIELD_NAME"] = field.name + "_";
-    vars["FIELD_NAME_PASCAL"] = toPascalCase(field.name);
-    vars["FIELD_NAME_CAMEL"] = toCamelCase(field.name);
-    vars["GETTER_NAME"] = config_.accessorFormat.getterPrefix + toPascalCase(field.name);
-    vars["SETTER_NAME"] = config_.accessorFormat.setterPrefix + toPascalCase(field.name);
+    
+    // 使用配置的模板变量来生成字段相关的变量
+    for (const auto& templateVar : config_.templateVariables) {
+        if (templateVar.first.find("FIELD_") == 0 || templateVar.first.find("PRIVATE_") == 0) {
+            // 为字段相关的模板变量创建临时变量集合
+            TemplateVars tempVars = vars;
+            tempVars["FIELD_NAME"] = field.name;
+            tempVars["FIELD_TYPE"] = field.type->toString();
+            
+            // 渲染模板变量
+            vars[templateVar.first] = renderTemplate(templateVar.second, tempVars);
+        }
+    }
+    
+    // 如果配置中没有定义，则使用默认值
+    if (vars.find("PRIVATE_FIELD_NAME") == vars.end()) {
+        vars["PRIVATE_FIELD_NAME"] = field.name + "_";
+    }
+    if (vars.find("FIELD_NAME_PASCAL") == vars.end()) {
+        vars["FIELD_NAME_PASCAL"] = toPascalCase(field.name);
+    }
+    if (vars.find("FIELD_NAME_CAMEL") == vars.end()) {
+        vars["FIELD_NAME_CAMEL"] = toCamelCase(field.name);
+    }
+    
+    // 生成访问器名称
+    std::string getterName = config_.accessorFormat.getterPrefix;
+    std::string setterName = config_.accessorFormat.setterPrefix;
+    if (config_.accessorFormat.pascalCase) {
+        getterName += toPascalCase(field.name);
+        setterName += toPascalCase(field.name);
+    } else {
+        getterName += field.name;
+        setterName += field.name;
+    }
+    vars["GETTER_NAME"] = getterName;
+    vars["SETTER_NAME"] = setterName;
+    
+    // 生成序列化模板名称
     vars["SERIALIZE_TEMPLATE"] = getFieldTemplate(field.type->toString()) + "_SERIALIZE";
     vars["DESERIALIZE_TEMPLATE"] = getFieldTemplate(field.type->toString()) + "_DESERIALIZE";
     
@@ -570,19 +820,20 @@ TemplateVars Generator::buildFieldTemplateVars(const ast::Field& field) {
         vars["ITEM_TYPE"] = mapTypeFromConfig(elementType);
         vars["ELEMENT_TYPE"] = elementType;
         
-        // 为基本类型数组生成转换方法
-        if (elementType == "int8" || elementType == "int16" || elementType == "int32" || 
-            elementType == "int64" || elementType == "uint8" || elementType == "uint16" || 
-            elementType == "uint32" || elementType == "uint64") {
+        // 根据类型映射生成转换方法
+        auto mappedType = mapTypeFromConfig(elementType);
+        if (mappedType.find("int") != std::string::npos || mappedType == "byte" || mappedType == "short" || mappedType == "long") {
             vars["CONVERT_METHOD"] = "Integer";
-        } else if (elementType == "float32" || elementType == "float64") {
+        } else if (mappedType.find("float") != std::string::npos || mappedType.find("double") != std::string::npos) {
             vars["CONVERT_METHOD"] = "Double";
-        } else if (elementType == "string") {
+        } else if (mappedType.find("String") != std::string::npos || mappedType.find("QString") != std::string::npos) {
             vars["CONVERT_METHOD"] = "String";
-        } else if (elementType == "bool") {
+        } else if (mappedType.find("bool") != std::string::npos) {
             vars["CONVERT_METHOD"] = "Bool";
-        } else if (elementType == "bytes") {
+        } else if (mappedType.find("byte") != std::string::npos && mappedType.find("[]") != std::string::npos) {
             vars["CONVERT_METHOD"] = "ByteArray";
+        } else {
+            vars["CONVERT_METHOD"] = "Variant";
         }
     }
     
@@ -641,7 +892,7 @@ std::string Generator::extractTemplateSection(const std::string& templateContent
         }
         
         if (!cleanContent.empty()) {
-            cleanContent += "\n";
+            cleanContent += "\n        "; // 添加适当的缩进
         }
         cleanContent += line;
     }
@@ -686,11 +937,9 @@ std::string Generator::generateValueSetterLogicFromTemplate(const std::vector<st
         if (!result.empty()) result += "\n        ";
         result += "if (fieldName == QLatin1String(\"" + field->name + "\")) {\n";
         result += "            " + field->name + "_ = value.value<" + mapTypeFromConfig(field->type->toString()) + ">();\n";
-        result += "            return true;\n";
+        result += "            return;\n";
         result += "        }";
     }
-    if (!result.empty()) result += "\n        ";
-    result += "return false;";
     return result;
 }
 
@@ -803,7 +1052,7 @@ std::string Generator::generateStruct(const ast::Struct& structNode) {
         return "";
     }
     
-    TemplateVars vars = buildTemplateVars(structNode.name, "struct", structNode.fields);
+    TemplateVars vars = buildTemplateVars(structNode.name, "struct", structNode.fields, structNode.baseName);
     
     return renderTemplate(structTemplate, vars);
 }
@@ -820,7 +1069,7 @@ std::string Generator::generateBlock(const ast::Block& blockNode) {
         return "";
     }
     
-    TemplateVars vars = buildTemplateVars(blockNode.name, "block", blockNode.fields);
+    TemplateVars vars = buildTemplateVars(blockNode.name, "block", blockNode.fields, blockNode.baseName);
     
     return renderTemplate(blockTemplate, vars);
 }
@@ -1050,11 +1299,9 @@ std::string Generator::generateValueSetterLogic(const std::vector<std::unique_pt
         if (!result.empty()) result += "\n        ";
         result += "if (fieldName == QLatin1String(\"" + field->name + "\")) {\n";
         result += "            " + field->name + "_ = value.value<" + mapType(field->type->toString()) + ">();\n";
-        result += "            return true;\n";
+        result += "            return;\n";
         result += "        }";
     }
-    if (!result.empty()) result += "\n        ";
-    result += "return false;";
     return result;
 }
 
