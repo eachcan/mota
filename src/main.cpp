@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <filesystem>
+#include <functional>
 #include "parser.h"
 #include "generator.h"
 #include "syntax_checker.h"
@@ -253,12 +254,10 @@ std::unique_ptr<mota::ast::Document> processIncludesRecursively(
         // 获取当前文件所在目录
         std::string currentFileDir = fs::path(filePath).parent_path().string();
         
-        // 处理include声明
-        std::vector<std::unique_ptr<mota::ast::Node>> mergedDeclarations;
-        
+        // 处理include声明 - 验证include文件存在但保留include声明
         for (auto& decl : document->declarations) {
             if (decl->nodeType() == mota::ast::NodeType::IncludeDecl) {
-                // 这是一个include声明，需要处理
+                // 这是一个include声明，验证文件存在
                 auto includeDecl = static_cast<mota::ast::Include*>(decl.get());
                 std::string includeFile = findIncludeFile(includeDecl->path, includePaths, currentFileDir);
                 
@@ -267,24 +266,16 @@ std::unique_ptr<mota::ast::Document> processIncludesRecursively(
                     return nullptr;
                 }
                 
-                // 递归处理include文件
+                // 递归处理include文件以验证其语法正确性
                 auto includedDoc = processIncludesRecursively(includeFile, includePaths, processedFiles);
                 if (!includedDoc) {
                     return nullptr;
                 }
                 
-                // 将include文件的声明合并到当前文档
-                for (auto& includedDecl : includedDoc->declarations) {
-                    mergedDeclarations.push_back(std::move(includedDecl));
-                }
-            } else {
-                // 普通声明，直接添加
-                mergedDeclarations.push_back(std::move(decl));
+                // 注意：我们不合并include文件的内容，只是验证它们的存在和语法正确性
+                // include声明会保留在当前文档中，由代码生成器转换为#include指令
             }
         }
-        
-        // 更新document的声明列表
-        document->declarations = std::move(mergedDeclarations);
         
         return document;
         
@@ -305,9 +296,85 @@ bool processMotaFile(const std::string& inputFile, const std::string& outputDir,
             return false;
         }
         
-        // 语法检查
+        // 语法检查 - 需要收集所有include文件的注解定义
         mota::checker::SyntaxChecker checker;
-        auto errors = checker.check(*document, inputFile);
+        
+        // 收集include文件中的注解定义
+        std::set<std::string> allAnnotations;
+        std::function<void(const mota::ast::Document&)> collectAnnotations = [&](const mota::ast::Document& doc) {
+            std::string currentNamespace = "";
+            for (const auto& decl : doc.declarations) {
+                if (decl->nodeType() == mota::ast::NodeType::NamespaceDecl) {
+                    auto namespaceDecl = static_cast<const mota::ast::Namespace*>(decl.get());
+                    currentNamespace = "";
+                    for (size_t i = 0; i < namespaceDecl->name.size(); ++i) {
+                        if (i > 0) currentNamespace += ".";
+                        currentNamespace += namespaceDecl->name[i];
+                    }
+                } else if (decl->nodeType() == mota::ast::NodeType::AnnotationDecl) {
+                    auto annotationDecl = static_cast<const mota::ast::AnnotationDecl*>(decl.get());
+                    std::string fullName = annotationDecl->name;
+                    if (!currentNamespace.empty()) {
+                        fullName = currentNamespace + "." + annotationDecl->name;
+                    }
+                    allAnnotations.insert(fullName);
+                }
+            }
+        };
+        
+        // 收集include文件的注解
+        std::set<std::string> processedForAnnotations;
+        std::function<void(const std::string&)> processIncludeForAnnotations = [&](const std::string& filePath) {
+            std::string absolutePath = fs::absolute(filePath).string();
+            if (processedForAnnotations.count(absolutePath)) {
+                return;
+            }
+            processedForAnnotations.insert(absolutePath);
+            
+            std::ifstream file(filePath);
+            if (!file.is_open()) return;
+            
+            std::string source((std::istreambuf_iterator<char>(file)),
+                               std::istreambuf_iterator<char>());
+            file.close();
+            
+            try {
+                mota::lexer::Lexer lexer(source, filePath);
+                mota::parser::Parser parser(lexer);
+                auto includeDoc = parser.parse();
+                if (includeDoc) {
+                    collectAnnotations(*includeDoc);
+                    
+                    // 处理嵌套include
+                    std::string currentFileDir = fs::path(filePath).parent_path().string();
+                    for (const auto& decl : includeDoc->declarations) {
+                        if (decl->nodeType() == mota::ast::NodeType::IncludeDecl) {
+                            auto includeDecl = static_cast<const mota::ast::Include*>(decl.get());
+                            std::string includeFile = findIncludeFile(includeDecl->path, includePaths, currentFileDir);
+                            if (!includeFile.empty()) {
+                                processIncludeForAnnotations(includeFile);
+                            }
+                        }
+                    }
+                }
+            } catch (...) {
+                // 忽略解析错误，在主语法检查中会报告
+            }
+        };
+        
+        // 处理当前文件的include
+        for (const auto& decl : document->declarations) {
+            if (decl->nodeType() == mota::ast::NodeType::IncludeDecl) {
+                auto includeDecl = static_cast<const mota::ast::Include*>(decl.get());
+                std::string currentFileDir = fs::path(inputFile).parent_path().string();
+                std::string includeFile = findIncludeFile(includeDecl->path, includePaths, currentFileDir);
+                if (!includeFile.empty()) {
+                    processIncludeForAnnotations(includeFile);
+                }
+            }
+        }
+        
+        auto errors = checker.checkWithExternalAnnotations(*document, inputFile, allAnnotations);
         
         if (!errors.empty()) {
             std::cerr << "Syntax errors found in " << inputFile << ":" << std::endl;

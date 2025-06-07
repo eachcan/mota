@@ -20,13 +20,13 @@
 
 
 // 此文件由 Mota 代码生成器自动生成
-// 生成时间: 2025-06-07 23:37:43
+// 生成时间: 2025-06-07 23:55:07
 // 源文件: unknown.mota
 
 using namespace ymf;
 
 
-namespace examples::includes {
+namespace examples:includes {
 
 
 // WindowSettings块
@@ -738,5 +738,5 @@ private:
 
 
 
-} // namespace examples::includes
+} // namespace examples:includes
 

@@ -20,13 +20,13 @@
 
 
 // 此文件由 Mota 代码生成器自动生成
-// 生成时间: 2025-06-07 23:37:43
+// 生成时间: 2025-06-08 00:03:26
 // 源文件: unknown.mota
 
 using namespace ymf;
 
 
-namespace examples::enums {
+namespace examples:enums {
 
 
 // LogLevel枚举
@@ -81,9 +81,9 @@ namespace LogLevelHelper {
     
     // 获取整个枚举的注解
     inline QList<QSharedPointer<IAnnotation>> annotations() {
-        QList<QSharedPointer<IAnnotation>> result;
-        // TODO: 创建 yima.Window 注解实例
-        return result;
+                        QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.Window 注解实例
+                return result;
         return QList<QSharedPointer<IAnnotation>>();
     }
     
@@ -118,21 +118,21 @@ namespace LogLevelHelper {
     // 获取特定枚举值的注解（通过字符串）
     inline QList<QSharedPointer<IAnnotation>> valueAnnotations(const QString& valueName) {
         if (valueName == "DEBUG") {
-            QList<QSharedPointer<IAnnotation>> result;
-            // TODO: 创建 yima.EnumValue 注解实例
-            return result;
+                QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.EnumValue 注解实例
+                return result;
         } else if (valueName == "INFO") {
-            QList<QSharedPointer<IAnnotation>> result;
-            // TODO: 创建 yima.EnumValue 注解实例
-            return result;
+                QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.EnumValue 注解实例
+                return result;
         } else if (valueName == "WARNING") {
-            QList<QSharedPointer<IAnnotation>> result;
-            // TODO: 创建 yima.EnumValue 注解实例
-            return result;
+                QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.EnumValue 注解实例
+                return result;
         } else if (valueName == "ERROR") {
-            QList<QSharedPointer<IAnnotation>> result;
-            // TODO: 创建 yima.EnumValue 注解实例
-            return result;
+                QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.EnumValue 注解实例
+                return result;
         }
         return QList<QSharedPointer<IAnnotation>>();
     }
@@ -196,9 +196,9 @@ namespace HttpStatusHelper {
     
     // 获取整个枚举的注解
     inline QList<QSharedPointer<IAnnotation>> annotations() {
-        QList<QSharedPointer<IAnnotation>> result;
-        // TODO: 创建 yima.Window 注解实例
-        return result;
+                        QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.Window 注解实例
+                return result;
         return QList<QSharedPointer<IAnnotation>>();
     }
     
@@ -233,20 +233,20 @@ namespace HttpStatusHelper {
     // 获取特定枚举值的注解（通过字符串）
     inline QList<QSharedPointer<IAnnotation>> valueAnnotations(const QString& valueName) {
         if (valueName == "OK") {
-            QList<QSharedPointer<IAnnotation>> result;
-            return result;
+                QList<QSharedPointer<IAnnotation>> result;
+                return result;
         } else if (valueName == "BAD_REQUEST") {
-            QList<QSharedPointer<IAnnotation>> result;
-            return result;
+                QList<QSharedPointer<IAnnotation>> result;
+                return result;
         } else if (valueName == "UNAUTHORIZED") {
-            QList<QSharedPointer<IAnnotation>> result;
-            return result;
+                QList<QSharedPointer<IAnnotation>> result;
+                return result;
         } else if (valueName == "NOT_FOUND") {
-            QList<QSharedPointer<IAnnotation>> result;
-            return result;
+                QList<QSharedPointer<IAnnotation>> result;
+                return result;
         } else if (valueName == "INTERNAL_SERVER_ERROR") {
-            QList<QSharedPointer<IAnnotation>> result;
-            return result;
+                QList<QSharedPointer<IAnnotation>> result;
+                return result;
         }
         return QList<QSharedPointer<IAnnotation>>();
     }
@@ -380,5 +380,5 @@ private:
 
 
 
-} // namespace examples::enums
+} // namespace examples:enums
 

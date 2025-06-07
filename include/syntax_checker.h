@@ -28,6 +28,9 @@ class SyntaxChecker {
 public:
     // 对文档进行语法检查，返回所有诊断信息
     std::vector<SyntaxDiagnostic> check(const ast::Document& doc, const std::string& entryFile = "");
+    
+    // 对文档进行语法检查，使用外部提供的注解定义
+    std::vector<SyntaxDiagnostic> checkWithExternalAnnotations(const ast::Document& doc, const std::string& entryFile, const std::set<std::string>& externalAnnotations);
 };
 
 } // namespace checker

@@ -14,1069 +14,20 @@
 #include "framework/IModel.h"
 #include "framework/IAnnotation.h"
 
+
+#include "yima.h"
+#include "yima-ui.h"
+
+
 // 此文件由 Mota 代码生成器自动生成
-// 生成时间: 2025-06-07 22:55:14
+// 生成时间: 2025-06-07 23:37:43
 // 源文件: unknown.mota
 
 using namespace ymf;
 
 
-namespace examples.ui {
+namespace examples::ui {
 
-
-// Storage注解
-class MODEL_EXPORT StorageAnnotation : public IAnnotation {
-public:
-    StorageAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "Storage";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("path")) return QVariant::fromValue(path_);
-        if (argumentName == QLatin1String("format")) return QVariant::fromValue(format_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("path"), QLatin1String("format")};
-    }
-    
-    // 特定于Storage的访问器
-        // path字段的访问器
-    QString getPath() const {
-        return path_;
-    }
-    
-    void setPath(const QString& value) {
-        path_ = value;
-    } 
-
-        // format字段的访问器
-    QString getFormat() const {
-        return format_;
-    }
-    
-    void setFormat(const QString& value) {
-        format_ = value;
-    } 
-    
-private:
-    QString path_;
-    QString format_;
-}; 
-
-// Window注解
-class MODEL_EXPORT WindowAnnotation : public IAnnotation {
-public:
-    WindowAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "Window";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("title")) return QVariant::fromValue(title_);
-        if (argumentName == QLatin1String("desc")) return QVariant::fromValue(desc_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("title"), QLatin1String("desc")};
-    }
-    
-    // 特定于Window的访问器
-        // title字段的访问器
-    QString getTitle() const {
-        return title_;
-    }
-    
-    void setTitle(const QString& value) {
-        title_ = value;
-    } 
-
-        // desc字段的访问器
-    QString getDesc() const {
-        return desc_;
-    }
-    
-    void setDesc(const QString& value) {
-        desc_ = value;
-    } 
-    
-private:
-    QString title_;
-    QString desc_;
-}; 
-
-// Scope注解
-class MODEL_EXPORT ScopeAnnotation : public IAnnotation {
-public:
-    ScopeAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "Scope";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("value")) return QVariant::fromValue(value_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("value")};
-    }
-    
-    // 特定于Scope的访问器
-        // value字段的访问器
-    QString getValue() const {
-        return value_;
-    }
-    
-    void setValue(const QString& value) {
-        value_ = value;
-    } 
-    
-private:
-    QString value_;
-}; 
-
-// IniGroup注解
-class MODEL_EXPORT IniGroupAnnotation : public IAnnotation {
-public:
-    IniGroupAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "IniGroup";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("value")) return QVariant::fromValue(value_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("value")};
-    }
-    
-    // 特定于IniGroup的访问器
-        // value字段的访问器
-    QString getValue() const {
-        return value_;
-    }
-    
-    void setValue(const QString& value) {
-        value_ = value;
-    } 
-    
-private:
-    QString value_;
-}; 
-
-// Int注解
-class MODEL_EXPORT IntAnnotation : public IAnnotation {
-public:
-    IntAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "Int";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("min")) return QVariant::fromValue(min_);
-        if (argumentName == QLatin1String("max")) return QVariant::fromValue(max_);
-        if (argumentName == QLatin1String("step")) return QVariant::fromValue(step_);
-        if (argumentName == QLatin1String("desc")) return QVariant::fromValue(desc_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("min"), QLatin1String("max"), QLatin1String("step"), QLatin1String("desc")};
-    }
-    
-    // 特定于Int的访问器
-        // min字段的访问器
-    int32_t getMin() const {
-        return min_;
-    }
-    
-    void setMin(const int32_t& value) {
-        min_ = value;
-    } 
-
-        // max字段的访问器
-    int32_t getMax() const {
-        return max_;
-    }
-    
-    void setMax(const int32_t& value) {
-        max_ = value;
-    } 
-
-        // step字段的访问器
-    int32_t getStep() const {
-        return step_;
-    }
-    
-    void setStep(const int32_t& value) {
-        step_ = value;
-    } 
-
-        // desc字段的访问器
-    QString getDesc() const {
-        return desc_;
-    }
-    
-    void setDesc(const QString& value) {
-        desc_ = value;
-    } 
-    
-private:
-    int32_t min_;
-    int32_t max_;
-    int32_t step_;
-    QString desc_;
-}; 
-
-// Float注解
-class MODEL_EXPORT FloatAnnotation : public IAnnotation {
-public:
-    FloatAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "Float";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("min")) return QVariant::fromValue(min_);
-        if (argumentName == QLatin1String("max")) return QVariant::fromValue(max_);
-        if (argumentName == QLatin1String("step")) return QVariant::fromValue(step_);
-        if (argumentName == QLatin1String("desc")) return QVariant::fromValue(desc_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("min"), QLatin1String("max"), QLatin1String("step"), QLatin1String("desc")};
-    }
-    
-    // 特定于Float的访问器
-        // min字段的访问器
-    double getMin() const {
-        return min_;
-    }
-    
-    void setMin(const double& value) {
-        min_ = value;
-    } 
-
-        // max字段的访问器
-    double getMax() const {
-        return max_;
-    }
-    
-    void setMax(const double& value) {
-        max_ = value;
-    } 
-
-        // step字段的访问器
-    double getStep() const {
-        return step_;
-    }
-    
-    void setStep(const double& value) {
-        step_ = value;
-    } 
-
-        // desc字段的访问器
-    QString getDesc() const {
-        return desc_;
-    }
-    
-    void setDesc(const QString& value) {
-        desc_ = value;
-    } 
-    
-private:
-    double min_;
-    double max_;
-    double step_;
-    QString desc_;
-}; 
-
-// Text注解
-class MODEL_EXPORT TextAnnotation : public IAnnotation {
-public:
-    TextAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "Text";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("max_length")) return QVariant::fromValue(max_length_);
-        if (argumentName == QLatin1String("desc")) return QVariant::fromValue(desc_);
-        if (argumentName == QLatin1String("pattern")) return QVariant::fromValue(pattern_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("max_length"), QLatin1String("desc"), QLatin1String("pattern")};
-    }
-    
-    // 特定于Text的访问器
-        // max_length字段的访问器
-    int32_t getMaxLength() const {
-        return max_length_;
-    }
-    
-    void setMaxLength(const int32_t& value) {
-        max_length_ = value;
-    } 
-
-        // desc字段的访问器
-    QString getDesc() const {
-        return desc_;
-    }
-    
-    void setDesc(const QString& value) {
-        desc_ = value;
-    } 
-
-        // pattern字段的访问器
-    QString getPattern() const {
-        return pattern_;
-    }
-    
-    void setPattern(const QString& value) {
-        pattern_ = value;
-    } 
-    
-private:
-    int32_t max_length_;
-    QString desc_;
-    QString pattern_;
-}; 
-
-// Switcher注解
-class MODEL_EXPORT SwitcherAnnotation : public IAnnotation {
-public:
-    SwitcherAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "Switcher";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("desc")) return QVariant::fromValue(desc_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("desc")};
-    }
-    
-    // 特定于Switcher的访问器
-        // desc字段的访问器
-    QString getDesc() const {
-        return desc_;
-    }
-    
-    void setDesc(const QString& value) {
-        desc_ = value;
-    } 
-    
-private:
-    QString desc_;
-}; 
-
-// Select注解
-class MODEL_EXPORT SelectAnnotation : public IAnnotation {
-public:
-    SelectAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "Select";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("desc")) return QVariant::fromValue(desc_);
-        if (argumentName == QLatin1String("enumClass")) return QVariant::fromValue(enumClass_);
-        if (argumentName == QLatin1String("field")) return QVariant::fromValue(field_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("desc"), QLatin1String("enumClass"), QLatin1String("field")};
-    }
-    
-    // 特定于Select的访问器
-        // desc字段的访问器
-    QString getDesc() const {
-        return desc_;
-    }
-    
-    void setDesc(const QString& value) {
-        desc_ = value;
-    } 
-
-        // enumClass字段的访问器
-    QString getEnumClass() const {
-        return enumClass_;
-    }
-    
-    void setEnumClass(const QString& value) {
-        enumClass_ = value;
-    } 
-
-        // field字段的访问器
-    QString getField() const {
-        return field_;
-    }
-    
-    void setField(const QString& value) {
-        field_ = value;
-    } 
-    
-private:
-    QString desc_;
-    QString enumClass_;
-    QString field_;
-}; 
-
-// EnumValue注解
-class MODEL_EXPORT EnumValueAnnotation : public IAnnotation {
-public:
-    EnumValueAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "EnumValue";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("title")) return QVariant::fromValue(title_);
-        if (argumentName == QLatin1String("desc")) return QVariant::fromValue(desc_);
-        if (argumentName == QLatin1String("value")) return QVariant::fromValue(value_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("title"), QLatin1String("desc"), QLatin1String("value")};
-    }
-    
-    // 特定于EnumValue的访问器
-        // title字段的访问器
-    QString getTitle() const {
-        return title_;
-    }
-    
-    void setTitle(const QString& value) {
-        title_ = value;
-    } 
-
-        // desc字段的访问器
-    QString getDesc() const {
-        return desc_;
-    }
-    
-    void setDesc(const QString& value) {
-        desc_ = value;
-    } 
-
-        // value字段的访问器
-    QString getValue() const {
-        return value_;
-    }
-    
-    void setValue(const QString& value) {
-        value_ = value;
-    } 
-    
-private:
-    QString title_;
-    QString desc_;
-    QString value_;
-}; 
-
-// FolderDialog注解
-class MODEL_EXPORT FolderDialogAnnotation : public IAnnotation {
-public:
-    FolderDialogAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "FolderDialog";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("buttonText")) return QVariant::fromValue(buttonText_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("buttonText")};
-    }
-    
-    // 特定于FolderDialog的访问器
-        // buttonText字段的访问器
-    QString getButtonText() const {
-        return buttonText_;
-    }
-    
-    void setButtonText(const QString& value) {
-        buttonText_ = value;
-    } 
-    
-private:
-    QString buttonText_;
-}; 
-
-// FileDialog注解
-class MODEL_EXPORT FileDialogAnnotation : public IAnnotation {
-public:
-    FileDialogAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "FileDialog";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("filter")) return QVariant::fromValue(filter_);
-        if (argumentName == QLatin1String("buttonText")) return QVariant::fromValue(buttonText_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("filter"), QLatin1String("buttonText")};
-    }
-    
-    // 特定于FileDialog的访问器
-        // filter字段的访问器
-    QString getFilter() const {
-        return filter_;
-    }
-    
-    void setFilter(const QString& value) {
-        filter_ = value;
-    } 
-
-        // buttonText字段的访问器
-    QString getButtonText() const {
-        return buttonText_;
-    }
-    
-    void setButtonText(const QString& value) {
-        buttonText_ = value;
-    } 
-    
-private:
-    QString filter_;
-    QString buttonText_;
-}; 
-
-// ColorPicker注解
-class MODEL_EXPORT ColorPickerAnnotation : public IAnnotation {
-public:
-    ColorPickerAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "ColorPicker";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("default_value")) return QVariant::fromValue(default_value_);
-        if (argumentName == QLatin1String("buttonText")) return QVariant::fromValue(buttonText_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("default_value"), QLatin1String("buttonText")};
-    }
-    
-    // 特定于ColorPicker的访问器
-        // default_value字段的访问器
-    QString getDefaultValue() const {
-        return default_value_;
-    }
-    
-    void setDefaultValue(const QString& value) {
-        default_value_ = value;
-    } 
-
-        // buttonText字段的访问器
-    QString getButtonText() const {
-        return buttonText_;
-    }
-    
-    void setButtonText(const QString& value) {
-        buttonText_ = value;
-    } 
-    
-private:
-    QString default_value_;
-    QString buttonText_;
-}; 
-
-// Date注解
-class MODEL_EXPORT DateAnnotation : public IAnnotation {
-public:
-    DateAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "Date";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("format")) return QVariant::fromValue(format_);
-        if (argumentName == QLatin1String("buttonText")) return QVariant::fromValue(buttonText_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("format"), QLatin1String("buttonText")};
-    }
-    
-    // 特定于Date的访问器
-        // format字段的访问器
-    QString getFormat() const {
-        return format_;
-    }
-    
-    void setFormat(const QString& value) {
-        format_ = value;
-    } 
-
-        // buttonText字段的访问器
-    QString getButtonText() const {
-        return buttonText_;
-    }
-    
-    void setButtonText(const QString& value) {
-        buttonText_ = value;
-    } 
-    
-private:
-    QString format_;
-    QString buttonText_;
-}; 
-
-// Time注解
-class MODEL_EXPORT TimeAnnotation : public IAnnotation {
-public:
-    TimeAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "Time";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("format")) return QVariant::fromValue(format_);
-        if (argumentName == QLatin1String("buttonText")) return QVariant::fromValue(buttonText_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("format"), QLatin1String("buttonText")};
-    }
-    
-    // 特定于Time的访问器
-        // format字段的访问器
-    QString getFormat() const {
-        return format_;
-    }
-    
-    void setFormat(const QString& value) {
-        format_ = value;
-    } 
-
-        // buttonText字段的访问器
-    QString getButtonText() const {
-        return buttonText_;
-    }
-    
-    void setButtonText(const QString& value) {
-        buttonText_ = value;
-    } 
-    
-private:
-    QString format_;
-    QString buttonText_;
-}; 
-
-// DrawRectangle注解
-class MODEL_EXPORT DrawRectangleAnnotation : public IAnnotation {
-public:
-    DrawRectangleAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "DrawRectangle";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("buttonText")) return QVariant::fromValue(buttonText_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("buttonText")};
-    }
-    
-    // 特定于DrawRectangle的访问器
-        // buttonText字段的访问器
-    QString getButtonText() const {
-        return buttonText_;
-    }
-    
-    void setButtonText(const QString& value) {
-        buttonText_ = value;
-    } 
-    
-private:
-    QString buttonText_;
-}; 
-
-// DrawCircle注解
-class MODEL_EXPORT DrawCircleAnnotation : public IAnnotation {
-public:
-    DrawCircleAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "DrawCircle";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("buttonText")) return QVariant::fromValue(buttonText_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("buttonText")};
-    }
-    
-    // 特定于DrawCircle的访问器
-        // buttonText字段的访问器
-    QString getButtonText() const {
-        return buttonText_;
-    }
-    
-    void setButtonText(const QString& value) {
-        buttonText_ = value;
-    } 
-    
-private:
-    QString buttonText_;
-}; 
-
-// DrawPolygon注解
-class MODEL_EXPORT DrawPolygonAnnotation : public IAnnotation {
-public:
-    DrawPolygonAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "DrawPolygon";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("buttonText")) return QVariant::fromValue(buttonText_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("buttonText")};
-    }
-    
-    // 特定于DrawPolygon的访问器
-        // buttonText字段的访问器
-    QString getButtonText() const {
-        return buttonText_;
-    }
-    
-    void setButtonText(const QString& value) {
-        buttonText_ = value;
-    } 
-    
-private:
-    QString buttonText_;
-}; 
-
-// DrawLine注解
-class MODEL_EXPORT DrawLineAnnotation : public IAnnotation {
-public:
-    DrawLineAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "DrawLine";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("buttonText")) return QVariant::fromValue(buttonText_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("buttonText")};
-    }
-    
-    // 特定于DrawLine的访问器
-        // buttonText字段的访问器
-    QString getButtonText() const {
-        return buttonText_;
-    }
-    
-    void setButtonText(const QString& value) {
-        buttonText_ = value;
-    } 
-    
-private:
-    QString buttonText_;
-}; 
-
-// DrawPoint注解
-class MODEL_EXPORT DrawPointAnnotation : public IAnnotation {
-public:
-    DrawPointAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "DrawPoint";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("buttonText")) return QVariant::fromValue(buttonText_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("buttonText")};
-    }
-    
-    // 特定于DrawPoint的访问器
-        // buttonText字段的访问器
-    QString getButtonText() const {
-        return buttonText_;
-    }
-    
-    void setButtonText(const QString& value) {
-        buttonText_ = value;
-    } 
-    
-private:
-    QString buttonText_;
-}; 
-
-// Label注解
-class MODEL_EXPORT LabelAnnotation : public IAnnotation {
-public:
-    LabelAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "Label";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("text")) return QVariant::fromValue(text_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("text")};
-    }
-    
-    // 特定于Label的访问器
-        // text字段的访问器
-    QString getText() const {
-        return text_;
-    }
-    
-    void setText(const QString& value) {
-        text_ = value;
-    } 
-    
-private:
-    QString text_;
-}; 
-
-// Validate注解
-class MODEL_EXPORT ValidateAnnotation : public IAnnotation {
-public:
-    ValidateAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "Validate";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("rule")) return QVariant::fromValue(rule_);
-        if (argumentName == QLatin1String("message")) return QVariant::fromValue(message_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("rule"), QLatin1String("message")};
-    }
-    
-    // 特定于Validate的访问器
-        // rule字段的访问器
-    QString getRule() const {
-        return rule_;
-    }
-    
-    void setRule(const QString& value) {
-        rule_ = value;
-    } 
-
-        // message字段的访问器
-    QString getMessage() const {
-        return message_;
-    }
-    
-    void setMessage(const QString& value) {
-        message_ = value;
-    } 
-    
-private:
-    QString rule_;
-    QString message_;
-}; 
-
-// Tooltip注解
-class MODEL_EXPORT TooltipAnnotation : public IAnnotation {
-public:
-    TooltipAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "Tooltip";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("text")) return QVariant::fromValue(text_);
-        if (argumentName == QLatin1String("duration")) return QVariant::fromValue(duration_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("text"), QLatin1String("duration")};
-    }
-    
-    // 特定于Tooltip的访问器
-        // text字段的访问器
-    QString getText() const {
-        return text_;
-    }
-    
-    void setText(const QString& value) {
-        text_ = value;
-    } 
-
-        // duration字段的访问器
-    int32_t getDuration() const {
-        return duration_;
-    }
-    
-    void setDuration(const int32_t& value) {
-        duration_ = value;
-    } 
-    
-private:
-    QString text_;
-    int32_t duration_;
-}; 
-
-// ReadOnly注解
-class MODEL_EXPORT ReadOnlyAnnotation : public IAnnotation {
-public:
-    ReadOnlyAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "ReadOnly";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{};
-    }
-    
-    // 特定于ReadOnly的访问器
-    
-    
-private:
-    
-}; 
-
-// Hidden注解
-class MODEL_EXPORT HiddenAnnotation : public IAnnotation {
-public:
-    HiddenAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "Hidden";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{};
-    }
-    
-    // 特定于Hidden的访问器
-    
-    
-private:
-    
-}; 
 
 // Gender枚举
 enum class Gender {
@@ -1091,11 +42,11 @@ namespace GenderHelper {
     inline QString toString(Gender value) {
         switch (value) {
             case Gender::MALE:
-                return "MALE";
+                return QLatin1String("MALE");
             case Gender::FEMALE:
-                return "FEMALE";
+                return QLatin1String("FEMALE");
             case Gender::OTHER:
-                return "OTHER";
+                return QLatin1String("OTHER");
             default:
                 return QString();
         }
@@ -1103,11 +54,11 @@ namespace GenderHelper {
     
     // 将字符串转换为枚举值
     inline Gender fromString(const QString& str) {
-        if (str == "MALE") {
+        if (str == QLatin1String("MALE")) {
             return Gender::MALE;
-        } else if (str == "FEMALE") {
+        } else if (str == QLatin1String("FEMALE")) {
             return Gender::FEMALE;
-        } else if (str == "OTHER") {
+        } else if (str == QLatin1String("OTHER")) {
             return Gender::OTHER;
         }
         return Gender::MALE;
@@ -1115,29 +66,39 @@ namespace GenderHelper {
     
     // 获取所有枚举值的字符串表示
     inline QStringList allValues() {
-        return QStringList() << "MALE" << "FEMALE" << "OTHER";
+        return QStringList() << QLatin1String("MALE") << QLatin1String("FEMALE") << QLatin1String("OTHER");
     }
     
     // 获取所有枚举值的UI显示名称
     inline QStringList allDisplayNames() {
-        return QStringList() << "MALE" << "FEMALE" << "OTHER";
+        return QStringList() << QLatin1String("男") << QLatin1String("女") << QLatin1String("其他");
     }
     
     // 获取整个枚举的注解
     inline QList<QSharedPointer<IAnnotation>> annotations() {
-        
+        QList<QSharedPointer<IAnnotation>> result;
+        return result;
         return QList<QSharedPointer<IAnnotation>>();
     }
     
     // 获取特定枚举值的注解
     inline QList<QSharedPointer<IAnnotation>> valueAnnotations(Gender value) {
         switch (value) {
-            case Gender::MALE:
-                return QList<QSharedPointer<IAnnotation>>();
-            case Gender::FEMALE:
-                return QList<QSharedPointer<IAnnotation>>();
-            case Gender::OTHER:
-                return QList<QSharedPointer<IAnnotation>>();
+            case Gender::MALE: {
+                QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.EnumValue 注解实例
+                return result;
+            }
+            case Gender::FEMALE: {
+                QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.EnumValue 注解实例
+                return result;
+            }
+            case Gender::OTHER: {
+                QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.EnumValue 注解实例
+                return result;
+            }
             default:
                 return QList<QSharedPointer<IAnnotation>>();
         }
@@ -1146,11 +107,17 @@ namespace GenderHelper {
     // 获取特定枚举值的注解（通过字符串）
     inline QList<QSharedPointer<IAnnotation>> valueAnnotations(const QString& valueName) {
         if (valueName == "MALE") {
-            return QList<QSharedPointer<IAnnotation>>();
+            QList<QSharedPointer<IAnnotation>> result;
+            // TODO: 创建 yima.EnumValue 注解实例
+            return result;
         } else if (valueName == "FEMALE") {
-            return QList<QSharedPointer<IAnnotation>>();
+            QList<QSharedPointer<IAnnotation>> result;
+            // TODO: 创建 yima.EnumValue 注解实例
+            return result;
         } else if (valueName == "OTHER") {
-            return QList<QSharedPointer<IAnnotation>>();
+            QList<QSharedPointer<IAnnotation>> result;
+            // TODO: 创建 yima.EnumValue 注解实例
+            return result;
         }
         return QList<QSharedPointer<IAnnotation>>();
     }
@@ -1171,13 +138,13 @@ namespace CountryHelper {
     inline QString toString(Country value) {
         switch (value) {
             case Country::CHINA:
-                return "CHINA";
+                return QLatin1String("CHINA");
             case Country::USA:
-                return "USA";
+                return QLatin1String("USA");
             case Country::JAPAN:
-                return "JAPAN";
+                return QLatin1String("JAPAN");
             case Country::EUROPE:
-                return "EUROPE";
+                return QLatin1String("EUROPE");
             default:
                 return QString();
         }
@@ -1185,13 +152,13 @@ namespace CountryHelper {
     
     // 将字符串转换为枚举值
     inline Country fromString(const QString& str) {
-        if (str == "CHINA") {
+        if (str == QLatin1String("CHINA")) {
             return Country::CHINA;
-        } else if (str == "USA") {
+        } else if (str == QLatin1String("USA")) {
             return Country::USA;
-        } else if (str == "JAPAN") {
+        } else if (str == QLatin1String("JAPAN")) {
             return Country::JAPAN;
-        } else if (str == "EUROPE") {
+        } else if (str == QLatin1String("EUROPE")) {
             return Country::EUROPE;
         }
         return Country::CHINA;
@@ -1199,31 +166,44 @@ namespace CountryHelper {
     
     // 获取所有枚举值的字符串表示
     inline QStringList allValues() {
-        return QStringList() << "CHINA" << "USA" << "JAPAN" << "EUROPE";
+        return QStringList() << QLatin1String("CHINA") << QLatin1String("USA") << QLatin1String("JAPAN") << QLatin1String("EUROPE");
     }
     
     // 获取所有枚举值的UI显示名称
     inline QStringList allDisplayNames() {
-        return QStringList() << "CHINA" << "USA" << "JAPAN" << "EUROPE";
+        return QStringList() << QLatin1String("中国") << QLatin1String("美国") << QLatin1String("日本") << QLatin1String("欧洲");
     }
     
     // 获取整个枚举的注解
     inline QList<QSharedPointer<IAnnotation>> annotations() {
-        
+        QList<QSharedPointer<IAnnotation>> result;
+        return result;
         return QList<QSharedPointer<IAnnotation>>();
     }
     
     // 获取特定枚举值的注解
     inline QList<QSharedPointer<IAnnotation>> valueAnnotations(Country value) {
         switch (value) {
-            case Country::CHINA:
-                return QList<QSharedPointer<IAnnotation>>();
-            case Country::USA:
-                return QList<QSharedPointer<IAnnotation>>();
-            case Country::JAPAN:
-                return QList<QSharedPointer<IAnnotation>>();
-            case Country::EUROPE:
-                return QList<QSharedPointer<IAnnotation>>();
+            case Country::CHINA: {
+                QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.EnumValue 注解实例
+                return result;
+            }
+            case Country::USA: {
+                QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.EnumValue 注解实例
+                return result;
+            }
+            case Country::JAPAN: {
+                QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.EnumValue 注解实例
+                return result;
+            }
+            case Country::EUROPE: {
+                QList<QSharedPointer<IAnnotation>> result;
+                // TODO: 创建 yima.EnumValue 注解实例
+                return result;
+            }
             default:
                 return QList<QSharedPointer<IAnnotation>>();
         }
@@ -1232,13 +212,21 @@ namespace CountryHelper {
     // 获取特定枚举值的注解（通过字符串）
     inline QList<QSharedPointer<IAnnotation>> valueAnnotations(const QString& valueName) {
         if (valueName == "CHINA") {
-            return QList<QSharedPointer<IAnnotation>>();
+            QList<QSharedPointer<IAnnotation>> result;
+            // TODO: 创建 yima.EnumValue 注解实例
+            return result;
         } else if (valueName == "USA") {
-            return QList<QSharedPointer<IAnnotation>>();
+            QList<QSharedPointer<IAnnotation>> result;
+            // TODO: 创建 yima.EnumValue 注解实例
+            return result;
         } else if (valueName == "JAPAN") {
-            return QList<QSharedPointer<IAnnotation>>();
+            QList<QSharedPointer<IAnnotation>> result;
+            // TODO: 创建 yima.EnumValue 注解实例
+            return result;
         } else if (valueName == "EUROPE") {
-            return QList<QSharedPointer<IAnnotation>>();
+            QList<QSharedPointer<IAnnotation>> result;
+            // TODO: 创建 yima.EnumValue 注解实例
+            return result;
         }
         return QList<QSharedPointer<IAnnotation>>();
     }
@@ -1561,5 +549,5 @@ private:
 
 
 
-} // namespace examples.ui
+} // namespace examples::ui
 

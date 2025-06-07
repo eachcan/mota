@@ -14,173 +14,19 @@
 #include "framework/IModel.h"
 #include "framework/IAnnotation.h"
 
+
+#include "yima.h"
+
+
 // 此文件由 Mota 代码生成器自动生成
-// 生成时间: 2025-06-07 22:55:13
+// 生成时间: 2025-06-07 23:43:29
 // 源文件: unknown.mota
 
 using namespace ymf;
 
 
-namespace yima {
+namespace examples {
 
-
-// Storage注解
-class MODEL_EXPORT StorageAnnotation : public IAnnotation {
-public:
-    StorageAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "Storage";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("path")) return QVariant::fromValue(path_);
-        if (argumentName == QLatin1String("format")) return QVariant::fromValue(format_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("path"), QLatin1String("format")};
-    }
-    
-    // 特定于Storage的访问器
-        // path字段的访问器
-    QString getPath() const {
-        return path_;
-    }
-    
-    void setPath(const QString& value) {
-        path_ = value;
-    } 
-
-        // format字段的访问器
-    QString getFormat() const {
-        return format_;
-    }
-    
-    void setFormat(const QString& value) {
-        format_ = value;
-    } 
-    
-private:
-    QString path_;
-    QString format_;
-}; 
-
-// Window注解
-class MODEL_EXPORT WindowAnnotation : public IAnnotation {
-public:
-    WindowAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "Window";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("title")) return QVariant::fromValue(title_);
-        if (argumentName == QLatin1String("desc")) return QVariant::fromValue(desc_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("title"), QLatin1String("desc")};
-    }
-    
-    // 特定于Window的访问器
-        // title字段的访问器
-    QString getTitle() const {
-        return title_;
-    }
-    
-    void setTitle(const QString& value) {
-        title_ = value;
-    } 
-
-        // desc字段的访问器
-    QString getDesc() const {
-        return desc_;
-    }
-    
-    void setDesc(const QString& value) {
-        desc_ = value;
-    } 
-    
-private:
-    QString title_;
-    QString desc_;
-}; 
-
-// Scope注解
-class MODEL_EXPORT ScopeAnnotation : public IAnnotation {
-public:
-    ScopeAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "Scope";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("value")) return QVariant::fromValue(value_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("value")};
-    }
-    
-    // 特定于Scope的访问器
-        // value字段的访问器
-    QString getValue() const {
-        return value_;
-    }
-    
-    void setValue(const QString& value) {
-        value_ = value;
-    } 
-    
-private:
-    QString value_;
-}; 
-
-// IniGroup注解
-class MODEL_EXPORT IniGroupAnnotation : public IAnnotation {
-public:
-    IniGroupAnnotation() = default;
-    
-    
-    // 实现IAnnotation接口
-    QString name() const override {
-        return "IniGroup";
-    }
-    
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("value")) return QVariant::fromValue(value_);
-        return QVariant();
-    }
-    
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("value")};
-    }
-    
-    // 特定于IniGroup的访问器
-        // value字段的访问器
-    QString getValue() const {
-        return value_;
-    }
-    
-    void setValue(const QString& value) {
-        value_ = value;
-    } 
-    
-private:
-    QString value_;
-}; 
 
 // Range注解
 class MODEL_EXPORT RangeAnnotation : public IAnnotation {
@@ -251,11 +97,11 @@ namespace PriorityHelper {
     inline QString toString(Priority value) {
         switch (value) {
             case Priority::Low:
-                return "Low";
+                return QLatin1String("Low");
             case Priority::Medium:
-                return "Medium";
+                return QLatin1String("Medium");
             case Priority::High:
-                return "High";
+                return QLatin1String("High");
             default:
                 return QString();
         }
@@ -263,11 +109,11 @@ namespace PriorityHelper {
     
     // 将字符串转换为枚举值
     inline Priority fromString(const QString& str) {
-        if (str == "Low") {
+        if (str == QLatin1String("Low")) {
             return Priority::Low;
-        } else if (str == "Medium") {
+        } else if (str == QLatin1String("Medium")) {
             return Priority::Medium;
-        } else if (str == "High") {
+        } else if (str == QLatin1String("High")) {
             return Priority::High;
         }
         return Priority::Low;
@@ -275,29 +121,36 @@ namespace PriorityHelper {
     
     // 获取所有枚举值的字符串表示
     inline QStringList allValues() {
-        return QStringList() << "Low" << "Medium" << "High";
+        return QStringList() << QLatin1String("Low") << QLatin1String("Medium") << QLatin1String("High");
     }
     
     // 获取所有枚举值的UI显示名称
     inline QStringList allDisplayNames() {
-        return QStringList() << "Low" << "Medium" << "High";
+        return QStringList() << QLatin1String("Low") << QLatin1String("Medium") << QLatin1String("High");
     }
     
     // 获取整个枚举的注解
     inline QList<QSharedPointer<IAnnotation>> annotations() {
-        
+        QList<QSharedPointer<IAnnotation>> result;
+        return result;
         return QList<QSharedPointer<IAnnotation>>();
     }
     
     // 获取特定枚举值的注解
     inline QList<QSharedPointer<IAnnotation>> valueAnnotations(Priority value) {
         switch (value) {
-            case Priority::Low:
-                return QList<QSharedPointer<IAnnotation>>();
-            case Priority::Medium:
-                return QList<QSharedPointer<IAnnotation>>();
-            case Priority::High:
-                return QList<QSharedPointer<IAnnotation>>();
+            case Priority::Low: {
+                QList<QSharedPointer<IAnnotation>> result;
+                return result;
+            }
+            case Priority::Medium: {
+                QList<QSharedPointer<IAnnotation>> result;
+                return result;
+            }
+            case Priority::High: {
+                QList<QSharedPointer<IAnnotation>> result;
+                return result;
+            }
             default:
                 return QList<QSharedPointer<IAnnotation>>();
         }
@@ -306,11 +159,14 @@ namespace PriorityHelper {
     // 获取特定枚举值的注解（通过字符串）
     inline QList<QSharedPointer<IAnnotation>> valueAnnotations(const QString& valueName) {
         if (valueName == "Low") {
-            return QList<QSharedPointer<IAnnotation>>();
+            QList<QSharedPointer<IAnnotation>> result;
+            return result;
         } else if (valueName == "Medium") {
-            return QList<QSharedPointer<IAnnotation>>();
+            QList<QSharedPointer<IAnnotation>> result;
+            return result;
         } else if (valueName == "High") {
-            return QList<QSharedPointer<IAnnotation>>();
+            QList<QSharedPointer<IAnnotation>> result;
+            return result;
         }
         return QList<QSharedPointer<IAnnotation>>();
     }
@@ -618,5 +474,5 @@ private:
 
 
 
-} // namespace yima
+} // namespace examples
 

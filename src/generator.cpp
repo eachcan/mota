@@ -83,10 +83,48 @@ bool Generator::parseConfig(const std::string& content) {
         size_t quoteStart = content.find("\"", colonPos);
         if (quoteStart == std::string::npos) return "";
         
-        size_t quoteEnd = content.find("\"", quoteStart + 1);
-        if (quoteEnd == std::string::npos) return "";
+        // 查找匹配的结束引号，考虑转义字符
+        size_t pos = quoteStart + 1;
+        while (pos < content.length()) {
+            if (content[pos] == '\\') {
+                pos += 2; // 跳过转义字符
+                continue;
+            }
+            if (content[pos] == '"') {
+                break; // 找到结束引号
+            }
+            pos++;
+        }
         
-        return content.substr(quoteStart + 1, quoteEnd - quoteStart - 1);
+        if (pos >= content.length()) return "";
+        
+        std::string result = content.substr(quoteStart + 1, pos - quoteStart - 1);
+        
+        // 处理转义字符
+        std::string unescaped;
+        for (size_t i = 0; i < result.length(); ++i) {
+            if (result[i] == '\\' && i + 1 < result.length()) {
+                char nextChar = result[i + 1];
+                if (nextChar == '"') {
+                    unescaped += '"';
+                } else if (nextChar == '\\') {
+                    unescaped += '\\';
+                } else if (nextChar == 'n') {
+                    unescaped += '\n';
+                } else if (nextChar == 't') {
+                    unescaped += '\t';
+                } else if (nextChar == 'r') {
+                    unescaped += '\r';
+                } else {
+                    unescaped += nextChar;
+                }
+                i++; // 跳过下一个字符
+            } else {
+                unescaped += result[i];
+            }
+        }
+        
+        return unescaped;
     };
     
     auto extractBoolValue = [&](const std::string& key) -> bool {
@@ -134,13 +172,50 @@ bool Generator::parseConfig(const std::string& content) {
             size_t valueStart = objectContent.find("\"", colonPos);
             if (valueStart == std::string::npos) break;
             
-            size_t valueEnd = objectContent.find("\"", valueStart + 1);
-            if (valueEnd == std::string::npos) break;
+            // 查找匹配的结束引号，考虑转义字符
+            size_t valuePos = valueStart + 1;
+            while (valuePos < objectContent.length()) {
+                if (objectContent[valuePos] == '\\') {
+                    valuePos += 2; // 跳过转义字符
+                    continue;
+                }
+                if (objectContent[valuePos] == '"') {
+                    break; // 找到结束引号
+                }
+                valuePos++;
+            }
             
-            std::string value = objectContent.substr(valueStart + 1, valueEnd - valueStart - 1);
+            if (valuePos >= objectContent.length()) break;
+            
+            std::string rawValue = objectContent.substr(valueStart + 1, valuePos - valueStart - 1);
+            
+            // 处理转义字符
+            std::string value;
+            for (size_t i = 0; i < rawValue.length(); ++i) {
+                if (rawValue[i] == '\\' && i + 1 < rawValue.length()) {
+                    char nextChar = rawValue[i + 1];
+                    if (nextChar == '"') {
+                        value += '"';
+                    } else if (nextChar == '\\') {
+                        value += '\\';
+                    } else if (nextChar == 'n') {
+                        value += '\n';
+                    } else if (nextChar == 't') {
+                        value += '\t';
+                    } else if (nextChar == 'r') {
+                        value += '\r';
+                    } else {
+                        value += nextChar;
+                    }
+                    i++; // 跳过下一个字符
+                } else {
+                    value += rawValue[i];
+                }
+            }
+            
             result[key] = value;
             
-            pos = valueEnd + 1;
+            pos = valuePos + 1;
         }
         
         return result;
@@ -196,6 +271,20 @@ bool Generator::parseConfig(const std::string& content) {
     config_.loopSyntax.itemVariable = extractStringValue("item_variable");
     config_.loopSyntax.indexVariable = extractStringValue("index_variable");
     
+    // 解析语法元素配置
+    config_.syntaxElements = extractObjectValues("syntax_elements");
+    
+    // 解析Include指令配置
+    config_.includeDirective.pattern = extractStringValue("include_pattern");
+    config_.includeDirective.sourceExtension = extractStringValue("source_extension");
+    config_.includeDirective.targetExtension = extractStringValue("target_extension");
+    
+    // 解析代码生成配置
+    config_.codeGeneration.containerTemplate = extractStringValue("container_template");
+    config_.codeGeneration.stringLiteralTemplate = extractStringValue("string_literal_template");
+    config_.codeGeneration.variantTemplate = extractStringValue("variant_template");
+    config_.codeGeneration.collectionSeparator = extractStringValue("collection_separator");
+    
     return true;
 }
 
@@ -248,8 +337,26 @@ std::string Generator::renderTemplate(const std::string& templateContent, const 
 std::string Generator::processLoops(const std::string& content, const TemplateVars& vars) {
     std::string result = content;
     
-    // 查找循环语法 {{#each COLLECTION as ITEM}}...{{/each}}
-    std::regex loopRegex(R"(\{\{#each\s+(\w+)\s+as\s+(\w+)(?:\s+with\s+(\w+))?\}\}(.*?)\{\{/each\}\})");
+    // 从配置获取循环语法标签，需要转义正则表达式特殊字符
+    auto escapeRegex = [](const std::string& str) -> std::string {
+        std::string result;
+        for (char c : str) {
+            if (c == '{' || c == '}' || c == '(' || c == ')' || c == '[' || c == ']' || 
+                c == '.' || c == '*' || c == '+' || c == '?' || c == '^' || c == '$' || 
+                c == '|' || c == '\\') {
+                result += '\\';
+            }
+            result += c;
+        }
+        return result;
+    };
+    
+    std::string startTag = config_.loopSyntax.startTag.empty() ? "\\{\\{#each" : escapeRegex(config_.loopSyntax.startTag);
+    std::string endTag = config_.loopSyntax.endTag.empty() ? "\\{\\{/each\\}\\}" : escapeRegex(config_.loopSyntax.endTag);
+    
+    // 构建动态正则表达式
+    std::string regexPattern = startTag + R"(\s+(\w+)\s+as\s+(\w+)(?:\s+with\s+(\w+))?\}\}(.*?))" + endTag;
+    std::regex loopRegex(regexPattern);
     std::smatch match;
     
     while (std::regex_search(result, match, loopRegex)) {
@@ -274,13 +381,15 @@ std::string Generator::processLoops(const std::string& content, const TemplateVa
 
 std::string Generator::expandLoop(const std::string& loopContent, const std::string& collectionData, 
                                  const std::string& itemName, const std::string& indexName) {
-    // 这里简化处理，假设集合数据是以分隔符分隔的字符串
-    // 在实际实现中，应该支持更复杂的数据结构
+    // 从配置获取集合分隔符
+    std::string separator = config_.codeGeneration.collectionSeparator.empty() ? "|" : config_.codeGeneration.collectionSeparator;
+    char separatorChar = separator.empty() ? '|' : separator[0];
+    
     std::vector<std::string> items;
     std::stringstream ss(collectionData);
     std::string item;
     
-    while (std::getline(ss, item, '|')) {
+    while (std::getline(ss, item, separatorChar)) {
         items.push_back(item);
     }
     
@@ -458,25 +567,32 @@ std::string Generator::formatNamespacePath(const std::string& namespaceStr) {
     
     std::string result = namespaceStr;
     
-    // 根据配置的分隔符替换
-    if (config_.namespaceFormat.separator == "::") {
-        // C++ 风格，将 . 替换为 /
-        std::replace(result.begin(), result.end(), '.', '/');
-    } else if (config_.namespaceFormat.separator == ".") {
-        // Java 风格，将 . 替换为 /
-        std::replace(result.begin(), result.end(), '.', '/');
+    // 从配置获取路径分隔符
+    auto pathSeparatorIt = config_.syntaxElements.find("NAMESPACE_PATH_SEPARATOR");
+    std::string pathSeparator = (pathSeparatorIt != config_.syntaxElements.end()) ? 
+        pathSeparatorIt->second : "/";
+    
+    // 将非数字、英文、下划线的字符替换为路径分隔符
+    for (size_t i = 0; i < result.length(); ++i) {
+        char c = result[i];
+        if (!std::isalnum(c) && c != '_') {
+            result[i] = pathSeparator[0];
+        }
     }
     
     return result;
 }
 
 std::string Generator::joinStrings(const std::string& value, const std::string& separator) {
-    // 简化实现，假设 value 是以 | 分隔的字符串
+    // 使用配置的集合分隔符
+    std::string collectionSep = config_.codeGeneration.collectionSeparator.empty() ? "|" : config_.codeGeneration.collectionSeparator;
+    char collectionSepChar = collectionSep.empty() ? '|' : collectionSep[0];
+    
     std::vector<std::string> parts;
     std::stringstream ss(value);
     std::string part;
     
-    while (std::getline(ss, part, '|')) {
+    while (std::getline(ss, part, collectionSepChar)) {
         parts.push_back(part);
     }
     
@@ -490,11 +606,24 @@ std::string Generator::joinStrings(const std::string& value, const std::string& 
 }
 
 std::string Generator::mapTypeFromConfig(const std::string& motaType) {
+    // 从配置获取repeated关键字
+    auto repeatedKeywordIt = config_.syntaxElements.find("REPEATED_KEYWORD");
+    std::string repeatedKeyword = (repeatedKeywordIt != config_.syntaxElements.end()) ? 
+        repeatedKeywordIt->second : "repeated";
+    
     // 处理repeated类型
-    if (motaType.substr(0, 9) == "repeated ") {
-        std::string elementType = motaType.substr(9);
+    std::string repeatedPrefix = repeatedKeyword + " ";
+    if (motaType.substr(0, repeatedPrefix.length()) == repeatedPrefix) {
+        std::string elementType = motaType.substr(repeatedPrefix.length());
         std::string mappedElementType = mapTypeFromConfig(elementType); // 递归调用
-        return "QVector<" + mappedElementType + ">";
+        
+        // 从配置获取容器模板
+        std::string containerTemplate = config_.codeGeneration.containerTemplate.empty() ? 
+            "QVector<{{ELEMENT_TYPE}}>" : config_.codeGeneration.containerTemplate;
+        
+        TemplateVars containerVars;
+        containerVars["ELEMENT_TYPE"] = mappedElementType;
+        return renderTemplate(containerTemplate, containerVars);
     }
     
     // 检查内置类型映射
@@ -720,12 +849,16 @@ std::string Generator::generateFromTemplate(const std::string& templateType, con
 
 std::string Generator::generatePrivateFieldsFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields) {
     std::string result;
+    auto privateFieldTemplateIt = config_.templateVariables.find("PRIVATE_FIELD_DECLARATION");
+    std::string privateFieldTemplate = (privateFieldTemplateIt != config_.templateVariables.end()) ? 
+        privateFieldTemplateIt->second : "{{FIELD_TYPE_MAPPED}} {{PRIVATE_FIELD_NAME}};";
+    
     for (const auto& field : fields) {
         TemplateVars fieldVars = buildFieldTemplateVars(*field);
         
         // 生成私有字段声明
         if (!result.empty()) result += "\n    ";
-        result += fieldVars["FIELD_TYPE_MAPPED"] + " " + fieldVars["PRIVATE_FIELD_NAME"] + ";";
+        result += renderTemplate(privateFieldTemplate, fieldVars);
     }
     return result;
 }
@@ -799,7 +932,10 @@ TemplateVars Generator::buildFieldTemplateVars(const ast::Field& field) {
     
     // 如果配置中没有定义，则使用默认值
     if (vars.find("PRIVATE_FIELD_NAME") == vars.end()) {
-        vars["PRIVATE_FIELD_NAME"] = field.name + "_";
+        auto privateFieldSuffixIt = config_.syntaxElements.find("PRIVATE_FIELD_SUFFIX");
+        std::string privateFieldSuffix = (privateFieldSuffixIt != config_.syntaxElements.end()) ? 
+            privateFieldSuffixIt->second : "_";
+        vars["PRIVATE_FIELD_NAME"] = field.name + privateFieldSuffix;
     }
     if (vars.find("FIELD_NAME_PASCAL") == vars.end()) {
         vars["FIELD_NAME_PASCAL"] = toPascalCase(field.name);
@@ -833,18 +969,34 @@ TemplateVars Generator::buildFieldTemplateVars(const ast::Field& field) {
         
         // 根据类型映射生成转换方法
         auto mappedType = mapTypeFromConfig(elementType);
-        if (mappedType.find("int") != std::string::npos || mappedType == "byte" || mappedType == "short" || mappedType == "long") {
-            vars["CONVERT_METHOD"] = "Integer";
-        } else if (mappedType.find("float") != std::string::npos || mappedType.find("double") != std::string::npos) {
-            vars["CONVERT_METHOD"] = "Double";
-        } else if (mappedType.find("String") != std::string::npos || mappedType.find("QString") != std::string::npos) {
-            vars["CONVERT_METHOD"] = "String";
-        } else if (mappedType.find("bool") != std::string::npos) {
-            vars["CONVERT_METHOD"] = "Bool";
-        } else if (mappedType.find("byte") != std::string::npos && mappedType.find("[]") != std::string::npos) {
-            vars["CONVERT_METHOD"] = "ByteArray";
+        
+        // 从配置获取类型转换映射
+        auto typeConversionIt = config_.syntaxElements.find("TYPE_CONVERSION_" + mappedType);
+        if (typeConversionIt != config_.syntaxElements.end()) {
+            vars["CONVERT_METHOD"] = typeConversionIt->second;
         } else {
-            vars["CONVERT_METHOD"] = "Variant";
+            // 回退到基于模式匹配的转换方法
+            auto intPatternIt = config_.syntaxElements.find("INT_TYPE_PATTERN");
+            auto floatPatternIt = config_.syntaxElements.find("FLOAT_TYPE_PATTERN");
+            auto stringPatternIt = config_.syntaxElements.find("STRING_TYPE_PATTERN");
+            auto boolPatternIt = config_.syntaxElements.find("BOOL_TYPE_PATTERN");
+            auto byteArrayPatternIt = config_.syntaxElements.find("BYTE_ARRAY_TYPE_PATTERN");
+            
+            if (intPatternIt != config_.syntaxElements.end() && mappedType.find(intPatternIt->second) != std::string::npos) {
+                vars["CONVERT_METHOD"] = config_.syntaxElements["INT_CONVERT_METHOD"];
+            } else if (floatPatternIt != config_.syntaxElements.end() && mappedType.find(floatPatternIt->second) != std::string::npos) {
+                vars["CONVERT_METHOD"] = config_.syntaxElements["FLOAT_CONVERT_METHOD"];
+            } else if (stringPatternIt != config_.syntaxElements.end() && mappedType.find(stringPatternIt->second) != std::string::npos) {
+                vars["CONVERT_METHOD"] = config_.syntaxElements["STRING_CONVERT_METHOD"];
+            } else if (boolPatternIt != config_.syntaxElements.end() && mappedType.find(boolPatternIt->second) != std::string::npos) {
+                vars["CONVERT_METHOD"] = config_.syntaxElements["BOOL_CONVERT_METHOD"];
+            } else if (byteArrayPatternIt != config_.syntaxElements.end() && mappedType.find(byteArrayPatternIt->second) != std::string::npos) {
+                vars["CONVERT_METHOD"] = config_.syntaxElements["BYTE_ARRAY_CONVERT_METHOD"];
+            } else {
+                auto defaultConvertIt = config_.syntaxElements.find("DEFAULT_CONVERT_METHOD");
+                vars["CONVERT_METHOD"] = (defaultConvertIt != config_.syntaxElements.end()) ? 
+                    defaultConvertIt->second : "Variant";
+            }
         }
     }
     
@@ -913,41 +1065,92 @@ std::string Generator::extractTemplateSection(const std::string& templateContent
 
 std::string Generator::generateFieldNamesFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields) {
     std::string result;
+    std::string stringTemplate = config_.codeGeneration.stringLiteralTemplate.empty() ? 
+        "QLatin1String(\"{{STRING_VALUE}}\")" : config_.codeGeneration.stringLiteralTemplate;
+    
     for (size_t i = 0; i < fields.size(); ++i) {
         if (i > 0) result += ", ";
-        result += "QLatin1String(\"" + fields[i]->name + "\")";
+        
+        TemplateVars stringVars;
+        stringVars["STRING_VALUE"] = fields[i]->name;
+        result += renderTemplate(stringTemplate, stringVars);
     }
     return result;
 }
 
 std::string Generator::generateFieldTypeLogicFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields) {
     std::string result;
+    std::string stringTemplate = config_.codeGeneration.stringLiteralTemplate.empty() ? 
+        "QLatin1String(\"{{STRING_VALUE}}\")" : config_.codeGeneration.stringLiteralTemplate;
+    
     for (const auto& field : fields) {
         if (!result.empty()) result += "\n        ";
-        result += "if (fieldName == QLatin1String(\"" + field->name + "\")) return QLatin1String(\"" + field->type->toString() + "\");";
+        
+        TemplateVars fieldNameVars;
+        fieldNameVars["STRING_VALUE"] = field->name;
+        std::string fieldNameStr = renderTemplate(stringTemplate, fieldNameVars);
+        
+        TemplateVars fieldTypeVars;
+        fieldTypeVars["STRING_VALUE"] = field->type->toString();
+        std::string fieldTypeStr = renderTemplate(stringTemplate, fieldTypeVars);
+        
+        result += "if (fieldName == " + fieldNameStr + ") return " + fieldTypeStr + ";";
     }
     if (!result.empty()) result += "\n        ";
-    result += "return QLatin1String(\"\");";
+    
+    TemplateVars emptyVars;
+    emptyVars["STRING_VALUE"] = "";
+    result += "return " + renderTemplate(stringTemplate, emptyVars) + ";";
     return result;
 }
 
 std::string Generator::generateValueGetterLogicFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields) {
     std::string result;
+    std::string stringTemplate = config_.codeGeneration.stringLiteralTemplate.empty() ? 
+        "QLatin1String(\"{{STRING_VALUE}}\")" : config_.codeGeneration.stringLiteralTemplate;
+    std::string variantTemplate = config_.codeGeneration.variantTemplate.empty() ? 
+        "QVariant::fromValue({{VALUE}})" : config_.codeGeneration.variantTemplate;
+    
     for (const auto& field : fields) {
         if (!result.empty()) result += "\n        ";
-        result += "if (fieldName == QLatin1String(\"" + field->name + "\")) return QVariant::fromValue(" + field->name + "_);";
+        
+        TemplateVars fieldNameVars;
+        fieldNameVars["STRING_VALUE"] = field->name;
+        std::string fieldNameStr = renderTemplate(stringTemplate, fieldNameVars);
+        
+        TemplateVars variantVars;
+        variantVars["VALUE"] = field->name + "_";
+        std::string variantStr = renderTemplate(variantTemplate, variantVars);
+        
+        result += "if (fieldName == " + fieldNameStr + ") return " + variantStr + ";";
     }
     if (!result.empty()) result += "\n        ";
-    result += "return QVariant();";
+    
+    // 从语法元素配置获取空变体表示
+    auto emptyVariantIt = config_.syntaxElements.find("EMPTY_VARIANT");
+    std::string emptyVariant = (emptyVariantIt != config_.syntaxElements.end()) ? 
+        emptyVariantIt->second : "QVariant()";
+    result += "return " + emptyVariant + ";";
     return result;
 }
 
 std::string Generator::generateValueSetterLogicFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields) {
     std::string result;
+    std::string stringTemplate = config_.codeGeneration.stringLiteralTemplate.empty() ? 
+        "QLatin1String(\"{{STRING_VALUE}}\")" : config_.codeGeneration.stringLiteralTemplate;
+    auto privateFieldSuffixIt = config_.syntaxElements.find("PRIVATE_FIELD_SUFFIX");
+    std::string privateFieldSuffix = (privateFieldSuffixIt != config_.syntaxElements.end()) ? 
+        privateFieldSuffixIt->second : "_";
+    
     for (const auto& field : fields) {
         if (!result.empty()) result += "\n        ";
-        result += "if (fieldName == QLatin1String(\"" + field->name + "\")) {\n";
-        result += "            " + field->name + "_ = value.value<" + mapTypeFromConfig(field->type->toString()) + ">();\n";
+        
+        TemplateVars fieldNameVars;
+        fieldNameVars["STRING_VALUE"] = field->name;
+        std::string fieldNameStr = renderTemplate(stringTemplate, fieldNameVars);
+        
+        result += "if (fieldName == " + fieldNameStr + ") {\n";
+        result += "            " + field->name + privateFieldSuffix + " = value.value<" + mapTypeFromConfig(field->type->toString()) + ">();\n";
         result += "            return;\n";
         result += "        }";
     }
@@ -960,6 +1163,19 @@ std::string Generator::generateFieldAnnotationLogicFromTemplate(const std::vecto
     std::string fieldAnnotationTemplate = (fieldAnnotationTemplateIt != config_.templateVariables.end()) ? 
         fieldAnnotationTemplateIt->second : "return QList<QSharedPointer<void>>();";
     
+    std::string stringTemplate = config_.codeGeneration.stringLiteralTemplate.empty() ? 
+        "QLatin1String(\"{{STRING_VALUE}}\")" : config_.codeGeneration.stringLiteralTemplate;
+    
+    // 从配置获取字段名变量
+    auto fieldNameVarIt = config_.syntaxElements.find("FIELD_NAME_VARIABLE");
+    std::string fieldNameVar = (fieldNameVarIt != config_.syntaxElements.end()) ? 
+        fieldNameVarIt->second : "fieldName";
+    
+    // 从配置获取条件语句模板
+    auto fieldConditionTemplateIt = config_.templateVariables.find("FIELD_CONDITION_TEMPLATE");
+    std::string fieldConditionTemplate = (fieldConditionTemplateIt != config_.templateVariables.end()) ? 
+        fieldConditionTemplateIt->second : "if ({{FIELD_NAME_VAR}} == {{FIELD_NAME_STR}}) {\n            {{FIELD_LOGIC}}\n        }";
+    
     std::string result;
     for (const auto& field : fields) {
         if (!result.empty()) result += "\n        ";
@@ -969,31 +1185,78 @@ std::string Generator::generateFieldAnnotationLogicFromTemplate(const std::vecto
         fieldVars["FIELD_TYPE"] = field->type->toString();
         fieldVars["FIELD_TYPE_MAPPED"] = mapTypeFromConfig(field->type->toString());
         
-        result += "if (fieldName == QLatin1String(\"" + field->name + "\")) {\n";
-        result += "            " + renderTemplate(fieldAnnotationTemplate, fieldVars) + "\n";
-        result += "        }";
+        TemplateVars fieldNameVars;
+        fieldNameVars["STRING_VALUE"] = field->name;
+        std::string fieldNameStr = renderTemplate(stringTemplate, fieldNameVars);
+        
+        TemplateVars conditionVars;
+        conditionVars["FIELD_NAME_VAR"] = fieldNameVar;
+        conditionVars["FIELD_NAME_STR"] = fieldNameStr;
+        conditionVars["FIELD_LOGIC"] = renderTemplate(fieldAnnotationTemplate, fieldVars);
+        
+        result += renderTemplate(fieldConditionTemplate, conditionVars);
     }
     return result;
 }
 
 std::string Generator::generateArgumentGetterLogicFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields) {
     std::string result;
+    std::string stringTemplate = config_.codeGeneration.stringLiteralTemplate.empty() ? 
+        "QLatin1String(\"{{STRING_VALUE}}\")" : config_.codeGeneration.stringLiteralTemplate;
+    std::string variantTemplate = config_.codeGeneration.variantTemplate.empty() ? 
+        "QVariant::fromValue({{VALUE}})" : config_.codeGeneration.variantTemplate;
+    auto privateFieldSuffixIt = config_.syntaxElements.find("PRIVATE_FIELD_SUFFIX");
+    std::string privateFieldSuffix = (privateFieldSuffixIt != config_.syntaxElements.end()) ? 
+        privateFieldSuffixIt->second : "_";
+    
+    // 从配置获取参数名变量
+    auto argumentNameVarIt = config_.syntaxElements.find("ARGUMENT_NAME_VARIABLE");
+    std::string argumentNameVar = (argumentNameVarIt != config_.syntaxElements.end()) ? 
+        argumentNameVarIt->second : "argumentName";
+    
+    // 从配置获取条件语句模板
+    auto conditionTemplateIt = config_.templateVariables.find("ARGUMENT_CONDITION_TEMPLATE");
+    std::string conditionTemplate = (conditionTemplateIt != config_.templateVariables.end()) ? 
+        conditionTemplateIt->second : "if ({{ARGUMENT_NAME_VAR}} == {{FIELD_NAME_STR}}) return {{VARIANT_STR}};";
+    
     for (const auto& field : fields) {
         if (!result.empty()) result += "\n        ";
-        result += "if (argumentName == QLatin1String(\"" + field->name + "\")) return QVariant::fromValue(" + field->name + "_);";
+        
+        TemplateVars fieldNameVars;
+        fieldNameVars["STRING_VALUE"] = field->name;
+        std::string fieldNameStr = renderTemplate(stringTemplate, fieldNameVars);
+        
+        TemplateVars variantVars;
+        variantVars["VALUE"] = field->name + privateFieldSuffix;
+        std::string variantStr = renderTemplate(variantTemplate, variantVars);
+        
+        TemplateVars conditionVars;
+        conditionVars["ARGUMENT_NAME_VAR"] = argumentNameVar;
+        conditionVars["FIELD_NAME_STR"] = fieldNameStr;
+        conditionVars["VARIANT_STR"] = variantStr;
+        
+        result += renderTemplate(conditionTemplate, conditionVars);
     }
     if (!result.empty()) result += "\n        ";
-    result += "return QVariant();";
+    
+    auto emptyVariantIt = config_.syntaxElements.find("EMPTY_VARIANT");
+    std::string emptyVariant = (emptyVariantIt != config_.syntaxElements.end()) ? 
+        emptyVariantIt->second : "QVariant()";
+    
+    auto returnTemplateIt = config_.templateVariables.find("RETURN_TEMPLATE");
+    std::string returnTemplate = (returnTemplateIt != config_.templateVariables.end()) ? 
+        returnTemplateIt->second : "return {{VALUE}};";
+    
+    TemplateVars returnVars;
+    returnVars["VALUE"] = emptyVariant;
+    result += renderTemplate(returnTemplate, returnVars);
+    
     return result;
 }
 
 std::string Generator::generateArgumentNamesFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields) {
-    std::string result;
-    for (size_t i = 0; i < fields.size(); ++i) {
-        if (i > 0) result += ", ";
-        result += "QLatin1String(\"" + fields[i]->name + "\")";
-    }
-    return result;
+    // 使用与generateFieldNamesFromTemplate相同的逻辑
+    return generateFieldNamesFromTemplate(fields);
 }
 
 std::string Generator::generate(const ast::Document& document, const std::string& outputPath) {
@@ -1017,10 +1280,32 @@ std::string Generator::generateFile(const ast::Document& document) {
     
     // 收集所有生成的内容
     std::vector<std::string> contents;
+    std::vector<std::string> includes;
     
     // 遍历文档中的所有声明
     for (const auto& node : document.declarations) {
         switch (node->nodeType()) {
+            case ast::NodeType::IncludeDecl: {
+                auto includeNode = static_cast<const ast::Include*>(node.get());
+                
+                // 使用配置的include指令处理
+                std::string includePath = includeNode->path;
+                std::string sourceExt = config_.includeDirective.sourceExtension.empty() ? ".mota" : config_.includeDirective.sourceExtension;
+                std::string targetExt = config_.includeDirective.targetExtension.empty() ? ".h" : config_.includeDirective.targetExtension;
+                
+                if (includePath.ends_with(sourceExt)) {
+                    includePath = includePath.substr(0, includePath.length() - sourceExt.length()) + targetExt;
+                }
+                
+                // 使用配置的include模式
+                std::string includePattern = config_.includeDirective.pattern.empty() ? 
+                    "#include \"{{INCLUDE_PATH}}\"" : config_.includeDirective.pattern;
+                
+                TemplateVars includeVars;
+                includeVars["INCLUDE_PATH"] = includePath;
+                includes.push_back(renderTemplate(includePattern, includeVars));
+                break;
+            }
             case ast::NodeType::StructDecl: {
                 auto structNode = static_cast<const ast::Struct*>(node.get());
                 contents.push_back(generateStruct(*structNode));
@@ -1054,7 +1339,47 @@ std::string Generator::generateFile(const ast::Document& document) {
     std::string namespaceStr = extractNamespace(document);
     if (!namespaceStr.empty()) {
         vars["HAS_NAMESPACE"] = "true";
-        vars["NAMESPACE"] = namespaceStr;
+        
+        // 使用配置的命名空间格式化
+        std::string formattedNamespace = namespaceStr;
+        
+        // 从配置获取命名空间分隔符替换规则
+        auto namespaceSeparatorIt = config_.syntaxElements.find("NAMESPACE_SEPARATOR_REPLACEMENT");
+        if (namespaceSeparatorIt != config_.syntaxElements.end()) {
+            // 使用配置的替换规则
+            std::string replacementRule = namespaceSeparatorIt->second;
+            // 格式: "source_char->target_string"
+            size_t arrowPos = replacementRule.find("->");
+            if (arrowPos != std::string::npos) {
+                std::string sourceChar = replacementRule.substr(0, arrowPos);
+                std::string targetString = replacementRule.substr(arrowPos + 2);
+                
+                // 替换所有源字符
+                for (size_t i = 0; i < formattedNamespace.length(); ++i) {
+                    if (formattedNamespace.substr(i, sourceChar.length()) == sourceChar) {
+                        formattedNamespace.replace(i, sourceChar.length(), targetString);
+                        i += targetString.length() - 1;
+                    }
+                }
+            }
+        } else {
+            // 回退到原来的逻辑，但使用配置的分隔符
+            if (config_.namespaceFormat.separator == "::") {
+                std::replace(formattedNamespace.begin(), formattedNamespace.end(), '.', ':');
+                // 将单个冒号替换为双冒号
+                size_t pos = 0;
+                while ((pos = formattedNamespace.find(":", pos)) != std::string::npos) {
+                    if (pos + 1 < formattedNamespace.length() && formattedNamespace[pos + 1] != ':') {
+                        formattedNamespace.replace(pos, 1, "::");
+                        pos += 2;
+                    } else {
+                        pos++;
+                    }
+                }
+            }
+        }
+        
+        vars["NAMESPACE"] = formattedNamespace;
     } else {
         vars["HAS_NAMESPACE"] = "";
         vars["NAMESPACE"] = "";
@@ -1069,6 +1394,22 @@ std::string Generator::generateFile(const ast::Document& document) {
         allContent += content;
     }
     vars["CONTENT"] = allContent;
+    
+    // 处理include信息
+    if (!includes.empty()) {
+        vars["HAS_INCLUDES"] = "true";
+        std::string allIncludes;
+        for (const auto& include : includes) {
+            if (!allIncludes.empty()) {
+                allIncludes += "\n";
+            }
+            allIncludes += include;
+        }
+        vars["INCLUDES"] = allIncludes;
+    } else {
+        vars["HAS_INCLUDES"] = "";
+        vars["INCLUDES"] = "";
+    }
     
     return renderTemplate(headerTemplate, vars);
 }
@@ -1119,87 +1460,8 @@ std::string Generator::generateEnum(const ast::Enum& enumNode) {
         return "";
     }
     
-    TemplateVars vars;
-    std::string className = formatTypeName(enumNode.name, "enum");
-    vars["CLASS_NAME"] = className;
-    vars["ENUM_NAME"] = enumNode.name;
-    
-    // 生成枚举值列表
-    std::string enumValues;
-    std::string toStringCases;
-    std::string fromStringLogic;
-    std::string stringValues;
-    std::string displayNames;
-    
-    for (size_t i = 0; i < enumNode.values.size(); ++i) {
-        const auto& enumValue = enumNode.values[i];
-        
-        // 枚举值定义
-        if (i > 0) {
-            enumValues += ",\n    ";
-            stringValues += " ";
-            displayNames += " ";
-        }
-        enumValues += enumValue->name + " = " + std::to_string(i);
-        
-        // toString cases
-        if (i > 0) toStringCases += "\n            ";
-        toStringCases += "case " + className + "::" + enumValue->name + ":\n";
-        toStringCases += "                return \"" + enumValue->name + "\";";
-        
-        // fromString logic
-        if (i > 0) fromStringLogic += " else ";
-        fromStringLogic += "if (str == \"" + enumValue->name + "\") {\n";
-        fromStringLogic += "            return " + className + "::" + enumValue->name + ";\n";
-        fromStringLogic += "        }";
-        
-        // string values and display names
-        stringValues += "<< \"" + enumValue->name + "\"";
-        displayNames += "<< \"" + enumValue->name + "\"";
-    }
-    
-    vars["ENUM_VALUES"] = enumValues;
-    vars["ENUM_TO_STRING_CASES"] = toStringCases;
-    vars["STRING_TO_ENUM_LOGIC"] = fromStringLogic;
-    vars["DEFAULT_ENUM_VALUE"] = enumNode.values.empty() ? "" : enumNode.values[0]->name;
-    vars["ENUM_STRING_VALUES"] = stringValues;
-    vars["ENUM_DISPLAY_NAMES"] = displayNames;
-    
-    // 生成枚举注解相关的代码 - 从模板变量获取或留空
-    auto enumAnnotationIt = config_.templateVariables.find("ENUM_ANNOTATION_LOGIC");
-    vars["ENUM_ANNOTATION_LOGIC"] = (enumAnnotationIt != config_.templateVariables.end()) ? 
-        renderTemplate(enumAnnotationIt->second, vars) : "";
-    
-    // 生成枚举值注解的switch cases
-    std::string enumValueAnnotationCases;
-    std::string enumValueAnnotationByNameLogic;
-    
-    // 从配置中获取枚举值注解模板
-    auto enumValueAnnotationTemplateIt = config_.templateVariables.find("ENUM_VALUE_ANNOTATION_TEMPLATE");
-    std::string enumValueAnnotationTemplate = (enumValueAnnotationTemplateIt != config_.templateVariables.end()) ? 
-        enumValueAnnotationTemplateIt->second : "return QList<QSharedPointer<IAnnotation>>();";
-    
-    for (size_t i = 0; i < enumNode.values.size(); ++i) {
-        const auto& enumValue = enumNode.values[i];
-        
-        TemplateVars enumValueVars;
-        enumValueVars["ENUM_VALUE_NAME"] = enumValue->name;
-        enumValueVars["ENUM_CLASS_NAME"] = className;
-        
-        // 为每个枚举值生成注解case
-        if (i > 0) enumValueAnnotationCases += "\n            ";
-        enumValueAnnotationCases += "case " + className + "::" + enumValue->name + ":\n";
-        enumValueAnnotationCases += "                " + renderTemplate(enumValueAnnotationTemplate, enumValueVars);
-        
-        // 为按名称查找生成逻辑
-        if (i > 0) enumValueAnnotationByNameLogic += " else ";
-        enumValueAnnotationByNameLogic += "if (valueName == \"" + enumValue->name + "\") {\n";
-        enumValueAnnotationByNameLogic += "            " + renderTemplate(enumValueAnnotationTemplate, enumValueVars) + "\n";
-        enumValueAnnotationByNameLogic += "        }";
-    }
-    
-    vars["ENUM_VALUE_ANNOTATION_CASES"] = enumValueAnnotationCases;
-    vars["ENUM_VALUE_ANNOTATION_BY_NAME_LOGIC"] = enumValueAnnotationByNameLogic;
+    // 构建枚举的模板变量
+    TemplateVars vars = buildEnumTemplateVars(enumNode);
     
     return renderTemplate(enumTemplate, vars);
 }
@@ -1244,12 +1506,8 @@ std::string Generator::generateAccessors(const std::vector<std::unique_ptr<ast::
 }
 
 std::string Generator::generatePrivateFields(const std::vector<std::unique_ptr<ast::Field>>& fields) {
-    std::string result;
-    for (const auto& field : fields) {
-        if (!result.empty()) result += "\n    ";
-        result += mapTypeFromConfig(field->type->toString()) + " " + field->name + "_;";
-    }
-    return result;
+    // 使用基于模板的方法
+    return generatePrivateFieldsFromTemplate(fields);
 }
 
 std::string Generator::generateConstructor(const std::vector<std::unique_ptr<ast::Field>>& fields, const std::string& className) {
@@ -1270,13 +1528,8 @@ std::string Generator::generateConstructor(const std::vector<std::unique_ptr<ast
 std::string Generator::generateSerializeFields(const std::vector<std::unique_ptr<ast::Field>>& fields) {
     auto templateIt = config_.templates.find("serialize");
     if (templateIt == config_.templates.end()) {
-        // 降级到默认行为
-        std::string result;
-        for (const auto& field : fields) {
-            if (!result.empty()) result += "\n        ";
-            result += "map[QLatin1String(\"" + field->name + "\")] = QCborValue::fromVariant(QVariant::fromValue(" + field->name + "_));";
-        }
-        return result;
+        // 使用基于模板的方法
+        return generateSerializeFieldsFromTemplate(fields);
     }
     
     std::string serializeTemplate = loadTemplate(templateIt->second);
@@ -1301,15 +1554,8 @@ std::string Generator::generateSerializeFields(const std::vector<std::unique_ptr
 std::string Generator::generateDeserializeFields(const std::vector<std::unique_ptr<ast::Field>>& fields) {
     auto templateIt = config_.templates.find("deserialize");
     if (templateIt == config_.templates.end()) {
-        // 降级到默认行为
-        std::string result;
-        for (const auto& field : fields) {
-            if (!result.empty()) result += "\n        ";
-            result += "if (map.contains(QLatin1String(\"" + field->name + "\"))) {\n";
-            result += "            " + field->name + "_ = map[QLatin1String(\"" + field->name + "\")].toVariant().value<" + mapType(field->type->toString()) + ">();\n";
-            result += "        }";
-        }
-        return result;
+        // 使用基于模板的方法
+        return generateDeserializeFieldsFromTemplate(fields);
     }
     
     std::string deserializeTemplate = loadTemplate(templateIt->second);
@@ -1332,46 +1578,23 @@ std::string Generator::generateDeserializeFields(const std::vector<std::unique_p
 }
 
 std::string Generator::generateFieldNames(const std::vector<std::unique_ptr<ast::Field>>& fields) {
-    std::string result;
-    for (size_t i = 0; i < fields.size(); ++i) {
-        if (i > 0) result += ", ";
-        result += "QLatin1String(\"" + fields[i]->name + "\")";
-    }
-    return result;
+    // 使用新的基于模板的方法
+    return generateFieldNamesFromTemplate(fields);
 }
 
 std::string Generator::generateFieldTypeLogic(const std::vector<std::unique_ptr<ast::Field>>& fields) {
-    std::string result;
-    for (const auto& field : fields) {
-        if (!result.empty()) result += "\n        ";
-        result += "if (fieldName == QLatin1String(\"" + field->name + "\")) return QLatin1String(\"" + field->type->toString() + "\");";
-    }
-    if (!result.empty()) result += "\n        ";
-    result += "return QLatin1String(\"\");";
-    return result;
+    // 使用新的基于模板的方法
+    return generateFieldTypeLogicFromTemplate(fields);
 }
 
 std::string Generator::generateValueGetterLogic(const std::vector<std::unique_ptr<ast::Field>>& fields) {
-    std::string result;
-    for (const auto& field : fields) {
-        if (!result.empty()) result += "\n        ";
-        result += "if (fieldName == QLatin1String(\"" + field->name + "\")) return QVariant::fromValue(" + field->name + "_);";
-    }
-    if (!result.empty()) result += "\n        ";
-    result += "return QVariant();";
-    return result;
+    // 使用新的基于模板的方法
+    return generateValueGetterLogicFromTemplate(fields);
 }
 
 std::string Generator::generateValueSetterLogic(const std::vector<std::unique_ptr<ast::Field>>& fields) {
-    std::string result;
-    for (const auto& field : fields) {
-        if (!result.empty()) result += "\n        ";
-        result += "if (fieldName == QLatin1String(\"" + field->name + "\")) {\n";
-        result += "            " + field->name + "_ = value.value<" + mapType(field->type->toString()) + ">();\n";
-        result += "            return;\n";
-        result += "        }";
-    }
-    return result;
+    // 使用新的基于模板的方法
+    return generateValueSetterLogicFromTemplate(fields);
 }
 
 std::string Generator::generatePropertyTypeLogic(const std::vector<std::unique_ptr<ast::Field>>& fields) {
@@ -1387,38 +1610,13 @@ std::string Generator::generatePropertySetterLogic(const std::vector<std::unique
 }
 
 std::string Generator::generateArgumentGetterLogic(const std::vector<std::unique_ptr<ast::Field>>& fields) {
-    std::string result;
-    for (const auto& field : fields) {
-        if (!result.empty()) result += "\n        ";
-        result += "if (argumentName == QLatin1String(\"" + field->name + "\")) return QVariant::fromValue(" + field->name + "_);";
-    }
-    if (!result.empty()) result += "\n        ";
-    result += "return QVariant();";
-    return result;
+    // 使用新的基于模板的方法
+    return generateArgumentGetterLogicFromTemplate(fields);
 }
 
 std::string Generator::mapType(const std::string& motaType) {
-    // 处理repeated类型
-    if (motaType.substr(0, 9) == "repeated ") {
-        std::string elementType = motaType.substr(9);
-        std::string mappedElementType = mapType(elementType); // 递归调用
-        return "QVector<" + mappedElementType + ">";
-    }
-    
-    // 检查内置类型映射
-    auto it = config_.typeMapping.find(motaType);
-    if (it != config_.typeMapping.end()) {
-        return it->second;
-    }
-    
-    // 检查是否是已定义的自定义类型
-    auto typeIt = typeContext_.find(motaType);
-    if (typeIt != typeContext_.end()) {
-        return formatTypeName(motaType, typeIt->second);
-    }
-    
-    // 如果找不到，假设是block类型（保持向后兼容）
-    return formatTypeName(motaType, "block");
+    // 使用新的基于配置的方法
+    return mapTypeFromConfig(motaType);
 }
 
 std::string Generator::formatTypeName(const std::string& name, const std::string& type) {
@@ -1510,6 +1708,313 @@ std::string Generator::extractFileName(const std::string& filePath) {
     }
     
     return filePath.substr(lastSlash, lastDot - lastSlash);
+}
+
+TemplateVars Generator::buildEnumTemplateVars(const ast::Enum& enumNode) {
+    TemplateVars vars;
+    
+    // 基础信息
+    std::string className = formatTypeName(enumNode.name, "enum");
+    vars["CLASS_NAME"] = className;
+    vars["ENUM_NAME"] = enumNode.name;
+    
+    // 构建枚举值数据
+    std::string enumValuesData;
+    for (size_t i = 0; i < enumNode.values.size(); ++i) {
+        if (i > 0) enumValuesData += "|";
+        enumValuesData += enumNode.values[i]->name;
+    }
+    vars["ENUM_VALUES_DATA"] = enumValuesData;
+    
+    // 使用模板生成各个部分
+    vars["ENUM_VALUES"] = generateEnumValuesFromTemplate(enumNode);
+    vars["ENUM_TO_STRING_CASES"] = generateEnumToStringCasesFromTemplate(enumNode, className);
+    vars["STRING_TO_ENUM_LOGIC"] = generateStringToEnumLogicFromTemplate(enumNode, className);
+    vars["ENUM_STRING_VALUES"] = generateEnumStringValuesFromTemplate(enumNode);
+    vars["ENUM_DISPLAY_NAMES"] = generateEnumDisplayNamesFromTemplate(enumNode);
+    vars["ENUM_ANNOTATION_LOGIC"] = generateEnumAnnotationLogicFromTemplate(enumNode);
+    vars["ENUM_VALUE_ANNOTATION_CASES"] = generateEnumValueAnnotationCasesFromTemplate(enumNode, className);
+    vars["ENUM_VALUE_ANNOTATION_BY_NAME_LOGIC"] = generateEnumValueAnnotationByNameLogicFromTemplate(enumNode);
+    
+    // 默认值
+    vars["DEFAULT_ENUM_VALUE"] = enumNode.values.empty() ? "" : enumNode.values[0]->name;
+    
+    return vars;
+}
+
+std::string Generator::generateEnumValuesFromTemplate(const ast::Enum& enumNode) {
+    auto enumValueTemplateIt = config_.templateVariables.find("ENUM_VALUE_TEMPLATE");
+    std::string enumValueTemplate = (enumValueTemplateIt != config_.templateVariables.end()) ? 
+        enumValueTemplateIt->second : "{{ENUM_VALUE_NAME}} = {{ENUM_VALUE_INDEX}}";
+    
+    auto enumValueSeparatorIt = config_.syntaxElements.find("ENUM_VALUE_SEPARATOR");
+    std::string enumValueSeparator = (enumValueSeparatorIt != config_.syntaxElements.end()) ? 
+        enumValueSeparatorIt->second : ",\n    ";
+    
+    std::string result;
+    for (size_t i = 0; i < enumNode.values.size(); ++i) {
+        if (i > 0) result += enumValueSeparator;
+        
+        TemplateVars enumValueVars;
+        enumValueVars["ENUM_VALUE_NAME"] = enumNode.values[i]->name;
+        enumValueVars["ENUM_VALUE_INDEX"] = std::to_string(i);
+        
+        result += renderTemplate(enumValueTemplate, enumValueVars);
+    }
+    return result;
+}
+
+std::string Generator::generateEnumToStringCasesFromTemplate(const ast::Enum& enumNode, const std::string& className) {
+    auto caseTemplateIt = config_.templateVariables.find("ENUM_TO_STRING_CASE_TEMPLATE");
+    std::string caseTemplate = (caseTemplateIt != config_.templateVariables.end()) ? 
+        caseTemplateIt->second : "case {{CLASS_NAME}}::{{ENUM_VALUE_NAME}}:\n                return {{STRING_LITERAL}};";
+    
+    auto caseSeparatorIt = config_.syntaxElements.find("ENUM_CASE_SEPARATOR");
+    std::string caseSeparator = (caseSeparatorIt != config_.syntaxElements.end()) ? 
+        caseSeparatorIt->second : "\n            ";
+    
+    std::string stringTemplate = config_.codeGeneration.stringLiteralTemplate.empty() ? 
+        "QLatin1String(\"{{STRING_VALUE}}\")" : config_.codeGeneration.stringLiteralTemplate;
+    
+    std::string result;
+    for (size_t i = 0; i < enumNode.values.size(); ++i) {
+        if (i > 0) result += caseSeparator;
+        
+        TemplateVars stringVars;
+        stringVars["STRING_VALUE"] = enumNode.values[i]->name;
+        std::string stringLiteral = renderTemplate(stringTemplate, stringVars);
+        
+        TemplateVars caseVars;
+        caseVars["CLASS_NAME"] = className;
+        caseVars["ENUM_VALUE_NAME"] = enumNode.values[i]->name;
+        caseVars["STRING_LITERAL"] = stringLiteral;
+        
+        result += renderTemplate(caseTemplate, caseVars);
+    }
+    return result;
+}
+
+std::string Generator::generateStringToEnumLogicFromTemplate(const ast::Enum& enumNode, const std::string& className) {
+    auto conditionTemplateIt = config_.templateVariables.find("STRING_TO_ENUM_CONDITION_TEMPLATE");
+    std::string conditionTemplate = (conditionTemplateIt != config_.templateVariables.end()) ? 
+        conditionTemplateIt->second : "if (str == {{STRING_LITERAL}}) {\n            return {{CLASS_NAME}}::{{ENUM_VALUE_NAME}};\n        }";
+    
+    auto conditionSeparatorIt = config_.syntaxElements.find("ENUM_CONDITION_SEPARATOR");
+    std::string conditionSeparator = (conditionSeparatorIt != config_.syntaxElements.end()) ? 
+        conditionSeparatorIt->second : " else ";
+    
+    std::string stringTemplate = config_.codeGeneration.stringLiteralTemplate.empty() ? 
+        "QLatin1String(\"{{STRING_VALUE}}\")" : config_.codeGeneration.stringLiteralTemplate;
+    
+    std::string result;
+    for (size_t i = 0; i < enumNode.values.size(); ++i) {
+        if (i > 0) result += conditionSeparator;
+        
+        TemplateVars stringVars;
+        stringVars["STRING_VALUE"] = enumNode.values[i]->name;
+        std::string stringLiteral = renderTemplate(stringTemplate, stringVars);
+        
+        TemplateVars conditionVars;
+        conditionVars["CLASS_NAME"] = className;
+        conditionVars["ENUM_VALUE_NAME"] = enumNode.values[i]->name;
+        conditionVars["STRING_LITERAL"] = stringLiteral;
+        
+        result += renderTemplate(conditionTemplate, conditionVars);
+    }
+    return result;
+}
+
+std::string Generator::generateEnumStringValuesFromTemplate(const ast::Enum& enumNode) {
+    auto stringValueTemplateIt = config_.templateVariables.find("ENUM_STRING_VALUE_TEMPLATE");
+    std::string stringValueTemplate = (stringValueTemplateIt != config_.templateVariables.end()) ? 
+        stringValueTemplateIt->second : "<< {{STRING_LITERAL}}";
+    
+    auto stringValueSeparatorIt = config_.syntaxElements.find("ENUM_STRING_VALUE_SEPARATOR");
+    std::string stringValueSeparator = (stringValueSeparatorIt != config_.syntaxElements.end()) ? 
+        stringValueSeparatorIt->second : " ";
+    
+    std::string stringTemplate = config_.codeGeneration.stringLiteralTemplate.empty() ? 
+        "QLatin1String(\"{{STRING_VALUE}}\")" : config_.codeGeneration.stringLiteralTemplate;
+    
+    std::string result;
+    for (size_t i = 0; i < enumNode.values.size(); ++i) {
+        if (i > 0) result += stringValueSeparator;
+        
+        TemplateVars stringVars;
+        stringVars["STRING_VALUE"] = enumNode.values[i]->name;
+        std::string stringLiteral = renderTemplate(stringTemplate, stringVars);
+        
+        TemplateVars valueVars;
+        valueVars["STRING_LITERAL"] = stringLiteral;
+        
+        result += renderTemplate(stringValueTemplate, valueVars);
+    }
+    return result;
+}
+
+std::string Generator::generateEnumDisplayNamesFromTemplate(const ast::Enum& enumNode) {
+    auto displayNameTemplateIt = config_.templateVariables.find("ENUM_DISPLAY_NAME_TEMPLATE");
+    std::string displayNameTemplate = (displayNameTemplateIt != config_.templateVariables.end()) ? 
+        displayNameTemplateIt->second : "<< {{STRING_LITERAL}}";
+    
+    auto displayNameSeparatorIt = config_.syntaxElements.find("ENUM_DISPLAY_NAME_SEPARATOR");
+    std::string displayNameSeparator = (displayNameSeparatorIt != config_.syntaxElements.end()) ? 
+        displayNameSeparatorIt->second : " ";
+    
+    std::string stringTemplate = config_.codeGeneration.stringLiteralTemplate.empty() ? 
+        "QLatin1String(\"{{STRING_VALUE}}\")" : config_.codeGeneration.stringLiteralTemplate;
+    
+    std::string result;
+    for (size_t i = 0; i < enumNode.values.size(); ++i) {
+        if (i > 0) result += displayNameSeparator;
+        
+        // 获取显示名称（从注解中获取desc，如果没有则使用枚举值名称）
+        std::string displayName = getEnumValueDisplayName(*enumNode.values[i]);
+        
+        TemplateVars stringVars;
+        stringVars["STRING_VALUE"] = displayName;
+        std::string stringLiteral = renderTemplate(stringTemplate, stringVars);
+        
+        TemplateVars displayVars;
+        displayVars["STRING_LITERAL"] = stringLiteral;
+        
+        result += renderTemplate(displayNameTemplate, displayVars);
+    }
+    return result;
+}
+
+std::string Generator::getEnumValueDisplayName(const ast::EnumValue& enumValue) {
+    // 默认使用枚举值名称
+    std::string displayName = enumValue.name;
+    
+    // 从配置获取枚举值注解名称
+    auto enumValueAnnotationNamesIt = config_.syntaxElements.find("ENUM_VALUE_ANNOTATION_NAMES");
+    std::string enumValueAnnotationNames = (enumValueAnnotationNamesIt != config_.syntaxElements.end()) ? 
+        enumValueAnnotationNamesIt->second : "yima.EnumValue|EnumValue";
+    
+    // 从配置获取描述参数名称
+    auto descParamNameIt = config_.syntaxElements.find("DESC_PARAM_NAME");
+    std::string descParamName = (descParamNameIt != config_.syntaxElements.end()) ? 
+        descParamNameIt->second : "desc";
+    
+    // 解析注解名称列表
+    std::vector<std::string> annotationNames;
+    std::stringstream ss(enumValueAnnotationNames);
+    std::string name;
+    char separator = enumValueAnnotationNames.find('|') != std::string::npos ? '|' : ',';
+    while (std::getline(ss, name, separator)) {
+        annotationNames.push_back(name);
+    }
+    
+    // 查找EnumValue注解中的desc参数
+    for (const auto& annotation : enumValue.annotations) {
+        bool isEnumValueAnnotation = false;
+        for (const auto& annotationName : annotationNames) {
+            if (annotation->name == annotationName) {
+                isEnumValueAnnotation = true;
+                break;
+            }
+        }
+        
+        if (isEnumValueAnnotation) {
+            for (const auto& arg : annotation->arguments) {
+                if (arg.name == descParamName) {
+                    if (arg.value->nodeType() == ast::NodeType::Literal) {
+                        auto literal = static_cast<const ast::Literal*>(arg.value.get());
+                        if (std::holds_alternative<std::string>(literal->value)) {
+                            displayName = std::get<std::string>(literal->value);
+                            break;
+                        }
+                    } else if (arg.value->nodeType() == ast::NodeType::Identifier) {
+                        // 处理字符串字面量被解析为标识符的情况
+                        auto identifier = static_cast<const ast::Identifier*>(arg.value.get());
+                        displayName = identifier->name;
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+    }
+    
+    return displayName;
+}
+
+std::string Generator::generateEnumAnnotationLogicFromTemplate(const ast::Enum& enumNode) {
+    return generateAnnotationLogicFromTemplate(enumNode.annotations);
+}
+
+std::string Generator::generateEnumValueAnnotationCasesFromTemplate(const ast::Enum& enumNode, const std::string& className) {
+    auto caseTemplateIt = config_.templateVariables.find("ENUM_VALUE_ANNOTATION_CASE_TEMPLATE");
+    std::string caseTemplate = (caseTemplateIt != config_.templateVariables.end()) ? 
+        caseTemplateIt->second : "case {{CLASS_NAME}}::{{ENUM_VALUE_NAME}}: {\n{{ANNOTATION_LOGIC}}\n            }";
+    
+    auto caseSeparatorIt = config_.syntaxElements.find("ENUM_ANNOTATION_CASE_SEPARATOR");
+    std::string caseSeparator = (caseSeparatorIt != config_.syntaxElements.end()) ? 
+        caseSeparatorIt->second : "\n            ";
+    
+    std::string result;
+    for (size_t i = 0; i < enumNode.values.size(); ++i) {
+        if (i > 0) result += caseSeparator;
+        
+        std::string annotationLogic = generateAnnotationLogicFromTemplate(enumNode.values[i]->annotations);
+        
+        TemplateVars caseVars;
+        caseVars["CLASS_NAME"] = className;
+        caseVars["ENUM_VALUE_NAME"] = enumNode.values[i]->name;
+        caseVars["ANNOTATION_LOGIC"] = annotationLogic;
+        
+        result += renderTemplate(caseTemplate, caseVars);
+    }
+    return result;
+}
+
+std::string Generator::generateEnumValueAnnotationByNameLogicFromTemplate(const ast::Enum& enumNode) {
+    auto conditionTemplateIt = config_.templateVariables.find("ENUM_VALUE_ANNOTATION_BY_NAME_CONDITION_TEMPLATE");
+    std::string conditionTemplate = (conditionTemplateIt != config_.templateVariables.end()) ? 
+        conditionTemplateIt->second : "if (valueName == \"{{ENUM_VALUE_NAME}}\") {\n{{ANNOTATION_LOGIC}}\n        }";
+    
+    auto conditionSeparatorIt = config_.syntaxElements.find("ENUM_ANNOTATION_CONDITION_SEPARATOR");
+    std::string conditionSeparator = (conditionSeparatorIt != config_.syntaxElements.end()) ? 
+        conditionSeparatorIt->second : " else ";
+    
+    std::string result;
+    for (size_t i = 0; i < enumNode.values.size(); ++i) {
+        if (i > 0) result += conditionSeparator;
+        
+        std::string annotationLogic = generateAnnotationLogicFromTemplate(enumNode.values[i]->annotations);
+        
+        TemplateVars conditionVars;
+        conditionVars["ENUM_VALUE_NAME"] = enumNode.values[i]->name;
+        conditionVars["ANNOTATION_LOGIC"] = annotationLogic;
+        
+        result += renderTemplate(conditionTemplate, conditionVars);
+    }
+    return result;
+}
+
+std::string Generator::generateAnnotationLogicFromTemplate(const std::vector<std::unique_ptr<ast::Annotation>>& annotations) {
+    auto annotationListTemplateIt = config_.templateVariables.find("ANNOTATION_LIST_TEMPLATE");
+    std::string annotationListTemplate = (annotationListTemplateIt != config_.templateVariables.end()) ? 
+        annotationListTemplateIt->second : "QList<QSharedPointer<IAnnotation>> result;";
+    
+    auto todoCommentTemplateIt = config_.templateVariables.find("TODO_COMMENT_TEMPLATE");
+    std::string todoCommentTemplate = (todoCommentTemplateIt != config_.templateVariables.end()) ? 
+        todoCommentTemplateIt->second : "// TODO: 创建 {{ANNOTATION_NAME}} 注解实例";
+    
+    auto returnResultTemplateIt = config_.templateVariables.find("RETURN_RESULT_TEMPLATE");
+    std::string returnResultTemplate = (returnResultTemplateIt != config_.templateVariables.end()) ? 
+        returnResultTemplateIt->second : "return result;";
+    
+    std::string result = "                " + annotationListTemplate + "\n";
+    for (const auto& annotation : annotations) {
+        TemplateVars todoVars;
+        todoVars["ANNOTATION_NAME"] = annotation->name;
+        result += "                " + renderTemplate(todoCommentTemplate, todoVars) + "\n";
+    }
+    result += "                " + returnResultTemplate;
+    
+    return result;
 }
 
 } // namespace generator

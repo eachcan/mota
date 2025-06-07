@@ -58,6 +58,24 @@ struct GeneratorConfig {
         std::string itemVariable;
         std::string indexVariable;
     } loopSyntax;
+    
+    // 语法元素配置
+    std::unordered_map<std::string, std::string> syntaxElements;
+    
+    // Include指令配置
+    struct {
+        std::string pattern;
+        std::string sourceExtension;
+        std::string targetExtension;
+    } includeDirective;
+    
+    // 代码生成配置
+    struct {
+        std::string containerTemplate;
+        std::string stringLiteralTemplate;
+        std::string variantTemplate;
+        std::string collectionSeparator;
+    } codeGeneration;
 };
 
 // 代码生成器
@@ -152,6 +170,19 @@ private:
                                   const std::vector<std::unique_ptr<ast::Field>>& fields,
                                   const std::string& baseName = "");
     TemplateVars buildFieldTemplateVars(const ast::Field& field);
+    TemplateVars buildEnumTemplateVars(const ast::Enum& enumNode);
+    
+    // 枚举代码生成的辅助方法
+    std::string generateEnumValuesFromTemplate(const ast::Enum& enumNode);
+    std::string generateEnumToStringCasesFromTemplate(const ast::Enum& enumNode, const std::string& className);
+    std::string generateStringToEnumLogicFromTemplate(const ast::Enum& enumNode, const std::string& className);
+    std::string generateEnumStringValuesFromTemplate(const ast::Enum& enumNode);
+    std::string generateEnumDisplayNamesFromTemplate(const ast::Enum& enumNode);
+    std::string generateEnumAnnotationLogicFromTemplate(const ast::Enum& enumNode);
+    std::string generateEnumValueAnnotationCasesFromTemplate(const ast::Enum& enumNode, const std::string& className);
+    std::string generateEnumValueAnnotationByNameLogicFromTemplate(const ast::Enum& enumNode);
+    std::string generateAnnotationLogicFromTemplate(const std::vector<std::unique_ptr<ast::Annotation>>& annotations);
+    std::string getEnumValueDisplayName(const ast::EnumValue& enumValue);
     
     // 基于模板的代码生成
     std::string generateFromTemplate(const std::string& templateType, const std::vector<std::unique_ptr<ast::Field>>& fields);

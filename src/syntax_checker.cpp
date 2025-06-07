@@ -345,5 +345,280 @@ std::vector<SyntaxDiagnostic> SyntaxChecker::check(const ast::Document& doc, con
     return diagnostics;
 }
 
+std::vector<SyntaxDiagnostic> SyntaxChecker::checkWithExternalAnnotations(const ast::Document& doc, const std::string& entryFile, const std::set<std::string>& externalAnnotations) {
+    std::vector<SyntaxDiagnostic> diagnostics;
+    std::unordered_map<std::string, const ast::Node*> typeTable; // 名称->声明
+    std::unordered_set<std::string> annotationSet;
+    std::unordered_map<std::string, ast::NodeType> nameTypeMap; // 名称->类型
+    std::unordered_map<std::string, std::string> inheritanceMap; // 子->父
+    std::unordered_map<std::string, std::set<std::string>> includeMap; // 文件->包含的文件列表
+    
+    // 添加外部注解定义
+    for (const auto& annotation : externalAnnotations) {
+        annotationSet.insert(annotation);
+    }
+    
+    // 1. 收集所有类型、注解定义，检测重复定义/命名冲突
+    std::string currentNamespace = "";
+    for (const auto& decl : doc.declarations) {
+        std::string name;
+        ast::NodeType type = decl->nodeType();
+        switch (type) {
+        case ast::NodeType::NamespaceDecl: {
+            auto namespaceDecl = static_cast<const ast::Namespace*>(decl.get());
+            currentNamespace = "";
+            for (size_t i = 0; i < namespaceDecl->name.size(); ++i) {
+                if (i > 0) currentNamespace += ".";
+                currentNamespace += namespaceDecl->name[i];
+            }
+            continue;
+        }
+        case ast::NodeType::StructDecl:
+            name = static_cast<const ast::Struct*>(decl.get())->name;
+            break;
+        case ast::NodeType::BlockDecl:
+            name = static_cast<const ast::Block*>(decl.get())->name;
+            break;
+        case ast::NodeType::EnumDecl:
+            name = static_cast<const ast::Enum*>(decl.get())->name;
+            break;
+        case ast::NodeType::AnnotationDecl: {
+            auto annotationDecl = static_cast<const ast::AnnotationDecl*>(decl.get());
+            name = annotationDecl->name;
+            // 注解需要考虑命名空间
+            std::string fullName = name;
+            if (!currentNamespace.empty()) {
+                fullName = currentNamespace + "." + name;
+            }
+            annotationSet.insert(fullName);
+            break;
+        }
+        case ast::NodeType::IncludeDecl:
+            // Include声明不需要检查重复定义
+            continue;
+        default:
+            continue;
+        }
+        
+        // 构建完全限定名
+        std::string fullName = name;
+        if (!currentNamespace.empty()) {
+            fullName = currentNamespace + "." + name;
+        }
+        
+        // 检查重复定义
+        if (typeTable.find(fullName) != typeTable.end()) {
+            diagnostics.push_back({
+                SyntaxDiagnostic::Level::Error,
+                "重复定义: " + fullName,
+                entryFile
+            });
+        } else {
+            typeTable[fullName] = decl.get();
+            nameTypeMap[fullName] = type;
+            // 同时添加简单名称（用于同命名空间内的引用）
+            if (!currentNamespace.empty()) {
+                typeTable[name] = decl.get();
+                nameTypeMap[name] = type;
+            }
+        }
+    }
+    
+    // 2. 检查继承关系
+    for (const auto& decl : doc.declarations) {
+        if (decl->nodeType() == ast::NodeType::StructDecl) {
+            auto structDecl = static_cast<const ast::Struct*>(decl.get());
+            if (!structDecl->baseName.empty()) {
+                std::string childName = structDecl->name;
+                std::string parentName = structDecl->baseName;
+                
+                // 检查父类是否存在
+                if (typeTable.find(parentName) == typeTable.end()) {
+                    diagnostics.push_back({
+                        SyntaxDiagnostic::Level::Error,
+                        "未定义的基类: " + parentName,
+                        entryFile
+                    });
+                } else {
+                    // 检查父类是否是struct类型
+                    if (nameTypeMap[parentName] != ast::NodeType::StructDecl) {
+                        diagnostics.push_back({
+                            SyntaxDiagnostic::Level::Error,
+                            "基类必须是struct类型: " + parentName,
+                            entryFile
+                        });
+                    } else {
+                        inheritanceMap[childName] = parentName;
+                    }
+                }
+            }
+        } else if (decl->nodeType() == ast::NodeType::BlockDecl) {
+            auto blockDecl = static_cast<const ast::Block*>(decl.get());
+            if (!blockDecl->baseName.empty()) {
+                std::string childName = blockDecl->name;
+                std::string parentName = blockDecl->baseName;
+                
+                // 检查父类是否存在
+                if (typeTable.find(parentName) == typeTable.end()) {
+                    diagnostics.push_back({
+                        SyntaxDiagnostic::Level::Error,
+                        "未定义的基类: " + parentName,
+                        entryFile
+                    });
+                } else {
+                    // 检查父类是否是block类型
+                    if (nameTypeMap[parentName] != ast::NodeType::BlockDecl) {
+                        diagnostics.push_back({
+                            SyntaxDiagnostic::Level::Error,
+                            "基类必须是block类型: " + parentName,
+                            entryFile
+                        });
+                    } else {
+                        inheritanceMap[childName] = parentName;
+                    }
+                }
+            }
+        }
+    }
+    
+    // 3. 检查循环继承
+    for (const auto& pair : inheritanceMap) {
+        std::set<std::string> visited;
+        std::string current = pair.first;
+        
+        while (!current.empty() && visited.find(current) == visited.end()) {
+            visited.insert(current);
+            auto it = inheritanceMap.find(current);
+            if (it != inheritanceMap.end()) {
+                current = it->second;
+            } else {
+                break;
+            }
+        }
+        
+        if (!current.empty() && visited.find(current) != visited.end()) {
+            diagnostics.push_back({
+                SyntaxDiagnostic::Level::Error,
+                "检测到循环继承: " + pair.first,
+                entryFile
+            });
+        }
+    }
+    
+    // 4. 检查字段类型和注解
+    for (const auto& decl : doc.declarations) {
+        if (decl->nodeType() == ast::NodeType::StructDecl) {
+            auto structDecl = static_cast<const ast::Struct*>(decl.get());
+            
+            // 检查字段
+            for (const auto& field : structDecl->fields) {
+                // 检查字段类型
+                std::string typeName = extractTypeName(field->type.get());
+                if (!typeName.empty()) {
+                    if (!isValidStructBlockFieldType(typeName, typeTable)) {
+                        TypeCategory cat = getTypeCategory(typeName, typeTable);
+                        if (cat == TypeCategory::Unknown) {
+                            diagnostics.push_back({SyntaxDiagnostic::Level::Error, "字段类型未定义: " + typeName, entryFile});
+                        } else if (cat == TypeCategory::Annotation) {
+                            diagnostics.push_back({SyntaxDiagnostic::Level::Error, "不能将注解用作字段类型: " + typeName, entryFile});
+                        } else if (cat == TypeCategory::Struct) {
+                            diagnostics.push_back({SyntaxDiagnostic::Level::Error, "不能将struct用作字段类型: " + typeName, entryFile});
+                        }
+                    }
+                }
+                
+                // 检查字段注解
+                for (const auto& ann : field->annotations) {
+                    if (!annotationSet.count(ann->name)) {
+                        diagnostics.push_back({SyntaxDiagnostic::Level::Error, "字段注解未定义: " + ann->name, entryFile});
+                    }
+                }
+            }
+            
+            // 检查struct注解
+            for (const auto& ann : structDecl->annotations) {
+                if (!annotationSet.count(ann->name)) {
+                    diagnostics.push_back({SyntaxDiagnostic::Level::Error, "struct注解未定义: " + ann->name, entryFile});
+                }
+            }
+            
+        } else if (decl->nodeType() == ast::NodeType::BlockDecl) {
+            auto blockDecl = static_cast<const ast::Block*>(decl.get());
+            
+            // 检查字段
+            for (const auto& field : blockDecl->fields) {
+                // 检查字段类型
+                std::string typeName = extractTypeName(field->type.get());
+                if (!typeName.empty()) {
+                    if (!isValidStructBlockFieldType(typeName, typeTable)) {
+                        TypeCategory cat = getTypeCategory(typeName, typeTable);
+                        if (cat == TypeCategory::Unknown) {
+                            diagnostics.push_back({SyntaxDiagnostic::Level::Error, "字段类型未定义: " + typeName, entryFile});
+                        } else if (cat == TypeCategory::Annotation) {
+                            diagnostics.push_back({SyntaxDiagnostic::Level::Error, "不能将注解用作字段类型: " + typeName, entryFile});
+                        } else if (cat == TypeCategory::Struct) {
+                            diagnostics.push_back({SyntaxDiagnostic::Level::Error, "不能将struct用作字段类型: " + typeName, entryFile});
+                        }
+                    }
+                }
+                
+                // 检查字段注解
+                for (const auto& ann : field->annotations) {
+                    if (!annotationSet.count(ann->name)) {
+                        diagnostics.push_back({SyntaxDiagnostic::Level::Error, "字段注解未定义: " + ann->name, entryFile});
+                    }
+                }
+            }
+            
+            // 检查block注解
+            for (const auto& ann : blockDecl->annotations) {
+                if (!annotationSet.count(ann->name)) {
+                    diagnostics.push_back({SyntaxDiagnostic::Level::Error, "block注解未定义: " + ann->name, entryFile});
+                }
+            }
+            
+        } else if (decl->nodeType() == ast::NodeType::EnumDecl) {
+            auto enumDecl = static_cast<const ast::Enum*>(decl.get());
+            
+            // 检查enum注解
+            for (const auto& ann : enumDecl->annotations) {
+                if (!annotationSet.count(ann->name)) {
+                    diagnostics.push_back({SyntaxDiagnostic::Level::Error, "enum注解未定义: " + ann->name, entryFile});
+                }
+            }
+            
+            // 检查枚举值的注解
+            for (const auto& enumValue : enumDecl->values) {
+                for (const auto& ann : enumValue->annotations) {
+                    if (!annotationSet.count(ann->name)) {
+                        diagnostics.push_back({SyntaxDiagnostic::Level::Error, "枚举值注解未定义: " + ann->name, entryFile});
+                    }
+                }
+            }
+            
+        } else if (decl->nodeType() == ast::NodeType::AnnotationDecl) {
+            auto annotationDecl = static_cast<const ast::AnnotationDecl*>(decl.get());
+            
+            // 检查注解字段
+            for (const auto& field : annotationDecl->fields) {
+                // 检查注解字段类型（只允许内置类型）
+                std::string typeName = extractTypeName(field->type.get());
+                if (!typeName.empty()) {
+                    if (!isValidAnnotationFieldType(typeName, typeTable)) {
+                        TypeCategory cat = getTypeCategory(typeName, typeTable);
+                        if (cat == TypeCategory::Unknown) {
+                            diagnostics.push_back({SyntaxDiagnostic::Level::Error, "注解字段类型未定义: " + typeName, entryFile});
+                        } else {
+                            diagnostics.push_back({SyntaxDiagnostic::Level::Error, "注解字段只能使用内置类型: " + typeName, entryFile});
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    return diagnostics;
+}
+
 } // namespace checker
 } // namespace mota 

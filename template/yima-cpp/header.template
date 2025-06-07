@@ -14,6 +14,10 @@
 #include "framework/IModel.h"
 #include "framework/IAnnotation.h"
 
+{{#HAS_INCLUDES}}
+{{INCLUDES}}
+{{/HAS_INCLUDES}}
+
 // 此文件由 Mota 代码生成器自动生成
 // 生成时间: {{GENERATION_TIME}}
 // 源文件: {{SOURCE_FILE}}
