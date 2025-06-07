@@ -3,6 +3,7 @@ namespace examples.ui;
 
 // 引入标准注解库
 include "yima.mota";
+include "yima-ui.mota";
 
 // 性别枚举
 enum Gender {

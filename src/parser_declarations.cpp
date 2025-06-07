@@ -291,28 +291,36 @@ std::unique_ptr<ast::AnnotationDecl> Parser::annotationDeclaration() {
         auto identToken = consume(lexer::TokenType::Identifier, "Expected identifier after '.'");
         name += identToken.lexeme;
     }
-    // 解析注解体
-    consume(lexer::TokenType::LeftBrace, "Expected '{' after annotation name");
+    
     std::vector<std::unique_ptr<ast::Field>> fields;
-    while (!check(lexer::TokenType::RightBrace) && !isAtEnd()) {
-        // 处理字段前的注解
-        std::vector<std::unique_ptr<ast::Annotation>> annotations;
-        while (consume(lexer::TokenType::At)) {
-            annotations.push_back(annotation());
+    
+    // 检查是否有注解体或者只是分号结尾
+    if (consume(lexer::TokenType::LeftBrace)) {
+        // 有注解体，解析字段
+        while (!check(lexer::TokenType::RightBrace) && !isAtEnd()) {
+            // 处理字段前的注解
+            std::vector<std::unique_ptr<ast::Annotation>> annotations;
+            while (consume(lexer::TokenType::At)) {
+                annotations.push_back(annotation());
+            }
+            // 解析字段
+            auto field = fieldDeclaration();
+            // 将注解添加到字段
+            for (auto& ann : annotations) {
+                field->annotations.push_back(std::move(ann));
+            }
+            fields.push_back(std::move(field));
         }
-        // 解析字段
-        auto field = fieldDeclaration();
-        // 将注解添加到字段
-        for (auto& ann : annotations) {
-            field->annotations.push_back(std::move(ann));
+        // 如果到达文件末尾但没有右大括号，抛出异常
+        if (isAtEnd()) {
+            error(previous_, "Expected '}' after annotation body but reached end of file");
         }
-        fields.push_back(std::move(field));
+        consume(lexer::TokenType::RightBrace, "Expected '}' after annotation body");
+    } else {
+        // 没有注解体，期望分号结尾
+        consume(lexer::TokenType::Semicolon, "Expected ';' after annotation declaration");
     }
-    // 如果到达文件末尾但没有右大括号，抛出异常
-    if (isAtEnd()) {
-        error(previous_, "Expected '}' after annotation body but reached end of file");
-    }
-    consume(lexer::TokenType::RightBrace, "Expected '}' after annotation body");
+    
     // 创建 AnnotationDecl 对象
     auto annotationNode = makeNode<ast::AnnotationDecl>(name);
     annotationNode->fields = std::move(fields);

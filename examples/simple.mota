@@ -1,6 +1,6 @@
 include "yima.mota";
 
-namespace example;
+namespace examples;
 
 annotation Range {
     int32 min;

@@ -119,13 +119,25 @@ std::vector<SyntaxDiagnostic> SyntaxChecker::check(const ast::Document& doc, con
     std::unordered_map<std::string, std::string> inheritanceMap; // 子->父
     std::unordered_map<std::string, std::set<std::string>> includeMap; // 文件->包含的文件列表
     
-    // 模拟include关系（这里简化处理，实际应该从parser获取）
-    // 用于测试循环include场景
+    // 当前命名空间
+    std::string currentNamespace = "";
     
     // 1. 收集所有类型、注解定义，检测重复定义/命名冲突
     for (const auto& decl : doc.declarations) {
         std::string name;
         ast::NodeType type = decl->nodeType();
+        
+        // 处理命名空间声明
+        if (type == ast::NodeType::NamespaceDecl) {
+            auto namespaceDecl = static_cast<const ast::Namespace*>(decl.get());
+            currentNamespace = "";
+            for (size_t i = 0; i < namespaceDecl->name.size(); ++i) {
+                if (i > 0) currentNamespace += ".";
+                currentNamespace += namespaceDecl->name[i];
+            }
+            continue;
+        }
+        
         switch (type) {
         case ast::NodeType::StructDecl:
             name = static_cast<const ast::Struct*>(decl.get())->name;
@@ -138,22 +150,37 @@ std::vector<SyntaxDiagnostic> SyntaxChecker::check(const ast::Document& doc, con
             break;
         case ast::NodeType::AnnotationDecl:
             name = static_cast<const ast::AnnotationDecl*>(decl.get())->name;
-            annotationSet.insert(name);
+            // 对于注解，需要添加完全限定名到集合中
+            if (!currentNamespace.empty()) {
+                annotationSet.insert(currentNamespace + "." + name);
+            }
+            annotationSet.insert(name); // 也添加简单名称以支持同命名空间内的引用
             break;
         default:
             break;
         }
         if (!name.empty()) {
-            auto it = nameTypeMap.find(name);
+            // 构建完全限定名
+            std::string fullName = name;
+            if (!currentNamespace.empty()) {
+                fullName = currentNamespace + "." + name;
+            }
+            
+            auto it = nameTypeMap.find(fullName);
             if (it != nameTypeMap.end()) {
                 if (it->second == type) {
-                    diagnostics.push_back({SyntaxDiagnostic::Level::Error, "重复定义类型或注解: " + name, entryFile, 0, 0});
+                    diagnostics.push_back({SyntaxDiagnostic::Level::Error, "重复定义类型或注解: " + fullName, entryFile, 0, 0});
                 } else {
-                    diagnostics.push_back({SyntaxDiagnostic::Level::Error, "命名冲突: " + name, entryFile, 0, 0});
+                    diagnostics.push_back({SyntaxDiagnostic::Level::Error, "命名冲突: " + fullName, entryFile, 0, 0});
                 }
             } else {
-                nameTypeMap[name] = type;
-                typeTable[name] = decl.get();
+                nameTypeMap[fullName] = type;
+                typeTable[fullName] = decl.get();
+                // 也添加简单名称的映射
+                if (!currentNamespace.empty()) {
+                    nameTypeMap[name] = type;
+                    typeTable[name] = decl.get();
+                }
             }
         }
     }

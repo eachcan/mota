@@ -3,10 +3,11 @@ namespace examples.namespaces;
 
 // 引入标准注解库
 include "yima.mota";
+include "yima-ui.mota";
 
-// 基本配置结构体
+// 基本配置块
 @yima.Window(title = "基本配置")
-struct BasicConfig {
+block BasicConfig {
     @yima.Text(desc = "名称")
     string name = "默认配置";
     
@@ -31,6 +32,10 @@ struct AdvancedConfig {
     
     // 高级设置
     AdvancedSettings settings;
+    
+    // 配置名称
+    @yima.Text(desc = "配置名称")
+    string configName = "高级配置";
 }
 
 // 系统配置
@@ -40,8 +45,8 @@ struct SystemConfig {
     // 基本配置
     BasicConfig basic;
     
-    // 高级配置
-    AdvancedConfig advanced;
+    // 高级设置
+    AdvancedSettings advanced;
     
     // 本地设置
     @yima.Text(desc = "系统ID")

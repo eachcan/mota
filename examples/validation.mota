@@ -3,6 +3,7 @@ namespace examples.validation;
 
 // 引入标准注解库
 include "yima.mota";
+include "yima-ui.mota";
 
 // 基本表单验证
 @yima.Window(title = "表单验证")

@@ -183,12 +183,56 @@ std::string findTemplateDirectory(const std::string& lang) {
     return candidatePaths[0];
 }
 
-bool processMotaFile(const std::string& inputFile, const std::string& outputDir, const std::string& templateDir) {
-    // 读取输入文件
-    std::ifstream file(inputFile);
+// 查找include文件的路径
+std::string findIncludeFile(const std::string& includePath, const std::vector<std::string>& includePaths, const std::string& currentFileDir) {
+    // 候选路径列表
+    std::vector<std::string> candidatePaths;
+    
+    // 1. 相对于当前文件的路径
+    candidatePaths.push_back((fs::path(currentFileDir) / includePath).string());
+    
+    // 2. 在指定的include路径中查找
+    for (const auto& includeDir : includePaths) {
+        candidatePaths.push_back((fs::path(includeDir) / includePath).string());
+    }
+    
+    // 3. 在默认的mota-include目录中查找
+    candidatePaths.push_back((fs::path("mota-include") / includePath).string());
+    
+    // 4. 在可执行文件目录的mota-include中查找
+    std::string exeDir = getExecutableDirectory();
+    candidatePaths.push_back((fs::path(exeDir) / "mota-include" / includePath).string());
+    candidatePaths.push_back((fs::path(exeDir) / ".." / "mota-include" / includePath).string());
+    
+    // 查找第一个存在的文件
+    for (const auto& path : candidatePaths) {
+        if (fs::exists(path) && fs::is_regular_file(path)) {
+            return path;
+        }
+    }
+    
+    return ""; // 未找到
+}
+
+// 递归处理include文件，合并所有声明到一个document中
+std::unique_ptr<mota::ast::Document> processIncludesRecursively(
+    const std::string& filePath, 
+    const std::vector<std::string>& includePaths,
+    std::set<std::string>& processedFiles) {
+    
+    // 获取文件的绝对路径，避免重复处理
+    std::string absolutePath = fs::absolute(filePath).string();
+    if (processedFiles.count(absolutePath)) {
+        // 文件已经处理过，返回空document避免循环包含
+        return std::make_unique<mota::ast::Document>();
+    }
+    processedFiles.insert(absolutePath);
+    
+    // 读取文件
+    std::ifstream file(filePath);
     if (!file.is_open()) {
-        std::cerr << "Error: Cannot open file " << inputFile << std::endl;
-        return false;
+        std::cerr << "Error: Cannot open include file " << filePath << std::endl;
+        return nullptr;
     }
     
     std::string source((std::istreambuf_iterator<char>(file)),
@@ -196,19 +240,74 @@ bool processMotaFile(const std::string& inputFile, const std::string& outputDir,
     file.close();
     
     try {
-        // 词法分析和语法分析
-        mota::lexer::Lexer lexer(source);
+        // 解析当前文件
+        mota::lexer::Lexer lexer(source, filePath);
         mota::parser::Parser parser(lexer);
         auto document = parser.parse();
         
         if (!document) {
-            std::cerr << "Error: Failed to parse document " << inputFile << std::endl;
+            std::cerr << "Error: Failed to parse include file " << filePath << std::endl;
+            return nullptr;
+        }
+        
+        // 获取当前文件所在目录
+        std::string currentFileDir = fs::path(filePath).parent_path().string();
+        
+        // 处理include声明
+        std::vector<std::unique_ptr<mota::ast::Node>> mergedDeclarations;
+        
+        for (auto& decl : document->declarations) {
+            if (decl->nodeType() == mota::ast::NodeType::IncludeDecl) {
+                // 这是一个include声明，需要处理
+                auto includeDecl = static_cast<mota::ast::Include*>(decl.get());
+                std::string includeFile = findIncludeFile(includeDecl->path, includePaths, currentFileDir);
+                
+                if (includeFile.empty()) {
+                    std::cerr << "Error: Include file not found: " << includeDecl->path << std::endl;
+                    return nullptr;
+                }
+                
+                // 递归处理include文件
+                auto includedDoc = processIncludesRecursively(includeFile, includePaths, processedFiles);
+                if (!includedDoc) {
+                    return nullptr;
+                }
+                
+                // 将include文件的声明合并到当前文档
+                for (auto& includedDecl : includedDoc->declarations) {
+                    mergedDeclarations.push_back(std::move(includedDecl));
+                }
+            } else {
+                // 普通声明，直接添加
+                mergedDeclarations.push_back(std::move(decl));
+            }
+        }
+        
+        // 更新document的声明列表
+        document->declarations = std::move(mergedDeclarations);
+        
+        return document;
+        
+    } catch (const std::exception& e) {
+        std::cerr << "Error processing include file " << filePath << ": " << e.what() << std::endl;
+        return nullptr;
+    }
+}
+
+bool processMotaFile(const std::string& inputFile, const std::string& outputDir, const std::string& templateDir, const std::vector<std::string>& includePaths) {
+    try {
+        // 处理include文件，获取合并后的document
+        std::set<std::string> processedFiles;
+        auto document = processIncludesRecursively(inputFile, includePaths, processedFiles);
+        
+        if (!document) {
+            std::cerr << "Error: Failed to process file with includes " << inputFile << std::endl;
             return false;
         }
         
         // 语法检查
         mota::checker::SyntaxChecker checker;
-        auto errors = checker.check(*document);
+        auto errors = checker.check(*document, inputFile);
         
         if (!errors.empty()) {
             std::cerr << "Syntax errors found in " << inputFile << ":" << std::endl;
@@ -347,7 +446,7 @@ int main(int argc, char* argv[]) {
     int totalCount = filesToProcess.size();
     
     for (const auto& file : filesToProcess) {
-        if (processMotaFile(file, options.outputDir, templateDir)) {
+        if (processMotaFile(file, options.outputDir, templateDir, options.includePaths)) {
             successCount++;
         }
     }

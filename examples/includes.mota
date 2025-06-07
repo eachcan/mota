@@ -3,14 +3,13 @@ namespace examples.includes;
 
 // 引入标准注解库
 include "yima.mota";
+include "yima-ui.mota";
 
-// 包含其他 Mota 文件
-// 注意：实际使用时应确保路径正确
-include "examples/basic_types.mota";
-include "examples/enums.mota";
-include "examples/blocks.mota";
+// 注意：这个示例展示了如何在一个文件中定义多种类型
+// 实际项目中，通常会将不同的类型分散到不同的文件中
 
 // 窗口设置块
+@yima.Window(title = "窗口设置")
 block WindowSettings {
     @yima.Int(min = 640, max = 3840, desc = "窗口宽度")
     int32 width = 1024;
@@ -23,6 +22,7 @@ block WindowSettings {
 }
 
 // 调试设置块
+@yima.Window(title = "调试设置")
 block DebugSettings {
     @yima.Switcher(desc = "启用调试工具")
     bool enableDebugTools = true;
