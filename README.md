@@ -76,13 +76,13 @@ Mota 是一个现代化的配置文件编译器，类似于 Protocol Buffer，�
 ```bash
 git clone --recursive https://github.com/eachcan/mota.git
 cd mota
-xmake
+xmake build
 ```
 
 ### 验证安装
 ```bash
 mota --help
-mota --version
+mota --version  # 输出: mota version 1.0.0
 ```
 
 ## 🛠️ 使用方式
@@ -176,13 +176,49 @@ struct CameraConfig {
 ### 2. 编译生成代码
 
 ```bash
-# 编译生成 C++ 代码
-mota camera_config.mota template/yima-cpp output/
+# 基本用法：编译当前目录下的所有.mota文件
+mota
 
-# 查看生成的文件
-ls output/
-# camera_config.h  - 配置类定义
-# camera_config.cpp - 实现文件
+# 编译指定文件
+mota camera_config.mota
+
+# 指定输出目录
+mota camera_config.mota -o output
+
+# 指定模板语言（目前只支持cpp）
+mota camera_config.mota -l cpp -o output
+
+# 添加包含路径
+mota camera_config.mota -i include_path1 -i include_path2 -o output
+
+# 使用配置文件
+mota -c mota-config.json
+
+# 查看帮助
+mota --help
+
+# 查看版本
+mota --version
+```
+
+### 命令行选项说明
+
+```
+mota [OPTIONS] [FILE] [...]
+
+Options:
+  -h, --help              显示帮助信息
+  -V, --version           显示版本信息
+  -v, --verbose           显示详细信息
+  -i, --include-path PATH 添加包含路径，可以指定多次
+  -o, --output-dir PATH   设置输出目录，默认为 output
+  -s, --source-dir PATH   设置源文件目录，默认为当前目录
+  -l, --lang LANG         设置输出语言，可选值：cpp[默认]
+  -c, --config PATH       设置配置文件路径
+
+FILE:
+  指定要编译的 Mota 文件或目录路径
+  如果未指定，则从当前目录搜索所有.mota文件
 ```
 
 ### 3. 在应用中使用
@@ -330,7 +366,13 @@ public:
 
 ```bash
 # 开发构建
-xmake
+xmake build
+
+# 运行程序
+xmake run mota
+
+# 运行测试
+xmake run test_generator
 
 # 创建安装包
 xmake run install
