@@ -1,0 +1,88 @@
+// 数组语法和注解功能演示
+namespace examples.array_syntax;
+
+// 基础注解定义
+annotation Option {
+    string text;
+    string value;
+    bool enabled = true;
+}
+
+annotation Validator {
+    int32 min = 0;
+    int32 max = 100;
+    repeated string allowedValues;
+}
+
+annotation UIConfig {
+    string type = "input";
+    repeated Option options;
+    Validator validator;
+}
+
+// 继承注解示例
+annotation BaseAnnotation {
+    string description;
+}
+
+annotation ExtendedAnnotation : BaseAnnotation {
+    int32 priority = 1;
+}
+
+// 使用数组字面量的结构体
+struct Configuration {
+    // 简单数组默认值
+    repeated int32 numbers = [1, 2, 3, 4, 5];
+    repeated string tags = ["important", "config", "demo"];
+    
+    // 使用注解的字段，包含数组参数
+    @UIConfig(
+        type = "select",
+        options = [
+            @Option(text = "低", value = "low"),
+            @Option(text = "中", value = "medium"),
+            @Option(text = "高", value = "high")
+        ],
+        validator = @Validator(
+            min = 1,
+            max = 3,
+            allowedValues = ["low", "medium", "high"]
+        )
+    )
+    string priority = "medium";
+    
+    // 嵌套数组
+    repeated repeated int32 matrix = [[1, 2], [3, 4], [5, 6]];
+    
+    // 使用继承注解
+    @ExtendedAnnotation(
+        description = "这是一个演示字段",
+        priority = 5
+    )
+    string demo;
+}
+
+// 枚举与注解
+enum Status {
+    @Option(text = "待处理", value = "pending")
+    PENDING = 0;
+    
+    @Option(text = "进行中", value = "running")
+    RUNNING = 1;
+    
+    @Option(text = "已完成", value = "completed")
+    COMPLETED = 2;
+}
+
+// 块定义
+block TaskConfig {
+    string name;
+    Status status = PENDING;
+    repeated string dependencies = [];
+}
+
+// 使用块的结构体
+struct Project {
+    string name;
+    repeated TaskConfig tasks;
+} 

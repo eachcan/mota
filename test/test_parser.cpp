@@ -347,7 +347,7 @@ TEST_F(ParserTest, Parse_AnnotationSingleParamOmitParen) {
     ASSERT_EQ(s->annotations.size(), 1);
     EXPECT_EQ(s->annotations[0]->name, "A");
     ASSERT_EQ(s->annotations[0]->arguments.size(), 1);
-    EXPECT_EQ(s->annotations[0]->arguments[0].name, "value");
+    EXPECT_EQ(s->annotations[0]->arguments[0]->name, "value");
 }
 
 TEST_F(ParserTest, Parse_AnnotationMultiParam) {
@@ -456,11 +456,12 @@ TEST_F(ParserTest, Parse_NestedNamespace) {
     )";
     auto doc = parse(source);
     ASSERT_NE(doc, nullptr);
-    ASSERT_EQ(doc->declarations.size(), 2);
-    auto ns = dynamic_cast<Namespace*>(doc->declarations[0].get());
+    ASSERT_EQ(doc->declarations.size(), 1);  // 只有struct在declarations中
+    ASSERT_TRUE(doc->hasNamespace());  // namespace在m_namespace中
+    auto ns = doc->m_namespace.get();
     ASSERT_NE(ns, nullptr);
     EXPECT_EQ(ns->name.size(), 3);
-    auto s = dynamic_cast<Struct*>(doc->declarations[1].get());
+    auto s = dynamic_cast<Struct*>(doc->declarations[0].get());
     ASSERT_NE(s, nullptr);
 }
 
@@ -510,7 +511,7 @@ TEST_F(ParserTest, Parse_AnnotationParamIsExpression) {
     ASSERT_NE(s, nullptr);
     ASSERT_EQ(s->annotations.size(), 1);
     ASSERT_EQ(s->annotations[0]->arguments.size(), 1);
-    auto bin = dynamic_cast<BinaryOp*>(s->annotations[0]->arguments[0].value.get());
+    auto bin = dynamic_cast<BinaryOp*>(s->annotations[0]->arguments[0]->value.get());
     ASSERT_NE(bin, nullptr);
     EXPECT_EQ(bin->op, BinaryOp::Op::Add);
 }
@@ -528,7 +529,7 @@ TEST_F(ParserTest, Parse_NestedAnnotation) {
     ASSERT_NE(s, nullptr);
     ASSERT_EQ(s->annotations.size(), 1);
     // 检查嵌套注解参数类型
-    auto innerAnn = dynamic_cast<Annotation*>(s->annotations[0]->arguments[0].value.get());
+    auto innerAnn = dynamic_cast<Annotation*>(s->annotations[0]->arguments[0]->value.get());
     ASSERT_NE(innerAnn, nullptr);
     EXPECT_EQ(innerAnn->name, "Inner");
 }

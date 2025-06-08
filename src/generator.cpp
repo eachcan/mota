@@ -1952,16 +1952,16 @@ std::string Generator::getEnumValueDisplayName(const ast::EnumValue& enumValue) 
         
         if (isEnumValueAnnotation) {
             for (const auto& arg : annotation->arguments) {
-                if (arg.name == descParamName) {
-                    if (arg.value->nodeType() == ast::NodeType::Literal) {
-                        auto literal = static_cast<const ast::Literal*>(arg.value.get());
+                if (arg->name == descParamName) {
+                    if (arg->value->nodeType() == ast::NodeType::Literal) {
+                        auto literal = static_cast<const ast::Literal*>(arg->value.get());
                         if (std::holds_alternative<std::string>(literal->value)) {
                             displayName = std::get<std::string>(literal->value);
                             break;
                         }
-                    } else if (arg.value->nodeType() == ast::NodeType::Identifier) {
+                    } else if (arg->value->nodeType() == ast::NodeType::Identifier) {
                         // 处理字符串字面量被解析为标识符的情况
-                        auto identifier = static_cast<const ast::Identifier*>(arg.value.get());
+                        auto identifier = static_cast<const ast::Identifier*>(arg->value.get());
                         displayName = identifier->name;
                         break;
                     }

@@ -90,7 +90,9 @@ TypeCategory getTypeCategory(const std::string& typeName,
 // 检查注解字段类型是否合法（只允许内置类型）
 bool isValidAnnotationFieldType(const std::string& typeName,
                                const std::unordered_map<std::string, const ast::Node*>& typeTable) {
-    return getTypeCategory(typeName, typeTable) == TypeCategory::Builtin;
+    TypeCategory cat = getTypeCategory(typeName, typeTable);
+    // 注解字段可以使用内置类型和其他注解类型
+    return cat == TypeCategory::Builtin || cat == TypeCategory::Annotation;
 }
 
 // 检查struct/block字段类型是否合法（不允许annotation、struct）
@@ -310,7 +312,7 @@ std::vector<SyntaxDiagnostic> SyntaxChecker::check(const ast::Document& doc, con
                     diagnostics.push_back({SyntaxDiagnostic::Level::Error, "注解字段名重复: " + field->name, entryFile, field->location.line, field->location.column});
                 }
                 
-                // 检查注解字段类型（只允许内置类型）
+                // 检查注解字段类型（允许内置类型和其他注解类型）
                 std::string typeName = extractTypeName(field->type.get());
                 if (!typeName.empty()) {
                     if (!isValidAnnotationFieldType(typeName, typeTable)) {
@@ -318,7 +320,7 @@ std::vector<SyntaxDiagnostic> SyntaxChecker::check(const ast::Document& doc, con
                         if (cat == TypeCategory::Unknown) {
                             diagnostics.push_back({SyntaxDiagnostic::Level::Error, "注解字段类型未定义: " + typeName, entryFile, field->location.line, field->location.column});
                         } else {
-                            diagnostics.push_back({SyntaxDiagnostic::Level::Error, "注解字段只能使用内置类型: " + typeName, entryFile, field->location.line, field->location.column});
+                            diagnostics.push_back({SyntaxDiagnostic::Level::Error, "注解字段只能使用内置类型或其他注解类型: " + typeName, entryFile, field->location.line, field->location.column});
                         }
                     }
                 }
@@ -609,7 +611,7 @@ std::vector<SyntaxDiagnostic> SyntaxChecker::checkWithExternalAnnotations(const 
             
             // 检查注解字段
             for (const auto& field : annotationDecl->fields) {
-                // 检查注解字段类型（只允许内置类型）
+                // 检查注解字段类型（允许内置类型和其他注解类型）
                 std::string typeName = extractTypeName(field->type.get());
                 if (!typeName.empty()) {
                     if (!isValidAnnotationFieldType(typeName, typeTable)) {
@@ -617,7 +619,7 @@ std::vector<SyntaxDiagnostic> SyntaxChecker::checkWithExternalAnnotations(const 
                         if (cat == TypeCategory::Unknown) {
                             diagnostics.push_back({SyntaxDiagnostic::Level::Error, "注解字段类型未定义: " + typeName, entryFile});
                         } else {
-                            diagnostics.push_back({SyntaxDiagnostic::Level::Error, "注解字段只能使用内置类型: " + typeName, entryFile});
+                            diagnostics.push_back({SyntaxDiagnostic::Level::Error, "注解字段只能使用内置类型或其他注解类型: " + typeName, entryFile});
                         }
                     }
                 }

@@ -18,11 +18,48 @@ std::unique_ptr<ast::Document> Parser::parse() {
         current_ = lexer_.nextToken();
     }
     
+    bool hasDeclaration = false;
     // 解析所有声明
     while (!isAtEnd()) {
         auto decl = declaration();
         if (decl) {
-            document->declarations.push_back(std::move(decl));
+            // 根据声明类型分别处理
+            switch (decl->nodeType()) {
+                case ast::NodeType::IncludeDecl: {
+                    if (hasDeclaration) {
+                        throw ParseError("Include declaration must appear before entity declarations", 
+                                       current_.line, current_.column);
+                    }
+                    // include声明放入includes数组
+                    auto includeDecl = std::unique_ptr<ast::Include>(
+                        static_cast<ast::Include*>(decl.release())
+                    );
+                    document->includes.push_back(std::move(includeDecl));
+                    break;
+                }
+                case ast::NodeType::NamespaceDecl: {
+                    // namespace声明设置到m_namespace（只能有一个）
+                    if (document->hasNamespace()) {
+                        throw ParseError("Multiple namespace declarations in one file", 
+                                       current_.line, current_.column);
+                    }
+                    if (hasDeclaration) {
+                        throw ParseError("Namespace declaration must be the first declaration in the file", 
+                                       current_.line, current_.column);
+                    }
+                    auto namespaceDecl = std::unique_ptr<ast::Namespace>(
+                        static_cast<ast::Namespace*>(decl.release())
+                    );
+                    document->m_namespace = std::move(namespaceDecl);
+                    break;
+                }
+                default: {
+                    // 其他声明（struct、block、enum、annotation）放入declarations
+                    document->declarations.push_back(std::move(decl));
+                    hasDeclaration = true;
+                    break;
+                }
+            }
         } else {
             throw ParseError("Declaration expected", current_.line, current_.column);
             break;

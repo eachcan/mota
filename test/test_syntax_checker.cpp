@@ -273,7 +273,7 @@ TEST_F(SyntaxCheckerTest, BlockStructAsAnnotationFieldType) {
     auto diagnostics = checker.check(*doc);
     ASSERT_GE(diagnostics.size(), 1);
     EXPECT_EQ(diagnostics[0].level, checker::SyntaxDiagnostic::Level::Error);
-    EXPECT_TRUE(diagnostics[0].message.find("注解字段只能使用内置类型") != std::string::npos);
+    EXPECT_TRUE(diagnostics[0].message.find("注解字段只能使用内置类型或其他注解类型") != std::string::npos);
 }
 
 TEST_F(SyntaxCheckerTest, ValidAnnotationFieldTypes) {

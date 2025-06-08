@@ -31,6 +31,7 @@ enum class NodeType {
     // 表达式
     Identifier, 
     Literal,
+    ArrayLiteral,
     BinaryOp,
     UnaryOp,
     MemberAccess,
@@ -38,7 +39,6 @@ enum class NodeType {
     // 类型
     NamedType,
     ContainerType,
-    OptionalType,
     
     // 语句
     FieldDecl,
@@ -51,6 +51,7 @@ enum class NodeType {
     EnumDecl,
     NamespaceDecl,
     IncludeDecl,
+    Document,
     
     // 其他
     Annotation,
@@ -106,6 +107,17 @@ public:
     NodeType nodeType() const override { return NodeType::Literal; }
     
     ValueType value;
+};
+
+// 数组字面量
+class ArrayLiteral : public Expr {
+public:
+    explicit ArrayLiteral(std::vector<std::unique_ptr<Expr>> elements = {})
+        : elements(std::move(elements)) {}
+    
+    NodeType nodeType() const override { return NodeType::ArrayLiteral; }
+    
+    std::vector<std::unique_ptr<Expr>> elements;
 };
 
 // 二元操作符
@@ -193,7 +205,12 @@ public:
         switch(kind) {
             case Kind::Array: return "repeated " + elementType->toString();
             case Kind::Optional: return "optional " + elementType->toString();
-            case Kind::Map: return "map " + elementType->toString();
+            case Kind::Map: 
+                if (keyType) {
+                    return "map<" + keyType->toString() + ", " + elementType->toString() + ">";
+                } else {
+                    return "map " + elementType->toString();
+                }
             default: return "unknown";
         }
     }
@@ -201,21 +218,26 @@ public:
     NodeType nodeType() const override { return NodeType::ContainerType; }
 };
 
-// 注解参数
-class AnnotationArgument {
+// 注解参数 - 现在继承自Node
+class AnnotationArgument : public Node {
 public:
+    AnnotationArgument(std::string name, std::unique_ptr<Expr> value)
+        : name(std::move(name)), value(std::move(value)) {}
+    
     std::string name;
     std::unique_ptr<Expr> value;
+    
+    NodeType nodeType() const override { return NodeType::AnnotationArgument; }
 };
 
 // 注解
 class Annotation : public Expr {
 public:
-    Annotation(std::string name, std::vector<AnnotationArgument> args = {})
+    Annotation(std::string name, std::vector<std::unique_ptr<AnnotationArgument>> args = {})
         : name(std::move(name)), arguments(std::move(args)) {}
     
     std::string name;
-    std::vector<AnnotationArgument> arguments;
+    std::vector<std::unique_ptr<AnnotationArgument>> arguments;
     
     NodeType nodeType() const override { return NodeType::Annotation; }
 };
@@ -273,12 +295,14 @@ public:
     NodeType nodeType() const override { return NodeType::StructDecl; }
 };
 
-// 注解声明
+// 注解声明 - 添加baseName支持继承
 class AnnotationDecl : public Node {
 public:
-    explicit AnnotationDecl(std::string name) : name(std::move(name)) {}
+    explicit AnnotationDecl(std::string name, std::string baseName = "") 
+        : name(std::move(name)), baseName(std::move(baseName)) {}
     
     std::string name;
+    std::string baseName;  // 继承的父注解名称
     std::vector<std::unique_ptr<Field>> fields;  // 注解字段
     
     NodeType nodeType() const override { return NodeType::AnnotationDecl; }
@@ -302,7 +326,6 @@ public:
     explicit Namespace(std::vector<std::string> name) : name(std::move(name)) {}
     
     std::vector<std::string> name;  // 完全限定名
-    std::vector<std::unique_ptr<Node>> declarations;
     
     NodeType nodeType() const override { return NodeType::NamespaceDecl; }
 };
@@ -317,11 +340,27 @@ public:
     NodeType nodeType() const override { return NodeType::IncludeDecl; }
 };
 
-// 文档根节点
-class Document {
+// 文档根节点 - 重新设计结构
+class Document : public Node {
 public:
+    Document() = default;
+    
+    // 顶层声明（struct、block、enum、annotation）
     std::vector<std::unique_ptr<Node>> declarations;
-    std::map<std::string, std::string> includes;  // 已包含的文件路径
+    
+    // 命名空间（一个文件只能有0个或1个）
+    std::unique_ptr<Namespace> m_namespace;
+    
+    // 包含声明（可以有多个）
+    std::vector<std::unique_ptr<Include>> includes;
+    
+    NodeType nodeType() const override { return NodeType::Document; } // 使用现有的枚举值
+    
+    // 检查是否已经开始解析声明
+    bool hasDeclarations() const { return !declarations.empty(); }
+    
+    // 检查是否已经设置了命名空间
+    bool hasNamespace() const { return m_namespace != nullptr; }
 };
 
 } // namespace ast

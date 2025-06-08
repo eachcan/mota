@@ -110,6 +110,65 @@ target("test_parser")
     -- 添加测试定义
     add_defines("TESTING")
 
+-- 测试目标：数组字面量测试
+target("test_array_literal")
+    -- 设置为可执行程序
+    set_kind("binary")
+    
+    -- 添加源文件
+    add_files("test/test_array_literal.cpp")
+    add_files("src/lexer_core.cpp")
+    add_files("src/lexer_utils.cpp")
+    add_files("src/lexer_tokens.cpp")
+    add_files("src/lexer_literals.cpp")
+    add_files("src/lexer_comments.cpp")
+    add_files("src/parser_core.cpp")
+    add_files("src/parser_declarations.cpp")
+    add_files("src/parser_types.cpp")
+    add_files("src/parser_expressions.cpp")
+    
+    -- 添加头文件目录
+    add_includedirs("include", "framework")
+    
+    -- 添加Google Test依赖
+    add_packages("gtest", {configs = {main = true}})
+    
+    -- 设置输出目录
+    set_targetdir("bin")
+    
+    -- 添加测试定义
+    add_defines("TESTING")
+
+-- 测试目标：注解字段类型验证测试
+target("test_annotation_field_type_validation")
+    -- 设置为可执行程序
+    set_kind("binary")
+    
+    -- 添加源文件
+    add_files("test/test_annotation_field_type_validation.cpp")
+    add_files("src/lexer_core.cpp")
+    add_files("src/lexer_utils.cpp")
+    add_files("src/lexer_tokens.cpp")
+    add_files("src/lexer_literals.cpp")
+    add_files("src/lexer_comments.cpp")
+    add_files("src/parser_core.cpp")
+    add_files("src/parser_declarations.cpp")
+    add_files("src/parser_types.cpp")
+    add_files("src/parser_expressions.cpp")
+    add_files("src/syntax_checker.cpp")
+    
+    -- 添加头文件目录
+    add_includedirs("include", "framework")
+    
+    -- 添加Google Test依赖
+    add_packages("gtest", {configs = {main = true}})
+    
+    -- 设置输出目录
+    set_targetdir("bin")
+    
+    -- 添加测试定义
+    add_defines("TESTING")
+
 -- 添加一个测试组，方便一键运行所有测试
 target("test")
     set_kind("phony")
@@ -117,6 +176,8 @@ target("test")
         -- 构建所有测试
         os.exec("xmake build test_lexer")
         os.exec("xmake build test_parser")
+        os.exec("xmake build test_array_literal")
+        os.exec("xmake build test_annotation_field_type_validation")
         
         -- 运行所有测试
         print("\nRunning lexer tests...")
@@ -124,6 +185,12 @@ target("test")
         
         print("\nRunning parser tests...")
         os.exec("xmake run test_parser")
+        
+        print("\nRunning array literal tests...")
+        os.exec("xmake run test_array_literal")
+        
+        print("\nRunning annotation field type validation tests...")
+        os.exec("xmake run test_annotation_field_type_validation")
     end)
 
 -- syntax_checker 测试

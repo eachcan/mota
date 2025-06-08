@@ -55,8 +55,8 @@ private:
     // 解析方法
     std::unique_ptr<ast::Node> declaration();
     std::unique_ptr<ast::Annotation> annotation();
-    std::vector<ast::AnnotationArgument> annotationArguments();
-    ast::AnnotationArgument annotationArgument();
+    std::vector<std::unique_ptr<ast::AnnotationArgument>> annotationArguments();
+    std::unique_ptr<ast::AnnotationArgument> annotationArgument();
     std::unique_ptr<ast::Node> typeDeclaration();
     std::unique_ptr<ast::Struct> structDeclaration();
     std::unique_ptr<ast::Enum> enumDeclaration();

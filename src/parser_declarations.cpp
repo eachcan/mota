@@ -90,7 +90,7 @@ std::unique_ptr<ast::Annotation> Parser::annotation() {
     }
     
     // 解析注解参数
-    std::vector<ast::AnnotationArgument> args;
+    std::vector<std::unique_ptr<ast::AnnotationArgument>> args;
     if (consume(lexer::TokenType::LeftParen)) {
         args = annotationArguments();
         consume(lexer::TokenType::RightParen, "Expected ')' after annotation arguments");
@@ -99,8 +99,8 @@ std::unique_ptr<ast::Annotation> Parser::annotation() {
     return makeNode<ast::Annotation>(name, std::move(args));
 }
 
-std::vector<ast::AnnotationArgument> Parser::annotationArguments() {
-    std::vector<ast::AnnotationArgument> args;
+std::vector<std::unique_ptr<ast::AnnotationArgument>> Parser::annotationArguments() {
+    std::vector<std::unique_ptr<ast::AnnotationArgument>> args;
     
     if (!check(lexer::TokenType::RightParen)) {
         do {
@@ -112,27 +112,46 @@ std::vector<ast::AnnotationArgument> Parser::annotationArguments() {
     return args;
 }
 
-ast::AnnotationArgument Parser::annotationArgument() {
+std::unique_ptr<ast::AnnotationArgument> Parser::annotationArgument() {
     std::string name;
     std::unique_ptr<ast::Expr> value;
+    
+    // 解析注解参数，支持以下语法：
+    // 1. name = value (命名参数)
+    // 2. value (匿名参数，默认为"value"参数)
+    // 3. @Annotation (嵌套注解作为参数)
+    // 4. [expr1, expr2, ...] (数组字面量)
+    
+    // 先尝试解析标识符，然后检查是否跟着等号
     if (check(lexer::TokenType::Identifier)) {
-        name = advance().lexeme;
-        consume(lexer::TokenType::Equal, "Expected '=' after annotation argument name");
-        // 支持参数为嵌套注解
-        if (check(lexer::TokenType::At)) {
-            value = annotation();
+        // 保存当前位置，以便回退
+        auto identToken = advance();
+        
+        if (consume(lexer::TokenType::Equal)) {
+            // 这是 name = value 的形式
+            name = identToken.lexeme;
+            // 支持参数为嵌套注解
+            if (check(lexer::TokenType::At)) {
+                value = annotation();
+            } else {
+                value = expression();
+            }
         } else {
-            value = expression();
+            // 这只是一个值，没有等号，默认为 value 参数
+            // 需要将标识符作为表达式处理
+            name = "value";
+            value = makeNode<ast::Identifier>(identToken.lexeme);
         }
     } else if (check(lexer::TokenType::At)) {
-        // 允许匿名嵌套注解作为参数
+        // 允许匿名嵌套注解作为参数，默认为 value 参数
         name = "value";
         value = annotation();
     } else {
+        // 没有指定参数名，默认为 value 参数（支持 @value 注解的简化语法）
         name = "value";
         value = expression();
     }
-    return ast::AnnotationArgument{name, std::move(value)};
+    return makeNode<ast::AnnotationArgument>(name, std::move(value));
 }
 
 std::unique_ptr<ast::Struct> Parser::structDeclaration() {
@@ -292,6 +311,18 @@ std::unique_ptr<ast::AnnotationDecl> Parser::annotationDeclaration() {
         name += identToken.lexeme;
     }
     
+    // 解析继承（如果有的话）
+    std::string baseName;
+    if (consume(lexer::TokenType::Colon)) {
+        baseName = consume(lexer::TokenType::Identifier, "Expected base annotation name after ':'").lexeme;
+        // 支持带点的基注解名称
+        while (consume(lexer::TokenType::Dot)) {
+            baseName += ".";
+            auto identToken = consume(lexer::TokenType::Identifier, "Expected identifier after '.'");
+            baseName += identToken.lexeme;
+        }
+    }
+    
     std::vector<std::unique_ptr<ast::Field>> fields;
     
     // 检查是否有注解体或者只是分号结尾
@@ -321,8 +352,8 @@ std::unique_ptr<ast::AnnotationDecl> Parser::annotationDeclaration() {
         consume(lexer::TokenType::Semicolon, "Expected ';' after annotation declaration");
     }
     
-    // 创建 AnnotationDecl 对象
-    auto annotationNode = makeNode<ast::AnnotationDecl>(name);
+    // 创建 AnnotationDecl 对象，传入继承的基注解名称
+    auto annotationNode = makeNode<ast::AnnotationDecl>(name, baseName);
     annotationNode->fields = std::move(fields);
     return annotationNode;
 }

@@ -265,6 +265,26 @@ std::unique_ptr<ast::Expr> Parser::primary() {
         return expr;
     }
     
+    // 解析数组字面量 [expr1, expr2, ...]
+    if (consume(lexer::TokenType::LeftBracket)) {
+        std::vector<std::unique_ptr<ast::Expr>> elements;
+        
+        // 处理空数组 []
+        if (!check(lexer::TokenType::RightBracket)) {
+            do {
+                // 支持数组元素为注解
+                if (check(lexer::TokenType::At)) {
+                    elements.push_back(annotation());
+                } else {
+                    elements.push_back(expression());
+                }
+            } while (consume(lexer::TokenType::Comma));
+        }
+        
+        consume(lexer::TokenType::RightBracket, "Expected ']' after array elements");
+        return makeNode<ast::ArrayLiteral>(std::move(elements));
+    }
+    
     throw error(peek(), "Expected expression");
 }
 

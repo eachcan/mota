@@ -10,16 +10,12 @@ Mota 的配置文件使用 `.mota` 为扩展名。
 
 - include: 包含其他 Mota 文件
 - namespace: 定义命名空间
-- dir: 定义输出目录
-- bindir: 定义二进制文件输出目录
 
 示例：
 
 ```mota
 include "task.mota";
 namespace a.b.c;
-dir = "src/";
-bindir = "${app_dir}/config/bindb/";
 ```
 
 ### include
@@ -181,7 +177,56 @@ annotation MyAnnotation;
 int32 id = 0;
 ```
 
-> **注意：注解（annotation）不支持继承。**
+### 3.5 注解参数的数组语法
+
+注解参数支持数组字面量语法，可以传递多个值：
+
+```mota
+annotation ModeOption {
+    string text;
+    string value;
+}
+
+annotation ModeSelector {
+    ModeOption default;
+    repeated ModeOption options;
+}
+
+@ModeSelector(
+    default = @ModeOption(text = "正常模式", value = "normal"),
+    options = [
+        @ModeOption(text = "正常模式", value = "normal"),
+        @ModeOption(text = "调试模式", value = "debug"),
+        @ModeOption(text = "测试模式", value = "test")
+    ]
+)
+struct RunMode {
+    string mode;
+}
+```
+
+数组字面量语法：
+- 使用方括号 `[]` 包围数组元素
+- 元素之间用逗号 `,` 分隔
+- 支持空数组 `[]`
+- 支持嵌套数组 `[[1, 2], [3, 4]]`
+- 数组元素可以是字面量、表达式或注解
+
+### 3.6 注解的继承
+
+注解可以继承自其他注解，示例：
+
+```mota
+annotation MyAnnotation : BaseAnnotation {
+    int32 id;
+}
+
+annotation BaseAnnotation {
+    string name;
+}
+```
+
+注解的继承仅支持单继承，且只能继承自其他注解。
 
 ## 4. 枚举
 
@@ -356,6 +401,17 @@ repeated 修饰的字段，表示该字段是一个数组，每一项值的类�
 
 ```mota
 repeated int64 arrayField;
+```
+
+repeated 字段支持数组字面量作为默认值：
+
+```mota
+repeated int32 numbers = [1, 2, 3, 4, 5];
+repeated string names = ["Alice", "Bob", "Charlie"];
+repeated MyBlock blocks = [
+    @MyBlock(id = 1, name = "first"),
+    @MyBlock(id = 2, name = "second")
+];
 ```
 
 ## 8. 注释
