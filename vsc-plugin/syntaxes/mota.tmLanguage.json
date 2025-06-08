@@ -73,7 +73,7 @@
       "patterns": [
         {
           "name": "keyword.control.mota",
-          "match": "\\b(enum|struct|block|annotation|optional|map|repeated|value)\\b"
+          "match": "\\b(enum|struct|block|annotation|optional|map|repeated)\\b"
         },
         {
           "name": "constant.language.mota",

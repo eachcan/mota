@@ -202,6 +202,7 @@ target("test_syntax_checker")
     remove_files("src/main.cpp")  -- 排除主程序的main函数
     add_packages("gtest")
     set_encodings("utf-8")
+    set_targetdir("bin")
 
 -- 生成器测试
 target("test_generator")
