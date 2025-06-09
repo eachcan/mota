@@ -53,7 +53,7 @@ void showHelp() {
     std::cout << "  -s, --source-dir PATH" << std::endl;
     std::cout << "                  设置源文件目录，默认为当前目录，指定则忽略 -c 参数" << std::endl;
     std::cout << "  -l, --lang LANG" << std::endl;
-    std::cout << "                  设置输出语言，可选值：cpp[默认]" << std::endl;
+    std::cout << "                  设置输出语言，可选值：yima-cpp[默认]" << std::endl;
     std::cout << "  -c, --config PATH" << std::endl;
     std::cout << "                  设置配置文件路径。" << std::endl;
     std::cout << "                  本参数和 -o / -s / -l 互斥，配置文件中源文件和输出目录是可以多组的。" << std::endl;
@@ -153,10 +153,14 @@ Options parseCommandLine(int argc, char* argv[]) {
         } else if (arg == "-l" || arg == "--lang") {
             if (i + 1 < argc) {
                 options.lang = argv[++i];
-                if (options.lang != "cpp") {
+                if (options.lang != "yima-cpp" && options.lang != "cpp") {
                     std::cerr << "Error: Unsupported language: " << options.lang << std::endl;
-                    std::cerr << "Currently supported languages: cpp" << std::endl;
+                    std::cerr << "Currently supported languages: yima-cpp" << std::endl;
                     exit(1);
+                }
+                // 兼容旧的cpp参数，转换为yima-cpp
+                if (options.lang == "cpp") {
+                    options.lang = "yima-cpp";
                 }
             } else {
                 std::cerr << "Error: " << arg << " requires a language argument" << std::endl;
@@ -222,9 +226,9 @@ std::string findTemplateDirectory(const std::string& lang) {
     // 获取可执行文件所在目录
     std::string exeDir = getExecutableDirectory();
     
-    // 候选路径列表：从可执行文件目录及其上级目录查找
+    // 候选路径列表：优先使用当前工作目录的template目录
     std::vector<std::string> candidatePaths = {
-        // 当前工作目录的template目录（兼容性）
+        // 当前工作目录的template目录（最高优先级）
         ("template/" + templateSubDir),
         // 可执行文件同级的template目录
         (fs::path(exeDir) / "template" / templateSubDir).string(),
@@ -237,16 +241,24 @@ std::string findTemplateDirectory(const std::string& lang) {
     // 查找第一个存在的模板目录
     for (const auto& path : candidatePaths) {
         fs::path templatePath(path);
+        std::cout << "Checking template path: " << templatePath.string() << std::endl;
         if (fs::exists(templatePath) && fs::is_directory(templatePath)) {
             // 检查是否包含config.json5文件
             fs::path configPath = templatePath / "config.json5";
             if (fs::exists(configPath)) {
+                std::cout << "Found template directory: " << templatePath.string() << std::endl;
                 return templatePath.string();
+            } else {
+                std::cout << "Template directory exists but config.json5 not found: " << configPath.string() << std::endl;
             }
         }
     }
     
     // 如果都没找到，返回第一个候选路径（让后续处理报错）
+    std::cerr << "Error: No valid template directory found. Tried paths:" << std::endl;
+    for (const auto& path : candidatePaths) {
+        std::cerr << "  - " << path << std::endl;
+    }
     return candidatePaths[0];
 }
 
@@ -352,8 +364,13 @@ std::unique_ptr<mota::ast::Document> processIncludesRecursively(
 }
 
 bool processMotaFile(const std::string& inputFile, const std::string& outputDir, const std::string& templateDir, const std::vector<std::string>& includePaths) {
+    std::cout << "Processing file: " << inputFile << std::endl;
+    std::cout << "Output directory: " << outputDir << std::endl;
+    std::cout << "Template directory: " << templateDir << std::endl;
+    
     try {
         // 处理include文件，获取合并后的document
+        std::cout << "Processing includes..." << std::endl;
         std::set<std::string> processedFiles;
         auto document = processIncludesRecursively(inputFile, includePaths, processedFiles);
         
@@ -361,6 +378,8 @@ bool processMotaFile(const std::string& inputFile, const std::string& outputDir,
             std::cerr << "Error: Failed to process file with includes " << inputFile << std::endl;
             return false;
         }
+        
+        std::cout << "Document processed successfully, starting syntax check..." << std::endl;
         
         // 语法检查 - 需要收集所有include文件的注解定义
         mota::checker::SyntaxChecker checker;
@@ -437,7 +456,16 @@ bool processMotaFile(const std::string& inputFile, const std::string& outputDir,
             }
         }
         
-        auto errors = checker.checkWithExternalAnnotations(*document, inputFile, allAnnotations);
+        std::vector<mota::checker::SyntaxDiagnostic> errors;
+        try {
+            errors = checker.checkWithExternalAnnotations(*document, inputFile, allAnnotations);
+        } catch (const std::exception& e) {
+            std::cerr << "Error: Exception during syntax check: " << e.what() << std::endl;
+            return false;
+        } catch (...) {
+            std::cerr << "Error: Unknown exception during syntax check" << std::endl;
+            return false;
+        }
         
         if (!errors.empty()) {
             std::cerr << "Syntax errors found in " << inputFile << ":" << std::endl;
@@ -447,22 +475,46 @@ bool processMotaFile(const std::string& inputFile, const std::string& outputDir,
             return false;
         }
         
+        std::cout << "Syntax check passed, initializing generator..." << std::endl;
+        
         // 代码生成
         mota::generator::Generator generator;
         
         // 初始化生成器
-        if (!generator.initialize(templateDir)) {
-            std::cerr << "Error: Failed to initialize generator with template directory: " << templateDir << std::endl;
+        std::cout << "Initializing generator with template directory: " << templateDir << std::endl;
+        try {
+            if (!generator.initialize(templateDir)) {
+                std::cerr << "Error: Failed to initialize generator with template directory: " << templateDir << std::endl;
+                return false;
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Error: Exception during generator initialization: " << e.what() << std::endl;
+            return false;
+        } catch (...) {
+            std::cerr << "Error: Unknown exception during generator initialization" << std::endl;
             return false;
         }
+        
+        std::cout << "Generator initialized successfully, generating code..." << std::endl;
         
         // 生成代码
-        std::string generatedCode = generator.generateCode(document, "file");
-        
-        if (generatedCode.empty()) {
-            std::cerr << "Error: Failed to generate code for " << inputFile << std::endl;
+        std::string generatedCode;
+        try {
+            generatedCode = generator.generateCode(document, "file");
+        } catch (const std::exception& e) {
+            std::cerr << "Error: Exception during code generation: " << e.what() << std::endl;
+            return false;
+        } catch (...) {
+            std::cerr << "Error: Unknown exception during code generation" << std::endl;
             return false;
         }
+        
+        if (generatedCode.empty()) {
+            std::cerr << "Error: Failed to generate code for " << inputFile << " (empty result)" << std::endl;
+            return false;
+        }
+        
+        std::cout << "Code generated successfully, saving to file..." << std::endl;
         
         // 根据配置文件生成输出文件路径
         fs::path inputPath(inputFile);
@@ -515,7 +567,22 @@ bool processMotaFile(const std::string& inputFile, const std::string& outputDir,
 int main(int argc, char* argv[]) {
     SetConsoleOutputCP(CP_UTF8);
     
+    std::cout << "Starting mota compiler..." << std::endl;
+    std::cout << "Arguments count: " << argc << std::endl;
+    for (int i = 0; i < argc; ++i) {
+        std::cout << "  arg[" << i << "]: " << argv[i] << std::endl;
+    }
+    
     Options options = parseCommandLine(argc, argv);
+    
+    std::cout << "Parsed options:" << std::endl;
+    std::cout << "  outputDir: " << options.outputDir << std::endl;
+    std::cout << "  sourceDir: " << options.sourceDir << std::endl;
+    std::cout << "  lang: " << options.lang << std::endl;
+    std::cout << "  files count: " << options.files.size() << std::endl;
+    for (const auto& file : options.files) {
+        std::cout << "    file: " << file << std::endl;
+    }
     
     if (options.showHelp) {
         showHelp();

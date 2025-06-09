@@ -20,6 +20,15 @@ protected:
         };
         
         for (const auto& path : possiblePaths) {
+            // 首先尝试 config.json5
+            std::ifstream testFile5(path + "/config.json5");
+            if (testFile5.is_open()) {
+                templateDir_ = path;
+                testFile5.close();
+                break;
+            }
+            
+            // 如果 config.json5 不存在，尝试 config.json
             std::ifstream testFile(path + "/config.json");
             if (testFile.is_open()) {
                 templateDir_ = path;

@@ -69,11 +69,35 @@ std::string Generator::generateCode(const std::unique_ptr<ast::Document>& docume
         return "";
     }
     
+    std::cout << "Generator: Building template variables..." << std::endl;
+    
     // 构建模板变量
-    TemplateVars vars = buildTemplateVars(document);
+    TemplateVars vars;
+    try {
+        vars = buildTemplateVars(document);
+        std::cout << "Generator: Template variables built successfully" << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Generator: Exception in buildTemplateVars: " << e.what() << std::endl;
+        return "";
+    } catch (...) {
+        std::cerr << "Generator: Unknown exception in buildTemplateVars" << std::endl;
+        return "";
+    }
+    
+    std::cout << "Generator: Rendering template '" << templateName << "'..." << std::endl;
     
     // 使用模板引擎渲染
-    return templateEngine_->renderTemplate(templateName, vars);
+    try {
+        std::string result = templateEngine_->renderTemplate(templateName, vars);
+        std::cout << "Generator: Template rendered successfully" << std::endl;
+        return result;
+    } catch (const std::exception& e) {
+        std::cerr << "Generator: Exception in renderTemplate: " << e.what() << std::endl;
+        return "";
+    } catch (...) {
+        std::cerr << "Generator: Unknown exception in renderTemplate" << std::endl;
+        return "";
+    }
 }
 
 bool Generator::generateToFile(const std::unique_ptr<ast::Document>& document, 
@@ -104,16 +128,20 @@ bool Generator::generateToFile(const std::unique_ptr<ast::Document>& document,
 TemplateVars Generator::buildTemplateVars(const std::unique_ptr<ast::Document>& document) {
     TemplateVars vars;
     
+    std::cout << "Generator: Step 1 - Setting basic info..." << std::endl;
     // 基本信息
     vars["GENERATION_TIME"] = getCurrentTime();
     vars["SOURCE_FILE"] = "document.mota"; // 可以从参数传入
     
+    std::cout << "Generator: Step 2 - Processing namespace..." << std::endl;
     // 处理命名空间
     std::string namespaceStr = extractNamespace(document);
+    std::cout << "Generator: Extracted namespace: '" << namespaceStr << "'" << std::endl;
     vars["NAMESPACE"] = namespaceStr;
     vars["NAMESPACE_PATH"] = formatNamespacePath(namespaceStr);
     vars["HAS_NAMESPACE"] = namespaceStr.empty() ? "false" : "true";
     
+    std::cout << "Generator: Step 3 - Building namespace parts..." << std::endl;
     // 分割namespace为各个部分，用于嵌套声明
     if (!namespaceStr.empty()) {
         std::vector<std::string> namespaceParts;
@@ -139,6 +167,7 @@ TemplateVars Generator::buildTemplateVars(const std::unique_ptr<ast::Document>& 
         vars["NAMESPACE_PARTS"] = nlohmann::json::array();
     }
     
+    std::cout << "Generator: Step 4 - Processing includes..." << std::endl;
     // 处理Include声明
     std::vector<std::string> includeContents;
     for (const auto& include : document->includes) {
@@ -168,12 +197,18 @@ TemplateVars Generator::buildTemplateVars(const std::unique_ptr<ast::Document>& 
     vars["INCLUDES"] = includesStr;
     vars["HAS_INCLUDES"] = includeContents.empty() ? "false" : "true";
     
+    std::cout << "Generator: Step 5 - Processing declarations..." << std::endl;
     // 收集各种类型的声明并生成代码
     std::vector<std::string> contents;
     
-    for (const auto& decl : document->declarations) {
+    std::cout << "Generator: Found " << document->declarations.size() << " declarations" << std::endl;
+    for (size_t idx = 0; idx < document->declarations.size(); ++idx) {
+        const auto& decl = document->declarations[idx];
+        std::cout << "Generator: Processing declaration " << idx << " of type " << static_cast<int>(decl->nodeType()) << std::endl;
+        
         switch (decl->nodeType()) {
             case ast::NodeType::AnnotationDecl: {
+                std::cout << "Generator: Processing AnnotationDecl..." << std::endl;
                 auto annotation = static_cast<const ast::AnnotationDecl*>(decl.get());
                 std::string annotationCode = generateAnnotationDecl(*annotation);
                 if (!annotationCode.empty()) {
@@ -182,6 +217,7 @@ TemplateVars Generator::buildTemplateVars(const std::unique_ptr<ast::Document>& 
                 break;
             }
             case ast::NodeType::StructDecl: {
+                std::cout << "Generator: Processing StructDecl..." << std::endl;
                 auto struct_ = static_cast<const ast::Struct*>(decl.get());
                 std::string structCode = generateStructDecl(*struct_);
                 if (!structCode.empty()) {
@@ -190,6 +226,7 @@ TemplateVars Generator::buildTemplateVars(const std::unique_ptr<ast::Document>& 
                 break;
             }
             case ast::NodeType::BlockDecl: {
+                std::cout << "Generator: Processing BlockDecl..." << std::endl;
                 auto block = static_cast<const ast::Block*>(decl.get());
                 std::string blockCode = generateBlockDecl(*block);
                 if (!blockCode.empty()) {
@@ -198,6 +235,7 @@ TemplateVars Generator::buildTemplateVars(const std::unique_ptr<ast::Document>& 
                 break;
             }
             case ast::NodeType::EnumDecl: {
+                std::cout << "Generator: Processing EnumDecl..." << std::endl;
                 auto enum_ = static_cast<const ast::Enum*>(decl.get());
                 std::string enumCode = generateEnumDecl(*enum_);
                 if (!enumCode.empty()) {
@@ -206,11 +244,13 @@ TemplateVars Generator::buildTemplateVars(const std::unique_ptr<ast::Document>& 
                 break;
             }
             default:
+                std::cout << "Generator: Ignoring declaration type " << static_cast<int>(decl->nodeType()) << std::endl;
                 // 忽略其他类型的声明
                 break;
         }
     }
     
+    std::cout << "Generator: Step 6 - Merging content..." << std::endl;
     // 合并所有内容
     std::string content;
     for (size_t i = 0; i < contents.size(); ++i) {
@@ -222,6 +262,7 @@ TemplateVars Generator::buildTemplateVars(const std::unique_ptr<ast::Document>& 
     // 添加描述信息（默认值）
     vars["DESCRIPTION"] = "DESCRIPTION";
     
+    std::cout << "Generator: Template variables completed successfully" << std::endl;
     return vars;
 }
 

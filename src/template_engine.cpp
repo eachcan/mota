@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cctype>
 #include <stack>
+#include <stdexcept>
 
 namespace mota {
 namespace template_engine {
@@ -202,6 +203,12 @@ std::shared_ptr<TagNode> TemplateEngine::parseTag(const std::string& tagContent,
     } else if (trimmed.substr(0, 2) == "if") {
         // 条件语句 <%if (condition)%>
         return parseIfTag(trimmed, start, end);
+    } else if (trimmed == "else") {
+        // else分支 <%else%>
+        auto node = std::make_shared<TagNode>(TagType::ELSE);
+        node->start_pos = start;
+        node->end_pos = end;
+        return node;
     } else if (trimmed == "endif") {
         // 条件结束 <%endif%>
         auto node = std::make_shared<TagNode>(TagType::END_IF);
@@ -219,7 +226,7 @@ std::shared_ptr<TagNode> TemplateEngine::parseTag(const std::string& tagContent,
         return node;
     }
 
-    throw std::format("invalid tag [{}, {}] {}", start, end, tagContent);
+    throw std::runtime_error("invalid tag [" + std::to_string(start) + ", " + std::to_string(end) + "] " + tagContent);
     
     return nullptr;
 }
@@ -298,17 +305,28 @@ std::shared_ptr<TagNode> TemplateEngine::parseForeachTag(const std::string& tagC
 std::vector<std::shared_ptr<TagNode>> TemplateEngine::buildTagTree(const std::vector<std::shared_ptr<TagNode>>& tokens) {
     std::vector<std::shared_ptr<TagNode>> result;
     std::stack<std::shared_ptr<TagNode>> stack;
+    std::stack<bool> inElseBranch; // 标记当前是否在else分支中
     
     for (const auto& token : tokens) {
         if (token->type == TagType::IF || token->type == TagType::FOREACH) {
             // 开始标签，推入栈
             stack.push(token);
+            inElseBranch.push(false); // 初始在if分支中
             result.push_back(token);
+        } else if (token->type == TagType::ELSE) {
+            // else标签，切换到else分支
+            if (!stack.empty() && stack.top()->type == TagType::IF) {
+                inElseBranch.pop();
+                inElseBranch.push(true); // 现在在else分支中
+            } else {
+                std::cerr << "Unmatched else tag" << std::endl;
+            }
         } else if (token->type == TagType::END_IF || token->type == TagType::END_FOREACH) {
             // 结束标签，从栈中弹出对应的开始标签
             if (!stack.empty()) {
                 auto startTag = stack.top();
                 stack.pop();
+                inElseBranch.pop();
                 
                 // 验证标签匹配
                 bool matched = (token->type == TagType::END_IF && startTag->type == TagType::IF) ||
@@ -325,7 +343,13 @@ std::vector<std::shared_ptr<TagNode>> TemplateEngine::buildTagTree(const std::ve
             // 普通标签或文本
             if (!stack.empty()) {
                 // 如果栈不为空，添加到栈顶元素的子节点
-                stack.top()->children.push_back(token);
+                if (!inElseBranch.empty() && inElseBranch.top()) {
+                    // 在else分支中，添加到else_children
+                    stack.top()->else_children.push_back(token);
+                } else {
+                    // 在if分支中，添加到children
+                    stack.top()->children.push_back(token);
+                }
             } else {
                 // 否则添加到结果
                 result.push_back(token);
@@ -371,9 +395,10 @@ std::string TemplateEngine::renderTagNode(const std::shared_ptr<TagNode>& node, 
         case TagType::FOREACH:
             return renderForeachBlock(node, vars);
             
+        case TagType::ELSE:
         case TagType::END_IF:
         case TagType::END_FOREACH:
-            // 结束标签不应该单独渲染
+            // 结束标签和else标签不应该单独渲染
             return "";
             
         default:
@@ -446,9 +471,10 @@ std::string TemplateEngine::renderIfBlock(const std::shared_ptr<TagNode>& ifNode
     
     if (conditionResult) {
         return renderTagTree(ifNode->children, vars);
+    } else {
+        // 渲染else分支
+        return renderTagTree(ifNode->else_children, vars);
     }
-    
-    return "";
 }
 
 std::string TemplateEngine::renderForeachBlock(const std::shared_ptr<TagNode>& foreachNode, const TemplateVars& vars) {
@@ -772,7 +798,7 @@ std::vector<std::string> TemplateEngine::parseArguments(const std::string& args)
                 current += c;
             } else if (c == ',' && parenLevel == 0) {
                 if (current.empty()) {
-                    throw std::format("invalid function arguments: {}", args);
+                    throw std::runtime_error("invalid function arguments: " + args);
                 }
 
                 // 找到参数分隔符
@@ -790,7 +816,7 @@ std::vector<std::string> TemplateEngine::parseArguments(const std::string& args)
     }
 
     if (parenLevel != 0) {
-        throw std::format("invalid function arguments: {}", args);
+        throw std::runtime_error("invalid function arguments: " + args);
     }
     
     // 添加最后一个参数
@@ -858,14 +884,14 @@ std::string TemplateEngine::evaluateExpression(const std::string& expr, const Te
             size_t pos = remaining.find('.');
             if (pos == std::string::npos) {
                 if (remaining.empty()) {
-                    throw std::format("invalid property path: {}", trimmedExpr);
+                    throw std::runtime_error("invalid property path: " + trimmedExpr);
                 }
                 propertyPath.push_back(remaining);
                 break;
             } else {
                 auto segment = remaining.substr(0, pos);
                 if (segment.empty()) {
-                    throw std::format("invalid property path: {}", trimmedExpr);
+                    throw std::runtime_error("invalid property path: " + trimmedExpr);
                 }
                 propertyPath.push_back(segment);
                 remaining = remaining.substr(pos + 1);
@@ -873,13 +899,13 @@ std::string TemplateEngine::evaluateExpression(const std::string& expr, const Te
         }
         
         if (propertyPath.empty()) {
-            throw std::format("invalid property path: {}", trimmedExpr);
+            throw std::runtime_error("invalid property path: " + trimmedExpr);
         }
         
         // 从根对象开始逐级访问
         auto currentIt = vars.find(propertyPath[0]);
         if (currentIt == vars.end()) {
-            throw std::format("invalid property path: {}", trimmedExpr);
+            throw std::runtime_error("invalid property path: " + trimmedExpr);
         }
         
         const nlohmann::json* currentObj = &(currentIt->second);
@@ -887,11 +913,11 @@ std::string TemplateEngine::evaluateExpression(const std::string& expr, const Te
         // 逐级访问属性
         for (size_t i = 1; i < propertyPath.size(); ++i) {
             if (!currentObj->is_object()) {
-                throw std::format("invalid property path: {}", trimmedExpr);
+                throw std::runtime_error("invalid property path: " + trimmedExpr);
             }
             
             if (!currentObj->contains(propertyPath[i])) {
-                throw std::format("invalid property path: {}", trimmedExpr);
+                throw std::runtime_error("invalid property path: " + trimmedExpr);
             }
             
             currentObj = &((*currentObj)[propertyPath[i]]);

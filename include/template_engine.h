@@ -21,6 +21,7 @@ enum class TagType {
     FUNCTION_CALL,  // 函数调用 <%=func(arg)%>
     MISC_CALL,      // misc调用 <%call misc_name%>
     IF,             // 条件语句 <%if (condition)%>
+    ELSE,           // else分支 <%else%>
     FOREACH,        // 循环语句 <%foreach collection as item%>
     END_IF,         // 条件结束 <%endif%>
     END_FOREACH     // 循环结束 <%endforeach%>
@@ -43,6 +44,9 @@ struct TagNode {
     std::string condition;          // 条件表达式
     std::string collection;         // 集合变量名
     std::string item_name;          // 循环项变量名
+    
+    // if-else 支持
+    std::vector<std::shared_ptr<TagNode>> else_children;  // else 分支的子节点
     
     TagNode(TagType t = TagType::TEXT) : type(t), start_pos(0), end_pos(0) {}
 };

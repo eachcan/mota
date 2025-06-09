@@ -105,46 +105,68 @@ std::string Generator::generateBlockDecl(const ast::Block& block) {
 }
 
 std::string Generator::generateEnumDecl(const ast::Enum& enum_) {
+    std::cout << "Generator: generateEnumDecl starting for enum '" << enum_.name << "'" << std::endl;
+    
     TemplateVars vars;
     
-    // 基本信息
-    vars["ENUM_NAME"] = enum_.name;
-    vars["TYPE_NAME"] = enum_.name;
-    vars["TYPE_KIND"] = "enum";
-    
-    // 枚举值信息
-    vars["HAS_VALUES"] = enum_.values.empty() ? "false" : "true";
-    
-    // 构建枚举值数据
-    nlohmann::json valuesArray = nlohmann::json::array();
-    for (size_t i = 0; i < enum_.values.size(); ++i) {
-        const auto& value = enum_.values[i];
-        nlohmann::json valueObj = {
-            {"name", value->name},
-            {"index", i},
-            {"is_first", i == 0},
-            {"is_last", i == enum_.values.size() - 1}
-        };
+    try {
+        // 基本信息
+        vars["ENUM_NAME"] = enum_.name;
+        vars["TYPE_NAME"] = enum_.name;
+        vars["TYPE_KIND"] = "enum";
         
-        // 如果有值，添加值信息
-        if (value->value) {
-            valueObj["has_value"] = true;
-            // 这里需要处理表达式值，暂时用占位符
-            valueObj["value"] = "0";
-        } else {
-            valueObj["has_value"] = false;
-            valueObj["value"] = "";
+        std::cout << "Generator: Set basic enum info" << std::endl;
+        
+        // 枚举值信息
+        vars["HAS_VALUES"] = enum_.values.empty() ? "false" : "true";
+        
+        std::cout << "Generator: Building enum values, count: " << enum_.values.size() << std::endl;
+        
+        // 构建枚举值数据
+        nlohmann::json valuesArray = nlohmann::json::array();
+        for (size_t i = 0; i < enum_.values.size(); ++i) {
+            const auto& value = enum_.values[i];
+            nlohmann::json valueObj = {
+                {"name", value->name},
+                {"index", i},
+                {"is_first", i == 0},
+                {"is_last", i == enum_.values.size() - 1}
+            };
+            
+            // 如果有值，添加值信息
+            if (value->value) {
+                valueObj["has_value"] = true;
+                // 这里需要处理表达式值，暂时用占位符
+                valueObj["value"] = "0";
+            } else {
+                valueObj["has_value"] = false;
+                valueObj["value"] = "";
+            }
+            
+            valuesArray.push_back(valueObj);
         }
+        vars["ENUM_VALUES"] = valuesArray;
         
-        valuesArray.push_back(valueObj);
+        std::cout << "Generator: Built enum values array" << std::endl;
+        
+        // 注解信息
+        vars["HAS_ANNOTATIONS"] = enum_.annotations.empty() ? "false" : "true";
+        
+        std::cout << "Generator: Calling template engine for enum_decl..." << std::endl;
+        
+        // 使用模板引擎渲染
+        std::string result = templateEngine_->renderTemplate("enum_decl", vars);
+        
+        std::cout << "Generator: Template engine returned result for enum" << std::endl;
+        return result;
+        
+    } catch (const std::exception& e) {
+        std::cerr << "Generator: Exception in generateEnumDecl: " << e.what() << std::endl;
+        return "";
+    } catch (...) {
+        std::cerr << "Generator: Unknown exception in generateEnumDecl" << std::endl;
+        return "";
     }
-    vars["ENUM_VALUES"] = valuesArray;
-    
-    // 注解信息
-    vars["HAS_ANNOTATIONS"] = enum_.annotations.empty() ? "false" : "true";
-    
-    // 使用模板引擎渲染
-    return templateEngine_->renderTemplate("enum_decl", vars);
 }
 
 std::string Generator::buildFieldsData(const std::vector<std::unique_ptr<ast::Field>>& fields) {

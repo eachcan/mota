@@ -1,0 +1,12 @@
+namespace test;
+
+enum Priority {
+    Low;
+    Medium;
+    High;
+}
+
+struct Task {
+    string title;
+    bool completed = false;
+} 
