@@ -15,15 +15,24 @@
 #include "framework/IAnnotation.h"
 
 
+#include "yima.h"
+#include "yima-ui.h"
+
 
 // 此文件由 Mota 代码生成器自动生成
-// 生成时间: 2025-06-08 21:04:04
-// 源文件: annotations.mota
+// 生成时间: 2025-06-09 17:26:44
+// 源文件: document.mota
 
 using namespace ymf;
 
 
-namespace examples::annotations {
+
+
+namespace examples {
+
+namespace annotations {
+
+
 
 
 // DateTimePicker注解
@@ -31,256 +40,596 @@ class MODEL_EXPORT DateTimePickerAnnotation : public IAnnotation {
 public:
     DateTimePickerAnnotation() = default;
     
+
+
     
     // 实现IAnnotation接口
     QString name() const override {
         return "DateTimePicker";
     }
     
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("format")) return QVariant::fromValue(format_);
-        if (argumentName == QLatin1String("placeholder")) return QVariant::fromValue(placeholder_);
-        if (argumentName == QLatin1String("value")) return QVariant::fromValue(value_);
-        if (argumentName == QLatin1String("type")) return QVariant::fromValue(type_);
-        if (argumentName == QLatin1String("from")) return QVariant::fromValue(from_);
-        if (argumentName == QLatin1String("to")) return QVariant::fromValue(to_);
+    QStringList argumentNames() const override {
+        return QStringList{"format""placeholder""value""type""from""to"};
+    }
+    
+    QVariant argumentValue(const QString& argumentName) const override {
+
+        if (argumentName == "format") {
+            return QVariant::fromValue(format_);
+        }
+
+        if (argumentName == "placeholder") {
+            return QVariant::fromValue(placeholder_);
+        }
+
+        if (argumentName == "value") {
+            return QVariant::fromValue(value_);
+        }
+
+        if (argumentName == "type") {
+            return QVariant::fromValue(type_);
+        }
+
+        if (argumentName == "from") {
+            return QVariant::fromValue(from_);
+        }
+
+        if (argumentName == "to") {
+            return QVariant::fromValue(to_);
+        }
+
         return QVariant();
     }
     
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("format"), QLatin1String("placeholder"), QLatin1String("value"), QLatin1String("type"), QLatin1String("from"), QLatin1String("to")};
+    void argumentValue(const QString& argumentName, const QVariant& value) override {
+
+        if (argumentName == "format") {
+            format_ = value.value<QString>();
+            return;
+        }
+
+        if (argumentName == "placeholder") {
+            placeholder_ = value.value<QString>();
+            return;
+        }
+
+        if (argumentName == "value") {
+            value_ = value.value<QString>();
+            return;
+        }
+
+        if (argumentName == "type") {
+            type_ = value.value<QString>();
+            return;
+        }
+
+        if (argumentName == "from") {
+            from_ = value.value<QString>();
+            return;
+        }
+
+        if (argumentName == "to") {
+            to_ = value.value<QString>();
+            return;
+        }
+
+    }
+    
+    QString description() const override {
+        return "Generated annotation DateTimePicker";
+    }
+    
+    QString argumentDescription(const QString& argumentName) const override {
+
+        if (argumentName == "format") {
+            return "field.description";
+        }
+
+        if (argumentName == "placeholder") {
+            return "field.description";
+        }
+
+        if (argumentName == "value") {
+            return "field.description";
+        }
+
+        if (argumentName == "type") {
+            return "field.description";
+        }
+
+        if (argumentName == "from") {
+            return "field.description";
+        }
+
+        if (argumentName == "to") {
+            return "field.description";
+        }
+
+        return QString();
     }
     
     // 特定于DateTimePicker的访问器
-        // format字段的访问器
+
+
+
     QString getFormat() const {
         return format_;
     }
-    
+
+
     void setFormat(const QString& value) {
         format_ = value;
-    } 
+    }
 
-        // placeholder字段的访问器
+
+
     QString getPlaceholder() const {
         return placeholder_;
     }
-    
+
+
     void setPlaceholder(const QString& value) {
         placeholder_ = value;
-    } 
+    }
 
-        // value字段的访问器
+
+
     QString getValue() const {
         return value_;
     }
-    
+
+
     void setValue(const QString& value) {
         value_ = value;
-    } 
+    }
 
-        // type字段的访问器
+
+
     QString getType() const {
         return type_;
     }
-    
+
+
     void setType(const QString& value) {
         type_ = value;
-    } 
+    }
 
-        // from字段的访问器
+
+
     QString getFrom() const {
         return from_;
     }
-    
+
+
     void setFrom(const QString& value) {
         from_ = value;
-    } 
+    }
 
-        // to字段的访问器
+
+
     QString getTo() const {
         return to_;
     }
-    
+
+
     void setTo(const QString& value) {
         to_ = value;
-    } 
+    }
+
+
+
     
 private:
-    QString format_ = "yyyy-MM-dd HH:mm:ss";
-    QString placeholder_ = "请选择日期时间";
+
+
+    QString format_;
+
+    QString placeholder_;
+
     QString value_;
-    QString type_ = "datetime";
+
+    QString type_;
+
     QString from_;
+
     QString to_;
+
+
 }; 
+
 
 // ModeOption注解
 class MODEL_EXPORT ModeOptionAnnotation : public IAnnotation {
 public:
     ModeOptionAnnotation() = default;
     
+
+
     
     // 实现IAnnotation接口
     QString name() const override {
         return "ModeOption";
     }
     
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("text")) return QVariant::fromValue(text_);
-        if (argumentName == QLatin1String("value")) return QVariant::fromValue(value_);
+    QStringList argumentNames() const override {
+        return QStringList{"text""value"};
+    }
+    
+    QVariant argumentValue(const QString& argumentName) const override {
+
+        if (argumentName == "text") {
+            return QVariant::fromValue(text_);
+        }
+
+        if (argumentName == "value") {
+            return QVariant::fromValue(value_);
+        }
+
         return QVariant();
     }
     
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("text"), QLatin1String("value")};
+    void argumentValue(const QString& argumentName, const QVariant& value) override {
+
+        if (argumentName == "text") {
+            text_ = value.value<QString>();
+            return;
+        }
+
+        if (argumentName == "value") {
+            value_ = value.value<QString>();
+            return;
+        }
+
+    }
+    
+    QString description() const override {
+        return "Generated annotation ModeOption";
+    }
+    
+    QString argumentDescription(const QString& argumentName) const override {
+
+        if (argumentName == "text") {
+            return "field.description";
+        }
+
+        if (argumentName == "value") {
+            return "field.description";
+        }
+
+        return QString();
     }
     
     // 特定于ModeOption的访问器
-        // text字段的访问器
+
+
+
     QString getText() const {
         return text_;
     }
-    
+
+
     void setText(const QString& value) {
         text_ = value;
-    } 
+    }
 
-        // value字段的访问器
+
+
     QString getValue() const {
         return value_;
     }
-    
+
+
     void setValue(const QString& value) {
         value_ = value;
-    } 
+    }
+
+
+
     
 private:
-    QString text_ = "正常模式";
-    QString value_ = "normal";
+
+
+    QString text_;
+
+    QString value_;
+
+
 }; 
+
 
 // ModeSelector注解
 class MODEL_EXPORT ModeSelectorAnnotation : public IAnnotation {
 public:
     ModeSelectorAnnotation() = default;
     
+
+
     
     // 实现IAnnotation接口
     QString name() const override {
         return "ModeSelector";
     }
     
-    QVariant argument(const QString& argumentName) const override {
-        if (argumentName == QLatin1String("default")) return QVariant::fromValue(default_);
-        if (argumentName == QLatin1String("value")) return QVariant::fromValue(value_);
+    QStringList argumentNames() const override {
+        return QStringList{"default""value"};
+    }
+    
+    QVariant argumentValue(const QString& argumentName) const override {
+
+        if (argumentName == "default") {
+            return QVariant::fromValue(default_);
+        }
+
+        if (argumentName == "value") {
+            return QVariant::fromValue(value_);
+        }
+
         return QVariant();
     }
     
-    QStringList argumentNames() const override {
-        return QStringList{QLatin1String("default"), QLatin1String("value")};
+    void argumentValue(const QString& argumentName, const QVariant& value) override {
+
+        if (argumentName == "default") {
+            default_ = value.value<ModeOption>();
+            return;
+        }
+
+        if (argumentName == "value") {
+            value_ = value.value<QVector<ModeOption>>();
+            return;
+        }
+
+    }
+    
+    QString description() const override {
+        return "Generated annotation ModeSelector";
+    }
+    
+    QString argumentDescription(const QString& argumentName) const override {
+
+        if (argumentName == "default") {
+            return "field.description";
+        }
+
+        if (argumentName == "value") {
+            return "field.description";
+        }
+
+        return QString();
     }
     
     // 特定于ModeSelector的访问器
-        // default字段的访问器
-    QSharedPointer<ModeOptionAnnotation> getDefault() const {
+
+
+
+    ModeOption getDefault() const {
         return default_;
     }
-    
-    void setDefault(const QSharedPointer<ModeOptionAnnotation>& value) {
-        default_ = value;
-    } 
 
-        // value字段的访问器
-    QVector<QSharedPointer<ModeOptionAnnotation>> getValue() const {
+
+    void setDefault(const ModeOption& value) {
+        default_ = value;
+    }
+
+
+
+    QVector<ModeOption> getValue() const {
         return value_;
     }
-    
-    void setValue(const QVector<QSharedPointer<ModeOptionAnnotation>>& value) {
+
+
+    void setValue(const QVector<ModeOption>& value) {
         value_ = value;
-    } 
+    }
+
+
+
     
 private:
-    QSharedPointer<ModeOptionAnnotation> default_;
-    QVector<QSharedPointer<ModeOptionAnnotation>> value_;
+
+
+    ModeOption default_;
+
+    QVector<ModeOption> value_;
+
+
 }; 
 
-// RunMode结构体
 
-class MODEL_EXPORT RunModeModel : public IModel {
+// RunMode结构体
+class MODEL_EXPORT RunModeModel :  {
 public:
     RunModeModel() = default;
     
+
+
     
     // 实现IModel接口
     QCborValue toCbor() const override {
         QCborMap map;
-        map.insert(QLatin1String("name"), QCborValue(getName()));
+
+
+<%if (field_type_template(field.type) == "INT")%>
+        map["name"] = QCborValue(name_);
+<%endif%>
+<%if (field_type_template(field.type) == "FLOAT")%>
+        map["name"] = QCborValue(name_);
+<%endif%>
+<%if (field_type_template(field.type) == "STRING")%>
+        map["name"] = QCborValue(name_);
+<%endif%>
+<%if (field_type_template(field.type) == "BOOL")%>
+        map["name"] = QCborValue(name_);
+<%endif%>
+<%if (field_type_template(field.type) == "BYTES")%>
+        map["name"] = QCborValue(name_);
+<%endif%>
+<%if (field_type_template(field.type) == "ARRAY")%>
+        QCborArray nameArray;
+        for (const auto& item : name_) {
+            nameArray.append(item.toCbor());
+        }
+        map["name"] = nameArray;
+<%endif%>
+<%if (field_type_template(field.type) == "COMPLEX")%>
+        map["name"] = name_.toCbor();
+<%endif%>
+
+
         return map;
     }
     
     void fromCbor(const QCborValue& cbor) override {
         QCborMap map = cbor.toMap();
-        setName(map.value(QLatin1String("name")).toString());
+
+
+<%if (field_type_template(field.type) == "INT")%>
+        if (map.contains("name")) {
+            name_ = map["name"].toInteger();
+        }
+<%endif%>
+<%if (field_type_template(field.type) == "FLOAT")%>
+        if (map.contains("name")) {
+            name_ = map["name"].toDouble();
+        }
+<%endif%>
+<%if (field_type_template(field.type) == "STRING")%>
+        if (map.contains("name")) {
+            name_ = map["name"].toString();
+        }
+<%endif%>
+<%if (field_type_template(field.type) == "BOOL")%>
+        if (map.contains("name")) {
+            name_ = map["name"].toBool();
+        }
+<%endif%>
+<%if (field_type_template(field.type) == "BYTES")%>
+        if (map.contains("name")) {
+            name_ = map["name"].toByteArray();
+        }
+<%endif%>
+<%if (field_type_template(field.type) == "ARRAY")%>
+        if (map.contains("name")) {
+            QCborArray nameArray = map["name"].toArray();
+            name_.clear();
+            for (const auto& item : nameArray) {
+                QString element;
+                element.fromCbor(item);
+                name_.append(element);
+            }
+        }
+<%endif%>
+<%if (field_type_template(field.type) == "COMPLEX")%>
+        if (map.contains("name")) {
+            name_.fromCbor(map["name"]);
+        }
+<%endif%>
+
+
     }
     
     QStringList fields() const override {
-        return QStringList{QLatin1String("name")};
+        return QStringList{"name"};
     }
     
     QString fieldOriginTypeName(const QString& fieldName) const override {
-        if (fieldName == QLatin1String("name")) return QLatin1String("string");
-        return QLatin1String("");
+
+
+        if (fieldName == "name") {
+            return "string";
+        }
+
+        return QString();
+
     }
     
     QList<QSharedPointer<IAnnotation>> annotations() const override {
-        
+
+
+        QList<QSharedPointer<IAnnotation>> annotations;
+<%foreach ANNOTATIONS as annotation%>
+        auto _annotation_<%=annotation.index%> = QSharedPointer<<%=annotation.class_name%>>::create();
+<%foreach annotation.arguments as arg%>
+        _annotation_<%=annotation.index%>-><%=arg.setter_name%>(
+
+
+
+
+
+
+
+
+
+);
+<%endforeach%>
+        annotations.append(qSharedPointerCast<IAnnotation>(_annotation_<%=annotation.index%>));
+<%endforeach%>
+        return annotations;
+<%else%>
         return QList<QSharedPointer<IAnnotation>>();
+
+
     }
     
-    QList<QSharedPointer<void>> fieldAnnotations(const QString& fieldName) const override {
-        if (fieldName == QLatin1String("name")) {
+    QList<QSharedPointer<IAnnotation>> fieldAnnotations(const QString& fieldName) const override {
+
+
+        if (fieldName == "name") {
             QList<QSharedPointer<void>> result;
-            auto ModeSelectorInstance = QSharedPointer<ModeSelectorAnnotation>::create();
-            ModeSelectorInstance->setDefault(QSharedPointer<ModeOptionAnnotation>::create());
-            ModeSelectorInstance->setValue({QSharedPointer<ModeOptionAnnotation>::create(), QSharedPointer<ModeOptionAnnotation>::create(), QSharedPointer<ModeOptionAnnotation>::create(), QSharedPointer<ModeOptionAnnotation>::create()});
-            result.append(qSharedPointerCast<void>(ModeSelectorInstance));
 
             return result;
         }
-        return QList<QSharedPointer<void>>();
+<%endforeach%>
+
+        return QList<QSharedPointer<IAnnotation>>();
     }
     
     QString description() const override {
-        return "Generated from struct RunMode";
+        return "Generated struct RunMode";
     }
     
     QString fieldDescription(const QString& fieldName) const override {
-        
+
+        if (argumentName == "name") {
+            return "field.description";
+        }
+
         return QString();
     }
     
     QVariant value(const QString& fieldName) const override {
-        if (fieldName == QLatin1String("name")) return QVariant::fromValue(name_);
+
+        if (argumentName == "name") {
+            return QVariant::fromValue(name_);
+        }
+
         return QVariant();
     }
     
     void value(const QString& fieldName, const QVariant& value) override {
-        if (fieldName == QLatin1String("name")) {
+
+        if (argumentName == "name") {
             name_ = value.value<QString>();
             return;
         }
+
     }
     
     // 特定于RunMode的访问器
-        // name字段的访问器
+
+
+
     QString getName() const {
         return name_;
     }
-    
+
+
     void setName(const QString& value) {
         name_ = value;
-    } 
+    }
+
+
+
     
 protected:
     QString modelName() const override {
@@ -288,10 +637,20 @@ protected:
     }
     
 private:
+
+
     QString name_;
-};
+
+
+}; 
 
 
 
-} // namespace examples::annotations
 
+
+} // namespace examples
+
+} // namespace annotations
+
+
+ 

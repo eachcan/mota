@@ -1,0 +1,77 @@
+// <%=ENUM_NAME%>枚举
+enum class <%call class_name%> : int32_t {
+<%call enum_values%>
+};
+
+class MODEL_EXPORT <%call class_name%>Helper {
+public:
+    static QString toString(<%call class_name%> value) {
+        switch (value) {
+<%call enum_to_string_cases%>
+            default:
+                return QString();
+        }
+    }
+    
+    static <%call class_name%> fromString(const QString& str) {
+<%call string_to_enum_conditions%>
+        return static_cast<<%call class_name%>>(0);
+    }
+    
+    static QStringList allStringValues() {
+        return QStringList{
+<%foreach ENUM_VALUES as value%>
+            "<%=escape_string(value.string_value)%>"<%if (!value.is_last)%>,<%endif%>
+<%endforeach%>
+        };
+    }
+    
+    static QStringList allDisplayNames() {
+        return QStringList{
+<%foreach ENUM_VALUES as value%>
+            "<%=escape_string(value.display_name)%>"<%if (!value.is_last)%>,<%endif%>
+<%endforeach%>
+        };
+    }
+    
+    static QList<QSharedPointer<IAnnotation>> annotations() {
+<%call enum_annotation_logic%>
+    }
+    
+    static QList<QSharedPointer<IAnnotation>> valueAnnotations(<%call class_name%> value) {
+        switch (value) {
+<%call enum_value_annotation_cases%>
+            default:
+                return QList<QSharedPointer<IAnnotation>>();
+        }
+    }
+    
+    static QList<QSharedPointer<IAnnotation>> valueAnnotationsByName(const QString& valueName) {
+<%call enum_value_annotation_by_name_conditions%>
+        return QList<QSharedPointer<IAnnotation>>();
+    }
+    
+    static QString description() {
+        return "<%=escape_string(DESCRIPTION)%>";
+    }
+    
+    static QString valueDescription(<%call class_name%> value) {
+        switch (value) {
+<%foreach ENUM_VALUES as value%>
+            case <%call class_name%>::<%=value.name%>:
+                return "<%=escape_string(value.description)%>";
+<%endforeach%>
+            default:
+                return QString();
+        }
+    }
+    
+    static QString valueDescriptionByName(const QString& valueName) {
+<%foreach ENUM_VALUES as value%>
+        if (valueName == "<%=value.name%>") {
+            return "<%=escape_string(value.description)%>";
+        }
+<%endforeach%>
+        return QString();
+    }
+}; 

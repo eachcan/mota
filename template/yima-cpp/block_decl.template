@@ -1,63 +1,62 @@
-// {{BLOCK_NAME}}块
-class MODEL_EXPORT {{CLASS_NAME}} : {{INHERITANCE_DECLARATION}} {
+// <%=BLOCK_NAME%>块
+class MODEL_EXPORT <%call class_name%> : <%call inheritance_declaration%> {
 public:
-    {{CLASS_NAME}}() = default;
-    {{CONSTRUCTOR}}
+    <%call class_name%>() = default;
+    <%call constructor%>
     
-    // 实现{{INTERFACE_NAME}}接口
+    // 实现<%call interface_name%>接口
     QCborValue toCbor() const override {
         QCborMap map;
-        {{SERIALIZE_FIELDS}}
+<%call serialize_fields%>
         return map;
     }
     
     void fromCbor(const QCborValue& cbor) override {
         QCborMap map = cbor.toMap();
-        {{DESERIALIZE_FIELDS}}
+<%call deserialize_fields%>
     }
     
     QString name() const override {
-        return "{{BLOCK_NAME}}";
+        return "<%=BLOCK_NAME%>";
     }
     
     QStringList fields() const override {
-        return QStringList{{{FIELD_NAMES}}};
+        return QStringList{<%call field_names%>};
     }
     
     QString fieldType(const QString& fieldName) const override {
-        {{FIELD_TYPE_LOGIC}}
+<%call field_type_logic%>
     }
     
     QList<QSharedPointer<IAnnotation>> annotations() const override {
-        {{BLOCK_ANNOTATION_LOGIC}}
-        return QList<QSharedPointer<IAnnotation>>();
+<%call block_annotation_logic%>
     }
     
     QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
-        {{FIELD_ANNOTATION_LOGIC}}
+<%call field_annotation_logic%>
         return QList<QSharedPointer<void>>();
     }
     
     QString description() const override {
-        return "{{DESCRIPTION}}";
+        return "<%=escape_string(DESCRIPTION)%>";
     }
     
     QString fieldDescription(const QString& fieldName) const override {
-        {{FIELD_DESCRIPTION_LOGIC}}
+<%call field_description_logic%>
         return QString();
     }
     
     QVariant value(const QString& fieldName) const override {
-        {{VALUE_GETTER_LOGIC}}
+<%call value_getter_logic%>
     }
     
     void value(const QString& fieldName, const QVariant& value) override {
-        {{VALUE_SETTER_LOGIC}}
+<%call value_setter_logic%>
     }
     
-    // 特定于{{BLOCK_NAME}}的访问器
-    {{ACCESSORS}}
+    // 特定于<%=BLOCK_NAME%>的访问器
+<%call accessors%>
     
 private:
-    {{PRIVATE_FIELDS}}
-};
+<%call private_fields%>
+}; 

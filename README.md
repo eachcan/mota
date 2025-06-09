@@ -1,401 +1,428 @@
-# Mota - 配置文件编译器与代码生成工具
+# MOTA - Modern Object Type Architecture
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![C++](https://img.shields.io/badge/language-C%2B%2B20-blue.svg)](https://en.cppreference.com/w/cpp/20)
-[![VSCode Extension](https://img.shields.io/badge/VSCode-Extension-007ACC?logo=visualstudiocode)](https://marketplace.visualstudio.com/)
-[![Build Status](https://github.com/eachcan/mota/actions/workflows/build.yml/badge.svg)](https://github.com/eachcan/mota/actions)
+MOTA是一个现代化的数据结构定义语言和代码生成器，旨在简化跨语言数据模型的开发和维护。
 
-## 简介
+## 特性
 
-Mota 是一个现代化的配置文件编译器，类似于 Protocol Buffer，但专为配置管理而设计。它将 `.mota` 配置文件编译为 C++ 或其他语言的源代码，让开发者能够基于注解实现各种功能模块，而无需重复处理底层数据操作。
+- **简洁的语法**: 类似于Protocol Buffers但更加简洁直观
+- **强类型系统**: 支持基础类型、自定义类型、枚举、数组等
+- **多语言支持**: 通过模板系统支持生成多种目标语言
+- **注解系统**: 丰富的注解支持，用于验证、文档生成等
+- **代码生成**: 自动生成包含序列化、反序列化、访问器等完整功能的代码
+- **零硬编码**: 完全基于配置的代码生成，易于扩展和自定义
 
-### 🎯 核心理念
-
-**像 Protocol Buffer 一样简单**：
-- 定义一次配置结构 (`.mota` 文件)
-- 编译生成目标语言代码
-- 在应用中直接使用生成的类
-
-**基于注解的模块化开发**：
-- **存储模块**：根据 `@Storage` 注解决定存储位置和格式
-- **验证模块**：根据 `@Int`、`@Validator` 等注解自动验证数据
-- **UI 模块**：根据 `@Switcher`、`@Int` 等注解自动生成界面
-- **文档模块**：根据 `@Desc` 等注解自动生成文档
-
-**开发者只需关注业务逻辑**：
-- 无需手写序列化/反序列化代码
-- 无需手写数据验证逻辑
-- 无需手写UI绑定代码
-- 无需手写存储管理代码
-
-### ✨ 主要特性
-
-- **强大的类型系统**
-  - 基础类型：`int8`/`int16`/`int32`/`int64`/`float32`/`float64`/`string`/`bool`/`bytes`
-  - 复合类型：`struct`/`block`/`enum`/`annotation`
-  - 类型修饰符：`optional`/`repeated`/`map`
-  - 完整的类型推导和验证
-
-- **丰富的注解系统**
-  - **存储注解**：`@storage(path, format)` - 自动处理文件存储
-  - **UI注解**：`@window`, `@text`, `@int`, `@float`, `@switcher` - 自动生成界面
-  - **验证注解**：`@min`, `@max`, `@pattern`, `@required` - 自动数据验证
-  - **文档注解**：`@desc`, `@example` - 自动生成文档
-
-- **多语言代码生成**
-  - C++ (完整支持)
-  - Java (计划中)
-  - Python (计划中)
-  - TypeScript (计划中)
-
-- **多格式序列化**
-  - 二进制：`CBOR`（紧凑高效）
-  - 文本：`JSON`（人类可读）
-  - 配置：`INI`（兼容旧系统）
-
-- **开发工具支持**
-  - VSCode 插件：语法高亮、代码补全、错误检查
-  - 实时预览：配置变更即时反馈
-  - 调试支持：配置值追踪和验证
-
-## 🚀 快速开始
+## 快速开始
 
 ### 安装
 
-#### Windows 安装器（推荐）
-1. 下载 `mota-installer-v0.2.0.exe`
-2. 运行安装器，自动配置环境变量
-3. 打开新的命令行窗口，运行 `mota --help`
+使用xmake构建系统：
 
-#### ZIP 压缩包
-1. 下载 `mota-v0.2.0-windows-x64.zip`
-2. 解压到任意目录
-3. 将 `mota.exe` 所在目录添加到 PATH 环境变量
-
-#### 从源码构建
 ```bash
-git clone --recursive https://github.com/eachcan/mota.git
+# 克隆项目
+git clone https://github.com/your-repo/mota.git
 cd mota
-xmake build
+
+# 构建
+xmake
+
+# 运行测试
+xmake run test_generator
 ```
 
-### 验证安装
-```bash
-mota --help
-mota --version  # 输出: mota version 1.0.0
-```
+### 基本使用
 
-## 🛠️ 使用方式
-
-### 1. 定义配置结构
-
-创建 `camera_config.mota` 文件：
+1. **创建MOTA文件** (`user.mota`)：
 
 ```mota
-namespace vision;
+namespace com.example;
 
-// 相机类型枚举
-enum CameraType {
-    @desc("标准工业面阵相机")
-    AREA_SCAN = 0;
-    
-    @desc("高精度线扫描相机") 
-    LINE_SCAN = 1;
-    
-    @desc("三维点云采集相机")
-    DEPTH = 2;
+enum UserRole {
+    ADMIN = 1,
+    USER = 2,
+    GUEST = 3
 }
 
-// 相机配置结构
-@storage(path = "config/camera.cbor", format = "cbor")
-@window(title = "相机配置", width = 800, height = 600)
-struct CameraConfig {
-    // 基本信息
-    @text(maxLength = 50, placeholder = "请输入相机名称")
-    @desc("相机标识名称")
-    string name = "Camera_01";
-    
-    // 相机类型
-    @select(options = ["AREA_SCAN", "LINE_SCAN", "DEPTH"])
-    @desc("选择相机类型")
-    CameraType type = AREA_SCAN;
-    
-    // 位置参数
-    @group("位置设置")
-    struct Position {
-        @int(min = 0, max = 10000, step = 1, unit = "mm")
-        @desc("X轴坐标")
-        int32 x = 0;
-        
-        @int(min = 0, max = 10000, step = 1, unit = "mm") 
-        @desc("Y轴坐标")
-        int32 y = 0;
-        
-        @float(min = 0.0, max = 360.0, step = 0.1, unit = "度")
-        @desc("旋转角度")
-        float64 rotation = 0.0;
-    } position;
-    
-    // 成像参数
-    @group("成像参数")
-    struct Imaging {
-        @float(min = 10.0, max = 100000.0, step = 100.0, unit = "μs")
-        @desc("曝光时间")
-        float64 exposure = 1000.0;
-        
-        @float(min = 0.1, max = 10.0, step = 0.1)
-        @desc("增益值")
-        float64 gain = 1.0;
-        
-        @switcher
-        @desc("启用硬件触发")
-        bool triggerEnabled = false;
-    } imaging;
-    
-    // 网络设置
-    @group("网络设置")
-    struct Network {
-        @text(pattern = "^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")
-        @desc("IP地址")
-        string ip = "192.168.1.100";
-        
-        @int(min = 1024, max = 65535)
-        @desc("端口号")
-        int32 port = 8080;
-    } network;
-    
-    // 高级参数
-    @group("高级参数")
-    map<string, string> parameters = {
-        "PixelFormat": "Mono8",
-        "AcquisitionMode": "Continuous"
-    };
+struct User {
+    string name;
+    int32 age;
+    UserRole role;
+    repeated string tags;
+}
+
+block UserProfile {
+    User user;
+    string bio;
+    repeated User friends;
 }
 ```
 
-### 2. 编译生成代码
+2. **生成代码**：
 
 ```bash
-# 基本用法：编译当前目录下的所有.mota文件
-mota
+mota user.mota -o output/ -l cpp
+```
 
-# 编译指定文件
-mota camera_config.mota
+3. **使用生成的代码**：
 
-# 指定输出目录
-mota camera_config.mota -o output
+```cpp
+#include "com/example/user.h"
 
-# 指定模板语言（目前只支持cpp）
-mota camera_config.mota -l cpp -o output
+// 创建用户
+UserModel user;
+user.setName("张三");
+user.setAge(25);
+user.setRole(UserRole::USER);
+
+// 序列化
+QCborValue cbor = user.toCbor();
+
+// 反序列化
+UserModel user2;
+user2.fromCbor(cbor);
+```
+
+## 语法指南
+
+### 基础类型
+
+- **整数**: `int8`, `int16`, `int32`, `int64`
+- **无符号整数**: `uint8`, `uint16`, `uint32`, `uint64` 
+- **浮点数**: `float32`, `float64`
+- **其他**: `string`, `bool`, `bytes`
+
+### 自定义类型
+
+#### 结构体 (Struct)
+用于数据传输对象：
+
+```mota
+struct Point {
+    float32 x;
+    float32 y;
+}
+```
+
+#### 块 (Block) 
+用于业务实体：
+
+```mota
+block User {
+    string name;
+    int32 age;
+    Point location;
+}
+```
+
+#### 枚举 (Enum)
+```mota
+enum Status {
+    PENDING = 0,
+    APPROVED = 1,
+    REJECTED = 2
+}
+```
+
+### 数组
+使用 `repeated` 关键字：
+
+```mota
+struct Container {
+    repeated string items;
+    repeated Point coordinates;
+}
+```
+
+### 注解系统
+
+```mota
+annotation Validator {
+    string pattern;
+    int32 maxLength;
+}
+
+struct User {
+    @Validator(pattern: "^[a-zA-Z0-9]+$", maxLength: 50)
+    string username;
+}
+```
+
+### 包含文件
+
+```mota
+include "common/types.mota";
+
+struct MyType {
+    CommonType field;
+}
+```
+
+## 模板系统
+
+MOTA使用先进的模板系统生成目标语言代码，支持高度自定义和扩展。
+
+### 新模板语法
+
+使用现代化的模板语法：
+
+```template
+<%=variable%>                    # 输出变量
+<%=function(parameter)%>         # 调用函数
+<%if (condition)%>               # 条件语句
+    ...
+<%elseif (other_condition)%>
+    ...
+<%else%>
+    ...
+<%endif%>
+<%foreach item in items%>        # 循环语句
+    ...
+<%endforeach%>
+<%for (key, value) in map%>      # Map遍历
+    ...
+<%endfor%>
+```
+
+### 片段系统
+
+通过片段(Misc)系统实现模板模块化：
+
+```template
+<%misc getter_method%>           # 定义片段
+    <%=FIELD_TYPE%> get<%=pascal_case(FIELD_NAME)%>() const {
+        return <%=FIELD_NAME%>_;
+    }
+<%endmisc%>
+
+<%call getter_method%>           # 调用片段
+```
+
+### 配置简化
+
+新版本模板配置更加简洁，专注于核心设置：
+
+```json5
+{
+  "version": "2.0",
+  "templates": {
+    "file": "file.template",
+    "block_decl": "block_decl.template",
+    "struct_decl": "struct_decl.template",
+    "enum_decl": "enum_decl.template",
+    "annotation_decl": "annotation_decl.template",
+    "annotation": "annotation.template"
+  },
+  "miscs": ["misc.template"],
+  "type_mapping": {
+    "int32": "int32_t",
+    "string": "QString"
+  }
+}
+```
+
+### 格式化通过片段实现
+
+不再需要复杂的格式化配置，全部通过misc片段实现：
+
+- 类型后缀 → `type_suffix` 片段
+- 访问器格式 → `getter_prefix`、`setter_prefix` 片段  
+- 继承格式 → `inheritance_declaration` 片段
+- 接口映射 → `interface_name` 片段
+
+### 创建自定义模板
+
+1. **创建模板集目录**：
+```bash
+mkdir template/my-language
+```
+
+2. **编写配置文件** (`config.json5`)：
+```json5
+{
+  "version": "2.0",
+  "templates": { /* 必需的模板映射 */ },
+  "miscs": ["misc.template"],
+  "type_mapping": { /* 类型映射 */ }
+}
+```
+
+3. **定义片段** (`misc.template`)：
+```template
+<%misc class_name%><%=TYPE_NAME%><%call type_suffix%><%endmisc%>
+<%misc type_suffix%>
+<%if (TYPE == "struct")%>Model<%endif%>
+<%if (TYPE == "block")%>Block<%endif%>
+<%endmisc%>
+```
+
+4. **创建模板文件**：
+- `file.template` - 文件结构
+- `block_decl.template` - Block声明
+- `struct_decl.template` - Struct声明
+- `enum_decl.template` - Enum声明
+- `annotation_decl.template` - Annotation声明  
+- `annotation.template` - 注解实例
+
+### 模板优势
+
+- **零硬编码**: 所有生成逻辑通过配置和模板定义
+- **高度模块化**: 片段系统提高代码复用
+- **易于维护**: 配置简洁，逻辑清晰
+- **灵活扩展**: 创建新语言支持只需新建模板集
+
+详细的模板开发指南请参考：[模板开发指南](docs/template-development-guide.md)
+
+## 命令行工具
+
+### 基本语法
+```bash
+mota [OPTIONS] [FILE] [...]
+```
+
+### 主要选项
+- `-h, --help`: 显示帮助信息
+- `-V, --version`: 显示版本信息  
+- `-v, --verbose`: 显示详细信息
+- `-i, --include-path PATH`: 添加包含路径
+- `-o, --output-dir PATH`: 设置输出目录 (默认: output)
+- `-s, --source-dir PATH`: 设置源文件目录 (默认: 当前目录)
+- `-l, --lang LANG`: 设置输出语言 (默认: cpp)
+- `-c, --config PATH`: 设置配置文件路径
+
+### 使用示例
+
+```bash
+# 编译单个文件
+mota user.mota -o generated/
+
+# 编译整个目录
+mota src/ -o generated/ -l cpp
+
+# 使用自定义模板
+mota user.mota -l my-template
 
 # 添加包含路径
-mota camera_config.mota -i include_path1 -i include_path2 -o output
-
-# 使用配置文件
-mota -c mota-config.json
-
-# 查看帮助
-mota --help
-
-# 查看版本
-mota --version
+mota user.mota -i common/ -i shared/
 ```
 
-### 命令行选项说明
+## 生成的代码特性
 
-```
-mota [OPTIONS] [FILE] [...]
+### C++ 代码特性
 
-Options:
-  -h, --help              显示帮助信息
-  -V, --version           显示版本信息
-  -v, --verbose           显示详细信息
-  -i, --include-path PATH 添加包含路径，可以指定多次
-  -o, --output-dir PATH   设置输出目录，默认为 output
-  -s, --source-dir PATH   设置源文件目录，默认为当前目录
-  -l, --lang LANG         设置输出语言，可选值：cpp[默认]
-  -c, --config PATH       设置配置文件路径
+- **完整的CBOR序列化/反序列化支持**
+- **类型安全的访问器方法**
+- **注解系统支持**
+- **反射能力** (字段枚举、类型查询等)
+- **Qt框架集成**
+- **现代C++特性使用**
 
-FILE:
-  指定要编译的 Mota 文件或目录路径
-  如果未指定，则从当前目录搜索所有.mota文件
-```
-
-### 3. 在应用中使用
+### 示例生成代码
 
 ```cpp
-#include "camera_config.h"
-
-int main() {
-    // 创建配置实例
-    vision::CameraConfig config;
-    
-    // 设置配置值
-    config.setName("MainCamera");
-    config.setType(vision::CameraType::AREA_SCAN);
-    config.getPosition().setX(1000);
-    config.getPosition().setY(2000);
-    config.getImaging().setExposure(1500.0);
-    
-    // 自动验证（基于注解）
-    if (!config.validate()) {
-        std::cout << "配置验证失败: " << config.getValidationErrors() << std::endl;
-        return -1;
-    }
-    
-    // 自动保存（基于 @storage 注解）
-    config.save();  // 保存到 config/camera.cbor
-    
-    // 从文件加载
-    auto loaded_config = vision::CameraConfig::load("config/camera.cbor");
-    
-    return 0;
-}
-```
-
-### 4. 基于注解的模块开发
-
-#### 存储模块示例
-```cpp
-// 存储模块根据 @storage 注解自动处理文件操作
-class StorageModule {
+class MODEL_EXPORT UserModel : public IModel {
 public:
-    template<typename T>
-    static void autoSave(const T& config) {
-        // 根据 @storage 注解获取路径和格式
-        auto storage_info = T::getStorageInfo();
-        
-        if (storage_info.format == "cbor") {
-            saveToCbor(config, storage_info.path);
-        } else if (storage_info.format == "json") {
-            saveToJson(config, storage_info.path);
-        }
-    }
+    UserModel() = default;
+    
+    // 访问器
+    QString getName() const { return name_; }
+    void setName(const QString& value) { name_ = value; }
+    
+    int32_t getAge() const { return age_; }
+    void setAge(int32_t value) { age_ = value; }
+    
+    // 序列化
+    QCborValue toCbor() const override;
+    void fromCbor(const QCborValue& cbor) override;
+    
+    // 反射
+    QStringList fields() const override;
+    QString fieldType(const QString& fieldName) const override;
+    QVariant value(const QString& fieldName) const override;
+    
+private:
+    QString name_;
+    int32_t age_;
 };
 ```
 
-#### 验证模块示例
-```cpp
-// 验证模块根据 @int, @float, @text 等注解自动验证
-class ValidationModule {
-public:
-    template<typename T>
-    static ValidationResult validate(const T& config) {
-        ValidationResult result;
-        
-        // 根据字段注解自动验证
-        for (auto& field : T::getFields()) {
-            if (field.hasAnnotation("@int")) {
-                auto int_anno = field.getAnnotation("@int");
-                if (!validateIntRange(field.getValue(), int_anno.min, int_anno.max)) {
-                    result.addError(field.name + " 超出范围");
-                }
-            }
-            
-            if (field.hasAnnotation("@text")) {
-                auto text_anno = field.getAnnotation("@text");
-                if (!validateTextLength(field.getValue(), text_anno.maxLength)) {
-                    result.addError(field.name + " 长度超限");
-                }
-            }
-        }
-        
-        return result;
-    }
-};
+## 项目结构
+
+```
+mota/
+├── src/                    # 源代码
+│   ├── generator/         # 代码生成器
+│   ├── parser/           # 语法解析器
+│   ├── ast/              # 抽象语法树
+│   └── main.cpp          # 入口点
+├── template/             # 模板集合
+│   └── yima-cpp/        # C++模板
+│       ├── config.json5 # 配置文件
+│       ├── misc.template # 片段定义
+│       └── *.template   # 模板文件
+├── test/                # 测试文件
+├── docs/               # 文档
+└── examples/           # 示例
 ```
 
-#### UI模块示例
-```cpp
-// UI模块根据 @window, @group, @int, @switcher 等注解自动生成界面
-class UIModule {
-public:
-    template<typename T>
-    static QWidget* createConfigWidget(T& config) {
-        auto window_info = T::getWindowInfo();
-        auto widget = new QWidget();
-        widget->setWindowTitle(window_info.title);
-        widget->resize(window_info.width, window_info.height);
-        
-        auto layout = new QVBoxLayout(widget);
-        
-        // 根据字段注解创建控件
-        for (auto& field : T::getFields()) {
-            if (field.hasAnnotation("@int")) {
-                auto spinbox = createIntSpinBox(field);
-                layout->addWidget(spinbox);
-            } else if (field.hasAnnotation("@switcher")) {
-                auto checkbox = createCheckBox(field);
-                layout->addWidget(checkbox);
-            } else if (field.hasAnnotation("@text")) {
-                auto lineedit = createLineEdit(field);
-                layout->addWidget(lineedit);
-            }
-        }
-        
-        return widget;
-    }
-};
-```
+## 开发
 
-## 📚 注解参考
+### 构建系统
 
-### 存储注解
-- `@storage(path, format)` - 指定存储路径和格式
-
-### UI注解
-- `@window(title, width, height)` - 窗口属性
-- `@group(title)` - 分组显示
-- `@text(maxLength, placeholder, pattern)` - 文本输入
-- `@int(min, max, step, unit)` - 整数输入
-- `@float(min, max, step, unit)` - 浮点数输入
-- `@switcher` - 开关控件
-- `@select(options)` - 下拉选择
-
-### 验证注解
-- `@min(value)` - 最小值限制
-- `@max(value)` - 最大值限制
-- `@pattern(regex)` - 正则表达式验证
-- `@required` - 必填字段
-
-### 文档注解
-- `@desc(text)` - 字段描述
-- `@example(value)` - 示例值
-
-## 🔧 构建和分发
+项目使用xmake作为构建系统：
 
 ```bash
-# 开发构建
-xmake build
+# 配置项目
+xmake f -c debug
 
-# 运行程序
-xmake run mota
+# 构建
+xmake build
 
 # 运行测试
 xmake run test_generator
 
-# 创建安装包
-xmake run install
-
-# 创建ZIP分发包
-xmake run package
-
-# 创建Windows安装器（需要NSIS）
-xmake run installer
+# 清理
+xmake clean
 ```
 
-## 📖 更多资源
+### 添加新语言支持
 
-- [完整文档](docs/)
+1. 在 `template/` 下创建新的模板集目录
+2. 按照模板开发指南创建必需的模板文件
+3. 定义类型映射和生成规则
+4. 通过misc片段实现格式化逻辑
+5. 测试验证生成的代码
+
+### 贡献指南
+
+我们欢迎各种形式的贡献：
+
+- **Bug报告**: 通过Issues报告问题
+- **功能请求**: 提出新功能建议  
+- **代码贡献**: 提交Pull Request
+- **文档改进**: 完善文档和示例
+- **模板贡献**: 为新语言创建模板
+
+请遵循项目的编码规范和开发流程。
+
+## 许可证
+
+本项目采用 [MIT许可证](LICENSE)。
+
+## 相关资源
+
+- [语法参考](docs/syntax-reference.md)
+- [模板开发指南](docs/template-development-guide.md)
+- [API文档](docs/api-reference.md)
 - [示例项目](examples/)
-- [VSCode插件](vscode-extension/)
-- [API参考](docs/api/)
 
-## 🤝 贡献
+## 支持
 
-欢迎提交 Issue 和 Pull Request！
+如需帮助或有疑问，请：
 
-## 📄 许可证
+- 查看[文档](docs/)和[示例](examples/)
+- 在[Issues](https://github.com/your-repo/mota/issues)中搜索或提出问题
+- 参与[讨论区](https://github.com/your-repo/mota/discussions)讨论
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+---
+
+MOTA - 让数据模型定义更简单，让代码生成更智能。
 

@@ -1,17 +1,17 @@
 {
-  "version": "1.0",
+  "version": "2.0",
   "encoding": "UTF-8 with BOM",
   "templates": {
-    "header": "header.template",
-    "block": "block.template",
-    "struct": "struct.template",
-    "enum": "enum.template",
-    "annotation": "annotation.template",
-    "field_types": "field_types.template",
-    "accessor": "accessor.template",
-    "serialize": "serialize.template",
-    "deserialize": "deserialize.template"
+    "file": "file.template",
+    "block_decl": "block_decl.template",
+    "struct_decl": "struct_decl.template", 
+    "enum_decl": "enum_decl.template",
+    "annotation_decl": "annotation_decl.template",
+    "annotation": "annotation.template"
   },
+  "miscs": [
+    "misc.template"
+  ],
   "type_mapping": {
     "int8": "int8_t",
     "int16": "int16_t",
@@ -27,139 +27,15 @@
     "bool": "bool",
     "bytes": "QByteArray"
   },
-  "accessor_format": {
-    "getter_prefix": "get",
-    "setter_prefix": "set",
-    "pascal_case": true
-  },
-  "identifier_format": {
-    "style": "pascal_case",
-    "prefix": {
-    },
-    "suffix": {
-      "block": "Block",
-      "struct": "Model",
-      "enum": "",
-      "annotation": "Annotation"
-    }
-  },
-  "namespace_format": {
-    "separator": "::",
-    "style": "snake_case"
-  },
-  "inheritance_format": {
-    "single_inheritance": "{{BASE_CLASS}}",
-    "multiple_inheritance": "{{BASE_CLASSES | join(', ')}}",
-    "interface_inheritance": "{{INTERFACES | join(', ')}}",
-    "combined_inheritance": "{{BASE_CLASSES | join(', ')}}{{#HAS_INTERFACES}}, {{INTERFACES | join(', ')}}{{/HAS_INTERFACES}}",
-    "inheritance_keyword": "public"
-  },
-  "field_type_templates": {
-    "int8": "INT",
-    "int16": "INT", 
-    "int32": "INT",
-    "int64": "INT",
-    "uint8": "INT",
-    "uint16": "INT", 
-    "uint32": "INT",
-    "uint64": "INT",
-    "float32": "FLOAT",
-    "float64": "FLOAT",
-    "string": "STRING",
-    "bool": "BOOL",
-    "bytes": "BYTES",
-    "repeated": "ARRAY",
-    "custom": "COMPLEX"
-  },
-  "template_variables": {
-    "CLASS_NAME": "{{TYPE_NAME}}{{TYPE_SUFFIX}}",
-    "PRIVATE_FIELD_NAME": "{{FIELD_NAME}}_",
-    "PRIVATE_FIELD_DECLARATION": "{{FIELD_TYPE_MAPPED}} {{PRIVATE_FIELD_NAME}}{{#HAS_DEFAULT_VALUE}} = {{DEFAULT_VALUE}}{{/HAS_DEFAULT_VALUE}};",
-    "FIELD_NAME_PASCAL": "{{FIELD_NAME | pascal_case}}",
-    "FIELD_NAME_CAMEL": "{{FIELD_NAME | camel_case}}",
-    "FIELD_TYPE_MAPPED": "{{FIELD_TYPE | map_type}}",
-    "SERIALIZE_TEMPLATE": "{{FIELD_TYPE | field_template}}_SERIALIZE",
-    "DESERIALIZE_TEMPLATE": "{{FIELD_TYPE | field_template}}_DESERIALIZE",
-    "MODEL_ANNOTATION_LOGIC": "",
-    "BLOCK_ANNOTATION_LOGIC": "",
-    "ENUM_ANNOTATION_LOGIC": "",
-    "FIELD_ANNOTATION_LOGIC_TEMPLATE": "QList<QSharedPointer<void>> result;\n            // TODO: 创建字段 {{FIELD_NAME}} 的注解实例\n            return result;",
-    "ENUM_VALUE_ANNOTATION_TEMPLATE": "return QList<QSharedPointer<IAnnotation>>();",
-    "ANNOTATION_LIST_TEMPLATE": "QList<QSharedPointer<IAnnotation>> result;",
-    "TODO_COMMENT_TEMPLATE": "// TODO: 创建 {{ANNOTATION_NAME}} 注解实例",
-    "RETURN_RESULT_TEMPLATE": "return result;",
-            "ENUM_VALUE_CASE_TEMPLATE": "case {{CLASS_NAME}}::{{ENUM_VALUE}}: {",
-        "IF_CONDITION_TEMPLATE": "if ({{VARIABLE_NAME}} == \"{{VALUE}}\") {",
-        
-        // 枚举模板变量
-        "ENUM_VALUE_TEMPLATE": "{{ENUM_VALUE_NAME}} = {{ENUM_VALUE_INDEX}}",
-        "ENUM_TO_STRING_CASE_TEMPLATE": "case {{CLASS_NAME}}::{{ENUM_VALUE_NAME}}:\n                return {{STRING_LITERAL}};",
-        "STRING_TO_ENUM_CONDITION_TEMPLATE": "if (str == {{STRING_LITERAL}}) {\n            return {{CLASS_NAME}}::{{ENUM_VALUE_NAME}};\n        }",
-        "ENUM_STRING_VALUE_TEMPLATE": "<< {{STRING_LITERAL}}",
-        "ENUM_DISPLAY_NAME_TEMPLATE": "<< {{STRING_LITERAL}}",
-        "ENUM_VALUE_ANNOTATION_CASE_TEMPLATE": "case {{CLASS_NAME}}::{{ENUM_VALUE_NAME}}: {\n{{ANNOTATION_LOGIC}}\n            }",
-        "ENUM_VALUE_ANNOTATION_BY_NAME_CONDITION_TEMPLATE": "if (valueName == \"{{ENUM_VALUE_NAME}}\") {\n{{ANNOTATION_LOGIC}}\n        }",
-    "ARGUMENT_CONDITION_TEMPLATE": "if ({{ARGUMENT_NAME_VAR}} == {{FIELD_NAME_STR}}) return {{VARIANT_STR}};",
-    "RETURN_TEMPLATE": "return {{VALUE}};",
-    "FIELD_CONDITION_TEMPLATE": "if ({{FIELD_NAME_VAR}} == {{FIELD_NAME_STR}}) {\n            {{FIELD_LOGIC}}\n        }"
-  },
-  "type_interface_mapping": {
-    "block": "IBlock",
-    "struct": "IModel", 
-    "annotation": "IAnnotation"
-  },
   "file_path": [
     {
-      "path": "{{NAMESPACE | namespace_path}}/{{FILE_NAME}}.h",
+      "path": "<%=namespace_path(NAMESPACE)%>/<%=FILE_NAME%>.h",
       "type": "file"
     }
   ],
-  "loop_syntax": {
-    "start_tag": "{{#each",
-    "end_tag": "{{/each}}",
-    "item_variable": "item",
-    "index_variable": "index"
-  },
-  "syntax_elements": {
-    "PRIVATE_FIELD_SUFFIX": "_",
-    "EMPTY_VARIANT": "QVariant()",
-    "INT_TYPE_PATTERN": "int",
-    "FLOAT_TYPE_PATTERN": "float",
-    "STRING_TYPE_PATTERN": "QString",
-    "BOOL_TYPE_PATTERN": "bool",
-    "BYTE_ARRAY_TYPE_PATTERN": "QByteArray",
-    "INT_CONVERT_METHOD": "Integer",
-    "FLOAT_CONVERT_METHOD": "Double",
-    "STRING_CONVERT_METHOD": "String",
-    "BOOL_CONVERT_METHOD": "Bool",
-    "BYTE_ARRAY_CONVERT_METHOD": "ByteArray",
-    "DEFAULT_CONVERT_METHOD": "Variant",
-    "REPEATED_KEYWORD": "repeated",
-    "NAMESPACE_PATH_SEPARATOR": "/",
-    "NAMESPACE_SEPARATOR_REPLACEMENT": ".->::",
-    "ARGUMENT_NAME_VARIABLE": "argumentName",
-    "FIELD_NAME_VARIABLE": "fieldName",
-    
-    // 枚举语法元素
-    "ENUM_VALUE_SEPARATOR": ",\n    ",
-    "ENUM_CASE_SEPARATOR": "\n            ",
-    "ENUM_CONDITION_SEPARATOR": " else ",
-    "ENUM_STRING_VALUE_SEPARATOR": " ",
-    "ENUM_DISPLAY_NAME_SEPARATOR": " ",
-    "ENUM_ANNOTATION_CASE_SEPARATOR": "\n            ",
-    "ENUM_ANNOTATION_CONDITION_SEPARATOR": " else ",
-    "ENUM_VALUE_ANNOTATION_NAMES": "yima.EnumValue|EnumValue",
-    "DESC_PARAM_NAME": "desc"
-  },
   "include_directive": {
-    "pattern": "#include \"{{INCLUDE_PATH}}\"",
+    "pattern": "#include \"<%=INCLUDE_PATH%>\"",
     "source_extension": ".mota",
     "target_extension": ".h"
-  },
-  "code_generation": {
-    "container_template": "QVector<{{ELEMENT_TYPE}}>",
-    "string_literal_template": "QLatin1String(\"{{STRING_VALUE}}\")",
-    "variant_template": "QVariant::fromValue({{VALUE}})",
-    "collection_separator": "|"
   }
 }

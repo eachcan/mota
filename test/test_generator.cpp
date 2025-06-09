@@ -20,7 +20,7 @@ protected:
         };
         
         for (const auto& path : possiblePaths) {
-            std::ifstream testFile(path + "/header.template");
+            std::ifstream testFile(path + "/config.json");
             if (testFile.is_open()) {
                 templateDir_ = path;
                 testFile.close();
@@ -32,11 +32,11 @@ protected:
             templateDir_ = "template/yima-cpp"; // 默认路径
         }
         
-        generator_ = std::make_unique<generator::Generator>(templateDir_);
+        generator_ = std::make_unique<generator::Generator>();
         
-        // 加载配置
-        std::string configPath = templateDir_ + "/config.json5";
-        generator_->loadConfig(configPath); // 总是返回true（使用默认配置）
+        // 初始化生成器
+        bool success = generator_->initialize(templateDir_);
+        ASSERT_TRUE(success) << "Failed to initialize generator with template directory: " << templateDir_;
     }
     
     std::unique_ptr<ast::Document> parse(const std::string& source) {
@@ -60,7 +60,7 @@ TEST_F(GeneratorTest, GenerateSimpleStruct) {
     auto doc = parse(source);
     ASSERT_NE(doc, nullptr);
     
-    std::string result = generator_->generateFile(*doc);
+    std::string result = generator_->generateCode(doc, "file");
     
     // 检查生成的代码包含期望的内容
     EXPECT_TRUE(result.find("class MODEL_EXPORT Person") != std::string::npos);
@@ -83,7 +83,7 @@ TEST_F(GeneratorTest, GenerateSimpleBlock) {
     auto doc = parse(source);
     ASSERT_NE(doc, nullptr);
     
-    std::string result = generator_->generateFile(*doc);
+    std::string result = generator_->generateCode(doc, "file");
     
     // 检查生成的代码包含期望的内容
     EXPECT_TRUE(result.find("class MODEL_EXPORT Rectangle") != std::string::npos);
@@ -114,7 +114,7 @@ TEST_F(GeneratorTest, GenerateEnum) {
     auto doc = parse(source);
     ASSERT_NE(doc, nullptr);
     
-    std::string result = generator_->generateFile(*doc);
+    std::string result = generator_->generateCode(doc, "file");
     
     // 检查生成的代码包含期望的内容
     EXPECT_TRUE(result.find("Color") != std::string::npos);
@@ -141,7 +141,7 @@ TEST_F(GeneratorTest, GenerateAnnotation) {
     auto doc = parse(source);
     ASSERT_NE(doc, nullptr);
     
-    std::string result = generator_->generateFile(*doc);
+    std::string result = generator_->generateCode(doc, "file");
     
     // 检查生成的代码包含期望的内容
     EXPECT_TRUE(result.find("class MODEL_EXPORT Range") != std::string::npos);
@@ -167,7 +167,7 @@ TEST_F(GeneratorTest, GenerateWithNamespace) {
     auto doc = parse(source);
     ASSERT_NE(doc, nullptr);
     
-    std::string result = generator_->generateFile(*doc);
+    std::string result = generator_->generateCode(doc, "file");
     
     // 检查生成的代码包含期望的内容
     EXPECT_TRUE(result.find("namespace yima") != std::string::npos);

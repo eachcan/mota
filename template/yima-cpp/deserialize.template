@@ -1,3 +1,0 @@
-        if (map.contains(QLatin1String("{{FIELD_NAME}}"))) {
-            {{PRIVATE_FIELD_NAME}} = map[QLatin1String("{{FIELD_NAME}}")].toVariant().value<{{FIELD_TYPE}}>();
-        } 

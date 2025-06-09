@@ -64,7 +64,7 @@ namespace ymf {
         virtual QList<QSharedPointer<IAnnotation>> annotations() const = 0;
 
         // 获取字段注解
-        virtual QList<QSharedPointer<void>> fieldAnnotations(const QString& fieldName) const = 0;
+        virtual QList<QSharedPointer<IAnnotation>> fieldAnnotations(const QString& fieldName) const = 0;
 
         // 获取具体的注解
         QSharedPointer<IAnnotation> fieldAnnotation(const QString& fieldName) const;

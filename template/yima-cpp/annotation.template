@@ -1,25 +1,25 @@
-// {{ANNOTATION_NAME}}注解
-class MODEL_EXPORT {{CLASS_NAME}} : public {{INTERFACE_NAME}} {
+// <%=ANNOTATION_NAME%>注解
+class MODEL_EXPORT <%call class_name%> : public <%call interface_name%> {
 public:
-    {{CLASS_NAME}}() = default;
-    {{CONSTRUCTOR}}
+    <%call class_name%>() = default;
+    <%call constructor%>
     
-    // 实现{{INTERFACE_NAME}}接口
+    // 实现<%call interface_name%>接口
     QString name() const override {
-        return "{{ANNOTATION_NAME}}";
+        return "<%=ANNOTATION_NAME%>";
     }
     
     QVariant argument(const QString& argumentName) const override {
-        {{ARGUMENT_GETTER_LOGIC}}
+<%call value_getter_logic%>
     }
     
     QStringList argumentNames() const override {
-        return QStringList{{{ARGUMENT_NAMES}}};
+        return QStringList{<%call field_names%>};
     }
     
-    // 特定于{{ANNOTATION_NAME}}的访问器
-    {{ACCESSORS}}
+    // 特定于<%=ANNOTATION_NAME%>的访问器
+<%call accessors%>
     
 private:
-    {{PRIVATE_FIELDS}}
+<%call private_fields%>
 }; 

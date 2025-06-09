@@ -1,8 +1,0 @@
-    // {{FIELD_NAME}}字段的访问器
-    {{FIELD_TYPE_MAPPED}} {{GETTER_NAME}}() const {
-        return {{PRIVATE_FIELD_NAME}};
-    }
-    
-    void {{SETTER_NAME}}(const {{FIELD_TYPE_MAPPED}}& value) {
-        {{PRIVATE_FIELD_NAME}} = value;
-    } 

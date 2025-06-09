@@ -15,6 +15,7 @@ add_cxflags("/utf-8")
 -- 添加包依赖
 add_requires("gtest")
 add_requires("cxxopts")
+add_requires("nlohmann_json")
 set_encodings("utf-8")
 
 -- 主要目标：编译器
@@ -37,6 +38,7 @@ target("mota")
     
     -- 添加依赖包
     add_packages("cxxopts")
+    add_packages("nlohmann_json")
     
     -- Debug模式下添加调试信息
     if is_mode("debug") then
@@ -201,6 +203,7 @@ target("test_syntax_checker")
     add_files("src/*.cpp")
     remove_files("src/main.cpp")  -- 排除主程序的main函数
     add_packages("gtest")
+    add_packages("nlohmann_json")
     set_encodings("utf-8")
     set_targetdir("bin")
 
@@ -210,10 +213,14 @@ target("test_generator")
     add_files("test/test_generator.cpp")
     add_files("src/lexer_*.cpp")
     add_files("src/parser_*.cpp")  
-    add_files("src/generator.cpp")
+    add_files("src/generator_*.cpp")
+    add_files("src/config.cpp")
+    add_files("src/template_engine.cpp")
     add_includedirs("include")
     add_packages("gtest", {configs = {main = true}})
+    add_packages("nlohmann_json")
     set_encodings("utf-8")
+    set_targetdir("bin")
 
 -- 安装目标：生成完整的安装包
 target("install")
@@ -497,4 +504,3 @@ target("installer")
             print("💡 NSIS command returned: " .. tostring(ret))
         end
     end)
-

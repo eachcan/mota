@@ -1,0 +1,422 @@
+<%misc private_field_suffix%>_<%endmisc%>
+
+<%misc empty_variant%>QVariant()<%endmisc%>
+
+<%misc repeated_keyword%>repeated<%endmisc%>
+
+<%misc namespace_path_separator%>/<%endmisc%>
+
+<%misc namespace_separator_replacement%>.->::<%endmisc%>
+
+<%misc argument_name_variable%>argumentName<%endmisc%>
+
+<%misc field_name_variable%>fieldName<%endmisc%>
+
+<%misc enum_value_separator%>,
+    <%endmisc%>
+
+<%misc enum_case_separator%>
+            <%endmisc%>
+
+<%misc enum_condition_separator%> else <%endmisc%>
+
+<%misc enum_string_value_separator%> <%endmisc%>
+
+<%misc enum_display_name_separator%> <%endmisc%>
+
+<%misc enum_annotation_case_separator%>
+            <%endmisc%>
+
+<%misc enum_annotation_condition_separator%> else <%endmisc%>
+
+<%misc enum_value_annotation_names%>yima.EnumValue|EnumValue<%endmisc%>
+
+<%misc desc_param_name%>desc<%endmisc%>
+
+<%misc container_template%>QVector<<%=ELEMENT_TYPE%>><%endmisc%>
+
+<%misc string_literal_template%>QLatin1String("<%=escape_string(STRING_VALUE)%>")<%endmisc%>
+
+<%misc variant_template%>QVariant::fromValue(<%=VALUE%>)<%endmisc%>
+
+<%misc collection_separator%>|<%endmisc%>
+
+<%misc type_suffix%><%if (TYPE == "block")%>Block<%endif%><%if (TYPE == "struct")%>Model<%endif%><%if (TYPE == "enum")%><%endif%><%if (TYPE == "annotation")%>Annotation<%endif%><%endmisc%>
+
+<%misc interface_name%><%if (TYPE == "block")%>IBlock<%endif%><%if (TYPE == "struct")%>IModel<%endif%><%if (TYPE == "annotation")%>IAnnotation<%endif%><%endmisc%>
+
+<%misc class_name%><%=TYPE_NAME%><%call type_suffix%><%endmisc%>
+
+<%misc private_field_name%><%=FIELD_NAME%><%call private_field_suffix%><%endmisc%>
+
+<%misc private_field_declaration%><%=field.field_type_mapped%> <%=field.private_field_name%><%if (field.HAS_DEFAULT_VALUE)%> = <%=field.DEFAULT_VALUE%><%endif%>;<%endmisc%>
+
+<%misc field_name_pascal%><%=FIELD_NAME_PASCAL%><%endmisc%>
+
+<%misc field_name_camel%><%=FIELD_NAME_CAMEL%><%endmisc%>
+
+<%misc field_type_mapped%><%=FIELD_TYPE_MAPPED%><%endmisc%>
+
+<%misc field_type_template%>
+<%if (FIELD_TYPE == "int8" || FIELD_TYPE == "int16" || FIELD_TYPE == "int32" || FIELD_TYPE == "int64" || FIELD_TYPE == "uint8" || FIELD_TYPE == "uint16" || FIELD_TYPE == "uint32" || FIELD_TYPE == "uint64")%>INT<%endif%>
+<%if (FIELD_TYPE == "float32" || FIELD_TYPE == "float64")%>FLOAT<%endif%>
+<%if (FIELD_TYPE == "string")%>STRING<%endif%>
+<%if (FIELD_TYPE == "bool")%>BOOL<%endif%>
+<%if (FIELD_TYPE == "bytes")%>BYTES<%endif%>
+<%if (IS_REPEATED)%>ARRAY<%endif%>
+<%if (IS_CUSTOM_TYPE)%>COMPLEX<%endif%>
+<%endmisc%>
+
+<%misc getter_method%>
+    <%=field.field_type_mapped%> <%=field.getter_name%>() const {
+        return <%=field.private_field_name%>;
+    }
+<%endmisc%>
+
+<%misc setter_method%>
+    void <%=field.setter_name%>(const <%=field.field_type_mapped%>& value) {
+        <%=field.private_field_name%> = value;
+    }
+<%endmisc%>
+
+<%misc accessors%>
+<%foreach FIELDS as field%>
+<%call getter_method%>
+
+<%call setter_method%>
+<%endforeach%>
+<%endmisc%>
+
+<%misc serialize_int%>
+        map["<%=field.name%>"] = QCborValue(<%=field.private_field_name%>);
+<%endmisc%>
+
+<%misc serialize_float%>
+        map["<%=field.name%>"] = QCborValue(<%=field.private_field_name%>);
+<%endmisc%>
+
+<%misc serialize_string%>
+        map["<%=field.name%>"] = QCborValue(<%=field.private_field_name%>);
+<%endmisc%>
+
+<%misc serialize_bool%>
+        map["<%=field.name%>"] = QCborValue(<%=field.private_field_name%>);
+<%endmisc%>
+
+<%misc serialize_bytes%>
+        map["<%=field.name%>"] = QCborValue(<%=field.private_field_name%>);
+<%endmisc%>
+
+<%misc serialize_array%>
+        QCborArray <%=field.name%>Array;
+        for (const auto& item : <%=field.private_field_name%>) {
+            <%=field.name%>Array.append(item.toCbor());
+        }
+        map["<%=field.name%>"] = <%=field.name%>Array;
+<%endmisc%>
+
+<%misc serialize_complex%>
+        map["<%=field.name%>"] = <%=field.private_field_name%>.toCbor();
+<%endmisc%>
+
+<%misc deserialize_int%>
+        if (map.contains("<%=field.name%>")) {
+            <%=field.private_field_name%> = map["<%=field.name%>"].toInteger();
+        }
+<%endmisc%>
+
+<%misc deserialize_float%>
+        if (map.contains("<%=field.name%>")) {
+            <%=field.private_field_name%> = map["<%=field.name%>"].toDouble();
+        }
+<%endmisc%>
+
+<%misc deserialize_string%>
+        if (map.contains("<%=field.name%>")) {
+            <%=field.private_field_name%> = map["<%=field.name%>"].toString();
+        }
+<%endmisc%>
+
+<%misc deserialize_bool%>
+        if (map.contains("<%=field.name%>")) {
+            <%=field.private_field_name%> = map["<%=field.name%>"].toBool();
+        }
+<%endmisc%>
+
+<%misc deserialize_bytes%>
+        if (map.contains("<%=field.name%>")) {
+            <%=field.private_field_name%> = map["<%=field.name%>"].toByteArray();
+        }
+<%endmisc%>
+
+<%misc deserialize_array%>
+        if (map.contains("<%=field.name%>")) {
+            QCborArray <%=field.name%>Array = map["<%=field.name%>"].toArray();
+            <%=field.private_field_name%>.clear();
+            for (const auto& item : <%=field.name%>Array) {
+                <%=field.field_type_mapped%> element;
+                element.fromCbor(item);
+                <%=field.private_field_name%>.append(element);
+            }
+        }
+<%endmisc%>
+
+<%misc deserialize_complex%>
+        if (map.contains("<%=field.name%>")) {
+            <%=field.private_field_name%>.fromCbor(map["<%=field.name%>"]);
+        }
+<%endmisc%>
+
+<%misc serialize_fields%>
+<%foreach FIELDS as field%>
+<%if (field.field_type_template == "INT")%><%call serialize_int%><%endif%>
+<%if (field.field_type_template == "FLOAT")%><%call serialize_float%><%endif%>
+<%if (field.field_type_template == "STRING")%><%call serialize_string%><%endif%>
+<%if (field.field_type_template == "BOOL")%><%call serialize_bool%><%endif%>
+<%if (field.field_type_template == "BYTES")%><%call serialize_bytes%><%endif%>
+<%if (field.field_type_template == "ARRAY")%><%call serialize_array%><%endif%>
+<%if (field.field_type_template == "COMPLEX")%><%call serialize_complex%><%endif%>
+<%endforeach%>
+<%endmisc%>
+
+<%misc deserialize_fields%>
+<%foreach FIELDS as field%>
+<%if (field.field_type_template == "INT")%><%call deserialize_int%><%endif%>
+<%if (field.field_type_template == "FLOAT")%><%call deserialize_float%><%endif%>
+<%if (field.field_type_template == "STRING")%><%call deserialize_string%><%endif%>
+<%if (field.field_type_template == "BOOL")%><%call deserialize_bool%><%endif%>
+<%if (field.field_type_template == "BYTES")%><%call deserialize_bytes%><%endif%>
+<%if (field.field_type_template == "ARRAY")%><%call deserialize_array%><%endif%>
+<%if (field.field_type_template == "COMPLEX")%><%call deserialize_complex%><%endif%>
+<%endforeach%>
+<%endmisc%>
+
+<%misc annotation_arg_literal_string%>"<%=escape_string(LITERAL_VALUE)%>"<%endmisc%>
+
+<%misc annotation_arg_literal_int%><%=LITERAL_VALUE%><%endmisc%>
+
+<%misc annotation_arg_literal_float%><%=LITERAL_VALUE%><%endmisc%>
+
+<%misc annotation_arg_literal_bool_true%>true<%endmisc%>
+
+<%misc annotation_arg_literal_bool_false%>false<%endmisc%>
+
+<%misc includes%><%=INCLUDES%><%endmisc%>
+
+<%misc namespace_declaration%>
+namespace <%=first_namespace_part(NAMESPACE)%> {
+<%if (has_nested_namespace(NAMESPACE))%>
+<%call namespace_nested_declaration%>
+<%endif%>
+<%endmisc%>
+
+<%misc namespace_closing%>
+<%if (has_nested_namespace(NAMESPACE))%>
+<%call namespace_nested_closing%>
+<%endif%>
+} // namespace <%=first_namespace_part(NAMESPACE)%>
+<%endmisc%>
+
+<%misc namespace_nested_declaration%>
+<%foreach NAMESPACE_PARTS as part%>
+<%if (!part.is_first)%>namespace <%=part.name%> {
+<%endif%>
+<%endforeach%>
+<%endmisc%>
+
+<%misc namespace_nested_closing%>
+<%foreach NAMESPACE_PARTS as part%>
+<%if (!part.is_first)%>} // namespace <%=part.name%>
+<%endif%>
+<%endforeach%>
+<%endmisc%>
+
+<%misc annotation_arg_array%>QList<QSharedPointer<<%=ELEMENT_TYPE%>>>{<%=ARRAY_ELEMENTS%>}<%endmisc%>
+
+<%misc annotation_arg_map%>QMap<QString, QSharedPointer<<%=VALUE_TYPE%>>>{
+<%for (key, value) in MAP_ELEMENTS%>
+    { "<%=escape_string(key)%>", <%=value%> },
+<%endfor%>
+}<%endmisc%>
+
+<%misc annotation_arg_custom%>[&](){
+    auto anno = QSharedPointer<<%=ANNOTATION_CLASS_NAME%>>::create();
+<%foreach ANNOTATION_ARGUMENTS as arg%>
+    anno-><%=arg.setter_name%>(<%=arg.value%>);
+<%endforeach%>
+    return anno;
+}()<%endmisc%>
+
+<%misc annotation_arg_identifier%><%=IDENTIFIER_NAME%><%endmisc%>
+
+<%misc annotation_arg_value%>
+<%if (ARG_TYPE == "Literal_string")%><%call annotation_arg_literal_string%><%endif%>
+<%if (ARG_TYPE == "Literal_int64")%><%call annotation_arg_literal_int%><%endif%>
+<%if (ARG_TYPE == "Literal_double")%><%call annotation_arg_literal_float%><%endif%>
+<%if (ARG_TYPE == "Literal_bool_true")%><%call annotation_arg_literal_bool_true%><%endif%>
+<%if (ARG_TYPE == "Literal_bool_false")%><%call annotation_arg_literal_bool_false%><%endif%>
+<%if (ARG_TYPE == "ArrayLiteral")%><%call annotation_arg_array%><%endif%>
+<%if (ARG_TYPE == "MapLiteral")%><%call annotation_arg_map%><%endif%>
+<%if (ARG_TYPE == "Annotation")%><%call annotation_arg_custom%><%endif%>
+<%if (ARG_TYPE == "Identifier")%><%call annotation_arg_identifier%><%endif%>
+<%endmisc%>
+
+<%misc model_annotation_logic%>
+<%if (HAS_ANNOTATIONS)%>
+        QList<QSharedPointer<IAnnotation>> annotations;
+<%foreach ANNOTATIONS as annotation%>
+        auto _annotation_<%=annotation.index%> = QSharedPointer<<%=annotation.class_name%>>::create();
+<%foreach annotation.arguments as arg%>
+        _annotation_<%=annotation.index%>-><%=arg.setter_name%>(<%call annotation_arg_value%>);
+<%endforeach%>
+        annotations.append(qSharedPointerCast<IAnnotation>(_annotation_<%=annotation.index%>));
+<%endforeach%>
+        return annotations;
+<%else%>
+        return QList<QSharedPointer<IAnnotation>>();
+<%endif%>
+<%endmisc%>
+
+<%misc block_annotation_logic%>
+        return QList<QSharedPointer<IAnnotation>>();
+<%endmisc%>
+
+<%misc enum_annotation_logic%><%call model_annotation_logic%><%endmisc%>
+
+<%misc field_annotation_logic%>
+<%foreach FIELDS as field%>
+        if (<%call field_name_variable%> == "<%=field.name%>") {
+            QList<QSharedPointer<void>> result;
+<%if (field.HAS_ANNOTATIONS)%>
+<%foreach field.ANNOTATIONS as annotation%>
+            auto <%=annotation.instance_name%> = QSharedPointer<<%=annotation.class_name%>>::create();
+<%foreach annotation.arguments as arg%>
+            <%=annotation.instance_name%>-><%=arg.setter_name%>(<%call annotation_arg_value%>);
+<%endforeach%>
+            result.append(qSharedPointerCast<void>(<%=annotation.instance_name%>));
+<%endforeach%>
+<%endif%>
+            return result;
+        }
+<%endforeach%>
+<%endmisc%>
+
+<%misc field_names%><%foreach FIELDS as field%>"<%=field.name%>"<%if (!field.is_last)%>, <%endif%><%endforeach%><%endmisc%>
+
+<%misc field_type_logic%>
+<%foreach FIELDS as field%>
+        if (<%call field_name_variable%> == "<%=field.name%>") {
+            return "<%=field.origin_type_name%>";
+        }
+<%endforeach%>
+        return QString();
+<%endmisc%>
+
+<%misc field_description_logic%><%foreach FIELDS as field%>
+        if (<%call field_name_variable%> == "<%=field.name%>") {
+            return "<%=escape_string(field.description)%>";
+        }
+<%endforeach%><%endmisc%>
+
+<%misc value_getter_logic%><%foreach FIELDS as field%>
+        if (<%call field_name_variable%> == "<%=field.name%>") {
+            return QVariant::fromValue(<%=field.private_field_name%>);
+        }
+<%endforeach%>
+        return <%call empty_variant%>;<%endmisc%>
+
+<%misc value_setter_logic%><%foreach FIELDS as field%>
+        if (<%call field_name_variable%> == "<%=field.name%>") {
+            <%=field.private_field_name%> = value.value<<%=field.field_type_mapped%>>();
+            return;
+        }
+<%endforeach%><%endmisc%>
+
+<%misc private_fields%>
+<%foreach FIELDS as field%>
+    <%call private_field_declaration%>
+<%endforeach%>
+<%endmisc%>
+
+<%misc enum_values%>
+<%foreach ENUM_VALUES as value%>
+    <%=value.name%> = <%=value.index%><%if (!value.is_last)%><%call enum_value_separator%><%endif%>
+<%endforeach%>
+<%endmisc%>
+
+<%misc enum_to_string_cases%>
+<%foreach ENUM_VALUES as value%>
+            case <%call class_name%>::<%=value.name%>:
+                return "<%=escape_string(value.string_value)%>";
+<%endforeach%>
+<%endmisc%>
+
+<%misc string_to_enum_conditions%>
+<%foreach ENUM_VALUES as value%>
+        if (str == "<%=escape_string(value.string_value)%>") {
+            return <%call class_name%>::<%=value.name%>;
+        }
+<%endforeach%>
+<%endmisc%>
+
+<%misc enum_value_annotation_cases%>
+<%foreach ENUM_VALUES as value%>
+            case <%call class_name%>::<%=value.name%>: {
+<%if (value.HAS_ANNOTATIONS)%>
+                QList<QSharedPointer<IAnnotation>> annotations;
+<%foreach value.ANNOTATIONS as annotation%>
+                auto _annotation_<%=annotation.index%> = QSharedPointer<<%=annotation.class_name%>>::create();
+<%foreach annotation.arguments as arg%>
+                _annotation_<%=annotation.index%>-><%=arg.setter_name%>(<%call annotation_arg_value%>);
+<%endforeach%>
+                annotations.append(qSharedPointerCast<IAnnotation>(_annotation_<%=annotation.index%>));
+<%endforeach%>
+                return annotations;
+<%else%>
+                return QList<QSharedPointer<IAnnotation>>();
+<%endif%>
+            }
+<%endforeach%>
+<%endmisc%>
+
+<%misc enum_value_annotation_by_name_conditions%>
+<%foreach ENUM_VALUES as value%>
+        if (valueName == "<%=value.name%>") {
+<%if (value.HAS_ANNOTATIONS)%>
+            QList<QSharedPointer<IAnnotation>> annotations;
+<%foreach value.ANNOTATIONS as annotation%>
+            auto _annotation_<%=annotation.index%> = QSharedPointer<<%=annotation.class_name%>>::create();
+<%foreach annotation.arguments as arg%>
+            _annotation_<%=annotation.index%>-><%=arg.setter_name%>(<%call annotation_arg_value%>);
+<%endforeach%>
+            annotations.append(qSharedPointerCast<IAnnotation>(_annotation_<%=annotation.index%>));
+<%endforeach%>
+            return annotations;
+<%else%>
+            return QList<QSharedPointer<IAnnotation>>();
+<%endif%>
+        }
+<%endforeach%>
+<%endmisc%>
+
+<%misc inheritance_declaration%><%if (HAS_BASE_CLASS)%>public <%=BASE_CLASS%>, public <%call interface_name%><%else%>public <%call interface_name%><%endif%><%endmisc%>
+
+<%misc constructor%>
+<%if (HAS_CONSTRUCTOR_PARAMS)%>
+    <%call class_name%>(<%=join(", ", CONSTRUCTOR_PARAMS)%>) : <%=join(", ", CONSTRUCTOR_INITIALIZERS)%> {}
+<%endif%>
+<%endmisc%>
+
+<%misc includes%><%=INCLUDES%><%endmisc%>
+
+<%misc namespace_declaration%>
+<%foreach NAMESPACE_PARTS as part%>
+namespace <%=part.name%> {
+<%endforeach%>
+<%endmisc%>
+
+<%misc namespace_closing%>
+<%foreach NAMESPACE_PARTS as part%>
+} // namespace <%=part.name%>
+<%endforeach%>
+<%endmisc%> 

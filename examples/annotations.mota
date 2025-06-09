@@ -5,6 +5,7 @@ namespace examples.annotations;
 include "yima.mota";
 include "yima-ui.mota";
 
+// 日期时间选择器注解
 annotation DateTimePicker {
     string format = "yyyy-MM-dd HH:mm:ss";
     string placeholder = "请选择日期时间";
@@ -14,16 +15,17 @@ annotation DateTimePicker {
     string to;
 }
 
+// 模式选项注解
 annotation ModeOption {
     string text = "正常模式";
     string value = "normal";
 }
 
+// 模式选择器注解
 annotation ModeSelector {
     ModeOption default;
     repeated ModeOption value;
 }
-
 
 @ModeSelector(
     default = @ModeOption(text = "正常模式", value = "normal"),

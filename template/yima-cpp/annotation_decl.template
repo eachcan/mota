@@ -1,0 +1,38 @@
+// <%=ANNOTATION_NAME%>注解
+class MODEL_EXPORT <%=TYPE_NAME%>Annotation : public IAnnotation {
+public:
+    <%=TYPE_NAME%>Annotation() = default;
+    <%call constructor%>
+    
+    // 实现<%call interface_name%>接口
+    QString name() const override {
+        return "<%=ANNOTATION_NAME%>";
+    }
+    
+    QStringList argumentNames() const override {
+        return QStringList{<%call field_names%>};
+    }
+    
+    QVariant argumentValue(const QString& argumentName) const override {
+<%call value_getter_logic%>
+    }
+    
+    void argumentValue(const QString& argumentName, const QVariant& value) override {
+<%call value_setter_logic%>
+    }
+    
+    QString description() const override {
+        return "<%=escape_string(DESCRIPTION)%>";
+    }
+    
+    QString argumentDescription(const QString& argumentName) const override {
+<%call field_description_logic%>
+        return QString();
+    }
+    
+    // 特定于<%=ANNOTATION_NAME%>的访问器
+<%call accessors%>
+    
+private:
+<%call private_fields%>
+}; 

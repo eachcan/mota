@@ -1,210 +1,104 @@
 #pragma once
 
-#include "ast.h"
 #include <string>
 #include <unordered_map>
 #include <vector>
 #include <memory>
+#include <chrono>
+#include <iomanip>
+#include <fstream>
+#include <nlohmann/json.hpp>
+#include "ast.h"
+#include "config.h"
+#include "template_engine.h"
 
 namespace mota {
 namespace generator {
 
-// 模板变量类型
-using TemplateVars = std::unordered_map<std::string, std::string>;
+// 继承模板引擎的变量类型定义
+using TemplateVars = template_engine::TemplateVars;
 
-// 生成器配置
+// 生成器配置（旧版兼容性）
 struct GeneratorConfig {
-    std::string version;
-    std::string encoding;
+    std::string version = "2.0";
+    std::string encoding = "UTF-8";
     std::unordered_map<std::string, std::string> templates;
+    std::vector<std::string> miscs;
     std::unordered_map<std::string, std::string> typeMapping;
-    std::unordered_map<std::string, std::string> fieldTypeTemplates;
-    std::unordered_map<std::string, std::string> templateVariables;
-    std::unordered_map<std::string, std::string> typeInterfaceMapping;
+    std::string filePath;
+    std::string includeDirective;
     
-    struct {
-        std::string getterPrefix;
-        std::string setterPrefix;
-        bool pascalCase;
-    } accessorFormat;
-    
-    struct {
-        std::string style;
-        std::unordered_map<std::string, std::string> prefix;
-        std::unordered_map<std::string, std::string> suffix;
-    } identifierFormat;
-    
-    struct {
-        std::string separator;
-        std::string style;
-    } namespaceFormat;
-    
-    struct {
-        std::string singleInheritance;
-        std::string multipleInheritance;
-        std::string interfaceInheritance;
-        std::string combinedInheritance;
-        std::string inheritanceKeyword;
-    } inheritanceFormat;
-    
-    struct {
-        std::string path;
-        std::string type;
-    } filePath;
-    
-    struct {
-        std::string startTag;
-        std::string endTag;
-        std::string itemVariable;
-        std::string indexVariable;
-    } loopSyntax;
-    
-    // 语法元素配置
-    std::unordered_map<std::string, std::string> syntaxElements;
-    
-    // Include指令配置
-    struct {
-        std::string pattern;
-        std::string sourceExtension;
-        std::string targetExtension;
-    } includeDirective;
-    
-    // 代码生成配置
-    struct {
-        std::string containerTemplate;
-        std::string stringLiteralTemplate;
-        std::string variantTemplate;
-        std::string collectionSeparator;
-    } codeGeneration;
+    // 从新配置转换
+    static GeneratorConfig fromTemplateConfig(const config::TemplateConfig& templateConfig);
 };
 
 // 代码生成器
 class Generator {
 public:
-    explicit Generator(const std::string& templateDir);
+    Generator();
+    ~Generator() = default;
     
-    // 加载配置
-    bool loadConfig(const std::string& configPath);
+    // 初始化生成器
+    bool initialize(const std::string& templateDir, const std::string& configPath = "");
     
-    // 解析配置
-    bool parseConfig(const std::string& content);
-    
-    // 建立类型上下文
-    void buildTypeContext(const ast::Document& document);
+    // 从配置对象初始化
+    bool initializeWithConfig(const config::TemplateConfig& templateConfig, const std::string& templateDir);
     
     // 生成代码
-    std::string generate(const ast::Document& document, const std::string& outputPath = "");
+    std::string generateCode(const std::unique_ptr<ast::Document>& document, const std::string& templateName);
     
-    // 生成单个文件
-    std::string generateFile(const ast::Document& document, const std::string& sourceFileName = "");
+    // 生成到文件
+    bool generateToFile(const std::unique_ptr<ast::Document>& document, 
+                       const std::string& templateName, 
+                       const std::string& outputPath);
+    
+    // 获取配置
+    const config::TemplateConfig& getConfig() const { return templateConfig_; }
+    
+    // 获取模板引擎
+    template_engine::TemplateEngine& getTemplateEngine() { return *templateEngine_; }
     
 private:
-    std::string templateDir_;
-    GeneratorConfig config_;
-    std::unordered_map<std::string, std::string> templateCache_;
+    // 构建模板变量
+    TemplateVars buildTemplateVars(const std::unique_ptr<ast::Document>& document);
     
-    // 类型上下文，用于记录定义的类型
-    std::unordered_map<std::string, std::string> typeContext_; // name -> type (block, enum, struct, annotation)
+    // 生成各种声明的代码
+    std::string generateAnnotationDecl(const ast::AnnotationDecl& annotation);
+    std::string generateStructDecl(const ast::Struct& struct_);
+    std::string generateBlockDecl(const ast::Block& block);
+    std::string generateEnumDecl(const ast::Enum& enum_);
     
-    // 加载模板
-    std::string loadTemplate(const std::string& templateName);
+    // 字段相关数据构建
+    std::string buildFieldsData(const std::vector<std::unique_ptr<ast::Field>>& fields);
+    TemplateVars buildAnnotationVars(const std::unique_ptr<ast::Annotation>& annotation);
+    TemplateVars buildStructVars(const std::unique_ptr<ast::Struct>& struct_);
+    TemplateVars buildBlockVars(const std::unique_ptr<ast::Block>& block);
+    TemplateVars buildEnumVars(const std::unique_ptr<ast::Enum>& enum_);
     
-    // 渲染模板
-    std::string renderTemplate(const std::string& templateContent, const TemplateVars& vars);
-    
-    // 生成各种类型的代码
-    std::string generateStruct(const ast::Struct& structNode);
-    std::string generateBlock(const ast::Block& blockNode);
-    std::string generateEnum(const ast::Enum& enumNode);
-    std::string generateAnnotation(const ast::AnnotationDecl& annotationNode);
-    
-    // 生成字段访问器
-    std::string generateAccessors(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generatePrivateFields(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generateConstructor(const std::vector<std::unique_ptr<ast::Field>>& fields, const std::string& className);
-    std::string generateSerializeFields(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generateDeserializeFields(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generateFieldNames(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generateFieldTypeLogic(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generateValueGetterLogic(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generateValueSetterLogic(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    
-    // 注解专用的属性处理方法
-    std::string generatePropertyTypeLogic(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generatePropertyGetterLogic(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generatePropertySetterLogic(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generateArgumentGetterLogic(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    
-    // 工具函数
+    // 类型相关方法
     std::string mapType(const std::string& motaType);
-    std::string formatTypeName(const std::string& name, const std::string& type);
+    bool isBuiltinType(const std::string& type);
+    bool isRepeatedType(const ast::Type& type);
+    bool isOptionalType(const ast::Type& type);
+    bool isMapType(const ast::Type& type);
+    
+    // 格式化方法
     std::string toPascalCase(const std::string& str);
     std::string toCamelCase(const std::string& str);
-    std::string toSnakeCase(const std::string& str);
-    std::string getCurrentTimestamp();
-    std::string extractNamespace(const ast::Document& document);
-    std::string extractFileName(const std::string& filePath);
-    std::string generateDefaultValue(const ast::Expr& expr, const std::string& fieldType);
+    std::string escapeString(const std::string& str);
     
-    // 模板处理
-    std::string processLoops(const std::string& content, const TemplateVars& vars);
-    std::string expandLoop(const std::string& loopContent, const std::string& collectionData, 
-                          const std::string& itemName, const std::string& indexName);
-    std::string processConditionals(const std::string& content, const TemplateVars& vars);
-    std::string processTemplateFunctions(const std::string& content, const TemplateVars& vars);
-    std::string applyTemplateFunction(const std::string& value, const std::string& function);
-    
-    // 新增的模板函数
+    // Namespace处理
+    std::string extractNamespace(const std::unique_ptr<ast::Document>& document);
     std::string formatNamespacePath(const std::string& namespaceStr);
-    std::string joinStrings(const std::string& value, const std::string& separator);
     
-    // 基于配置的类型处理
-    std::string mapTypeFromConfig(const std::string& motaType);
-    std::string formatTypeNameFromConfig(const std::string& name, const std::string& type);
-    std::string getTypeSuffix(const std::string& type);
-    std::string getInterfaceName(const std::string& type);
-    std::string getFieldTemplate(const std::string& motaType);
-    std::string getTypeKind(const std::string& typeName);
+    // 时间相关
+    std::string getCurrentTime();
     
-    // 统一的模板变量构建
-    TemplateVars buildTemplateVars(const std::string& typeName, const std::string& typeKind, 
-                                  const std::vector<std::unique_ptr<ast::Field>>& fields,
-                                  const std::string& baseName = "");
-    TemplateVars buildFieldTemplateVars(const ast::Field& field);
-    TemplateVars buildEnumTemplateVars(const ast::Enum& enumNode);
-    
-    // 枚举代码生成的辅助方法
-    std::string generateEnumValuesFromTemplate(const ast::Enum& enumNode);
-    std::string generateEnumToStringCasesFromTemplate(const ast::Enum& enumNode, const std::string& className);
-    std::string generateStringToEnumLogicFromTemplate(const ast::Enum& enumNode, const std::string& className);
-    std::string generateEnumStringValuesFromTemplate(const ast::Enum& enumNode);
-    std::string generateEnumDisplayNamesFromTemplate(const ast::Enum& enumNode);
-    std::string generateEnumAnnotationLogicFromTemplate(const ast::Enum& enumNode);
-    std::string generateEnumValueAnnotationCasesFromTemplate(const ast::Enum& enumNode, const std::string& className);
-    std::string generateEnumValueAnnotationByNameLogicFromTemplate(const ast::Enum& enumNode);
-    std::string generateAnnotationLogicFromTemplate(const std::vector<std::unique_ptr<ast::Annotation>>& annotations);
-    std::string generateAnnotationInstancesLogic(const std::vector<std::unique_ptr<ast::Annotation>>& annotations);
-    std::string generateAnnotationArgumentValue(const ast::Expr& expr);
-    std::string getEnumValueDisplayName(const ast::EnumValue& enumValue);
-    
-    // 基于模板的代码生成
-    std::string generateFromTemplate(const std::string& templateType, const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generatePrivateFieldsFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generateAccessorsFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generateSerializeFieldsFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generateDeserializeFieldsFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generateFieldNamesFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generateFieldTypeLogicFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generateValueGetterLogicFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generateValueSetterLogicFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generateFieldAnnotationLogicFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generateArgumentGetterLogicFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    std::string generateArgumentNamesFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    
-    // 字段类型模板处理
-    std::string getFieldTypeSerializeCode(const std::string& templateName, const TemplateVars& fieldVars);
-    std::string getFieldTypeDeserializeCode(const std::string& templateName, const TemplateVars& fieldVars);
-    std::string extractTemplateSection(const std::string& templateContent, const std::string& sectionName, const TemplateVars& vars);
+private:
+    config::TemplateConfig templateConfig_;
+    std::unique_ptr<template_engine::TemplateEngine> templateEngine_;
+    std::string templateDir_;
+    bool initialized_ = false;
 };
 
 } // namespace generator
