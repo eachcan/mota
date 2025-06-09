@@ -62,7 +62,4 @@ protected:
     
 private:
     {{PRIVATE_FIELDS}}
-    
-    // 变更通知
-    void notifyChange();
 };

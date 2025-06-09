@@ -397,7 +397,7 @@ bool processMotaFile(const std::string& inputFile, const std::string& outputDir,
         }
         
         // 生成代码
-        std::string generatedCode = generator.generateFile(*document);
+        std::string generatedCode = generator.generateFile(*document, inputFile);
         
         if (generatedCode.empty()) {
             std::cerr << "Error: Failed to generate code for " << inputFile << std::endl;

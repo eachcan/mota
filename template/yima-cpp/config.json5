@@ -74,7 +74,7 @@
   "template_variables": {
     "CLASS_NAME": "{{TYPE_NAME}}{{TYPE_SUFFIX}}",
     "PRIVATE_FIELD_NAME": "{{FIELD_NAME}}_",
-    "PRIVATE_FIELD_DECLARATION": "{{FIELD_TYPE_MAPPED}} {{PRIVATE_FIELD_NAME}};",
+    "PRIVATE_FIELD_DECLARATION": "{{FIELD_TYPE_MAPPED}} {{PRIVATE_FIELD_NAME}}{{#HAS_DEFAULT_VALUE}} = {{DEFAULT_VALUE}}{{/HAS_DEFAULT_VALUE}};",
     "FIELD_NAME_PASCAL": "{{FIELD_NAME | pascal_case}}",
     "FIELD_NAME_CAMEL": "{{FIELD_NAME | camel_case}}",
     "FIELD_TYPE_MAPPED": "{{FIELD_TYPE | map_type}}",
@@ -83,7 +83,7 @@
     "MODEL_ANNOTATION_LOGIC": "",
     "BLOCK_ANNOTATION_LOGIC": "",
     "ENUM_ANNOTATION_LOGIC": "",
-    "FIELD_ANNOTATION_LOGIC_TEMPLATE": "return QList<QSharedPointer<void>>();",
+    "FIELD_ANNOTATION_LOGIC_TEMPLATE": "QList<QSharedPointer<void>> result;\n            // TODO: 创建字段 {{FIELD_NAME}} 的注解实例\n            return result;",
     "ENUM_VALUE_ANNOTATION_TEMPLATE": "return QList<QSharedPointer<IAnnotation>>();",
     "ANNOTATION_LIST_TEMPLATE": "QList<QSharedPointer<IAnnotation>> result;",
     "TODO_COMMENT_TEMPLATE": "// TODO: 创建 {{ANNOTATION_NAME}} 注解实例",

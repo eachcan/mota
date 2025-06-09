@@ -17,11 +17,13 @@
 
 
 // 此文件由 Mota 代码生成器自动生成
-// 生成时间: 2025-06-08 20:10:27
-// 源文件: annotations
+// 生成时间: 2025-06-08 21:04:04
+// 源文件: annotations.mota
 
 using namespace ymf;
 
+
+namespace examples::annotations {
 
 
 // DateTimePicker注解
@@ -105,10 +107,10 @@ public:
     } 
     
 private:
-    QString format_;
-    QString placeholder_;
+    QString format_ = "yyyy-MM-dd HH:mm:ss";
+    QString placeholder_ = "请选择日期时间";
     QString value_;
-    QString type_;
+    QString type_ = "datetime";
     QString from_;
     QString to_;
 }; 
@@ -154,8 +156,8 @@ public:
     } 
     
 private:
-    QString text_;
-    QString value_;
+    QString text_ = "正常模式";
+    QString value_ = "normal";
 }; 
 
 // ModeSelector注解
@@ -238,7 +240,13 @@ public:
     
     QList<QSharedPointer<void>> fieldAnnotations(const QString& fieldName) const override {
         if (fieldName == QLatin1String("name")) {
-            return QList<QSharedPointer<void>>();
+            QList<QSharedPointer<void>> result;
+            auto ModeSelectorInstance = QSharedPointer<ModeSelectorAnnotation>::create();
+            ModeSelectorInstance->setDefault(QSharedPointer<ModeOptionAnnotation>::create());
+            ModeSelectorInstance->setValue({QSharedPointer<ModeOptionAnnotation>::create(), QSharedPointer<ModeOptionAnnotation>::create(), QSharedPointer<ModeOptionAnnotation>::create(), QSharedPointer<ModeOptionAnnotation>::create()});
+            result.append(qSharedPointerCast<void>(ModeSelectorInstance));
+
+            return result;
         }
         return QList<QSharedPointer<void>>();
     }
@@ -284,4 +292,6 @@ private:
 };
 
 
+
+} // namespace examples::annotations
 

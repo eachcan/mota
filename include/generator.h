@@ -96,7 +96,7 @@ public:
     std::string generate(const ast::Document& document, const std::string& outputPath = "");
     
     // 生成单个文件
-    std::string generateFile(const ast::Document& document);
+    std::string generateFile(const ast::Document& document, const std::string& sourceFileName = "");
     
 private:
     std::string templateDir_;
@@ -144,6 +144,7 @@ private:
     std::string getCurrentTimestamp();
     std::string extractNamespace(const ast::Document& document);
     std::string extractFileName(const std::string& filePath);
+    std::string generateDefaultValue(const ast::Expr& expr, const std::string& fieldType);
     
     // 模板处理
     std::string processLoops(const std::string& content, const TemplateVars& vars);
@@ -182,6 +183,8 @@ private:
     std::string generateEnumValueAnnotationCasesFromTemplate(const ast::Enum& enumNode, const std::string& className);
     std::string generateEnumValueAnnotationByNameLogicFromTemplate(const ast::Enum& enumNode);
     std::string generateAnnotationLogicFromTemplate(const std::vector<std::unique_ptr<ast::Annotation>>& annotations);
+    std::string generateAnnotationInstancesLogic(const std::vector<std::unique_ptr<ast::Annotation>>& annotations);
+    std::string generateAnnotationArgumentValue(const ast::Expr& expr);
     std::string getEnumValueDisplayName(const ast::EnumValue& enumValue);
     
     // 基于模板的代码生成

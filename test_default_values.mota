@@ -1,0 +1,10 @@
+annotation TestAnnotation {
+    string name = "default_name";
+    int32 count = 42;
+    bool enabled = true;
+}
+
+struct TestStruct {
+    string field1 = "test";
+    int32 field2 = 123;
+} 

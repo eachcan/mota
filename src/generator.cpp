@@ -261,6 +261,10 @@ bool Generator::parseConfig(const std::string& content) {
     
     // 解析模板变量定义
     config_.templateVariables = extractObjectValues("template_variables");
+    std::cerr << "Loaded " << config_.templateVariables.size() << " template variables" << std::endl;
+    for (const auto& pair : config_.templateVariables) {
+        std::cerr << "  " << pair.first << " = " << pair.second << std::endl;
+    }
     
     // 解析类型接口映射
     config_.typeInterfaceMapping = extractObjectValues("type_interface_mapping");
@@ -635,7 +639,12 @@ std::string Generator::mapTypeFromConfig(const std::string& motaType) {
     // 检查是否是已定义的自定义类型
     auto typeIt = typeContext_.find(motaType);
     if (typeIt != typeContext_.end()) {
-        return formatTypeNameFromConfig(motaType, typeIt->second);
+        std::string typeName = formatTypeNameFromConfig(motaType, typeIt->second);
+        // 如果是注解类型，需要用智能指针包装
+        if (typeIt->second == "annotation") {
+            return "QSharedPointer<" + typeName + ">";
+        }
+        return typeName;
     }
     
     // 默认作为自定义类型处理
@@ -850,15 +859,23 @@ std::string Generator::generateFromTemplate(const std::string& templateType, con
 std::string Generator::generatePrivateFieldsFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields) {
     std::string result;
     auto privateFieldTemplateIt = config_.templateVariables.find("PRIVATE_FIELD_DECLARATION");
-    std::string privateFieldTemplate = (privateFieldTemplateIt != config_.templateVariables.end()) ? 
-        privateFieldTemplateIt->second : "{{FIELD_TYPE_MAPPED}} {{PRIVATE_FIELD_NAME}};";
+    std::string privateFieldTemplate;
+    if (privateFieldTemplateIt != config_.templateVariables.end()) {
+        privateFieldTemplate = privateFieldTemplateIt->second;
+    } else {
+        // 硬编码的回退模板，支持默认值
+        privateFieldTemplate = "{{FIELD_TYPE_MAPPED}} {{PRIVATE_FIELD_NAME}}{{#HAS_DEFAULT_VALUE}} = {{DEFAULT_VALUE}}{{/HAS_DEFAULT_VALUE}};";
+    }
     
     for (const auto& field : fields) {
         TemplateVars fieldVars = buildFieldTemplateVars(*field);
         
         // 生成私有字段声明
         if (!result.empty()) result += "\n    ";
-        result += renderTemplate(privateFieldTemplate, fieldVars);
+        std::string renderedField = renderTemplate(privateFieldTemplate, fieldVars);
+        std::cerr << "Private field template: " << privateFieldTemplate << std::endl;
+        std::cerr << "Rendered field: " << renderedField << std::endl;
+        result += renderedField;
     }
     return result;
 }
@@ -916,6 +933,17 @@ TemplateVars Generator::buildFieldTemplateVars(const ast::Field& field) {
     vars["FIELD_NAME"] = field.name;
     vars["FIELD_TYPE"] = field.type->toString();
     vars["FIELD_TYPE_MAPPED"] = mapTypeFromConfig(field.type->toString());
+    
+    // 处理默认值
+    if (field.defaultValue) {
+        vars["HAS_DEFAULT_VALUE"] = "true";
+        vars["DEFAULT_VALUE"] = generateDefaultValue(*field.defaultValue, field.type->toString());
+        std::cerr << "Field " << field.name << " has default value: " << vars["DEFAULT_VALUE"] << std::endl;
+    } else {
+        vars["HAS_DEFAULT_VALUE"] = "";
+        vars["DEFAULT_VALUE"] = "";
+        std::cerr << "Field " << field.name << " has no default value" << std::endl;
+    }
     
     // 使用配置的模板变量来生成字段相关的变量
     for (const auto& templateVar : config_.templateVariables) {
@@ -1001,6 +1029,50 @@ TemplateVars Generator::buildFieldTemplateVars(const ast::Field& field) {
     }
     
     return vars;
+}
+
+std::string Generator::generateDefaultValue(const ast::Expr& expr, const std::string& fieldType) {
+    switch (expr.nodeType()) {
+        case ast::NodeType::Literal: {
+            auto& literal = static_cast<const ast::Literal&>(expr);
+            if (std::holds_alternative<std::string>(literal.value)) {
+                return "\"" + std::get<std::string>(literal.value) + "\"";
+            } else if (std::holds_alternative<int64_t>(literal.value)) {
+                return std::to_string(std::get<int64_t>(literal.value));
+            } else if (std::holds_alternative<double>(literal.value)) {
+                return std::to_string(std::get<double>(literal.value));
+            } else if (std::holds_alternative<bool>(literal.value)) {
+                return std::get<bool>(literal.value) ? "true" : "false";
+            }
+            break;
+        }
+        case ast::NodeType::ArrayLiteral: {
+            auto& arrayLiteral = static_cast<const ast::ArrayLiteral&>(expr);
+            std::string result = "{";
+            for (size_t i = 0; i < arrayLiteral.elements.size(); ++i) {
+                if (i > 0) result += ", ";
+                result += generateDefaultValue(*arrayLiteral.elements[i], fieldType);
+            }
+            result += "}";
+            return result;
+        }
+        case ast::NodeType::Annotation: {
+            auto& annotation = static_cast<const ast::Annotation&>(expr);
+            // 对于注解默认值，生成构造函数调用
+            std::string result = "QSharedPointer<" + formatTypeNameFromConfig(annotation.name, "annotation") + ">::create(";
+            // 这里可以添加注解参数的处理
+            result += ")";
+            return result;
+        }
+        case ast::NodeType::Identifier: {
+            auto& identifier = static_cast<const ast::Identifier&>(expr);
+            // 对于标识符，可能是枚举值
+            return identifier.name;
+        }
+        default:
+            break;
+    }
+    return "";
 }
 
 std::string Generator::getFieldTypeSerializeCode(const std::string& templateName, const TemplateVars& fieldVars) {
@@ -1158,11 +1230,6 @@ std::string Generator::generateValueSetterLogicFromTemplate(const std::vector<st
 }
 
 std::string Generator::generateFieldAnnotationLogicFromTemplate(const std::vector<std::unique_ptr<ast::Field>>& fields) {
-    // 从配置中获取字段注解逻辑模板
-    auto fieldAnnotationTemplateIt = config_.templateVariables.find("FIELD_ANNOTATION_LOGIC_TEMPLATE");
-    std::string fieldAnnotationTemplate = (fieldAnnotationTemplateIt != config_.templateVariables.end()) ? 
-        fieldAnnotationTemplateIt->second : "return QList<QSharedPointer<void>>();";
-    
     std::string stringTemplate = config_.codeGeneration.stringLiteralTemplate.empty() ? 
         "QLatin1String(\"{{STRING_VALUE}}\")" : config_.codeGeneration.stringLiteralTemplate;
     
@@ -1180,21 +1247,30 @@ std::string Generator::generateFieldAnnotationLogicFromTemplate(const std::vecto
     for (const auto& field : fields) {
         if (!result.empty()) result += "\n        ";
         
-        TemplateVars fieldVars;
-        fieldVars["FIELD_NAME"] = field->name;
-        fieldVars["FIELD_TYPE"] = field->type->toString();
-        fieldVars["FIELD_TYPE_MAPPED"] = mapTypeFromConfig(field->type->toString());
-        
         TemplateVars fieldNameVars;
         fieldNameVars["STRING_VALUE"] = field->name;
         std::string fieldNameStr = renderTemplate(stringTemplate, fieldNameVars);
         
+        // 生成字段注解实例逻辑
+        std::string fieldLogic;
+        if (!field->annotations.empty()) {
+            std::cout << "Generating annotation instances for field: " << field->name << ", annotations count: " << field->annotations.size() << std::endl;
+            
+            fieldLogic = generateAnnotationInstancesLogic(field->annotations);
+            std::cout << "Generated annotation instances: " << fieldLogic << std::endl;
+        } else {
+            std::cout << "Generating annotation instances for field: " << field->name << ", annotations count: 0" << std::endl;
+            fieldLogic = "\n            return QList<QSharedPointer<void>>();";
+        }
+        
         TemplateVars conditionVars;
         conditionVars["FIELD_NAME_VAR"] = fieldNameVar;
         conditionVars["FIELD_NAME_STR"] = fieldNameStr;
-        conditionVars["FIELD_LOGIC"] = renderTemplate(fieldAnnotationTemplate, fieldVars);
+        conditionVars["FIELD_LOGIC"] = fieldLogic;
         
-        result += renderTemplate(fieldConditionTemplate, conditionVars);
+        std::string conditionResult = renderTemplate(fieldConditionTemplate, conditionVars);
+        std::cout << "Generated field annotation logic: " << conditionResult << std::endl;
+        result += conditionResult;
     }
     return result;
 }
@@ -1263,7 +1339,7 @@ std::string Generator::generate(const ast::Document& document, const std::string
     return generateFile(document);
 }
 
-std::string Generator::generateFile(const ast::Document& document) {
+std::string Generator::generateFile(const ast::Document& document, const std::string& sourceFileName) {
     auto headerIt = config_.templates.find("header");
     if (headerIt == config_.templates.end()) {
         std::cerr << "Header template not found in config" << std::endl;
@@ -1334,7 +1410,18 @@ std::string Generator::generateFile(const ast::Document& document) {
     // 准备模板变量
     TemplateVars vars;
     vars["GENERATION_TIME"] = getCurrentTimestamp();
-    vars["SOURCE_FILE"] = "unknown.mota";
+    std::cerr << "Source file name: '" << sourceFileName << "'" << std::endl;
+    
+    // 处理源文件名：只保留文件名，不包含路径信息，避免泄露开发者文件结构
+    std::string sourceFileDisplay;
+    if (sourceFileName.empty()) {
+        sourceFileDisplay = "unknown.mota";
+    } else {
+        // 只使用文件名部分，不包含路径
+        std::string fileName = extractFileName(sourceFileName);
+        sourceFileDisplay = fileName + ".mota";
+    }
+    vars["SOURCE_FILE"] = sourceFileDisplay;
     
     std::string namespaceStr = extractNamespace(document);
     if (!namespaceStr.empty()) {
@@ -1672,18 +1759,15 @@ std::string Generator::getCurrentTimestamp() {
 }
 
 std::string Generator::extractNamespace(const ast::Document& document) {
-    // 查找文档中的命名空间声明
-    for (const auto& node : document.declarations) {
-        if (node->nodeType() == ast::NodeType::NamespaceDecl) {
-            auto namespaceNode = static_cast<const ast::Namespace*>(node.get());
-            // 将命名空间的向量名称转换为点分隔的字符串
-            std::string result;
-            for (size_t i = 0; i < namespaceNode->name.size(); ++i) {
-                if (i > 0) result += ".";
-                result += namespaceNode->name[i];
-            }
-            return result;
+    // 检查文档的命名空间字段
+    if (document.m_namespace) {
+        // 将命名空间的向量名称转换为点分隔的字符串
+        std::string result;
+        for (size_t i = 0; i < document.m_namespace->name.size(); ++i) {
+            if (i > 0) result += ".";
+            result += document.m_namespace->name[i];
         }
+        return result;
     }
     return "";
 }
@@ -2049,6 +2133,69 @@ std::string Generator::generateAnnotationLogicFromTemplate(const std::vector<std
     result += "                " + returnResultTemplate;
     
     return result;
+}
+
+std::string Generator::generateAnnotationInstancesLogic(const std::vector<std::unique_ptr<ast::Annotation>>& annotations) {
+    std::string result = "QList<QSharedPointer<void>> result;\n";
+    
+    for (const auto& annotation : annotations) {
+        std::string annotationClassName = formatTypeNameFromConfig(annotation->name, "annotation");
+        result += "            auto " + annotation->name + "Instance = QSharedPointer<" + annotationClassName + ">::create();\n";
+        
+        // 设置注解参数
+        for (const auto& arg : annotation->arguments) {
+            std::string setterName = "set" + toPascalCase(arg->name);
+            std::string argValue = generateAnnotationArgumentValue(*arg->value);
+            result += "            " + annotation->name + "Instance->" + setterName + "(" + argValue + ");\n";
+        }
+        
+        result += "            result.append(qSharedPointerCast<void>(" + annotation->name + "Instance));\n";
+    }
+    
+    result += "\n            return result;";
+    return result;
+}
+
+std::string Generator::generateAnnotationArgumentValue(const ast::Expr& expr) {
+    switch (expr.nodeType()) {
+        case ast::NodeType::Literal: {
+            auto& literal = static_cast<const ast::Literal&>(expr);
+            if (std::holds_alternative<std::string>(literal.value)) {
+                return "\"" + std::get<std::string>(literal.value) + "\"";
+            } else if (std::holds_alternative<int64_t>(literal.value)) {
+                return std::to_string(std::get<int64_t>(literal.value));
+            } else if (std::holds_alternative<double>(literal.value)) {
+                return std::to_string(std::get<double>(literal.value));
+            } else if (std::holds_alternative<bool>(literal.value)) {
+                return std::get<bool>(literal.value) ? "true" : "false";
+            }
+            break;
+        }
+        case ast::NodeType::ArrayLiteral: {
+            auto& arrayLiteral = static_cast<const ast::ArrayLiteral&>(expr);
+            std::string result = "{";
+            for (size_t i = 0; i < arrayLiteral.elements.size(); ++i) {
+                if (i > 0) result += ", ";
+                result += generateAnnotationArgumentValue(*arrayLiteral.elements[i]);
+            }
+            result += "}";
+            return result;
+        }
+        case ast::NodeType::Annotation: {
+            auto& annotation = static_cast<const ast::Annotation&>(expr);
+            std::string annotationClassName = formatTypeNameFromConfig(annotation.name, "annotation");
+            std::string result = "QSharedPointer<" + annotationClassName + ">::create()";
+            // 这里可以进一步处理嵌套注解的参数
+            return result;
+        }
+        case ast::NodeType::Identifier: {
+            auto& identifier = static_cast<const ast::Identifier&>(expr);
+            return identifier.name;
+        }
+        default:
+            break;
+    }
+    return "nullptr";
 }
 
 } // namespace generator

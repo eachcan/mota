@@ -24,6 +24,16 @@ annotation ModeSelector {
     repeated ModeOption value;
 }
 
+
+@ModeSelector(
+    default = @ModeOption(text = "正常模式", value = "normal"),
+    value = [
+        @ModeOption(text = "正常模式", value = "normal"),
+        @ModeOption(text = "调试模式", value = "debug"),
+        @ModeOption(text = "测试模式", value = "test"),
+        @ModeOption(text = "生产模式", value = "production")
+    ]
+)
 struct RunMode {
     @ModeSelector(
         default = @ModeOption(text = "正常模式", value = "normal"),
