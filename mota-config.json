@@ -1,0 +1,12 @@
+﻿{
+    "include_paths": [
+        "mota-include"
+    ],
+    "projects": [
+        {
+            "source_dir": "examples",
+            "output_dir": "examples/generated",
+            "lang": "yima-cpp"
+        }
+    ]
+}

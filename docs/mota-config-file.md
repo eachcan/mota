@@ -4,15 +4,15 @@ MOTA 配置文件使用 JSON 格式，示例：
 
 ```json
 {
-    "includePath": [
+    "include_paths": [
         "C:\\path\\to\\include",
         "C:\\path\\to\\include2"
     ],
-    "items": [
+    "projects": [
         {
-            "output": "C:\\path\\to\\output",
-            "source": "C:\\path\\to\\source",
-            "lang": "cpp"
+            "output_dir": "examples/generated",
+            "source_dir": "examples",
+            "lang": "yima-cpp"
         }
     ]
 }

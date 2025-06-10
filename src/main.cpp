@@ -10,6 +10,7 @@
 #include "generator.h"
 #include "syntax_checker.h"
 #include <windows.h>
+#include "version.h"
 
 namespace fs = std::filesystem;
 using json = nlohmann::json;
@@ -29,12 +30,12 @@ struct ConfigFile {
 struct Options {
     std::vector<std::string> includePaths;
     std::string outputDir = "output";
-    std::string sourceDir = ".";
     std::string lang = "";
     std::string configPath;
     std::vector<std::string> files;
     bool showHelp = false;
     bool showVersion = false;
+    bool verbose = false;
 };
 
 void showHelp() {
@@ -49,22 +50,20 @@ void showHelp() {
     std::cout << "  -i, --include-path PATH" << std::endl;
     std::cout << "                  添加包含路径，可以指定多次。如果使用了 mota-config.json，本参数会在 mota-config.json 的 include_paths 基础上增加。" << std::endl;
     std::cout << "  -o, --output-dir PATH" << std::endl;
-    std::cout << "                  设置输出目录，默认为 `output`，指定则忽略 -c 参数" << std::endl;
-    std::cout << "  -s, --source-dir PATH" << std::endl;
-    std::cout << "                  设置源文件目录，默认为当前目录，指定则忽略 -c 参数" << std::endl;
+    std::cout << "                  设置输出目录，默认为 `output`" << std::endl;
     std::cout << "  -l, --lang LANG" << std::endl;
     std::cout << "                  设置输出语言，可选值：yima-cpp[默认]" << std::endl;
     std::cout << "  -c, --config PATH" << std::endl;
     std::cout << "                  设置配置文件路径。" << std::endl;
-    std::cout << "                  本参数和 -o / -s / -l 互斥，配置文件中源文件和输出目录是可以多组的。" << std::endl;
-    std::cout << "                  如果当前目录存在 mota-config.json，则会自动加载。" << std::endl;
+    std::cout << "                  本参数和 FILE 互斥，如果指定了 FILE 则忽略配置文件。" << std::endl;
+    std::cout << "                  如果当前目录存在 mota-config.json，且未指定 FILE，则会自动加载。" << std::endl;
     std::cout << std::endl;
     std::cout << "FILE" << std::endl;
-    std::cout << "    指定要编译的 Mota 文件或目录路径，如果未指定，则从当前目录开始搜索，不会递归搜索。" << std::endl;
+    std::cout << "    指定要编译的 Mota 文件或目录路径，如果未指定，则使用配置文件或从当前目录开始搜索，不会递归搜索。" << std::endl;
 }
 
 void showVersion() {
-    std::cout << "mota version 1.0.0" << std::endl;
+    std::cout << "mota version " << MOTA_VERSION << std::endl;
 }
 
 // 解析配置文件
@@ -129,6 +128,8 @@ Options parseCommandLine(int argc, char* argv[]) {
             options.showHelp = true;
         } else if (arg == "-V" || arg == "--version") {
             options.showVersion = true;
+        } else if (arg == "-v" || arg == "--verbose") {
+            options.verbose = true;
         } else if (arg == "-i" || arg == "--include-path") {
             if (i + 1 < argc) {
                 options.includePaths.push_back(argv[++i]);
@@ -143,23 +144,10 @@ Options parseCommandLine(int argc, char* argv[]) {
                 std::cerr << "Error: " << arg << " requires a path argument" << std::endl;
                 exit(1);
             }
-        } else if (arg == "-s" || arg == "--source-dir") {
-            if (i + 1 < argc) {
-                options.sourceDir = argv[++i];
-            } else {
-                std::cerr << "Error: " << arg << " requires a path argument" << std::endl;
-                exit(1);
-            }
         } else if (arg == "-l" || arg == "--lang") {
             if (i + 1 < argc) {
                 options.lang = argv[++i];
-                if (options.lang != "yima-cpp" && options.lang != "cpp") {
-                    std::cerr << "Error: Unsupported language: " << options.lang << std::endl;
-                    std::cerr << "Currently supported languages: yima-cpp" << std::endl;
-                    exit(1);
-                }
-                // 兼容旧的cpp参数，转换为yima-cpp
-                if (options.lang == "cpp") {
+                if (options.lang.empty()) {
                     options.lang = "yima-cpp";
                 }
             } else {
@@ -214,7 +202,7 @@ std::string getExecutableDirectory() {
     return exePath.parent_path().string();
 }
 
-std::string findTemplateDirectory(const std::string& lang) {
+std::string findTemplateDirectory(const std::string& lang, bool verbose = false) {
     // 确定模板子目录名称
     std::string templateSubDir;
     if (lang.empty()) {
@@ -241,15 +229,21 @@ std::string findTemplateDirectory(const std::string& lang) {
     // 查找第一个存在的模板目录
     for (const auto& path : candidatePaths) {
         fs::path templatePath(path);
-        std::cout << "Checking template path: " << templatePath.string() << std::endl;
+        if (verbose) {
+            std::cout << "Checking template path: " << templatePath.string() << std::endl;
+        }
         if (fs::exists(templatePath) && fs::is_directory(templatePath)) {
             // 检查是否包含config.json5文件
             fs::path configPath = templatePath / "config.json5";
             if (fs::exists(configPath)) {
-                std::cout << "Found template directory: " << templatePath.string() << std::endl;
+                if (verbose) {
+                    std::cout << "Found template directory: " << templatePath.string() << std::endl;
+                }
                 return templatePath.string();
             } else {
-                std::cout << "Template directory exists but config.json5 not found: " << configPath.string() << std::endl;
+                if (verbose) {
+                    std::cout << "Template directory exists but config.json5 not found: " << configPath.string() << std::endl;
+                }
             }
         }
     }
@@ -363,14 +357,18 @@ std::unique_ptr<mota::ast::Document> processIncludesRecursively(
     }
 }
 
-bool processMotaFile(const std::string& inputFile, const std::string& outputDir, const std::string& templateDir, const std::vector<std::string>& includePaths) {
+bool processMotaFile(const std::string& inputFile, const std::string& outputDir, const std::string& templateDir, const std::vector<std::string>& includePaths, bool verbose = false) {
     std::cout << "Processing file: " << inputFile << std::endl;
-    std::cout << "Output directory: " << outputDir << std::endl;
-    std::cout << "Template directory: " << templateDir << std::endl;
+    if (verbose) {
+        std::cout << "Output directory: " << outputDir << std::endl;
+        std::cout << "Template directory: " << templateDir << std::endl;
+    }
     
     try {
         // 处理include文件，获取合并后的document
-        std::cout << "Processing includes..." << std::endl;
+        if (verbose) {
+            std::cout << "Processing includes..." << std::endl;
+        }
         std::set<std::string> processedFiles;
         auto document = processIncludesRecursively(inputFile, includePaths, processedFiles);
         
@@ -379,7 +377,9 @@ bool processMotaFile(const std::string& inputFile, const std::string& outputDir,
             return false;
         }
         
-        std::cout << "Document processed successfully, starting syntax check..." << std::endl;
+        if (verbose) {
+            std::cout << "Document processed successfully, starting syntax check..." << std::endl;
+        }
         
         // 语法检查 - 需要收集所有include文件的注解定义
         mota::checker::SyntaxChecker checker;
@@ -475,13 +475,17 @@ bool processMotaFile(const std::string& inputFile, const std::string& outputDir,
             return false;
         }
         
-        std::cout << "Syntax check passed, initializing generator..." << std::endl;
+        if (verbose) {
+            std::cout << "Syntax check passed, initializing generator..." << std::endl;
+        }
         
         // 代码生成
         mota::generator::Generator generator;
         
         // 初始化生成器
-        std::cout << "Initializing generator with template directory: " << templateDir << std::endl;
+        if (verbose) {
+            std::cout << "Initializing generator with template directory: " << templateDir << std::endl;
+        }
         try {
             if (!generator.initialize(templateDir)) {
                 std::cerr << "Error: Failed to initialize generator with template directory: " << templateDir << std::endl;
@@ -495,7 +499,9 @@ bool processMotaFile(const std::string& inputFile, const std::string& outputDir,
             return false;
         }
         
-        std::cout << "Generator initialized successfully, generating code..." << std::endl;
+        if (verbose) {
+            std::cout << "Generator initialized successfully, generating code..." << std::endl;
+        }
         
         // 生成代码
         std::string generatedCode;
@@ -514,7 +520,9 @@ bool processMotaFile(const std::string& inputFile, const std::string& outputDir,
             return false;
         }
         
-        std::cout << "Code generated successfully, saving to file..." << std::endl;
+        if (verbose) {
+            std::cout << "Code generated successfully, saving to file..." << std::endl;
+        }
         
         // 根据配置文件生成输出文件路径
         fs::path inputPath(inputFile);
@@ -551,7 +559,7 @@ bool processMotaFile(const std::string& inputFile, const std::string& outputDir,
         if (outFile.is_open()) {
             outFile << generatedCode;
             outFile.close();
-            std::cout << "Generated: " << outputFile << std::endl;
+            std::cout << "Processed: " << outputFile << std::endl;
             return true;
         } else {
             std::cerr << "Error: Cannot write to file " << outputFile << std::endl;
@@ -567,21 +575,22 @@ bool processMotaFile(const std::string& inputFile, const std::string& outputDir,
 int main(int argc, char* argv[]) {
     SetConsoleOutputCP(CP_UTF8);
     
-    std::cout << "Starting mota compiler..." << std::endl;
-    std::cout << "Arguments count: " << argc << std::endl;
-    for (int i = 0; i < argc; ++i) {
-        std::cout << "  arg[" << i << "]: " << argv[i] << std::endl;
-    }
-    
     Options options = parseCommandLine(argc, argv);
     
-    std::cout << "Parsed options:" << std::endl;
-    std::cout << "  outputDir: " << options.outputDir << std::endl;
-    std::cout << "  sourceDir: " << options.sourceDir << std::endl;
-    std::cout << "  lang: " << options.lang << std::endl;
-    std::cout << "  files count: " << options.files.size() << std::endl;
-    for (const auto& file : options.files) {
-        std::cout << "    file: " << file << std::endl;
+    if (options.verbose) {
+        std::cout << "Starting mota compiler..." << std::endl;
+        std::cout << "Arguments count: " << argc << std::endl;
+        for (int i = 0; i < argc; ++i) {
+            std::cout << "  arg[" << i << "]: " << argv[i] << std::endl;
+        }
+        
+        std::cout << "Parsed options:" << std::endl;
+        std::cout << "  outputDir: " << options.outputDir << std::endl;
+        std::cout << "  lang: " << options.lang << std::endl;
+        std::cout << "  files count: " << options.files.size() << std::endl;
+        for (const auto& file : options.files) {
+            std::cout << "    file: " << file << std::endl;
+        }
     }
     
     if (options.showHelp) {
@@ -594,118 +603,115 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     
-    // 检查是否自动加载mota-config.json
-    if (options.configPath.empty() && fs::exists("mota-config.json")) {
-        options.configPath = "mota-config.json";
-        std::cout << "Auto-loading config: mota-config.json" << std::endl;
-    }
-    
-    // 处理配置文件
-    ConfigFile configFile;
-    bool useConfigFile = false;
-    
-    if (!options.configPath.empty()) {
-        std::cout << "Using config file: " << options.configPath << std::endl;
-        try {
-            configFile = parseConfigFile(options.configPath);
-            useConfigFile = true;
-            
-            // 合并命令行指定的 include 路径
-            for (const auto& path : options.includePaths) {
-                configFile.includePaths.push_back(path);
-            }
-            
-        } catch (const std::exception& e) {
-            std::cerr << "Error: " << e.what() << std::endl;
-            return 1;
-        }
-    }
-    
     int successCount = 0;
     int totalCount = 0;
     
-    if (useConfigFile) {
-        // 使用配置文件处理多个项目
-        for (const auto& project : configFile.projects) {
-            std::vector<std::string> filesToProcess;
-            
-            if (options.files.empty()) {
-                // 如果没有指定文件，从项目源目录搜索.mota文件
-                filesToProcess = findMotaFiles(project.sourceDir);
-                if (filesToProcess.empty()) {
-                    std::cout << "No .mota files found in directory: " << project.sourceDir << std::endl;
-                    continue;
-                }
-            } else {
-                // 处理指定的文件/目录
-                for (const auto& file : options.files) {
-                    if (fs::is_directory(file)) {
-                        auto dirFiles = findMotaFiles(file);
-                        filesToProcess.insert(filesToProcess.end(), dirFiles.begin(), dirFiles.end());
-                    } else if (fs::is_regular_file(file)) {
-                        filesToProcess.push_back(file);
-                    } else {
-                        std::cerr << "Warning: File not found: " << file << std::endl;
-                    }
-                }
-            }
-            
-            if (filesToProcess.empty()) {
-                continue;
-            }
-            
-            // 确定模板目录
-            std::string templateDir = findTemplateDirectory(project.lang);
-            
-            // 处理项目中的每个文件
-            std::cout << "Processing project: " << project.sourceDir << " -> " << project.outputDir << std::endl;
-            
-            for (const auto& file : filesToProcess) {
-                totalCount++;
-                if (processMotaFile(file, project.outputDir, templateDir, configFile.includePaths)) {
-                    successCount++;
-                }
-            }
-        }
-    } else {
-        // 使用命令行参数处理单个项目
+    if (!options.files.empty()) {
+        // 如果指定了 FILE，则忽略配置文件，使用命令行参数处理
         std::vector<std::string> filesToProcess;
         
-        if (options.files.empty()) {
-            // 如果没有指定文件，从源目录搜索.mota文件
-            filesToProcess = findMotaFiles(options.sourceDir);
-            if (filesToProcess.empty()) {
-                std::cout << "No .mota files found in directory: " << options.sourceDir << std::endl;
-                return 0;
-            }
-        } else {
-            // 处理指定的文件/目录
-            for (const auto& file : options.files) {
-                if (fs::is_directory(file)) {
-                    auto dirFiles = findMotaFiles(file);
-                    filesToProcess.insert(filesToProcess.end(), dirFiles.begin(), dirFiles.end());
-                } else if (fs::is_regular_file(file)) {
-                    filesToProcess.push_back(file);
-                } else {
-                    std::cerr << "Warning: File not found: " << file << std::endl;
-                }
+        // 处理指定的文件/目录
+        for (const auto& file : options.files) {
+            if (fs::is_directory(file)) {
+                auto dirFiles = findMotaFiles(file);
+                filesToProcess.insert(filesToProcess.end(), dirFiles.begin(), dirFiles.end());
+            } else if (fs::is_regular_file(file)) {
+                filesToProcess.push_back(file);
+            } else {
+                std::cerr << "Warning: File not found: " << file << std::endl;
             }
         }
         
         if (filesToProcess.empty()) {
-            std::cout << "No files to process." << std::endl;
+            if (options.verbose) {
+                std::cout << "No files to process." << std::endl;
+            }
             return 0;
         }
         
         // 确定模板目录
-        std::string templateDir = findTemplateDirectory(options.lang);
+        std::string templateDir = findTemplateDirectory(options.lang, options.verbose);
         
         // 处理每个文件
         totalCount = filesToProcess.size();
         
         for (const auto& file : filesToProcess) {
-            if (processMotaFile(file, options.outputDir, templateDir, options.includePaths)) {
+            if (processMotaFile(file, options.outputDir, templateDir, options.includePaths, options.verbose)) {
                 successCount++;
+            }
+        }
+    } else {
+        // 如果没有指定 FILE，则检查配置文件
+        if (options.configPath.empty() && fs::exists("mota-config.json")) {
+            options.configPath = "mota-config.json";
+            if (options.verbose) {
+                std::cout << "Auto-loading config: mota-config.json" << std::endl;
+            }
+        }
+        
+        if (!options.configPath.empty()) {
+            // 使用配置文件处理多个项目
+            ConfigFile configFile;
+            try {
+                configFile = parseConfigFile(options.configPath);
+                
+                // 合并命令行指定的 include 路径
+                for (const auto& path : options.includePaths) {
+                    configFile.includePaths.push_back(path);
+                }
+                
+            } catch (const std::exception& e) {
+                std::cerr << "Error: " << e.what() << std::endl;
+                return 1;
+            }
+            
+            for (const auto& project : configFile.projects) {
+                std::vector<std::string> filesToProcess;
+                
+                // 从项目源目录搜索.mota文件
+                filesToProcess = findMotaFiles(project.sourceDir);
+                if (filesToProcess.empty()) {
+                    if (options.verbose) {
+                        std::cout << "No .mota files found in directory: " << project.sourceDir << std::endl;
+                    }
+                    continue;
+                }
+                
+                // 确定模板目录
+                std::string templateDir = findTemplateDirectory(project.lang, options.verbose);
+                
+                // 处理项目中的每个文件
+                if (options.verbose) {
+                    std::cout << "Processing project: " << project.sourceDir << " -> " << project.outputDir << std::endl;
+                }
+                
+                for (const auto& file : filesToProcess) {
+                    totalCount++;
+                    if (processMotaFile(file, project.outputDir, templateDir, configFile.includePaths, options.verbose)) {
+                        successCount++;
+                    }
+                }
+            }
+        } else {
+            // 既没有指定文件，也没有配置文件，从当前目录搜索
+            std::vector<std::string> filesToProcess = findMotaFiles(".");
+            if (filesToProcess.empty()) {
+                if (options.verbose) {
+                    std::cout << "No .mota files found in current directory." << std::endl;
+                }
+                return 0;
+            }
+            
+            // 确定模板目录
+            std::string templateDir = findTemplateDirectory(options.lang, options.verbose);
+            
+            // 处理每个文件
+            totalCount = filesToProcess.size();
+            
+            for (const auto& file : filesToProcess) {
+                if (processMotaFile(file, options.outputDir, templateDir, options.includePaths, options.verbose)) {
+                    successCount++;
+                }
             }
         }
     }

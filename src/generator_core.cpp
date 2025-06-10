@@ -131,7 +131,7 @@ TemplateVars Generator::buildTemplateVars(const std::unique_ptr<ast::Document>& 
     std::cout << "Generator: Step 1 - Setting basic info..." << std::endl;
     // 基本信息
     vars["GENERATION_TIME"] = getCurrentTime();
-    vars["SOURCE_FILE"] = "document.mota"; // 可以从参数传入
+    vars["SOURCE_FILE"] = document->location.filename; // 可以从参数传入
     
     std::cout << "Generator: Step 2 - Processing namespace..." << std::endl;
     // 处理命名空间
