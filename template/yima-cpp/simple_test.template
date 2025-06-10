@@ -1,0 +1,13 @@
+TEST START
+
+<%foreach DECLARATIONS as declaration%>
+Item type: <%=declaration.type%>
+<%if (declaration.type == "enum")%>
+  -> This is an ENUM!
+<%endif%>
+<%if (declaration.type == "struct")%>
+  -> This is a STRUCT!
+<%endif%>
+<%endforeach%>
+
+TEST END 

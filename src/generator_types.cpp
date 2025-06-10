@@ -184,24 +184,7 @@ std::string Generator::buildFieldsData(const std::vector<std::unique_ptr<ast::Fi
         std::string fieldNameCamel = toCamelCase(fieldName);
         std::string privateFieldName = fieldName + "_";
         
-        // 计算字段类型模板
-        std::string fieldTypeTemplate;
-        if (fieldType == "int8" || fieldType == "int16" || fieldType == "int32" || fieldType == "int64" ||
-            fieldType == "uint8" || fieldType == "uint16" || fieldType == "uint32" || fieldType == "uint64") {
-            fieldTypeTemplate = "INT";
-        } else if (fieldType == "float32" || fieldType == "float64") {
-            fieldTypeTemplate = "FLOAT";
-        } else if (fieldType == "string") {
-            fieldTypeTemplate = "STRING";
-        } else if (fieldType == "bool") {
-            fieldTypeTemplate = "BOOL";
-        } else if (fieldType == "bytes") {
-            fieldTypeTemplate = "BYTES";
-        } else if (isRepeatedType(*field->type)) {
-            fieldTypeTemplate = "ARRAY";
-        } else {
-            fieldTypeTemplate = "COMPLEX";
-        }
+
         
         // 构建字段的JSON对象，包含所有可能需要的变量
         nlohmann::json fieldObj = {
@@ -236,7 +219,6 @@ std::string Generator::buildFieldsData(const std::vector<std::unique_ptr<ast::Fi
             {"setter_name", "set" + fieldNamePascal},
             {"GETTER_NAME", "get" + fieldNamePascal},
             {"SETTER_NAME", "set" + fieldNamePascal},
-            {"field_type_template", fieldTypeTemplate},
             // 注解相关
             {"HAS_ANNOTATIONS", false},
             {"ANNOTATIONS", nlohmann::json::array()}

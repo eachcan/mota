@@ -1,0 +1,149 @@
+<%misc struct%>
+// <%=name%>结构体
+class MODEL_EXPORT <%=class_name%> {
+public:
+    <%=class_name%>() = default;
+    
+    // TODO: 基本实现
+private:
+    // TODO: 字段
+};
+<%endmisc%>
+
+<%misc block%>
+// <%=name%>块定义
+class MODEL_EXPORT <%=class_name%> : <%call inheritance_declaration%> {
+public:
+    <%=class_name%>() = default;
+    <%call constructor%>
+    
+    // 实现<%call interface_name%>接口
+    QCborValue toCbor() const override {
+        QCborMap map;
+<%call serialize_fields%>
+        return map;
+    }
+    
+    void fromCbor(const QCborValue& cbor) override {
+        QCborMap map = cbor.toMap();
+<%call deserialize_fields%>
+    }
+    
+    QStringList fields() const override {
+        return QStringList{<%call field_names%>};
+    }
+    
+    QString fieldOriginTypeName(const QString& fieldName) const override {
+<%call field_type_logic%>
+    }
+    
+    QList<QSharedPointer<IAnnotation>> annotations() const override {
+<%call model_annotation_logic%>
+    }
+    
+    QList<QSharedPointer<IAnnotation>> fieldAnnotations(const QString& fieldName) const override {
+<%call field_annotation_logic%>
+        return QList<QSharedPointer<IAnnotation>>();
+    }
+    
+    QString description() const override {
+        return "<%=escape_string(name)%>";
+    }
+    
+    QString fieldDescription(const QString& fieldName) const override {
+<%call field_description_logic%>
+        return QString();
+    }
+    
+    QVariant value(const QString& fieldName) const override {
+<%call value_getter_logic%>
+    }
+    
+    void value(const QString& fieldName, const QVariant& value) override {
+<%call value_setter_logic%>
+    }
+    
+    // 特定于<%=name%>的访问器
+<%call accessors%>
+    
+protected:
+    QString blockName() const override {
+        return "<%=name%>";
+    }
+    
+private:
+<%call private_fields%>
+};
+<%endmisc%>
+
+<%misc enum%>
+// <%=name%>枚举
+enum class <%=class_name%> {
+<%foreach values as value%>
+    <%=value.field_name%><%if (value.value)%> = <%=value.value%><%endif%><%if (!value.is_last)%>,<%endif%>
+<%endforeach%>
+};
+
+// <%=name%>枚举辅助函数
+class <%=class_name%>Helper {
+public:
+    static QString toString(<%=class_name%> value) {
+        switch (value) {
+<%foreach values as value%>
+            case <%=class_name%>::<%=value.field_name%>:
+                return "<%=value.name%>";
+<%endforeach%>
+            default:
+                return "Unknown";
+        }
+    }
+    
+    static <%=class_name%> fromString(const QString& str) {
+<%foreach values as value%>
+        <%if (!value.is_first)%>else <%endif%>if (str == "<%=value.name%>") {
+            return <%=class_name%>::<%=value.field_name%>;
+        }
+<%endforeach%>
+        return <%=class_name%>::<%=values[0].field_name%>; // 默认值
+    }
+    
+    static QStringList allValues() {
+        return QStringList{
+<%foreach values as value%>
+            "<%=value.name%>"<%if (!value.is_last)%>,<%endif%>
+<%endforeach%>
+        };
+    }
+};
+<%endmisc%>
+
+<%misc annotation_decl%>
+// <%=name%>注解
+class MODEL_EXPORT <%=class_name%> : <%call inheritance_declaration%> {
+public:
+    <%=class_name%>() = default;
+    <%call constructor%>
+    
+    // 实现IAnnotation接口
+    QString name() const override {
+        return "<%=name%>";
+    }
+    
+    QCborValue toCbor() const override {
+        QCborMap map;
+<%call serialize_fields%>
+        return map;
+    }
+    
+    void fromCbor(const QCborValue& cbor) override {
+        QCborMap map = cbor.toMap();
+<%call deserialize_fields%>
+    }
+    
+    // 特定于<%=name%>的访问器
+<%call accessors%>
+    
+private:
+<%call private_fields%>
+};
+<%endmisc%> 

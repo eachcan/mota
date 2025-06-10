@@ -207,6 +207,62 @@ target("test_syntax_checker")
     set_encodings("utf-8")
     set_targetdir("bin")
 
+-- 模板引擎测试
+target("test_template_engine")
+    set_kind("binary")
+    add_files("test_template_engine.cpp")
+    add_files("src/template_engine.cpp")
+    add_files("src/config.cpp")
+    add_includedirs("include")
+    add_packages("nlohmann_json")
+    set_encodings("utf-8")
+    set_targetdir("bin")
+
+-- misc调用测试
+target("test_misc_call")
+    set_kind("binary")
+    add_files("test_misc_call.cpp")
+    add_files("src/template_engine.cpp")
+    add_files("src/config.cpp")
+    add_includedirs("include")
+    add_packages("nlohmann_json")
+    set_encodings("utf-8")
+    set_targetdir("bin")
+
+-- 嵌套misc调用测试
+target("test_nested_misc")
+    set_kind("binary")
+    add_files("test_nested_misc.cpp")
+    add_files("src/template_engine.cpp")
+    add_files("src/config.cpp")
+    add_includedirs("include")
+    add_packages("nlohmann_json")
+    set_encodings("utf-8")
+    set_targetdir("bin")
+
+-- 实际misc配置测试
+target("test_real_misc")
+    set_kind("binary")
+    add_files("test_real_misc.cpp")
+    add_files("src/template_engine.cpp")
+    add_files("src/config.cpp")
+    add_includedirs("include")
+    add_packages("nlohmann_json")
+    set_encodings("utf-8")
+    set_targetdir("bin")
+
+-- misc调试测试
+target("test_misc_debug")
+    set_kind("binary")
+    add_files("test_misc_debug.cpp")
+    add_files("src/template_engine.cpp")
+    add_files("src/config.cpp")
+    add_includedirs("include")
+    add_packages("nlohmann_json")
+    set_encodings("utf-8")
+    set_targetdir("bin")
+
+
 -- 生成器测试
 target("test_generator")
     set_kind("binary")
@@ -504,3 +560,4 @@ target("installer")
             print("💡 NSIS command returned: " .. tostring(ret))
         end
     end)
+

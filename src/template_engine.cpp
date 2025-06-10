@@ -304,62 +304,109 @@ std::shared_ptr<TagNode> TemplateEngine::parseForeachTag(const std::string& tagC
 
 std::vector<std::shared_ptr<TagNode>> TemplateEngine::buildTagTree(const std::vector<std::shared_ptr<TagNode>>& tokens) {
     std::vector<std::shared_ptr<TagNode>> result;
-    std::stack<std::shared_ptr<TagNode>> stack;
-    std::stack<bool> inElseBranch; // 标记当前是否在else分支中
+    size_t i = 0;
     
-    for (const auto& token : tokens) {
-        if (token->type == TagType::IF || token->type == TagType::FOREACH) {
-            // 开始标签，推入栈
-            stack.push(token);
-            inElseBranch.push(false); // 初始在if分支中
-            result.push_back(token);
-        } else if (token->type == TagType::ELSE) {
-            // else标签，切换到else分支
-            if (!stack.empty() && stack.top()->type == TagType::IF) {
-                inElseBranch.pop();
-                inElseBranch.push(true); // 现在在else分支中
-            } else {
-                std::cerr << "Unmatched else tag" << std::endl;
-            }
-        } else if (token->type == TagType::END_IF || token->type == TagType::END_FOREACH) {
-            // 结束标签，从栈中弹出对应的开始标签
-            if (!stack.empty()) {
-                auto startTag = stack.top();
-                stack.pop();
-                inElseBranch.pop();
-                
-                // 验证标签匹配
-                bool matched = (token->type == TagType::END_IF && startTag->type == TagType::IF) ||
-                              (token->type == TagType::END_FOREACH && startTag->type == TagType::FOREACH);
-                
-                if (!matched) {
-                    std::cerr << "Mismatched tags: " << static_cast<int>(startTag->type) 
-                              << " and " << static_cast<int>(token->type) << std::endl;
+    while (i < tokens.size()) {
+        auto token = tokens[i];
+        
+        if (token->type == TagType::IF) {
+            // 解析if块的内容
+            size_t ifStart = i;
+            size_t level = 1;
+            size_t elsePos = SIZE_MAX;
+            size_t endPos = SIZE_MAX;
+            
+            // 查找匹配的endif和else
+            for (size_t j = i + 1; j < tokens.size(); ++j) {
+                if (tokens[j]->type == TagType::IF) {
+                    level++;
+                } else if (tokens[j]->type == TagType::END_IF) {
+                    level--;
+                    if (level == 0) {
+                        endPos = j;
+                        break;
+                    }
+                } else if (tokens[j]->type == TagType::ELSE && level == 1 && elsePos == SIZE_MAX) {
+                    elsePos = j;
                 }
-            } else {
-                std::cerr << "Unmatched end tag: " << static_cast<int>(token->type) << std::endl;
             }
+            
+            if (endPos == SIZE_MAX) {
+                std::cerr << "Unmatched if tag" << std::endl;
+                return result;
+            }
+            
+            // 创建if节点并设置内容
+            auto ifNode = token;
+            
+            // 提取if块的内容
+            std::string ifContent;
+            for (size_t j = ifStart + 1; j < (elsePos != SIZE_MAX ? elsePos : endPos); ++j) {
+                ifContent += tokens[j]->content;
+            }
+            ifNode->data = ifContent; // 使用data字段存储原始内容
+            
+            // 如果有else分支，提取else内容
+            if (elsePos != SIZE_MAX) {
+                std::string elseContent;
+                for (size_t j = elsePos + 1; j < endPos; ++j) {
+                    elseContent += tokens[j]->content;
+                }
+                // 创建一个虚拟的else节点来存储else内容
+                auto elseNode = std::make_shared<TagNode>(TagType::ELSE);
+                elseNode->data = elseContent;
+                ifNode->else_children.push_back(elseNode);
+            }
+            
+            result.push_back(ifNode);
+            i = endPos + 1; // 跳过整个if块
+            
+        } else if (token->type == TagType::FOREACH) {
+            // 解析foreach块的内容
+            size_t foreachStart = i;
+            size_t level = 1;
+            size_t endPos = SIZE_MAX;
+            
+            // 查找匹配的endforeach
+            for (size_t j = i + 1; j < tokens.size(); ++j) {
+                if (tokens[j]->type == TagType::FOREACH) {
+                    level++;
+                } else if (tokens[j]->type == TagType::END_FOREACH) {
+                    level--;
+                    if (level == 0) {
+                        endPos = j;
+                        break;
+                    }
+                }
+            }
+            
+            if (endPos == SIZE_MAX) {
+                std::cerr << "Unmatched foreach tag" << std::endl;
+                return result;
+            }
+            
+            // 创建foreach节点并设置内容
+            auto foreachNode = token;
+            
+            // 提取foreach块的内容
+            std::string foreachContent;
+            for (size_t j = foreachStart + 1; j < endPos; ++j) {
+                foreachContent += tokens[j]->content;
+            }
+            foreachNode->data = foreachContent; // 使用data字段存储原始内容
+            
+            result.push_back(foreachNode);
+            i = endPos + 1; // 跳过整个foreach块
+            
+        } else if (token->type == TagType::ELSE || token->type == TagType::END_IF || token->type == TagType::END_FOREACH) {
+            // 这些标签应该在上面的逻辑中处理，如果到这里说明有语法错误
+            std::cerr << "Unexpected tag: " << static_cast<int>(token->type) << std::endl;
+            i++;
         } else {
             // 普通标签或文本
-            if (!stack.empty()) {
-                // 如果栈不为空，添加到栈顶元素的子节点
-                if (!inElseBranch.empty() && inElseBranch.top()) {
-                    // 在else分支中，添加到else_children
-                    stack.top()->else_children.push_back(token);
-                } else {
-                    // 在if分支中，添加到children
-                    stack.top()->children.push_back(token);
-                }
-            } else {
-                // 否则添加到结果
-                result.push_back(token);
-            }
+            result.push_back(token);
+            i++;
         }
-    }
-    
-    // 检查是否有未匹配的开始标签
-    if (!stack.empty()) {
-        std::cerr << "Unmatched start tags found" << std::endl;
     }
     
     return result;
@@ -413,9 +460,8 @@ std::string TemplateEngine::renderVariable(const std::string& varName, const Tem
         std::string objectName = varName.substr(0, dotPos);
         std::string propertyName = varName.substr(dotPos + 1);
         
-        auto objectIt = vars.find(objectName);
-        if (objectIt != vars.end() && objectIt->second.is_object()) {
-            const auto& obj = objectIt->second;
+        if (vars.contains(objectName) && vars[objectName].is_object()) {
+            const auto& obj = vars[objectName];
             if (obj.contains(propertyName)) {
                 const auto& value = obj[propertyName];
                 if (value.is_string()) {
@@ -432,19 +478,19 @@ std::string TemplateEngine::renderVariable(const std::string& varName, const Tem
         return "";
     }
     
-    auto it = vars.find(varName);
-    if (it == vars.end()) {
+    if (!vars.contains(varName)) {
         return "";
     }
     
-    if (it->second.is_string()) {
-        return it->second.get<std::string>();
-    } else if (it->second.is_number()) {
-        return it->second.dump();
-    } else if (it->second.is_boolean()) {
-        return it->second.get<bool>() ? "true" : "false";
+    const auto& value = vars[varName];
+    if (value.is_string()) {
+        return value.get<std::string>();
+    } else if (value.is_number()) {
+        return value.dump();
+    } else if (value.is_boolean()) {
+        return value.get<bool>() ? "true" : "false";
     } else {
-        return it->second.dump();
+        return value.dump();
     }
 }
 
@@ -470,25 +516,30 @@ std::string TemplateEngine::renderIfBlock(const std::shared_ptr<TagNode>& ifNode
     bool conditionResult = evaluateCondition(ifNode->condition, vars);
     
     if (conditionResult) {
-        return renderTagTree(ifNode->children, vars);
+        // 重新解析并渲染if块的内容
+        return renderContent(ifNode->data, vars);
     } else {
         // 渲染else分支
-        return renderTagTree(ifNode->else_children, vars);
+        if (!ifNode->else_children.empty()) {
+            // 获取else内容并重新解析渲染
+            return renderContent(ifNode->else_children[0]->data, vars);
+        }
+        return "";
     }
 }
 
 std::string TemplateEngine::renderForeachBlock(const std::shared_ptr<TagNode>& foreachNode, const TemplateVars& vars) {
     // 查找集合数据
-    auto collectionIt = vars.find(foreachNode->collection);
-    if (collectionIt == vars.end()) {
+    if (!vars.contains(foreachNode->collection)) {
         return "";
     }
     
+    const auto& collection = vars[foreachNode->collection];
     std::string result;
     
     // 解析JSON数组
-    if (collectionIt->second.is_array()) {
-        const auto& jsonArray = collectionIt->second;
+    if (collection.is_array()) {
+        const auto& jsonArray = collection;
         
         for (size_t i = 0; i < jsonArray.size(); ++i) {
             const auto& itemObj = jsonArray[i];
@@ -496,18 +547,7 @@ std::string TemplateEngine::renderForeachBlock(const std::shared_ptr<TagNode>& f
             // 创建循环项的变量上下文
             TemplateVars itemVars = vars; // 复制原始变量
             
-            // 如果是JSON对象，提取所有字段
-            if (itemObj.is_object()) {
-                for (auto& [key, value] : itemObj.items()) {
-                    itemVars[key] = value;
-                    // 同时创建大写版本（兼容性）
-                    std::string upperKey = key;
-                    std::transform(upperKey.begin(), upperKey.end(), upperKey.begin(), ::toupper);
-                    itemVars[upperKey] = value;
-                }
-            }
-            
-            // 添加项目变量
+            // 直接添加项目变量，使用item_name作为key
             itemVars[foreachNode->item_name] = itemObj;
             
             // 添加索引变量
@@ -520,8 +560,8 @@ std::string TemplateEngine::renderForeachBlock(const std::shared_ptr<TagNode>& f
             itemVars["IS_FIRST"] = (i == 0);
             itemVars["IS_LAST"] = (i == jsonArray.size() - 1);
             
-            // 渲染子节点
-            result += renderTagTree(foreachNode->children, itemVars);
+            // 重新解析并渲染foreach块的内容
+            result += renderContent(foreachNode->data, itemVars);
         }
     }
     
@@ -529,6 +569,8 @@ std::string TemplateEngine::renderForeachBlock(const std::shared_ptr<TagNode>& f
 }
 
 bool TemplateEngine::evaluateCondition(const std::string& condition, const TemplateVars& vars) {
+    // std::cout << "DEBUG: evaluateCondition called with: '" << condition << "'" << std::endl;
+    
     // 检查相等条件
     size_t eqPos = condition.find("==");
     if (eqPos != std::string::npos) {
@@ -538,6 +580,8 @@ bool TemplateEngine::evaluateCondition(const std::string& condition, const Templ
         // 使用 evaluateExpression 执行等号两侧的表达式
         std::string leftValue = evaluateExpression(left, vars);
         std::string rightValue = evaluateExpression(right, vars);
+        
+        // std::cout << "DEBUG: Condition '" << condition << "' -> left: '" << leftValue << "', right: '" << rightValue << "', result: " << (leftValue == rightValue) << std::endl;
         
         // 比较结果
         return leftValue == rightValue;
@@ -610,29 +654,37 @@ bool TemplateEngine::evaluateCondition(const std::string& condition, const Templ
 
     // 检查变量存在性
     std::string varName = trimWhitespace(condition);
-    auto it = vars.find(varName);
-    if (it == vars.end()) {
+    if (!vars.contains(varName)) {
         return false;
     }
     
-    if (it->second.is_boolean()) {
-        return it->second.get<bool>();
-    } else if (it->second.is_string()) {
-        std::string value = it->second.get<std::string>();
-        return !value.empty() && value != "false";
+    const auto& value = vars[varName];
+    if (value.is_boolean()) {
+        return value.get<bool>();
+    } else if (value.is_string()) {
+        std::string strValue = value.get<std::string>();
+        return !strValue.empty() && strValue != "false";
     }
     
     return true;
 }
 
 std::string TemplateEngine::callMisc(const std::string& miscName, const TemplateVars& vars) {
+    std::cout << "DEBUG: callMisc called with name: " << miscName << std::endl;
     std::string miscContent = loadMisc(miscName);
+    std::cout << "DEBUG: miscContent length: " << miscContent.length() << std::endl;
     if (miscContent.empty()) {
-        return "";
+        std::cout << "DEBUG: misc content is empty!" << std::endl;
+        return "[MISSING_MISC:" + miscName + "]";
     }
     
+    std::cout << "DEBUG: misc content: " << miscContent.substr(0, 100) << "..." << std::endl;
+    
     // 递归渲染misc内容
-    return renderContent(miscContent, vars);
+    std::string result = renderContent(miscContent, vars);
+    std::cout << "DEBUG: rendered result length: " << result.length() << std::endl;
+    std::cout << "DEBUG: rendered result: " << result.substr(0, 100) << "..." << std::endl;
+    return result;
 }
 
 std::string TemplateEngine::toPascalCase(const std::string& str) {
@@ -686,27 +738,7 @@ std::string TemplateEngine::escapeString(const std::string& str) {
     return result;
 }
 
-std::string TemplateEngine::getFieldTypeTemplate(const std::string& fieldType, const TemplateVars& vars) {
-    // 根据字段类型返回对应的模板类型
-    if (fieldType == "int8" || fieldType == "int16" || fieldType == "int32" || fieldType == "int64" ||
-        fieldType == "uint8" || fieldType == "uint16" || fieldType == "uint32" || fieldType == "uint64") {
-        return "INT";
-    } else if (fieldType == "float32" || fieldType == "float64") {
-        return "FLOAT";
-    } else if (fieldType == "string") {
-        return "STRING";
-    } else if (fieldType == "bool") {
-        return "BOOL";
-    } else if (fieldType == "bytes") {
-        return "BYTES";
-    } else if (fieldType.find("repeated") != std::string::npos ||
-               fieldType.find("[]") != std::string::npos) {
-        return "ARRAY";
-    } else {
-        // 自定义类型
-        return "COMPLEX";
-    }
-}
+
 
 std::string TemplateEngine::getFirstNamespacePart(const std::string& namespaceStr) {
     if (namespaceStr.empty()) {
@@ -875,6 +907,8 @@ std::string TemplateEngine::evaluateExpression(const std::string& expr, const Te
     // 检查是否是对象属性访问
     size_t dotPos = trimmedExpr.find('.');
     if (dotPos != std::string::npos) {
+        // std::cout << "DEBUG: Processing property path: " << trimmedExpr << std::endl;
+        
         // 支持多级对象属性访问，如 obj.prop1.prop2.prop3
         std::vector<std::string> propertyPath;
         std::string remaining = trimmedExpr;
@@ -898,26 +932,27 @@ std::string TemplateEngine::evaluateExpression(const std::string& expr, const Te
             }
         }
         
+        // std::cout << "DEBUG: Property path segments: " << trimmedExpr << std::endl;
+        
         if (propertyPath.empty()) {
             throw std::runtime_error("invalid property path: " + trimmedExpr);
         }
         
         // 从根对象开始逐级访问
-        auto currentIt = vars.find(propertyPath[0]);
-        if (currentIt == vars.end()) {
-            throw std::runtime_error("invalid property path: " + trimmedExpr);
+        if (!vars.contains(propertyPath[0])) {
+            return "";  // 返回空字符串而不是抛异常
         }
         
-        const nlohmann::json* currentObj = &(currentIt->second);
+        const nlohmann::json* currentObj = &(vars[propertyPath[0]]);
         
         // 逐级访问属性
         for (size_t i = 1; i < propertyPath.size(); ++i) {
             if (!currentObj->is_object()) {
-                throw std::runtime_error("invalid property path: " + trimmedExpr);
+                return "";  // 返回空字符串而不是抛异常
             }
             
             if (!currentObj->contains(propertyPath[i])) {
-                throw std::runtime_error("invalid property path: " + trimmedExpr);
+                return "";  // 返回空字符串而不是抛异常
             }
             
             currentObj = &((*currentObj)[propertyPath[i]]);
@@ -936,9 +971,10 @@ std::string TemplateEngine::evaluateExpression(const std::string& expr, const Te
     }
     
     // 检查是否是变量引用
-    auto varIt = vars.find(trimmedExpr);
-    if (varIt != vars.end()) {
-        const auto& value = varIt->second;
+    std::cout << "DEBUG: evaluateExpression checking variable: '" << trimmedExpr << "'" << std::endl;
+    if (vars.contains(trimmedExpr)) {
+        const auto& value = vars[trimmedExpr];
+        std::cout << "DEBUG: Found variable '" << trimmedExpr << "' = " << value.dump() << std::endl;
         if (value.is_string()) {
             return value.get<std::string>();
         } else if (value.is_number()) {
@@ -950,6 +986,7 @@ std::string TemplateEngine::evaluateExpression(const std::string& expr, const Te
         }
     }
     
+    std::cout << "DEBUG: Variable '" << trimmedExpr << "' not found, returning literal" << std::endl;
     // 默认返回原始表达式
     return trimmedExpr;
 }
@@ -967,14 +1004,24 @@ std::string TemplateEngine::callBuiltinFunction(const std::string& funcName, con
             return mapType(arg);
         } else if (funcName == "escape_string") {
             return escapeString(arg);
-        } else if (funcName == "field_type_template") {
-            return getFieldTypeTemplate(arg, vars);
         } else if (funcName == "first_namespace_part") {
             return getFirstNamespacePart(arg);
         } else if (funcName == "has_nested_namespace") {
             return hasNestedNamespace(arg) ? "true" : "false";
         } else if (funcName == "namespace_path") {
             return formatNamespacePath(arg);
+        } else if (funcName == "basename") {
+            // 提取文件名（不包含路径和扩展名）
+            std::string filename = arg;
+            size_t lastSlash = filename.find_last_of("/\\");
+            if (lastSlash != std::string::npos) {
+                filename = filename.substr(lastSlash + 1);
+            }
+            size_t lastDot = filename.find_last_of('.');
+            if (lastDot != std::string::npos) {
+                filename = filename.substr(0, lastDot);
+            }
+            return filename;
         }
     }
     
@@ -985,10 +1032,9 @@ std::string TemplateEngine::callBuiltinFunction(const std::string& funcName, con
         
         if (funcName == "join") {
             // join(separator, array_var_name)
-            auto arrayIt = vars.find(arg2);
-            if (arrayIt != vars.end() && arrayIt->second.is_array()) {
+            if (vars.contains(arg2) && vars[arg2].is_array()) {
                 std::string result;
-                const auto& jsonArray = arrayIt->second;
+                const auto& jsonArray = vars[arg2];
                 for (size_t i = 0; i < jsonArray.size(); ++i) {
                     if (i > 0) {
                         result += arg1;

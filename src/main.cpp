@@ -9,6 +9,7 @@
 #include "parser.h"
 #include "generator.h"
 #include "syntax_checker.h"
+#include "file_processor.h"
 #include <windows.h>
 #include "version.h"
 
@@ -190,386 +191,52 @@ std::vector<std::string> findMotaFiles(const std::string& directory) {
 }
 
 std::string getExecutableDirectory() {
-    // 获取可执行文件的完整路径
     char buffer[MAX_PATH];
-    DWORD length = GetModuleFileNameA(NULL, buffer, MAX_PATH);
-    if (length == 0) {
-        return "."; // 如果获取失败，返回当前目录
-    }
-    
-    // 提取目录部分
+    GetModuleFileNameA(NULL, buffer, MAX_PATH);
     fs::path exePath(buffer);
     return exePath.parent_path().string();
 }
 
 std::string findTemplateDirectory(const std::string& lang, bool verbose = false) {
-    // 确定模板子目录名称
-    std::string templateSubDir;
-    if (lang.empty()) {
-        templateSubDir = "yima-cpp";
-    } else {
-        templateSubDir = lang;
+    std::string exeDir = getExecutableDirectory();
+
+    std::string templateLang = lang;
+    if (templateLang.empty()) {
+        templateLang = "yima-cpp";
     }
     
-    // 获取可执行文件所在目录
-    std::string exeDir = getExecutableDirectory();
-    
-    // 候选路径列表：优先使用当前工作目录的template目录
-    std::vector<std::string> candidatePaths = {
-        // 当前工作目录的template目录（最高优先级）
-        ("template/" + templateSubDir),
-        // 可执行文件同级的template目录
-        (fs::path(exeDir) / "template" / templateSubDir).string(),
-        // 可执行文件上级目录的template目录
-        (fs::path(exeDir) / ".." / "template" / templateSubDir).string(),
-        // 默认路径
-        "template/yima-cpp"
+    std::vector<std::string> searchPaths = {
+        exeDir + "/template/" + templateLang,
+        exeDir + "/../template/" + templateLang,
+        exeDir + "/../../template/" + templateLang,
+        "./template/" + templateLang
     };
     
-    // 查找第一个存在的模板目录
-    for (const auto& path : candidatePaths) {
-        fs::path templatePath(path);
-        if (verbose) {
-            std::cout << "Checking template path: " << templatePath.string() << std::endl;
-        }
-        if (fs::exists(templatePath) && fs::is_directory(templatePath)) {
-            // 检查是否包含config.json5文件
-            fs::path configPath = templatePath / "config.json5";
-            if (fs::exists(configPath)) {
-                if (verbose) {
-                    std::cout << "Found template directory: " << templatePath.string() << std::endl;
-                }
-                return templatePath.string();
-            } else {
-                if (verbose) {
-                    std::cout << "Template directory exists but config.json5 not found: " << configPath.string() << std::endl;
-                }
-            }
-        }
-    }
-    
-    // 如果都没找到，返回第一个候选路径（让后续处理报错）
-    std::cerr << "Error: No valid template directory found. Tried paths:" << std::endl;
-    for (const auto& path : candidatePaths) {
-        std::cerr << "  - " << path << std::endl;
-    }
-    return candidatePaths[0];
-}
-
-// 查找include文件的路径
-std::string findIncludeFile(const std::string& includePath, const std::vector<std::string>& includePaths, const std::string& currentFileDir) {
-    // 候选路径列表
-    std::vector<std::string> candidatePaths;
-    
-    // 1. 相对于当前文件的路径
-    candidatePaths.push_back((fs::path(currentFileDir) / includePath).string());
-    
-    // 2. 在指定的include路径中查找
-    for (const auto& includeDir : includePaths) {
-        candidatePaths.push_back((fs::path(includeDir) / includePath).string());
-    }
-    
-    // 3. 在默认的mota-include目录中查找
-    candidatePaths.push_back((fs::path("mota-include") / includePath).string());
-    
-    // 4. 在可执行文件目录的mota-include中查找
-    std::string exeDir = getExecutableDirectory();
-    candidatePaths.push_back((fs::path(exeDir) / "mota-include" / includePath).string());
-    candidatePaths.push_back((fs::path(exeDir) / ".." / "mota-include" / includePath).string());
-    
-    // 查找第一个存在的文件
-    for (const auto& path : candidatePaths) {
-        if (fs::exists(path) && fs::is_regular_file(path)) {
-            return path;
-        }
-    }
-    
-    return ""; // 未找到
-}
-
-// 递归处理include文件，合并所有声明到一个document中
-std::unique_ptr<mota::ast::Document> processIncludesRecursively(
-    const std::string& filePath, 
-    const std::vector<std::string>& includePaths,
-    std::set<std::string>& processedFiles) {
-    
-    // 获取文件的绝对路径，避免重复处理
-    std::string absolutePath = fs::absolute(filePath).string();
-    if (processedFiles.count(absolutePath)) {
-        // 文件已经处理过，返回空document避免循环包含
-        return std::make_unique<mota::ast::Document>();
-    }
-    processedFiles.insert(absolutePath);
-    
-    // 读取文件
-    std::ifstream file(filePath);
-    if (!file.is_open()) {
-        std::cerr << "Error: Cannot open include file " << filePath << std::endl;
-        return nullptr;
-    }
-    
-    std::string source((std::istreambuf_iterator<char>(file)),
-                       std::istreambuf_iterator<char>());
-    file.close();
-    
-    try {
-        // 解析当前文件
-        mota::lexer::Lexer lexer(source, filePath);
-        mota::parser::Parser parser(lexer);
-        auto document = parser.parse();
-        
-        if (!document) {
-            std::cerr << "Error: Failed to parse include file " << filePath << std::endl;
-            return nullptr;
-        }
-        
-        // 获取当前文件所在目录
-        std::string currentFileDir = fs::path(filePath).parent_path().string();
-        
-        // 处理include声明 - 验证include文件存在但保留include声明
-        for (auto& decl : document->declarations) {
-            if (decl->nodeType() == mota::ast::NodeType::IncludeDecl) {
-                // 这是一个include声明，验证文件存在
-                auto includeDecl = static_cast<mota::ast::Include*>(decl.get());
-                std::string includeFile = findIncludeFile(includeDecl->path, includePaths, currentFileDir);
-                
-                if (includeFile.empty()) {
-                    std::cerr << "Error: Include file not found: " << includeDecl->path << std::endl;
-                    return nullptr;
-                }
-                
-                // 递归处理include文件以验证其语法正确性
-                auto includedDoc = processIncludesRecursively(includeFile, includePaths, processedFiles);
-                if (!includedDoc) {
-                    return nullptr;
-                }
-                
-                // 注意：我们不合并include文件的内容，只是验证它们的存在和语法正确性
-                // include声明会保留在当前文档中，由代码生成器转换为#include指令
-            }
-        }
-        
-        return document;
-        
-    } catch (const std::exception& e) {
-        std::cerr << "Error processing include file " << filePath << ": " << e.what() << std::endl;
-        return nullptr;
-    }
-}
-
-bool processMotaFile(const std::string& inputFile, const std::string& outputDir, const std::string& templateDir, const std::vector<std::string>& includePaths, bool verbose = false) {
-    std::cout << "Processing file: " << inputFile << std::endl;
     if (verbose) {
-        std::cout << "Output directory: " << outputDir << std::endl;
-        std::cout << "Template directory: " << templateDir << std::endl;
+        std::cout << "Searching for template directory for language: " << lang << std::endl;
     }
     
-    try {
-        // 处理include文件，获取合并后的document
+    for (const auto& path : searchPaths) {
         if (verbose) {
-            std::cout << "Processing includes..." << std::endl;
-        }
-        std::set<std::string> processedFiles;
-        auto document = processIncludesRecursively(inputFile, includePaths, processedFiles);
-        
-        if (!document) {
-            std::cerr << "Error: Failed to process file with includes " << inputFile << std::endl;
-            return false;
+            std::cout << "  Checking: " << path << std::endl;
         }
         
-        if (verbose) {
-            std::cout << "Document processed successfully, starting syntax check..." << std::endl;
-        }
-        
-        // 语法检查 - 需要收集所有include文件的注解定义
-        mota::checker::SyntaxChecker checker;
-        
-        // 收集include文件中的注解定义
-        std::set<std::string> allAnnotations;
-        std::function<void(const mota::ast::Document&)> collectAnnotations = [&](const mota::ast::Document& doc) {
-            std::string currentNamespace = "";
-            for (const auto& decl : doc.declarations) {
-                if (decl->nodeType() == mota::ast::NodeType::NamespaceDecl) {
-                    auto namespaceDecl = static_cast<const mota::ast::Namespace*>(decl.get());
-                    currentNamespace = "";
-                    for (size_t i = 0; i < namespaceDecl->name.size(); ++i) {
-                        if (i > 0) currentNamespace += ".";
-                        currentNamespace += namespaceDecl->name[i];
-                    }
-                } else if (decl->nodeType() == mota::ast::NodeType::AnnotationDecl) {
-                    auto annotationDecl = static_cast<const mota::ast::AnnotationDecl*>(decl.get());
-                    std::string fullName = annotationDecl->name;
-                    if (!currentNamespace.empty()) {
-                        fullName = currentNamespace + "." + annotationDecl->name;
-                    }
-                    allAnnotations.insert(fullName);
-                }
+        fs::path templatePath(path);
+        if (fs::exists(templatePath) && fs::is_directory(templatePath)) {
+            if (verbose) {
+                std::cout << "  Found template directory: " << path << std::endl;
             }
-        };
-        
-        // 收集include文件的注解
-        std::set<std::string> processedForAnnotations;
-        std::function<void(const std::string&)> processIncludeForAnnotations = [&](const std::string& filePath) {
-            std::string absolutePath = fs::absolute(filePath).string();
-            if (processedForAnnotations.count(absolutePath)) {
-                return;
-            }
-            processedForAnnotations.insert(absolutePath);
-            
-            std::ifstream file(filePath);
-            if (!file.is_open()) return;
-            
-            std::string source((std::istreambuf_iterator<char>(file)),
-                               std::istreambuf_iterator<char>());
-            file.close();
-            
-            try {
-                mota::lexer::Lexer lexer(source, filePath);
-                mota::parser::Parser parser(lexer);
-                auto includeDoc = parser.parse();
-                if (includeDoc) {
-                    collectAnnotations(*includeDoc);
-                    
-                    // 处理嵌套include
-                    std::string currentFileDir = fs::path(filePath).parent_path().string();
-                    for (const auto& includeDecl : includeDoc->includes) {
-                        std::string includeFile = findIncludeFile(includeDecl->path, includePaths, currentFileDir);
-                        if (!includeFile.empty()) {
-                            processIncludeForAnnotations(includeFile);
-                        }
-                    }
-                }
-            } catch (...) {
-                // 忽略解析错误，在主语法检查中会报告
-            }
-        };
-        
-        // 先收集当前文件本身的注解
-        collectAnnotations(*document);
-        
-        // 处理当前文件的include
-        std::string currentFileDir = fs::path(inputFile).parent_path().string();
-        for (const auto& includeDecl : document->includes) {
-            std::string includeFile = findIncludeFile(includeDecl->path, includePaths, currentFileDir);
-            if (!includeFile.empty()) {
-                processIncludeForAnnotations(includeFile);
-            }
+            return templatePath.string();
         }
-        
-        std::vector<mota::checker::SyntaxDiagnostic> errors;
-        try {
-            errors = checker.checkWithExternalAnnotations(*document, inputFile, allAnnotations);
-        } catch (const std::exception& e) {
-            std::cerr << "Error: Exception during syntax check: " << e.what() << std::endl;
-            return false;
-        } catch (...) {
-            std::cerr << "Error: Unknown exception during syntax check" << std::endl;
-            return false;
-        }
-        
-        if (!errors.empty()) {
-            std::cerr << "Syntax errors found in " << inputFile << ":" << std::endl;
-            for (const auto& error : errors) {
-                std::cerr << "  " << error.message << std::endl;
-            }
-            return false;
-        }
-        
-        if (verbose) {
-            std::cout << "Syntax check passed, initializing generator..." << std::endl;
-        }
-        
-        // 代码生成
-        mota::generator::Generator generator;
-        
-        // 初始化生成器
-        if (verbose) {
-            std::cout << "Initializing generator with template directory: " << templateDir << std::endl;
-        }
-        try {
-            if (!generator.initialize(templateDir)) {
-                std::cerr << "Error: Failed to initialize generator with template directory: " << templateDir << std::endl;
-                return false;
-            }
-        } catch (const std::exception& e) {
-            std::cerr << "Error: Exception during generator initialization: " << e.what() << std::endl;
-            return false;
-        } catch (...) {
-            std::cerr << "Error: Unknown exception during generator initialization" << std::endl;
-            return false;
-        }
-        
-        if (verbose) {
-            std::cout << "Generator initialized successfully, generating code..." << std::endl;
-        }
-        
-        // 生成代码
-        std::string generatedCode;
-        try {
-            generatedCode = generator.generateCode(document, "file");
-        } catch (const std::exception& e) {
-            std::cerr << "Error: Exception during code generation: " << e.what() << std::endl;
-            return false;
-        } catch (...) {
-            std::cerr << "Error: Unknown exception during code generation" << std::endl;
-            return false;
-        }
-        
-        if (generatedCode.empty()) {
-            std::cerr << "Error: Failed to generate code for " << inputFile << " (empty result)" << std::endl;
-            return false;
-        }
-        
-        if (verbose) {
-            std::cout << "Code generated successfully, saving to file..." << std::endl;
-        }
-        
-        // 根据配置文件生成输出文件路径
-        fs::path inputPath(inputFile);
-        std::string fileName = inputPath.stem().string();
-        
-        // 提取命名空间信息
-        std::string namespaceStr = "";
-        for (const auto& node : document->declarations) {
-            if (node->nodeType() == mota::ast::NodeType::NamespaceDecl) {
-                auto namespaceNode = static_cast<const mota::ast::Namespace*>(node.get());
-                for (size_t i = 0; i < namespaceNode->name.size(); ++i) {
-                    if (i > 0) namespaceStr += ".";
-                    namespaceStr += namespaceNode->name[i];
-                }
-                break;
-            }
-        }
-        
-        // 构建输出路径
-        std::string outputFile = outputDir;
-        if (!namespaceStr.empty()) {
-            // 将命名空间的点替换为路径分隔符
-            std::string namespacePath = namespaceStr;
-            std::replace(namespacePath.begin(), namespacePath.end(), '.', '/');
-            outputFile = (fs::path(outputDir) / namespacePath / (fileName + ".h")).string();
-        } else {
-            outputFile = (fs::path(outputDir) / (fileName + ".h")).string();
-        }
-        
-        // 确保输出目录存在
-        fs::create_directories(fs::path(outputFile).parent_path());
-        
-        std::ofstream outFile(outputFile);
-        if (outFile.is_open()) {
-            outFile << generatedCode;
-            outFile.close();
-            std::cout << "Processed: " << outputFile << std::endl;
-            return true;
-        } else {
-            std::cerr << "Error: Cannot write to file " << outputFile << std::endl;
-            return false;
-        }
-        
-    } catch (const std::exception& e) {
-        std::cerr << "Error processing " << inputFile << ": " << e.what() << std::endl;
-        return false;
     }
+    
+    std::cerr << "Error: Template directory not found for language: " << lang << std::endl;
+    std::cerr << "Searched paths:" << std::endl;
+    for (const auto& path : searchPaths) {
+        std::cerr << "  " << path << std::endl;
+    }
+    
+    return "";
 }
 
 int main(int argc, char* argv[]) {
@@ -602,9 +269,15 @@ int main(int argc, char* argv[]) {
         showVersion();
         return 0;
     }
+
+    std::string exeDir = getExecutableDirectory();
+    std::cout << "exeDir: " << exeDir << std::endl;
     
     int successCount = 0;
     int totalCount = 0;
+    
+    // 创建文件处理器
+    mota::processor::FileProcessor processor;
     
     if (!options.files.empty()) {
         // 如果指定了 FILE，则忽略配置文件，使用命令行参数处理
@@ -631,12 +304,15 @@ int main(int argc, char* argv[]) {
         
         // 确定模板目录
         std::string templateDir = findTemplateDirectory(options.lang, options.verbose);
+        if (templateDir.empty()) {
+            return 1;
+        }
         
         // 处理每个文件
         totalCount = filesToProcess.size();
         
         for (const auto& file : filesToProcess) {
-            if (processMotaFile(file, options.outputDir, templateDir, options.includePaths, options.verbose)) {
+            if (processor.processMotaFile(file, options.outputDir, templateDir, options.includePaths, options.verbose)) {
                 successCount++;
             }
         }
@@ -679,6 +355,9 @@ int main(int argc, char* argv[]) {
                 
                 // 确定模板目录
                 std::string templateDir = findTemplateDirectory(project.lang, options.verbose);
+                if (templateDir.empty()) {
+                    return 1;
+                }
                 
                 // 处理项目中的每个文件
                 if (options.verbose) {
@@ -687,7 +366,7 @@ int main(int argc, char* argv[]) {
                 
                 for (const auto& file : filesToProcess) {
                     totalCount++;
-                    if (processMotaFile(file, project.outputDir, templateDir, configFile.includePaths, options.verbose)) {
+                    if (processor.processMotaFile(file, project.outputDir, templateDir, configFile.includePaths, options.verbose)) {
                         successCount++;
                     }
                 }
@@ -704,12 +383,15 @@ int main(int argc, char* argv[]) {
             
             // 确定模板目录
             std::string templateDir = findTemplateDirectory(options.lang, options.verbose);
+            if (templateDir.empty()) {
+                return 1;
+            }
             
             // 处理每个文件
             totalCount = filesToProcess.size();
             
             for (const auto& file : filesToProcess) {
-                if (processMotaFile(file, options.outputDir, templateDir, options.includePaths, options.verbose)) {
+                if (processor.processMotaFile(file, options.outputDir, templateDir, options.includePaths, options.verbose)) {
                     successCount++;
                 }
             }

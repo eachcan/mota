@@ -12,7 +12,7 @@ namespace mota {
 namespace template_engine {
 
 // 模板变量类型
-using TemplateVars = std::unordered_map<std::string, nlohmann::json>;
+using TemplateVars = nlohmann::json;
 
 // Tag类型枚举
 enum class TagType {
@@ -127,7 +127,7 @@ private:
     std::string toCamelCase(const std::string& str);
     std::string mapType(const std::string& motaType);
     std::string escapeString(const std::string& str);
-    std::string getFieldTypeTemplate(const std::string& fieldType, const TemplateVars& vars);
+
     std::string getFirstNamespacePart(const std::string& namespaceStr);
     bool hasNestedNamespace(const std::string& namespaceStr);
     std::string formatNamespacePath(const std::string& namespaceStr);

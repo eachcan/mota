@@ -3,9 +3,12 @@
 #include <unordered_map>
 #include <set>
 #include <iostream>
+#include <algorithm>
 
 namespace mota {
 namespace checker {
+
+
 
 namespace {
 // 内置基础类型
@@ -629,6 +632,135 @@ std::vector<SyntaxDiagnostic> SyntaxChecker::checkWithExternalAnnotations(const 
     
     return diagnostics;
 }
+
+// 新的方法实现，支持外部声明注册表
+std::vector<SyntaxDiagnostic> SyntaxChecker::check(
+    const ast::Document& doc,
+    const std::string& entryFile,
+    const std::map<std::string, KnownDecl>& includedDeclarations,
+    std::map<std::string, KnownDecl>& currentDeclarations) {
+    
+    std::vector<SyntaxDiagnostic> diagnostics;
+    
+    // 获取当前文档的命名空间
+    std::string currentNamespace = "";
+    if (doc.hasNamespace()) {
+        for (size_t i = 0; i < doc.m_namespace->name.size(); ++i) {
+            if (i > 0) currentNamespace += ".";
+            currentNamespace += doc.m_namespace->name[i];
+        }
+    }
+    
+    // 检查每个声明
+    for (const auto& decl : doc.declarations) {
+        std::vector<std::string> thisFields;
+        std::string declName;
+        ast::NodeType declType = decl->nodeType();
+        
+        // 获取声明名称
+        switch (declType) {
+            case ast::NodeType::StructDecl: {
+                auto structDecl = static_cast<const ast::Struct*>(decl.get());
+                declName = structDecl->name;
+                break;
+            }
+            case ast::NodeType::BlockDecl: {
+                auto blockDecl = static_cast<const ast::Block*>(decl.get());
+                declName = blockDecl->name;
+                break;
+            }
+            case ast::NodeType::EnumDecl: {
+                auto enumDecl = static_cast<const ast::Enum*>(decl.get());
+                declName = enumDecl->name;
+                break;
+            }
+            case ast::NodeType::AnnotationDecl: {
+                auto annotationDecl = static_cast<const ast::AnnotationDecl*>(decl.get());
+                declName = annotationDecl->name;
+                break;
+            }
+            default:
+                continue; // 跳过其他类型
+        }
+        
+        std::string qualifiedName = getFullName(declName, currentNamespace);
+        
+        // 检查名称冲突
+        if (checkNameExists(declName, currentNamespace, includedDeclarations) ||
+            currentDeclarations.find(qualifiedName) != currentDeclarations.end()) {
+            diagnostics.push_back({
+                SyntaxDiagnostic::Level::Error,
+                "名称冲突: " + qualifiedName,
+                entryFile,
+                decl->location.line,
+                decl->location.column
+            });
+            continue;
+        }
+        
+        // 添加到当前声明中
+        currentDeclarations[qualifiedName] = {
+            currentNamespace,
+            declType,
+            declName,
+            entryFile,
+            decl.get()
+        };
+    }
+    
+    return diagnostics;
+}
+
+// 辅助方法实现
+bool SyntaxChecker::checkNameExists(const std::string& name, const std::string& ns,
+                                   const std::map<std::string, KnownDecl>& declarations) const {
+    std::string fullName = getFullName(name, ns);
+    
+    // 首先检查完全限定名
+    if (declarations.find(fullName) != declarations.end()) {
+        return true;
+    }
+    
+    // 如果有命名空间，也检查简单名称（同命名空间内）
+    if (!ns.empty() && declarations.find(name) != declarations.end()) {
+        return true;
+    }
+    
+    return false;
+}
+
+bool SyntaxChecker::isTypeMatch(const ast::NodeType& expectedType, const std::string& typeName,
+                               const std::string& ns, const std::map<std::string, KnownDecl>& declarations) const {
+    std::string fullName = getFullName(typeName, ns);
+    
+    auto it = declarations.find(fullName);
+    if (it == declarations.end()) {
+        // 也尝试简单名称
+        it = declarations.find(typeName);
+        if (it == declarations.end()) {
+            return false;
+        }
+    }
+    
+    return it->second.type == expectedType;
+}
+
+bool SyntaxChecker::isBuiltinType(const std::string& typeName) const {
+    return kBuiltinTypes.find(typeName) != kBuiltinTypes.end();
+}
+
+
+
+std::string SyntaxChecker::getFullName(const std::string& name, const std::string& ns) const {
+    if (ns.empty()) {
+        return name;
+    }
+    return ns + "." + name;
+}
+
+
+
+
 
 } // namespace checker
 } // namespace mota 

@@ -2,15 +2,14 @@
   "version": "2.0",
   "encoding": "UTF-8 with BOM",
   "templates": {
-    "file": "file.template",
-    "block_decl": "block_decl.template",
-    "struct_decl": "struct_decl.template", 
-    "enum_decl": "enum_decl.template",
-    "annotation_decl": "annotation_decl.template",
-    "annotation": "annotation.template"
+    "file": "simple_test.template"
   },
   "miscs": [
-    "misc.template"
+    "misc-common.template",
+    "misc-namespace.template", 
+    "misc-accessors.template",
+    "misc-serialization.template",
+    "misc-debug.template"
   ],
   "type_mapping": {
     "int8": "int8_t",
@@ -29,7 +28,7 @@
   },
   "file_path": [
     {
-      "path": "<%=namespace_path(NAMESPACE)%>/<%=FILE_NAME%>.h",
+      "path": "<%=NAMESPACE.path%>/<%=basename(SOURCE_FILE)%>.h",
       "type": "file"
     }
   ],

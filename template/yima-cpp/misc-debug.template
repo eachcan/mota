@@ -1,0 +1,38 @@
+<%misc struct%>
+// STRUCT: <%=name%> (<%=class_name%>)
+class <%=class_name%> {
+    // 字段数量: <%=fields.count%>
+<%foreach fields as field%>
+    // 字段: <%=field.name%> 类型: <%=field.type_name%>
+<%endforeach%>
+};
+<%endmisc%>
+
+<%misc block%>
+// BLOCK: <%=name%> (<%=class_name%>)
+class <%=class_name%> {
+    // 字段数量: <%=fields.count%>
+<%foreach fields as field%>
+    // 字段: <%=field.name%> 类型: <%=field.type_name%>
+<%endforeach%>
+};
+<%endmisc%>
+
+<%misc enum%>
+// ENUM: <%=name%> (<%=class_name%>)
+enum class <%=class_name%> {
+<%foreach values as value%>
+    <%=value.name%><%if (!value.is_last)%>,<%endif%>
+<%endforeach%>
+};
+<%endmisc%>
+
+<%misc annotation_decl%>
+// ANNOTATION: <%=name%> (<%=class_name%>)
+class <%=class_name%> {
+    // 字段数量: <%=fields.count%>
+<%foreach fields as field%>
+    // 字段: <%=field.name%> 类型: <%=field.type_name%>
+<%endforeach%>
+};
+<%endmisc%> 

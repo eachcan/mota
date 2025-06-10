@@ -1,0 +1,11 @@
+<%misc namespace_declaration%>
+<%foreach NAMESPACE.parts as part%>
+namespace <%=part.name%> {
+<%endforeach%>
+<%endmisc%>
+
+<%misc namespace_closing%>
+<%foreach NAMESPACE.parts as part%>
+} // namespace <%=part.name%>
+<%endforeach%>
+<%endmisc%> 

@@ -1,0 +1,54 @@
+<%misc test%>
+TEST_MISC_WORKING
+<%endmisc%>
+
+
+
+<%misc private_field_suffix%>_<%endmisc%>
+
+<%misc empty_variant%>QVariant()<%endmisc%>
+
+<%misc repeated_keyword%>repeated<%endmisc%>
+
+<%misc namespace_path_separator%>/<%endmisc%>
+
+<%misc namespace_separator_replacement%>.->::<%endmisc%>
+
+<%misc argument_name_variable%>argumentName<%endmisc%>
+
+<%misc field_name_variable%>fieldName<%endmisc%>
+
+<%misc enum_value_separator%>,
+    <%endmisc%>
+
+<%misc enum_case_separator%>
+            <%endmisc%>
+
+<%misc enum_condition_separator%> else <%endmisc%>
+
+<%misc enum_string_value_separator%> <%endmisc%>
+
+<%misc enum_display_name_separator%> <%endmisc%>
+
+<%misc enum_annotation_case_separator%>
+            <%endmisc%>
+
+<%misc enum_annotation_condition_separator%> else <%endmisc%>
+
+<%misc enum_value_annotation_names%>yima.EnumValue|EnumValue<%endmisc%>
+
+<%misc desc_param_name%>desc<%endmisc%>
+
+<%misc container_template%>QVector<<%=ELEMENT_TYPE%>><%endmisc%>
+
+<%misc string_literal_template%>QLatin1String("<%=escape_string(STRING_VALUE)%>")<%endmisc%>
+
+<%misc variant_template%>QVariant::fromValue(<%=VALUE%>)<%endmisc%>
+
+<%misc collection_separator%>|<%endmisc%>
+
+<%misc type_suffix%><%if (type == "block")%>Block<%endif%><%if (type == "struct")%>Model<%endif%><%if (type == "enum")%><%endif%><%if (type == "annotation")%>Annotation<%endif%><%endmisc%>
+
+<%misc interface_name%><%if (type == "block")%>IBlock<%endif%><%if (type == "struct")%>IModel<%endif%><%if (type == "annotation")%>IAnnotation<%endif%><%endmisc%>
+
+<%misc inheritance_declaration%><%if (parent)%>public <%=parent_class_name%>, <%endif%>public <%call interface_name%><%endmisc%> 

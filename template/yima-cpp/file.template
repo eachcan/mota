@@ -1,5 +1,9 @@
 #pragma once
 
+// 此文件由 Mota 代码生成器自动生成
+// 生成时间: <%=CURRENT_TIME%>
+// 源文件: <%=SOURCE_FILE%>
+
 #include <QCborMap>
 #include <QCborArray>
 #include <QCborValue>
@@ -14,22 +18,44 @@
 #include "framework/IModel.h"
 #include "framework/IAnnotation.h"
 
-<%if (HAS_INCLUDES)%>
-<%call includes%>
+<%if (INCLUDES.count > 0)%>
+<%foreach INCLUDES.files as file%>
+#include "<%=file.translated%>"
+<%endforeach%>
 <%endif%>
-
-// 此文件由 Mota 代码生成器自动生成
-// 生成时间: <%=GENERATION_TIME%>
-// 源文件: <%=SOURCE_FILE%>
 
 using namespace ymf;
 
-<%if (HAS_NAMESPACE)%>
+<%if (NAMESPACE.exists)%>
 <%call namespace_declaration%>
 <%endif%>
 
-<%=CONTENT%>
+<%call test%>
 
-<%if (HAS_NAMESPACE)%>
+<%foreach DECLARATIONS as declaration%>
+// DEBUG: Processing type: <%=type%>, name: <%=name%>
+<%if (type == "enum")%>
+// Found enum, calling enum misc
+<%call enum%>
+<%endif%>
+
+<%if (type == "struct")%>
+// Found struct, calling struct misc
+<%call struct%>
+<%endif%>
+
+<%if (type == "block")%>
+// Found block, calling block misc  
+<%call block%>
+<%endif%>
+
+<%if (type == "annotation_decl")%>
+// Found annotation_decl, calling annotation_decl misc
+<%call annotation_decl%>
+<%endif%>
+
+<%endforeach%>
+
+<%if (NAMESPACE.exists)%>
 <%call namespace_closing%>
 <%endif%> 
