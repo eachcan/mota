@@ -1,0 +1,32 @@
+FOREACH调试测试:
+
+DECLARATIONS长度测试: <%=DECLARATIONS%>
+
+<%foreach DECLARATIONS as declaration%>
+=== 声明 <%=declaration.name%> ===
+类型: <%=declaration.type%>
+名称: <%=declaration.name%>
+类名: <%=declaration.class_name%>
+
+测试字段变量存在性:
+- declaration.fields存在吗: <%=declaration.fields%>
+- fields是数组吗: <%if (declaration.fields)%>是的<%endif%>
+
+简单字段foreach测试:
+<%foreach declaration.fields as field%>
+  字段: <%=field.name%>
+<%endforeach%>
+
+字段调试信息:
+<%call debug_fields%>
+
+值测试:
+<%foreach declaration.annotations as value%>
+  - 注解名: <%=value.name%>
+<%endforeach%>
+
+=== 结束 ===
+
+<%endforeach%>
+
+FOREACH调试结束。 

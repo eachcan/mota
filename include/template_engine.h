@@ -15,7 +15,7 @@ namespace template_engine {
 using TemplateVars = nlohmann::json;
 
 // Tag类型枚举
-enum class TagType {
+enum class TokenType {
     TEXT,           // 普通文本
     VARIABLE,       // 变量引用 <%=var%>
     FUNCTION_CALL,  // 函数调用 <%=func(arg)%>
@@ -28,13 +28,13 @@ enum class TagType {
 };
 
 // Tag节点结构
-struct TagNode {
-    TagType type;
-    std::string content;            // 原始内容
-    std::string data;               // 解析后的数据
-    size_t start_pos;               // 在原文本中的起始位置
-    size_t end_pos;                 // 在原文本中的结束位置
-    std::vector<std::shared_ptr<TagNode>> children;  // 子节点（对于成对标签）
+struct TemplateToken {
+    TokenType type;
+    std::string inner_content;      // 标签内部内容
+    std::string tag_content;            // 标签内容
+    std::string outer_content;            // 整个标签的内容
+    size_t start_pos;               // 在原文本中的起始位置 <%if 的开头
+    size_t end_pos;                 // 在原文本中的结束位置 endif%> 的结尾
     
     // 特定于不同类型的属性
     std::string variable_name;      // 变量名
@@ -44,11 +44,28 @@ struct TagNode {
     std::string condition;          // 条件表达式
     std::string collection;         // 集合变量名
     std::string item_name;          // 循环项变量名
+    std::string else_content;       // else 分支的内容
     
-    // if-else 支持
-    std::vector<std::shared_ptr<TagNode>> else_children;  // else 分支的子节点
-    
-    TagNode(TagType t = TagType::TEXT) : type(t), start_pos(0), end_pos(0) {}
+    TemplateToken(TokenType t = TokenType::TEXT) : type(t), start_pos(0), end_pos(0) {}
+};
+
+struct TagNode {
+    TokenType type;
+
+    std::string inner_text; // TEXT 节点，或 IF / FOREACH 节点的内容
+    std::string else_text; // IF 节点的 else 分支的内容
+    size_t start_pos; // 整个标签的开始位置
+    size_t end_pos; // 整个标签的结束位置
+
+    // 特定于不同类型的属性
+    std::string variable_name;      // 变量名
+    std::string function_name;      // 函数名
+    std::string function_args;      // 函数参数
+    std::string misc_name;          // misc名称
+    std::string condition;          // 条件表达式
+    std::string collection;         // 集合变量名
+    std::string item_name;          // 循环项变量名
+    std::string else_content;       // else 分支的内容
 };
 
 // 模板引擎类
@@ -75,14 +92,11 @@ private:
     // 加载misc片段
     std::string loadMisc(const std::string& miscName);
     
-    // 第一步：解析所有Tag
-    std::vector<std::shared_ptr<TagNode>> parseAllTags(const std::string& content);
-    
     // 第二步：确定普通文本和Tag的序列
-    std::vector<std::shared_ptr<TagNode>> buildTokenSequence(const std::string& content);
+    std::vector<std::shared_ptr<TemplateToken>> buildTokenSequence(const std::string& content);
     
     // 第三步：构建Tag树并检查成对标签
-    std::vector<std::shared_ptr<TagNode>> buildTagTree(const std::vector<std::shared_ptr<TagNode>>& tokens);
+    std::vector<std::shared_ptr<TagNode>> buildTagTree(const std::string& templateContent, const std::vector<std::shared_ptr<TemplateToken>>& tokens);
     
     // 第四步：遍历渲染
     std::string renderTagTree(const std::vector<std::shared_ptr<TagNode>>& tree, const TemplateVars& vars);
@@ -91,18 +105,17 @@ private:
     std::string renderTagNode(const std::shared_ptr<TagNode>& node, const TemplateVars& vars);
     
     // 解析Tag的通用方法
-    std::shared_ptr<TagNode> parseTag(const std::string& tagContent, size_t start, size_t end);
+    std::shared_ptr<TemplateToken> parseTag(const std::string& tagContent, size_t start, size_t end);
     
     // 解析特定类型的Tag
-    std::shared_ptr<TagNode> parseVariableTag(const std::string& tagContent, size_t start, size_t end);
-    std::shared_ptr<TagNode> parseFunctionCallTag(const std::string& tagContent, size_t start, size_t end);
-    std::shared_ptr<TagNode> parseMiscCallTag(const std::string& tagContent, size_t start, size_t end);
-    std::shared_ptr<TagNode> parseIfTag(const std::string& tagContent, size_t start, size_t end);
-    std::shared_ptr<TagNode> parseForeachTag(const std::string& tagContent, size_t start, size_t end);
-    std::shared_ptr<TagNode> parseEndTag(const std::string& tagContent, size_t start, size_t end);
+    std::shared_ptr<TemplateToken> parseVariableTag(const std::string& tagContent, size_t start, size_t end);
+    std::shared_ptr<TemplateToken> parseFunctionCallTag(const std::string& tagContent, size_t start, size_t end);
+    std::shared_ptr<TemplateToken> parseMiscCallTag(const std::string& tagContent, size_t start, size_t end);
+    std::shared_ptr<TemplateToken> parseIfTag(const std::string& tagContent, size_t start, size_t end);
+    std::shared_ptr<TemplateToken> parseForeachTag(const std::string& tagContent, size_t start, size_t end);
     
-    // 验证成对标签的匹配
-    bool validatePairedTags(const std::vector<std::shared_ptr<TagNode>>& tokens);
+    // 获得 Var 的值
+    nlohmann::json getVarValue(const std::string& varName, const TemplateVars& vars);
     
     // 渲染特定类型的Tag
     std::string renderVariable(const std::string& varName, const TemplateVars& vars);

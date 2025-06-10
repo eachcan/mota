@@ -1,8 +1,8 @@
 <%misc struct%>
-// <%=name%>结构体
-class MODEL_EXPORT <%=class_name%> {
+// <%=declaration.name%>结构体
+class MODEL_EXPORT <%=declaration.class_name%> {
 public:
-    <%=class_name%>() = default;
+    <%=declaration.class_name%>() = default;
     
     // TODO: 基本实现
 private:
@@ -11,10 +11,10 @@ private:
 <%endmisc%>
 
 <%misc block%>
-// <%=name%>块定义
-class MODEL_EXPORT <%=class_name%> : <%call inheritance_declaration%> {
+// <%=declaration.name%>块定义
+class MODEL_EXPORT <%=declaration.class_name%> : <%call inheritance_declaration%> {
 public:
-    <%=class_name%>() = default;
+    <%=declaration.class_name%>() = default;
     <%call constructor%>
     
     // 实现<%call interface_name%>接口
@@ -47,7 +47,7 @@ public:
     }
     
     QString description() const override {
-        return "<%=escape_string(name)%>";
+        return "<%=escape_string(declaration.name)%>";
     }
     
     QString fieldDescription(const QString& fieldName) const override {
@@ -63,12 +63,12 @@ public:
 <%call value_setter_logic%>
     }
     
-    // 特定于<%=name%>的访问器
+    // 特定于<%=declaration.name%>的访问器
 <%call accessors%>
     
 protected:
     QString blockName() const override {
-        return "<%=name%>";
+        return "<%=declaration.name%>";
     }
     
 private:
@@ -77,73 +77,60 @@ private:
 <%endmisc%>
 
 <%misc enum%>
-// <%=name%>枚举
-enum class <%=class_name%> {
-<%foreach values as value%>
-    <%=value.field_name%><%if (value.value)%> = <%=value.value%><%endif%><%if (!value.is_last)%>,<%endif%>
-<%endforeach%>
+// <%=declaration.name%>枚举
+enum class <%=declaration.class_name%> {
+    // TODO: 枚举值
 };
 
-// <%=name%>枚举辅助函数
-class <%=class_name%>Helper {
+// <%=declaration.name%>枚举辅助函数
+class <%=declaration.class_name%>Helper {
 public:
-    static QString toString(<%=class_name%> value) {
+    static QString toString(<%=declaration.class_name%> value) {
         switch (value) {
-<%foreach values as value%>
-            case <%=class_name%>::<%=value.field_name%>:
-                return "<%=value.name%>";
-<%endforeach%>
+            // TODO: 枚举值处理
             default:
                 return "Unknown";
         }
     }
     
-    static <%=class_name%> fromString(const QString& str) {
-<%foreach values as value%>
-        <%if (!value.is_first)%>else <%endif%>if (str == "<%=value.name%>") {
-            return <%=class_name%>::<%=value.field_name%>;
-        }
-<%endforeach%>
-        return <%=class_name%>::<%=values[0].field_name%>; // 默认值
+    static <%=declaration.class_name%> fromString(const QString& str) {
+        // TODO: 字符串转枚举
+        return static_cast<<%=declaration.class_name%>>(0); // 默认值
     }
     
     static QStringList allValues() {
         return QStringList{
-<%foreach values as value%>
-            "<%=value.name%>"<%if (!value.is_last)%>,<%endif%>
-<%endforeach%>
+            // TODO: 所有枚举值
         };
     }
 };
 <%endmisc%>
 
 <%misc annotation_decl%>
-// <%=name%>注解
-class MODEL_EXPORT <%=class_name%> : <%call inheritance_declaration%> {
+// <%=declaration.name%>注解
+class MODEL_EXPORT <%=declaration.class_name%> : <%call inheritance_declaration%> {
 public:
-    <%=class_name%>() = default;
-    <%call constructor%>
+    <%=declaration.class_name%>() = default;
     
     // 实现IAnnotation接口
     QString name() const override {
-        return "<%=name%>";
+        return "<%=declaration.name%>";
     }
     
     QCborValue toCbor() const override {
         QCborMap map;
-<%call serialize_fields%>
+        // TODO: 序列化字段
         return map;
     }
     
     void fromCbor(const QCborValue& cbor) override {
         QCborMap map = cbor.toMap();
-<%call deserialize_fields%>
+        // TODO: 反序列化字段
     }
     
-    // 特定于<%=name%>的访问器
-<%call accessors%>
+    // TODO: 访问器方法
     
 private:
-<%call private_fields%>
+    // TODO: 私有字段
 };
 <%endmisc%> 

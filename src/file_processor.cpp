@@ -62,31 +62,11 @@ bool FileProcessor::processMotaFile(
         std::map<std::string, checker::KnownDecl> includedDeclarations;
         std::map<std::string, checker::KnownDecl> currentDeclarations;
         
-        if (verbose) {
-            std::cout << "构建包含注册表..." << std::endl;
-        }
-        
         buildIncludeRegistry(*root, inputFile, includedFiles, includePaths, includedDeclarations, verbose);
-        
-        // 语法检查
-        if (verbose) {
-            std::cout << "开始语法检查..." << std::endl;
-        }
         
         checker::SyntaxChecker syntaxChecker;
         auto diagnostics = syntaxChecker.check(*root, inputFile, includedDeclarations, currentDeclarations);
         
-        // 打印所有声明
-        std::cout << "子级声明: " << std::endl;
-        for (const auto& decl : includedDeclarations) {
-            std::cout << "声明: " << decl.first << " 类型: " << getDeclType(decl.second.type) << " 文件: " << decl.second.file << std::endl;
-        }
-
-        std::cout << "当前声明: " << std::endl;
-        for (const auto& decl : currentDeclarations) {
-            std::cout << "声明: " << decl.first << " 类型: " << getDeclType(decl.second.type) << " 文件: " << decl.second.file << std::endl;
-        }
-
         if (!diagnostics.empty()) {
             std::cerr << "在文件 " << inputFile << " 中发现语法错误:" << std::endl;
             for (const auto& diagnostic : diagnostics) {
@@ -111,50 +91,60 @@ bool FileProcessor::processMotaFile(
             std::cout << "生成器初始化成功，开始生成代码..." << std::endl;
         }
         
-        std::string generatedCode = generator.generateCode(root, "file");
-        if (generatedCode.empty()) {
-            std::cerr << "错误: 代码生成失败 " << inputFile << std::endl;
-            return false;
-        }
-        
-        // 构建输出路径
-        fs::path inputPath(inputFile);
-        std::string fileName = inputPath.stem().string();
-        
-        // 提取命名空间信息
-        std::string namespaceStr = "";
-        if (root->hasNamespace()) {
-            for (size_t i = 0; i < root->m_namespace->name.size(); ++i) {
-                if (i > 0) namespaceStr += ".";
-                namespaceStr += root->m_namespace->name[i];
+        auto filePaths = generator.getConfig().file_path;
+        for (const auto& filePath : filePaths) {
+            std::string generatedCode = generator.generateCode(root, filePath.entry);
+            if (generatedCode.empty()) {
+                std::cerr << "错误: 代码生成失败 " << inputFile << std::endl;
+                return false;
+            }
+
+            // 提取命名空间信息
+            std::string namespaceStr = "";
+            if (root->hasNamespace()) {
+                for (size_t i = 0; i < root->m_namespace->name.size(); ++i) {
+                    if (i > 0) namespaceStr += filePath.namespace_separator;
+                    namespaceStr += root->m_namespace->name[i];
+                }
+            }
+
+            auto vars = nlohmann::json::object();
+            vars["NAMESPACE"] = nlohmann::json::object();
+            vars["NAMESPACE"]["path"] = namespaceStr;
+            vars["SOURCE_FILE"] = inputFile;
+            vars["INCLUDE_PATH"] = nlohmann::json::object();
+            vars["INCLUDE_PATH"]["path"] = includePaths;
+            vars["INCLUDE_PATH"]["path"] = includePaths;
+            
+            auto outputFilePath = generator.getTemplateEngine().renderContent(filePath.path, vars);
+            #ifdef _WIN32
+            if (outputFilePath[1] != ':') {
+                outputFilePath = outputDir + "/" + outputFilePath;
+            }
+            #else
+            if (outputFilePath[0] != '/') {
+                outputFilePath = outputDir + "/" + outputFilePath;
+            }
+            #endif
+            
+            // 确保输出目录存在
+            fs::create_directories(fs::path(outputFilePath).parent_path());
+            
+            // 写入生成的代码
+            std::ofstream outFile(outputFilePath);
+            if (!outFile.is_open()) {
+                std::cerr << "错误: 无法创建输出文件 " << outputFilePath << std::endl;
+                return false;
+            }
+            
+            outFile << generatedCode;
+            outFile.close();
+            if (verbose) {
+                std::cout << "已生成到: " << outputFilePath << std::endl;
             }
         }
         
-        // 构建输出文件路径
-        std::string outputFile = outputDir;
-        if (!namespaceStr.empty()) {
-            // 将命名空间的点替换为路径分隔符
-            std::string namespacePath = namespaceStr;
-            std::replace(namespacePath.begin(), namespacePath.end(), '.', '/');
-            outputFile = (fs::path(outputDir) / namespacePath / (fileName + ".h")).string();
-        } else {
-            outputFile = (fs::path(outputDir) / (fileName + ".h")).string();
-        }
-        
-        // 确保输出目录存在
-        fs::create_directories(fs::path(outputFile).parent_path());
-        
-        // 写入生成的代码
-        std::ofstream outFile(outputFile);
-        if (!outFile.is_open()) {
-            std::cerr << "错误: 无法创建输出文件 " << outputFile << std::endl;
-            return false;
-        }
-        
-        outFile << generatedCode;
-        outFile.close();
-        
-        std::cout << "生成完成: " << outputFile << std::endl;
+        std::cout << "生成完成: " << root->location.filename << std::endl;
         return true;
         
     } catch (const std::exception& e) {

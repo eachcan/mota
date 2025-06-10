@@ -65,22 +65,11 @@ std::string Generator::generateCode(const std::unique_ptr<ast::Document>& docume
         std::cerr << "Generator not initialized" << std::endl;
         return "";
     }
-    
-    std::cout << "Generator: Building template variables..." << std::endl;
-    
+        
     // 构建模板变量
     TemplateVars vars;
     try {
         vars = buildTemplateVars(document);
-        std::cout << "Generator: Template variables built successfully" << std::endl;
-        
-        // 打印待渲染的 JSON (pretty print)
-        std::cout << "\n=== Template Variables JSON (Pretty Print) ===" << std::endl;
-        for (auto it = vars.begin(); it != vars.end(); ++it) {
-            std::cout << "\"" << it.key() << "\": " << it.value().dump(2) << std::endl;
-        }
-        std::cout << "=== End Template Variables JSON ===" << std::endl << std::endl;
-        
     } catch (const std::exception& e) {
         std::cerr << "Generator: Exception in buildTemplateVars: " << e.what() << std::endl;
         return "";
@@ -89,12 +78,9 @@ std::string Generator::generateCode(const std::unique_ptr<ast::Document>& docume
         return "";
     }
     
-    std::cout << "Generator: Rendering template '" << templateName << "'..." << std::endl;
-    
     // 使用模板引擎渲染
     try {
         std::string result = templateEngine_->renderTemplate(templateName, vars);
-        std::cout << "Generator: Template rendered successfully" << std::endl;
         return result;
     } catch (const std::exception& e) {
         std::cerr << "Generator: Exception in renderTemplate: " << e.what() << std::endl;

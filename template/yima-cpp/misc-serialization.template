@@ -79,7 +79,7 @@
 <%endmisc%>
 
 <%misc serialize_fields%>
-<%foreach fields as field%>
+<%foreach declaration.fields as field%>
 <%if (field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64")%><%call serialize_int%><%endif%>
 <%if (field.type_name == "float32" || field.type_name == "float64")%><%call serialize_float%><%endif%>
 <%if (field.type_name == "string")%><%call serialize_string%><%endif%>
@@ -91,7 +91,7 @@
 <%endmisc%>
 
 <%misc deserialize_fields%>
-<%foreach fields as field%>
+<%foreach declaration.fields as field%>
 <%if (field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64")%><%call deserialize_int%><%endif%>
 <%if (field.type_name == "float32" || field.type_name == "float64")%><%call deserialize_float%><%endif%>
 <%if (field.type_name == "string")%><%call deserialize_string%><%endif%>

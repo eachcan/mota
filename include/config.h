@@ -11,9 +11,10 @@ namespace config {
 // 文件路径配置
 struct FilePathConfig {
     std::string path;
-    std::string type;
+    std::string entry;
+    std::string namespace_separator;
     
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(FilePathConfig, path, type)
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(FilePathConfig, path, entry, namespace_separator)
 };
 
 // Include指令配置

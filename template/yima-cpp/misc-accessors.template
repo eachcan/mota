@@ -1,35 +1,40 @@
 <%misc constructor%>
-<%if (fields)%>
-    <%=class_name%>(<%foreach fields as field%><%=map_type(field.type_name)%> <%=field.field_name%><%if (field.default_value)%> = <%=field.default_value%><%endif%><%if (!field.is_last)%>, <%endif%><%endforeach%>) 
-        : <%foreach fields as field%><%=field.field_name%>_(<%=field.field_name%>)<%if (!field.is_last)%>, <%endif%><%endforeach%> {}
+<%if (declaration.fields)%>
+    <%=declaration.class_name%>(<%foreach declaration.fields as field%><%call field_type%> <%=field.field_name%><%if (field.default_value)%> = <%=field.default_value%><%endif%><%if (!field.is_last)%>, <%endif%><%endforeach%>) 
+        : <%foreach declaration.fields as field%><%=field.field_name%>_(<%=field.field_name%>)<%if (!field.is_last)%>, <%endif%><%endforeach%> {}
 <%endif%>
 <%endmisc%>
 
 <%misc private_fields%>
-<%foreach fields as field%>
-    <%=map_type(field.type_name)%> <%=field.field_name%>_<%if (field.default_value)%> = <%=field.default_value%><%endif%>;
+<%foreach declaration.fields as field%>
+    <%call field_type%> <%=field.field_name%>_<%if (field.default_value)%> = <%=field.default_value%><%endif%>;
 <%endforeach%>
 <%endmisc%>
 
 <%misc field_names%>
-<%foreach fields as field%>
+<%foreach declaration.fields as field%>
 "<%=field.name%>"<%if (!field.is_last)%>, <%endif%><%endforeach%>
 <%endmisc%>
 
+<%misc debug_fields%>
+声明类型: <%=declaration.type%>
+声明名称: <%=declaration.name%>
+<%endmisc%>
+
 <%misc getter_method%>
-    <%=map_type(field.type_name)%> get<%=pascal_case(field.field_name)%>() const {
+    <%call field_type%> get<%=capitalize(field.field_name)%>() const {
         return <%=field.field_name%>_;
     }
 <%endmisc%>
 
 <%misc setter_method%>
-    void set<%=pascal_case(field.field_name)%>(const <%=map_type(field.type_name)%>& value) {
+    void set<%=capitalize(field.field_name)%>(const <%call field_type%>& value) {
         <%=field.field_name%>_ = value;
     }
 <%endmisc%>
 
 <%misc accessors%>
-<%foreach fields as field%>
+<%foreach declaration.fields as field%>
 <%call getter_method%>
 
 <%call setter_method%>
@@ -37,7 +42,7 @@
 <%endmisc%>
 
 <%misc field_type_logic%>
-<%foreach fields as field%>
+<%foreach declaration.fields as field%>
         <%if (!field.is_first)%>else <%endif%>if (fieldName == "<%=field.name%>") {
             return "<%=field.qualified_type_name%>";
         }
@@ -47,14 +52,14 @@
 
 <%misc model_annotation_logic%>
         QList<QSharedPointer<IAnnotation>> result;
-<%foreach annotations as annotation%>
+<%foreach declaration.annotations as annotation%>
         result.append(QSharedPointer<IAnnotation>(new <%=annotation.class_name%>()));
 <%endforeach%>
         return result;
 <%endmisc%>
 
 <%misc field_annotation_logic%>
-<%foreach fields as field%>
+<%foreach declaration.fields as field%>
         <%if (!field.is_first)%>else <%endif%>if (fieldName == "<%=field.name%>") {
             QList<QSharedPointer<IAnnotation>> result;
 <%foreach field.annotations as annotation%>
@@ -66,7 +71,7 @@
 <%endmisc%>
 
 <%misc field_description_logic%>
-<%foreach fields as field%>
+<%foreach declaration.fields as field%>
         <%if (!field.is_first)%>else <%endif%>if (fieldName == "<%=field.name%>") {
             return "<%=escape_string(field.name)%>";
         }
@@ -74,7 +79,7 @@
 <%endmisc%>
 
 <%misc value_getter_logic%>
-<%foreach fields as field%>
+<%foreach declaration.fields as field%>
         <%if (!field.is_first)%>else <%endif%>if (fieldName == "<%=field.name%>") {
             return QVariant::fromValue(<%=field.field_name%>_);
         }
@@ -83,9 +88,9 @@
 <%endmisc%>
 
 <%misc value_setter_logic%>
-<%foreach fields as field%>
+<%foreach declaration.fields as field%>
         <%if (!field.is_first)%>else <%endif%>if (fieldName == "<%=field.name%>") {
-            <%=field.field_name%>_ = value.value<<%=map_type(field.type_name)%>>();
+            <%=field.field_name%>_ = value.value<<%call field_type%>>();
         }
 <%endforeach%>
 <%endmisc%> 

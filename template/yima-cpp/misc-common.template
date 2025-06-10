@@ -47,8 +47,16 @@ TEST_MISC_WORKING
 
 <%misc collection_separator%>|<%endmisc%>
 
-<%misc type_suffix%><%if (type == "block")%>Block<%endif%><%if (type == "struct")%>Model<%endif%><%if (type == "enum")%><%endif%><%if (type == "annotation")%>Annotation<%endif%><%endmisc%>
+<%misc type_suffix%><%if (declaration.type == "block")%>Block<%endif%><%if (declaration.type == "struct")%>Model<%endif%><%if (declaration.type == "enum")%><%endif%><%if (declaration.type == "annotation")%>Annotation<%endif%><%endmisc%>
 
-<%misc interface_name%><%if (type == "block")%>IBlock<%endif%><%if (type == "struct")%>IModel<%endif%><%if (type == "annotation")%>IAnnotation<%endif%><%endmisc%>
+<%misc interface_name%><%if (declaration.type == "block")%>IBlock<%endif%><%if (declaration.type == "struct")%>IModel<%endif%><%if (declaration.type == "annotation_decl")%>IAnnotation<%endif%><%endmisc%>
 
-<%misc inheritance_declaration%><%if (parent)%>public <%=parent_class_name%>, <%endif%>public <%call interface_name%><%endmisc%> 
+<%misc inheritance_declaration%><%if (declaration.parent)%>public <%=declaration.parent_class_name%>, <%endif%>public <%call interface_name%><%endmisc%>
+
+<%misc map_type%><%if (type_name == "int8")%>int8_t<%endif%><%if (type_name == "int16")%>int16_t<%endif%><%if (type_name == "int32")%>int32_t<%endif%><%if (type_name == "int64")%>int64_t<%endif%><%if (type_name == "uint8")%>uint8_t<%endif%><%if (type_name == "uint16")%>uint16_t<%endif%><%if (type_name == "uint32")%>uint32_t<%endif%><%if (type_name == "uint64")%>uint64_t<%endif%><%if (type_name == "float32")%>float<%endif%><%if (type_name == "float64")%>double<%endif%><%if (type_name == "string")%>QString<%endif%><%if (type_name == "bool")%>bool<%endif%><%if (type_name == "bytes")%>QByteArray<%endif%><%if (type_name != "int8" && type_name != "int16" && type_name != "int32" && type_name != "int64" && type_name != "uint8" && type_name != "uint16" && type_name != "uint32" && type_name != "uint64" && type_name != "float32" && type_name != "float64" && type_name != "string" && type_name != "bool" && type_name != "bytes")%><%=type_name%><%endif%><%endmisc%>
+
+<%misc capitalize%><%=first_char_upper(field_name)%><%endmisc%>
+
+<%misc escape_string%><%=escape_string(STRING_VALUE)%><%endmisc%>
+
+<%misc field_type%><%if (field.container_type == "array")%>QVector<<%=map_type(field.type_name)%>><%else%><%=map_type(field.type_name)%><%endif%><%endmisc%> 

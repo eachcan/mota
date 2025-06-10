@@ -2,14 +2,14 @@
   "version": "2.0",
   "encoding": "UTF-8 with BOM",
   "templates": {
-    "file": "simple_test.template"
+    "file": "file.template"
   },
   "miscs": [
     "misc-common.template",
     "misc-namespace.template", 
     "misc-accessors.template",
     "misc-serialization.template",
-    "misc-debug.template"
+    "misc-declarations.template"
   ],
   "type_mapping": {
     "int8": "int8_t",
@@ -28,8 +28,9 @@
   },
   "file_path": [
     {
-      "path": "<%=NAMESPACE.path%>/<%=basename(SOURCE_FILE)%>.h",
-      "type": "file"
+      "namespace_separator": "\\",
+      "path": "<%=as_string(NAMESPACE.path)%>/<%=basename(SOURCE_FILE)%>.h",
+      "entry": "file"
     }
   ],
   "include_directive": {

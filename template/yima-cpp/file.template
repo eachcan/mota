@@ -33,23 +33,23 @@ using namespace ymf;
 <%call test%>
 
 <%foreach DECLARATIONS as declaration%>
-// DEBUG: Processing type: <%=type%>, name: <%=name%>
-<%if (type == "enum")%>
+// DEBUG: Processing type: <%=declaration.type%>, name: <%=declaration.name%>
+<%if (declaration.type == "enum")%>
 // Found enum, calling enum misc
 <%call enum%>
 <%endif%>
 
-<%if (type == "struct")%>
+<%if (declaration.type == "struct")%>
 // Found struct, calling struct misc
 <%call struct%>
 <%endif%>
 
-<%if (type == "block")%>
+<%if (declaration.type == "block")%>
 // Found block, calling block misc  
 <%call block%>
 <%endif%>
 
-<%if (type == "annotation_decl")%>
+<%if (declaration.type == "annotation_decl")%>
 // Found annotation_decl, calling annotation_decl misc
 <%call annotation_decl%>
 <%endif%>
