@@ -25,9 +25,14 @@ target("mota")
     -- 生成版本头文件
     before_build(function (target)
         local version = target:version()
-        local version_h = io.readfile("include/version.h.in")
-        version_h = version_h:gsub("${VERSION}", version)
-        io.writefile("include/version.h", version_h)
+        local version_h_in = io.readfile("include/version.h.in")
+        local version_h = io.readfile("include/version.h")
+
+        version_h_in = version_h_in:gsub("${VERSION}", version)
+        
+        if (version_h_in ~= version_h) then
+            io.writefile("include/version.h", version_h_in)
+        end
     end)
     -- 添加源文件
     add_files("src/*.cpp")

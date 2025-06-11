@@ -10,70 +10,66 @@ private:
 };
 <%endmisc%>
 
-<%misc block%>
-// <%=declaration.name%>块定义 - BLOCK MISC CALLED
-class MODEL_EXPORT <%=declaration.class_name%> : <%call inheritance_declaration%> {
+<%misc block%>// <%=declaration.name%>块定义
+class MODEL_EXPORT <%=declaration.class_name%> : <%call inheritance_declaration_block%> {
 public:
     <%=declaration.class_name%>() = default;
-    <%call constructor%>
     
-    // 实现<%call interface_name%>接口
-    QCborValue toCbor() const override {
-        QCborMap map;
+    // 实现 IBlock 接口
+    virtual QCborMap toCbor() const override {
+        QCborMap map<%if (declaration.parent)%> = <%=declaration.parent_class_name%>::toCbor()<%endif%>;
 <%call serialize_fields%>
         return map;
     }
     
-    void fromCbor(const QCborValue& cbor) override {
-        QCborMap map = cbor.toMap();
+    virtual void fromCbor(const QCborMap& map) override {<%if (declaration.parent)%>
+
+        <%=declaration.parent_class_name%>::fromCbor(map);
+
+<%endif%>
 <%call deserialize_fields%>
     }
     
-    QString name() const override {
+    virtual QString name() const override {
         return "<%=declaration.name%>";
     }
     
-    QStringList fields() const override {
+    virtual QStringList fields() const override {
         return QStringList{<%call field_names%>};
     }
     
-    QString fieldType(const QString& fieldName) const override {
+    virtual QString fieldType(const QString& fieldName) const override {
 <%call field_type_logic%>
     }
     
-    QList<QSharedPointer<IAnnotation>> annotations() const override {
+    virtual QList<QSharedPointer<IAnnotation>> annotations() const override {
 <%call model_annotation_logic%>
     }
     
-    QList<QSharedPointer<IAnnotation>> fieldAnnotation(const QString& fieldName) const override {
+    virtual QList<QSharedPointer<IAnnotation>> fieldAnnotation(const QString& fieldName) const override {
 <%call field_annotation_logic%>
         return QList<QSharedPointer<IAnnotation>>();
     }
     
-    QString description() const override {
+    virtual QString description() const override {
         return "<%=escape_string(declaration.name)%>";
     }
     
-    QString fieldDescription(const QString& fieldName) const override {
+    virtual QString fieldDescription(const QString& fieldName) const override {
 <%call field_description_logic%>
         return QString();
     }
     
-    QVariant value(const QString& fieldName) const override {
+    virtual QVariant value(const QString& fieldName) const override {
 <%call value_getter_logic%>
     }
     
-    void value(const QString& fieldName, const QVariant& value) override {
+    virtual void value(const QString& fieldName, const QVariant& value) override {
 <%call value_setter_logic%>
     }
     
     // 特定于<%=declaration.name%>的访问器
 <%call accessors%>
-    
-protected:
-    QString blockName() const override {
-        return "<%=declaration.name%>";
-    }
     
 private:
 <%call private_fields%>

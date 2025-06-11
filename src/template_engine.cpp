@@ -71,8 +71,7 @@ std::string TemplateEngine::loadTemplate(const std::string& templateName) {
 
 std::string TemplateEngine::loadMisc(const std::string& miscName) {
     // Check cache
-    static bool loaded = false;
-    if (loaded) {
+    if (is_loaded_misc_) {
         auto it = miscCache_.find(trimWhitespace(miscName));
         if (it != miscCache_.end()) {
             return it->second;
@@ -82,7 +81,7 @@ std::string TemplateEngine::loadMisc(const std::string& miscName) {
         return "";
     }
 
-    loaded = true;
+    is_loaded_misc_ = true;
     
     // Load all misc files and parse
     for (const auto& miscFile : config_.miscs) {
@@ -146,6 +145,8 @@ std::vector<std::shared_ptr<TemplateToken>> TemplateEngine::buildTokenSequence(c
     std::regex tagRegex("<%([\\s\\S]*?)%>");
     std::sregex_iterator iter(content.begin(), content.end(), tagRegex);
     std::sregex_iterator end;
+
+    std::regex spaceRegex("^[\t ]*$");
     
     size_t lastPos = 0;
     
@@ -157,10 +158,20 @@ std::vector<std::shared_ptr<TemplateToken>> TemplateEngine::buildTokenSequence(c
         // 添加Tag之前的文本
         if (tagStart > lastPos) {
             auto textNode = std::make_shared<TemplateToken>(TokenType::TEXT);
-            textNode->outer_content = content.substr(lastPos, tagStart - lastPos);
-            textNode->start_pos = lastPos;
-            textNode->end_pos = tagStart;
-            tokens.push_back(textNode);
+            std::string text;
+            if (content[lastPos] == '\n') {
+                text = content.substr(lastPos + 1, tagStart - lastPos - 1);
+            } else {
+                text = content.substr(lastPos, tagStart - lastPos);
+            }
+            
+            // 如果是单行空格，则去掉
+            if (!std::regex_match(text, spaceRegex)) {
+                textNode->outer_content = text;
+                textNode->start_pos = lastPos;
+                textNode->end_pos = tagStart;
+                tokens.push_back(textNode);
+            }
         }
         
         // 解析Tag
@@ -178,10 +189,18 @@ std::vector<std::shared_ptr<TemplateToken>> TemplateEngine::buildTokenSequence(c
     // 添加最后的文本
     if (lastPos < content.length()) {
         auto textNode = std::make_shared<TemplateToken>(TokenType::TEXT);
-        textNode->outer_content = content.substr(lastPos);
-        textNode->start_pos = lastPos;
-        textNode->end_pos = content.length();
-        tokens.push_back(textNode);
+        std::string text;
+        if (content[lastPos] == '\n') {
+            text = content.substr(lastPos + 1);
+        } else {
+            text = content.substr(lastPos);
+        }
+        if (!std::regex_match(text, spaceRegex)) {
+            textNode->outer_content = text;
+            textNode->start_pos = lastPos;
+            textNode->end_pos = content.length();
+            tokens.push_back(textNode);
+        }
     }
     
     return tokens;
@@ -516,7 +535,23 @@ std::string TemplateEngine::renderTagNode(const std::shared_ptr<TagNode>& node, 
 }
 
 std::string TemplateEngine::renderVariable(const std::string& varName, const TemplateVars& vars) {
-    return getVarValue(varName, vars);
+    try {
+        auto result =  getVarValue(varName, vars);
+        if (result.is_string()) {
+            return result.get<std::string>();
+        } else if (result.is_number()) {
+            return std::to_string(result.get<int>());
+        } else if (result.is_boolean()) {
+            return result.get<bool>() ? "true" : "false";
+        } else if (result.is_null()) {
+            return "";
+        } else {
+            return result.dump();
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return "";
+    }
 }
 
 std::string TemplateEngine::renderFunctionCall(const std::string& funcName, const std::string& args, const TemplateVars& vars) {
@@ -945,7 +980,17 @@ nlohmann::json TemplateEngine::evaluateExpression(const std::string& expr, const
     if (parenPos != std::string::npos && trimmedExpr.back() == ')') {
         std::string funcName = trimWhitespace(trimmedExpr.substr(0, parenPos));
         std::string funcArgs = trimmedExpr.substr(parenPos + 1, trimmedExpr.length() - parenPos - 2);
-        return renderFunctionCall(funcName, funcArgs, vars);
+
+        std::vector<std::string> parsedArgs = parseArguments(funcArgs);
+    
+        // 对每个参数进行求值，支持嵌套函数调用和变量引用
+        std::vector<nlohmann::json> evaluatedArgs;
+        for (const auto& arg : parsedArgs) {
+            evaluatedArgs.push_back(evaluateExpression(arg, vars));
+        }
+    
+    // 调用内置函数
+    return callBuiltinFunction(funcName, evaluatedArgs, vars);
     }
     
     return getVarValue(trimmedExpr, vars);
@@ -962,6 +1007,8 @@ nlohmann::json TemplateEngine::callBuiltinFunction(const std::string& funcName, 
             return toCamelCase(arg.get<std::string>());
         } else if (funcName == "map_type") {
             return mapType(arg.get<std::string>());
+        } else if (funcName == "is_base_type") {
+            return generator_->isBuiltinType(arg.get<std::string>());
         } else if (funcName == "escape_string") {
             return escapeString(arg.get<std::string>());
         } else if (funcName == "first_namespace_part") {
@@ -1021,17 +1068,19 @@ nlohmann::json TemplateEngine::callBuiltinFunction(const std::string& funcName, 
     
     // 双参数函数
     if (args.size() == 2) {
-        const std::string& arg1 = args[0];
-        const std::string& arg2 = args[1];
+        const nlohmann::json& arg1 = args[0];
+        const nlohmann::json& arg2 = args[1];
         
         if (funcName == "join") {
             // join(separator, array_var_name)
-            if (vars.contains(arg2) && vars[arg2].is_array()) {
+            std::string separator = arg1.get<std::string>();
+            nlohmann::json array = arg2;
+            if (array.is_array()) {
                 std::string result;
-                const auto& jsonArray = vars[arg2];
+                const auto& jsonArray = array;
                 for (size_t i = 0; i < jsonArray.size(); ++i) {
                     if (i > 0) {
-                        result += arg1;
+                        result += arg1.get<std::string>();
                     }
                     if (jsonArray[i].is_string()) {
                         result += jsonArray[i].get<std::string>();
@@ -1044,8 +1093,8 @@ nlohmann::json TemplateEngine::callBuiltinFunction(const std::string& funcName, 
             return "";
         } else if (funcName == "replace") {
             // replace(string, old_pattern, new_pattern) - 这里简化为双参数版本
-            std::string result = arg1;
-            std::string oldPattern = arg2;
+            std::string result = arg1.get<std::string>();
+            std::string oldPattern = arg2.get<std::string>();
             std::string newPattern = args.size() > 2 ? args[2] : "";
             
             size_t pos = 0;
@@ -1056,10 +1105,10 @@ nlohmann::json TemplateEngine::callBuiltinFunction(const std::string& funcName, 
             return result;
         } else if (funcName == "repeat") {
             // repeat(string, count)
-            std::string result = arg1;
-            int count = std::stoi(arg2);
+            std::string result = "";
+            int count = arg2.get<int>();
             for (int i = 0; i < count; ++i) {
-                result += arg1;
+                result += arg1.get<std::string>();
             }
             return result;
         }

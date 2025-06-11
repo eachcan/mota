@@ -38,10 +38,7 @@ block SystemInfo {
 
 // 使用块
 @yima.Window(title = "视觉系统配置")
-struct VisionSystem {
+block VisionSystem : SystemInfo {
     // 相机列表
     repeated CameraConfig cameras;
-    
-    // 系统信息
-    SystemInfo info;
 }

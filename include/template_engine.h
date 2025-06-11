@@ -161,6 +161,7 @@ private:
     std::unordered_map<std::string, std::string> templateCache_;
     std::unordered_map<std::string, std::string> miscCache_;
     generator::Generator* generator_ = nullptr; // 用于访问声明注册表
+    bool is_loaded_misc_ = false;
 };
 
 } // namespace template_engine

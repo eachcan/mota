@@ -28,7 +28,10 @@ static const std::unordered_map<std::string, TokenType> keywords = {
     {"struct", TokenType::Struct},
     {"enum", TokenType::Enum},
     {"block", TokenType::Block},
-    {"annotation", TokenType::Annotation}
+    {"annotation", TokenType::Annotation},
+
+    {"true", TokenType::True},
+    {"false", TokenType::False},
 };
 
 Token Lexer::identifierOrKeyword() {

@@ -593,7 +593,7 @@ std::string Generator::mapType(const std::string& motaType) {
 
 bool Generator::isBuiltinType(const std::string& type) {
     static const std::vector<std::string> builtinTypes = {
-        "string", "int32", "int64", "float", "double", "bool", "bytes"
+        "int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64", "float32", "float64", "string", "bool", "bytes"
     };
     return std::find(builtinTypes.begin(), builtinTypes.end(), type) != builtinTypes.end();
 }

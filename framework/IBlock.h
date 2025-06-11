@@ -20,8 +20,8 @@ namespace ymf {
         class MODEL_EXPORT IBlock {
             public:
                 virtual ~IBlock() = default;
-                virtual QCborValue toCbor() const = 0;
-                virtual void fromCbor(const QCborValue& cbor) = 0;
+                virtual QCborMap toCbor() const = 0;
+                virtual void fromCbor(const QCborMap& cbor) = 0;
         
                 // 获取块名称
                 virtual QString name() const = 0;

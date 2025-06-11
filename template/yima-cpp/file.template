@@ -23,13 +23,6 @@
 using namespace ymf;
 
 <%if (NAMESPACE.exists)%><%call namespace_declaration%><%endif%><%foreach DECLARATIONS as declaration%>
-<%if (declaration.type == "annotation_decl")%><%call annotation_decl%>
-<%endif%><%if (declaration.type == "enum")%>
-<%call enum%>
-<%endif%><%if (declaration.type == "struct")%>
-<%call struct%>
-<%endif%><%if (declaration.type == "block")%>
-<%call block%>
-<%endif%><%endforeach%><%if (NAMESPACE.exists)%>
-<%call namespace_closing%>
+<%if (declaration.type == "annotation_decl")%><%call annotation_decl%><%endif%><%if (declaration.type == "enum")%><%call enum%><%endif%><%if (declaration.type == "struct")%><%call struct%><%endif%><%if (declaration.type == "block")%><%call block%><%endif%><%endforeach%>
+<%if (NAMESPACE.exists)%><%call namespace_closing%>
 <%endif%> 

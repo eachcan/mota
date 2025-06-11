@@ -47,12 +47,21 @@
 
 <%misc inheritance_declaration%><%if (declaration.parent)%>public <%=declaration.parent_class_name%>, <%endif%>public <%call interface_name%><%endmisc%>
 <%misc inheritance_declaration_annotation%><%if (declaration.parent)%>public <%=declaration.parent_class_name%><%else%>public IAnnotation<%endif%><%endmisc%>
+<%misc inheritance_declaration_block%><%if (declaration.parent)%>public <%=declaration.parent_class_name%><%else%>public IBlock<%endif%><%endmisc%>
+<%misc inheritance_declaration_struct%><%if (declaration.parent)%>public <%=declaration.parent_class_name%>, <%endif%>public IModel<%endmisc%>
 
 <%misc capitalize%><%=first_char_upper(field_name)%><%endmisc%>
 
 <%misc escape_string%><%=escape_string(STRING_VALUE)%><%endmisc%>
 
-<%misc field_type%><%if (field.container_type == "array")%>QVector<<%=map_type(field.type_name)%>><%else%><%if field.container_type == "map"%>QMap<QString, <%=map_type(field.type_name)%>><%else%><%=map_type(field.type_name)%><%endif%><%endif%><%endmisc%>
+<%misc field_type%>
+    <%if (field.container_type == "array")%>
+QVector<<%=map_type(field.type_name)%>><%else%>
+        <%if field.container_type == "map"%>
+QMap<QString, <%=map_type(field.type_name)%>><%else%>
+<%=map_type(field.type_name)%><%endif%>
+    <%endif%>
+<%endmisc%>
 
 <%misc annotation_constructor%><%endmisc%>
 
