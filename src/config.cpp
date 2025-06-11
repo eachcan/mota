@@ -59,6 +59,17 @@ void TemplateConfig::loadFromJson(const nlohmann::json& json) {
     if (json.contains("include_directive")) {
         include_directive = json["include_directive"].get<IncludeDirectiveConfig>();
     }
+    
+    // 加载声明类型配置
+    if (json.contains("declaration_types")) {
+        declaration_types = json["declaration_types"].get<DeclarationTypesConfig>();
+    } else {
+        // 设置默认值
+        declaration_types.struct_decl.suffix = "Model";
+        declaration_types.block_decl.suffix = "Block";
+        declaration_types.enum_decl.suffix = "";
+        declaration_types.annotation_decl.suffix = "Annotation";
+    }
 }
 
 nlohmann::json TemplateConfig::toJson() const {
@@ -70,6 +81,7 @@ nlohmann::json TemplateConfig::toJson() const {
     json["type_mapping"] = type_mapping;
     json["file_path"] = file_path;
     json["include_directive"] = include_directive;
+    json["declaration_types"] = declaration_types;
     return json;
 }
 
@@ -81,6 +93,12 @@ void TemplateConfig::setDefaults() {
     type_mapping.clear();
     file_path.clear();
     include_directive = IncludeDirectiveConfig{};
+    
+    // 设置声明类型默认值
+    declaration_types.struct_decl.suffix = "Model";
+    declaration_types.block_decl.suffix = "Block";
+    declaration_types.enum_decl.suffix = "";
+    declaration_types.annotation_decl.suffix = "Annotation";
 }
 
 bool CompilerConfig::loadFromFile(const std::string& configPath) {

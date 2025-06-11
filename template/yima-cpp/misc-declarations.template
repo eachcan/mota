@@ -29,11 +29,15 @@ public:
 <%call deserialize_fields%>
     }
     
+    QString name() const override {
+        return "<%=declaration.name%>";
+    }
+    
     QStringList fields() const override {
         return QStringList{<%call field_names%>};
     }
     
-    QString fieldOriginTypeName(const QString& fieldName) const override {
+    QString fieldType(const QString& fieldName) const override {
 <%call field_type_logic%>
     }
     
@@ -41,7 +45,7 @@ public:
 <%call model_annotation_logic%>
     }
     
-    QList<QSharedPointer<IAnnotation>> fieldAnnotations(const QString& fieldName) const override {
+    QList<QSharedPointer<IAnnotation>> fieldAnnotation(const QString& fieldName) const override {
 <%call field_annotation_logic%>
         return QList<QSharedPointer<IAnnotation>>();
     }
@@ -74,6 +78,7 @@ protected:
 private:
 <%call private_fields%>
 };
+Q_DECLARE_METATYPE(<%=declaration.class_name%>)
 <%endmisc%>
 
 <%misc enum%>
@@ -107,7 +112,7 @@ public:
 <%endmisc%>
 
 <%misc annotation_decl%>// <%=declaration.name%>注解
-class MODEL_EXPORT <%=declaration.class_name%> : <%call inheritance_declaration%> {
+class MODEL_EXPORT <%=declaration.class_name%> : <%call inheritance_declaration_annotation%> {
 public:
     <%=declaration.class_name%>() = default;
     
@@ -126,8 +131,6 @@ public:
     
     // 特定于<%=declaration.name%>的访问器
 <%call annotation_accessors%>
-    
-private:
-<%call annotation_private_fields%>
+private:<%call annotation_private_fields%>
 };
-<%endmisc%> 
+Q_DECLARE_METATYPE(<%=declaration.class_name%>)<%endmisc%> 

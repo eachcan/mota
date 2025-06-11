@@ -21,6 +21,10 @@ annotation ModeOption {
     string value = "normal";
 }
 
+annotation OptionalModeOption : ModeOption {
+    bool is_optional = false;
+}
+
 // 模式选择器注解
 annotation ModeSelector {
     ModeOption default;

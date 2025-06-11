@@ -1,103 +1,74 @@
 <%misc serialize_int%>
-        map["<%=field.name%>"] = QCborValue(<%=field.field_name%>_);
+        map.insert(QLatin1String("<%=field.name%>"), QCborValue(get<%=pascal_case(field.name)%>()));
 <%endmisc%>
 
 <%misc serialize_float%>
-        map["<%=field.name%>"] = QCborValue(<%=field.field_name%>_);
+        map.insert(QLatin1String("<%=field.name%>"), QCborValue(get<%=pascal_case(field.name)%>()));
 <%endmisc%>
 
 <%misc serialize_string%>
-        map["<%=field.name%>"] = QCborValue(<%=field.field_name%>_);
+        map.insert(QLatin1String("<%=field.name%>"), QCborValue(get<%=pascal_case(field.name)%>()));
 <%endmisc%>
 
 <%misc serialize_bool%>
-        map["<%=field.name%>"] = QCborValue(<%=field.field_name%>_);
+        map.insert(QLatin1String("<%=field.name%>"), QCborValue(get<%=pascal_case(field.name)%>()));
 <%endmisc%>
 
 <%misc serialize_bytes%>
-        map["<%=field.name%>"] = QCborValue(<%=field.field_name%>_);
+        map.insert(QLatin1String("<%=field.name%>"), QCborValue(get<%=pascal_case(field.name)%>()));
 <%endmisc%>
 
 <%misc serialize_array%>
         QCborArray <%=field.name%>Array;
-        for (const auto& item : <%=field.field_name%>_) {
+        for (const auto& item : get<%=pascal_case(field.name)%>()) {
             <%=field.name%>Array.append(item.toCbor());
         }
-        map["<%=field.name%>"] = <%=field.name%>Array;
+        map.insert(QLatin1String("<%=field.name%>"), <%=field.name%>Array);
 <%endmisc%>
 
 <%misc serialize_complex%>
-        map["<%=field.name%>"] = <%=field.field_name%>_.toCbor();
+        map.insert(QLatin1String("<%=field.name%>"), get<%=pascal_case(field.name)%>().toCbor());
 <%endmisc%>
 
 <%misc deserialize_int%>
-        if (map.contains("<%=field.name%>")) {
-            <%=field.field_name%>_ = map["<%=field.name%>"].toInteger();
-        }
+        set<%=pascal_case(field.name)%>(static_cast<<%=map_type(field.type_name)%>>(map.value(QLatin1String("<%=field.name%>")).toInteger()));
 <%endmisc%>
 
 <%misc deserialize_float%>
-        if (map.contains("<%=field.name%>")) {
-            <%=field.field_name%>_ = map["<%=field.name%>"].toDouble();
-        }
+        set<%=pascal_case(field.name)%>(static_cast<<%=map_type(field.type_name)%>>(map.value(QLatin1String("<%=field.name%>")).toDouble()));
 <%endmisc%>
 
 <%misc deserialize_string%>
-        if (map.contains("<%=field.name%>")) {
-            <%=field.field_name%>_ = map["<%=field.name%>"].toString();
-        }
+        set<%=pascal_case(field.name)%>(map.value(QLatin1String("<%=field.name%>")).toString());
 <%endmisc%>
 
 <%misc deserialize_bool%>
-        if (map.contains("<%=field.name%>")) {
-            <%=field.field_name%>_ = map["<%=field.name%>"].toBool();
-        }
+        set<%=pascal_case(field.name)%>(map.value(QLatin1String("<%=field.name%>")).toBool());
 <%endmisc%>
 
 <%misc deserialize_bytes%>
-        if (map.contains("<%=field.name%>")) {
-            <%=field.field_name%>_ = map["<%=field.name%>"].toByteArray();
-        }
+        set<%=pascal_case(field.name)%>(map.value(QLatin1String("<%=field.name%>")).toByteArray());
 <%endmisc%>
 
 <%misc deserialize_array%>
-        if (map.contains("<%=field.name%>")) {
-            QCborArray <%=field.name%>Array = map["<%=field.name%>"].toArray();
-            <%=field.field_name%>_.clear();
-            for (const auto& item : <%=field.name%>Array) {
-                <%=map_type(field.type_name)%> element;
-                element.fromCbor(item);
-                <%=field.field_name%>_.append(element);
-            }
+        QCborArray <%=field.name%>Array = map.value(QLatin1String("<%=field.name%>")).toArray();
+        QVector<<%=map_type(field.type_name)%>> <%=field.name%>;
+        for (const auto& itemValue : <%=field.name%>Array) {
+            <%=map_type(field.type_name)%> item;
+            item.fromCbor(itemValue);
+            <%=field.name%>.append(item);
         }
+        set<%=pascal_case(field.name)%>(<%=field.name%>);
 <%endmisc%>
 
 <%misc deserialize_complex%>
-        if (map.contains("<%=field.name%>")) {
-            <%=field.field_name%>_.fromCbor(map["<%=field.name%>"]);
-        }
+        <%=map_type(field.type_name)%> <%=field.name%>;
+        <%=field.name%>.fromCbor(map.value(QLatin1String("<%=field.name%>")));
+        set<%=pascal_case(field.name)%>(<%=field.name%>);
 <%endmisc%>
 
 <%misc serialize_fields%>
-<%foreach declaration.fields as field%>
-<%if (field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64")%><%call serialize_int%><%endif%>
-<%if (field.type_name == "float32" || field.type_name == "float64")%><%call serialize_float%><%endif%>
-<%if (field.type_name == "string")%><%call serialize_string%><%endif%>
-<%if (field.type_name == "bool")%><%call serialize_bool%><%endif%>
-<%if (field.type_name == "bytes")%><%call serialize_bytes%><%endif%>
-<%if (field.container_type == "array")%><%call serialize_array%><%endif%>
-<%if (!field.type_name == "int8" && !field.type_name == "int16" && !field.type_name == "int32" && !field.type_name == "int64" && !field.type_name == "uint8" && !field.type_name == "uint16" && !field.type_name == "uint32" && !field.type_name == "uint64" && !field.type_name == "float32" && !field.type_name == "float64" && !field.type_name == "string" && !field.type_name == "bool" && !field.type_name == "bytes" && field.container_type == "none")%><%call serialize_complex%><%endif%>
-<%endforeach%>
-<%endmisc%>
+<%foreach declaration.fields as field%><%if (field.container_type == "array")%><%call serialize_array%><%else%><%if (field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64")%><%call serialize_int%><%else%><%if (field.type_name == "float32" || field.type_name == "float64")%><%call serialize_float%><%else%><%if (field.type_name == "string")%><%call serialize_string%><%else%><%if (field.type_name == "bool")%><%call serialize_bool%><%else%><%if (field.type_name == "bytes")%><%call serialize_bytes%><%else%><%call serialize_complex%><%endif%><%endif%><%endif%><%endif%><%endif%><%endforeach%><%endmisc%>
 
 <%misc deserialize_fields%>
-<%foreach declaration.fields as field%>
-<%if (field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64")%><%call deserialize_int%><%endif%>
-<%if (field.type_name == "float32" || field.type_name == "float64")%><%call deserialize_float%><%endif%>
-<%if (field.type_name == "string")%><%call deserialize_string%><%endif%>
-<%if (field.type_name == "bool")%><%call deserialize_bool%><%endif%>
-<%if (field.type_name == "bytes")%><%call deserialize_bytes%><%endif%>
-<%if (field.container_type == "array")%><%call deserialize_array%><%endif%>
-<%if (!field.type_name == "int8" && !field.type_name == "int16" && !field.type_name == "int32" && !field.type_name == "int64" && !field.type_name == "uint8" && !field.type_name == "uint16" && !field.type_name == "uint32" && !field.type_name == "uint64" && !field.type_name == "float32" && !field.type_name == "float64" && !field.type_name == "string" && !field.type_name == "bool" && !field.type_name == "bytes" && field.container_type == "none")%><%call deserialize_complex%><%endif%>
-<%endforeach%>
-<%endmisc%> 
+<%foreach declaration.fields as field%><%if (field.container_type == "array")%><%call deserialize_array%><%else%><%if (field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64")%><%call deserialize_int%><%else%><%if (field.type_name == "float32" || field.type_name == "float64")%><%call deserialize_float%><%else%><%if (field.type_name == "string")%><%call deserialize_string%><%else%><%if (field.type_name == "bool")%><%call deserialize_bool%><%else%><%if (field.type_name == "bytes")%><%call deserialize_bytes%><%else%><%call deserialize_complex%><%endif%><%endif%><%endif%><%endif%><%endif%><%endforeach%><%endmisc%> 

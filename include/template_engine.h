@@ -9,6 +9,12 @@
 #include "config.h"
 
 namespace mota {
+
+// 前向声明
+namespace generator {
+    class Generator;
+}
+
 namespace template_engine {
 
 // 模板变量类型
@@ -82,6 +88,9 @@ public:
     // 获取模板配置
     const config::TemplateConfig& getConfig() const { return config_; }
     
+    // 设置Generator引用（用于访问声明注册表）
+    void setGenerator(generator::Generator* generator) { generator_ = generator; }
+    
 private:
     // 加载模板文件
     std::string loadTemplate(const std::string& templateName);
@@ -151,6 +160,7 @@ private:
     std::string templateDir_;
     std::unordered_map<std::string, std::string> templateCache_;
     std::unordered_map<std::string, std::string> miscCache_;
+    generator::Generator* generator_ = nullptr; // 用于访问声明注册表
 };
 
 } // namespace template_engine

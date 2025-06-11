@@ -26,6 +26,24 @@ struct IncludeDirectiveConfig {
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(IncludeDirectiveConfig, pattern, source_extension, target_extension)
 };
 
+// 声明前后缀配置
+struct DeclarationPrefixSuffixConfig {
+    std::string prefix = "";
+    std::string suffix = "";
+    
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(DeclarationPrefixSuffixConfig, prefix, suffix)
+};
+
+// 声明类型配置
+struct DeclarationTypesConfig {
+    DeclarationPrefixSuffixConfig struct_decl;
+    DeclarationPrefixSuffixConfig block_decl;
+    DeclarationPrefixSuffixConfig enum_decl;
+    DeclarationPrefixSuffixConfig annotation_decl;
+    
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(DeclarationTypesConfig, struct_decl, block_decl, enum_decl, annotation_decl)
+};
+
 // 模板配置类
 class TemplateConfig {
 public:
@@ -36,6 +54,7 @@ public:
     std::unordered_map<std::string, std::string> type_mapping;
     std::vector<FilePathConfig> file_path;
     IncludeDirectiveConfig include_directive;
+    DeclarationTypesConfig declaration_types;
     
     // 从JSON文件加载配置
     bool loadFromFile(const std::string& configPath);

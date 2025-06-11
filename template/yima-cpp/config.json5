@@ -26,6 +26,24 @@
     "bool": "bool",
     "bytes": "QByteArray"
   },
+  "declaration_types": {
+    "struct_decl": {
+      "prefix": "",
+      "suffix": "Model"
+    },
+    "block_decl": {
+      "prefix": "",
+      "suffix": "Block"
+    },
+    "enum_decl": {
+      "prefix": "",
+      "suffix": ""
+    },
+    "annotation_decl": {
+      "prefix": "",
+      "suffix": "Annotation"
+    }
+  },
   "file_path": [
     {
       "namespace_separator": "\\",

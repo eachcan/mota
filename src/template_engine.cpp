@@ -1,4 +1,5 @@
 ﻿#include "template_engine.h"
+#include "generator.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -72,11 +73,12 @@ std::string TemplateEngine::loadMisc(const std::string& miscName) {
     // Check cache
     static bool loaded = false;
     if (loaded) {
-        auto it = miscCache_.find(miscName);
+        auto it = miscCache_.find(trimWhitespace(miscName));
         if (it != miscCache_.end()) {
             return it->second;
         }
-
+        // 找不到misc时输出错误信息
+        std::cerr << "Misc not found: " << miscName << std::endl;
         return "";
     }
 
@@ -87,6 +89,7 @@ std::string TemplateEngine::loadMisc(const std::string& miscName) {
         std::string miscPath = templateDir_ + "/" + miscFile;
         std::ifstream file(miscPath);
         if (!file.is_open()) {
+            std::cerr << "Cannot open misc file: " << miscPath << std::endl;
             continue;
         }
         
@@ -101,6 +104,7 @@ std::string TemplateEngine::loadMisc(const std::string& miscName) {
         std::sregex_iterator iter(content.begin(), content.end(), miscRegex);
         std::sregex_iterator end;
         
+        int fragmentCount = 0;
         while (iter != end) {
             std::smatch match = *iter;
             std::string name = match[1].str();
@@ -115,9 +119,14 @@ std::string TemplateEngine::loadMisc(const std::string& miscName) {
             // Trim whitespace
             name = trimWhitespace(name);
             miscCache_[name] = miscContent;
+            fragmentCount++;
             ++iter;
         }
+        
+        std::cout << "Loaded " << fragmentCount << " misc fragments from " << miscFile << std::endl;
     }
+    
+    std::cout << "Total misc fragments loaded: " << miscCache_.size() << std::endl;
     
     // Find requested misc fragment
     auto miscIt = miscCache_.find(miscName);
@@ -745,6 +754,12 @@ std::string TemplateEngine::toCamelCase(const std::string& str) {
 }
 
 std::string TemplateEngine::mapType(const std::string& motaType) {
+    // 如果有Generator引用，使用Generator的mapType方法（包含声明注册表查询）
+    if (generator_) {
+        return generator_->mapType(motaType);
+    }
+    
+    // 否则使用传统的类型映射
     auto it = config_.type_mapping.find(motaType);
     if (it != config_.type_mapping.end()) {
         return it->second;

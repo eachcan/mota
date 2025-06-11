@@ -13,6 +13,11 @@
 #include "template_engine.h"
 
 namespace mota {
+namespace processor {
+    struct DeclarationInfo;
+    using DeclarationRegistry = std::map<std::string, DeclarationInfo>;
+}
+
 namespace generator {
 
 // 继承模板引擎的变量类型定义
@@ -50,6 +55,15 @@ public:
     // 获取模板引擎
     template_engine::TemplateEngine& getTemplateEngine() { return *templateEngine_; }
     
+    // 设置声明注册表
+    void setDeclarationRegistry(const processor::DeclarationRegistry& registry);
+    
+    // 设置当前命名空间
+    void setCurrentNamespace(const std::string& currentNamespace);
+    
+    // 类型映射方法（模板引擎需要访问）
+    std::string mapType(const std::string& motaType);
+
 private:
     // 构建模板变量
     TemplateVars buildTemplateVars(const std::unique_ptr<ast::Document>& document);
@@ -65,12 +79,13 @@ private:
     nlohmann::json buildExprData(const std::unique_ptr<ast::Expr>& expr);
     nlohmann::json buildTypeData(const std::unique_ptr<ast::Type>& type);
     
+    // 构建声明注册表数据（用于模板变量）
+    nlohmann::json buildDeclarationRegistryData();
 
     
 
     
     // 类型相关方法
-    std::string mapType(const std::string& motaType);
     bool isBuiltinType(const std::string& type);
     bool isRepeatedType(const ast::Type& type);
     bool isOptionalType(const ast::Type& type);
@@ -91,8 +106,12 @@ private:
 private:
     config::TemplateConfig templateConfig_;
     std::unique_ptr<template_engine::TemplateEngine> templateEngine_;
-    std::string templateDir_;
     bool initialized_ = false;
+    std::string templateDir_;
+    
+    // 声明注册表和当前命名空间
+    processor::DeclarationRegistry* declarationRegistry_ = nullptr;
+    std::string currentNamespace_;
 };
 
 } // namespace generator

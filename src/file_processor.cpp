@@ -91,6 +91,22 @@ bool FileProcessor::processMotaFile(
             std::cout << "生成器初始化成功，开始生成代码..." << std::endl;
         }
         
+        // 构建声明注册表
+        DeclarationRegistry declarationRegistry;
+        buildDeclarationRegistry(includedDeclarations, currentDeclarations, declarationRegistry, generator.getConfig());
+        
+        // 设置声明注册表到生成器
+        generator.setDeclarationRegistry(declarationRegistry);
+        generator.setCurrentNamespace(root->hasNamespace() ? 
+            [&]() {
+                std::string ns;
+                for (size_t i = 0; i < root->m_namespace->name.size(); ++i) {
+                    if (i > 0) ns += ".";
+                    ns += root->m_namespace->name[i];
+                }
+                return ns;
+            }() : "");
+        
         auto filePaths = generator.getConfig().file_path;
         for (const auto& filePath : filePaths) {
             std::string generatedCode = generator.generateCode(root, filePath.entry);
@@ -342,6 +358,82 @@ void FileProcessor::mergeDeclarations(
             target[pair.first] = pair.second;
         }
         // 如果已存在，我们保持原有的，不覆盖
+    }
+}
+
+void FileProcessor::buildDeclarationRegistry(
+    const std::map<std::string, checker::KnownDecl>& includedDeclarations,
+    const std::map<std::string, checker::KnownDecl>& currentDeclarations,
+    DeclarationRegistry& registry,
+    const config::TemplateConfig& config) {
+    
+    auto buildDeclarationInfo = [](const std::string& qualifiedName, const checker::KnownDecl& knownDecl, 
+                                  const std::string& prefix, const std::string& suffix) -> DeclarationInfo {
+        DeclarationInfo info;
+        info.name = knownDecl.name;
+        info.qualified_name = qualifiedName;
+        info.namespace_name = knownDecl.namespaceName;
+        info.file_path = knownDecl.file;
+        info.node = knownDecl.node;
+        
+        // 根据节点类型设置声明类型和类名
+        switch (knownDecl.type) {
+            case ast::NodeType::StructDecl:
+                info.type = "struct";
+                info.class_name = prefix + knownDecl.name + suffix;
+                break;
+            case ast::NodeType::BlockDecl:
+                info.type = "block";
+                info.class_name = prefix + knownDecl.name + suffix;
+                break;
+            case ast::NodeType::EnumDecl:
+                info.type = "enum";
+                info.class_name = prefix + knownDecl.name + suffix;
+                break;
+            case ast::NodeType::AnnotationDecl:
+                info.type = "annotation_decl";
+                info.class_name = prefix + knownDecl.name + suffix;
+                break;
+            default:
+                break;
+        }
+        
+        return info;
+    };
+    
+    auto getPrefixSuffix = [&config](ast::NodeType type) -> std::pair<std::string, std::string> {
+        switch (type) {
+            case ast::NodeType::StructDecl:
+                return {config.declaration_types.struct_decl.prefix, config.declaration_types.struct_decl.suffix};
+            case ast::NodeType::BlockDecl:
+                return {config.declaration_types.block_decl.prefix, config.declaration_types.block_decl.suffix};
+            case ast::NodeType::EnumDecl:
+                return {config.declaration_types.enum_decl.prefix, config.declaration_types.enum_decl.suffix};
+            case ast::NodeType::AnnotationDecl:
+                return {config.declaration_types.annotation_decl.prefix, config.declaration_types.annotation_decl.suffix};
+            default:
+                return {"", ""};
+        }
+    };
+    
+    // 处理包含的声明
+    for (const auto& [qualifiedName, knownDecl] : includedDeclarations) {
+        auto [prefix, suffix] = getPrefixSuffix(knownDecl.type);
+        if (knownDecl.type == ast::NodeType::StructDecl || knownDecl.type == ast::NodeType::BlockDecl ||
+            knownDecl.type == ast::NodeType::EnumDecl || knownDecl.type == ast::NodeType::AnnotationDecl) {
+            auto info = buildDeclarationInfo(qualifiedName, knownDecl, prefix, suffix);
+            registry[qualifiedName] = info;
+        }
+    }
+    
+    // 处理当前文档的声明
+    for (const auto& [qualifiedName, knownDecl] : currentDeclarations) {
+        auto [prefix, suffix] = getPrefixSuffix(knownDecl.type);
+        if (knownDecl.type == ast::NodeType::StructDecl || knownDecl.type == ast::NodeType::BlockDecl ||
+            knownDecl.type == ast::NodeType::EnumDecl || knownDecl.type == ast::NodeType::AnnotationDecl) {
+            auto info = buildDeclarationInfo(qualifiedName, knownDecl, prefix, suffix);
+            registry[qualifiedName] = info;
+        }
     }
 }
 

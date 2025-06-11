@@ -10,6 +10,7 @@
 #include <QSharedPointer>
 #include <memory>
 
+#include "framework/IAnnotation.h"
 #include "framework/IBlock.h"
 
 // 此文件由 Mota 代码生成器自动生成
@@ -56,9 +57,9 @@ public:
         return QLatin1String("");
     }
     
-    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+    QList<QSharedPointer<IAnnotation>> fieldAnnotation(const QString& fieldName) const override {
         
-        return QList<QSharedPointer<void>>();
+        return QList<QSharedPointer<IAnnotation>>();
     }
     
     QString description() const override {
@@ -110,7 +111,7 @@ private:
     int16_t x_;
     int16_t y_;
 };
-
+Q_DECLARE_METATYPE(yima::PointBlock)
 
 // Rectangle块
 class MODEL_EXPORT RectangleBlock : public IBlock {
@@ -152,9 +153,9 @@ public:
         return QLatin1String("");
     }
     
-    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+    QList<QSharedPointer<IAnnotation>> fieldAnnotation(const QString& fieldName) const override {
         
-        return QList<QSharedPointer<void>>();
+        return QList<QSharedPointer<IAnnotation>>();
     }
     
     QString description() const override {
@@ -236,7 +237,7 @@ private:
     int16_t x_;
     int16_t y_;
 };
-
+Q_DECLARE_METATYPE(yima::RectangleBlock)
 
 // Circle块
 class MODEL_EXPORT CircleBlock : public IBlock {
@@ -275,9 +276,9 @@ public:
         return QLatin1String("");
     }
     
-    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+    QList<QSharedPointer<IAnnotation>> fieldAnnotation(const QString& fieldName) const override {
         
-        return QList<QSharedPointer<void>>();
+        return QList<QSharedPointer<IAnnotation>>();
     }
     
     QString description() const override {
@@ -344,7 +345,7 @@ private:
     int16_t x_;
     int16_t y_;
 };
-
+Q_DECLARE_METATYPE(yima::CircleBlock)
 
 // Ellipse块
 class MODEL_EXPORT EllipseBlock : public IBlock {
@@ -388,9 +389,9 @@ public:
         return QLatin1String("");
     }
     
-    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+    QList<QSharedPointer<IAnnotation>> fieldAnnotation(const QString& fieldName) const override {
         
-        return QList<QSharedPointer<void>>();
+        return QList<QSharedPointer<IAnnotation>>();
     }
     
     QString description() const override {
@@ -472,7 +473,7 @@ private:
     int16_t height_;
     float rotation_;
 };
-
+Q_DECLARE_METATYPE(yima::EllipseBlock)
 
 // Arc块
 class MODEL_EXPORT ArcBlock : public IBlock {
@@ -519,9 +520,9 @@ public:
         return QLatin1String("");
     }
     
-    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+    QList<QSharedPointer<IAnnotation>> fieldAnnotation(const QString& fieldName) const override {
         
-        return QList<QSharedPointer<void>>();
+        return QList<QSharedPointer<IAnnotation>>();
     }
     
     QString description() const override {
@@ -662,9 +663,9 @@ public:
         return QLatin1String("");
     }
     
-    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+    QList<QSharedPointer<IAnnotation>> fieldAnnotation(const QString& fieldName) const override {
         
-        return QList<QSharedPointer<void>>();
+        return QList<QSharedPointer<IAnnotation>>();
     }
     
     QString description() const override {
@@ -741,9 +742,9 @@ public:
         return QLatin1String("");
     }
     
-    QList<QSharedPointer<void>> fieldAnnotation(const QString& fieldName) const override {
+    QList<QSharedPointer<IAnnotation>> fieldAnnotation(const QString& fieldName) const override {
         
-        return QList<QSharedPointer<void>>();
+        return QList<QSharedPointer<IAnnotation>>();
     }
     
     QString description() const override {
@@ -756,8 +757,8 @@ public:
     }
     
     QVariant value(const QString& fieldName) const override {
-        if (fieldName == QLatin1String("start")) return QVariant::fromValue(start_);
-        if (fieldName == QLatin1String("end")) return QVariant::fromValue(end_);
+        if (fieldName == QLatin1String("start")) return QVariant(start_);
+        if (fieldName == QLatin1String("end")) return QVariant(end_);
         return QVariant();
     }
     

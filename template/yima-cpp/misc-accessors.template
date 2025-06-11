@@ -1,7 +1,7 @@
 <%misc constructor%>
 <%if (declaration.fields)%>
-    <%=declaration.class_name%>(<%foreach declaration.fields as field%><%call field_type%> <%=field.field_name%><%if (field.default_value)%> = <%=field.default_value%><%endif%><%if (!field.is_last)%>, <%endif%><%endforeach%>) 
-        : <%foreach declaration.fields as field%><%=field.field_name%>_(<%=field.field_name%>)<%if (!field.is_last)%>, <%endif%><%endforeach%> {}
+    <%=declaration.class_name%>(<%foreach declaration.fields as field%><%call field_type%> <%=field.field_name%><%if (field.default_value)%> = <%=field.default_value%><%endif%><%if (is_last == false)%>, <%endif%><%endforeach%>) 
+        : <%foreach declaration.fields as field%><%=field.field_name%>_(<%=field.field_name%>)<%if (is_last == false)%>, <%endif%><%endforeach%> {}
 <%endif%>
 <%endmisc%>
 
@@ -13,7 +13,7 @@
 
 <%misc field_names%>
 <%foreach declaration.fields as field%>
-"<%=field.name%>"<%if (!field.is_last)%>, <%endif%><%endforeach%>
+QLatin1String("<%=field.name%>")<%if (is_last == false)%>, <%endif%><%endforeach%>
 <%endmisc%>
 
 <%misc debug_fields%>
@@ -22,13 +22,13 @@
 <%endmisc%>
 
 <%misc getter_method%>
-    <%call field_type%> get<%=capitalize(field.field_name)%>() const {
+    <%call field_type%> get<%=pascal_case(field.name)%>() const {
         return <%=field.field_name%>_;
     }
 <%endmisc%>
 
 <%misc setter_method%>
-    void set<%=capitalize(field.field_name)%>(const <%call field_type%>& value) {
+    void set<%=pascal_case(field.name)%>(const <%call field_type%>& value) {
         <%=field.field_name%>_ = value;
     }
 <%endmisc%>
@@ -43,11 +43,9 @@
 
 <%misc field_type_logic%>
 <%foreach declaration.fields as field%>
-        <%if (!field.is_first)%>else <%endif%>if (fieldName == "<%=field.name%>") {
-            return "<%=field.qualified_type_name%>";
-        }
+        if (fieldName == QLatin1String("<%=field.name%>")) return QLatin1String("<%=field.type_name%>");
 <%endforeach%>
-        return QString();
+        return QLatin1String("");
 <%endmisc%>
 
 <%misc model_annotation_logic%>
@@ -60,7 +58,7 @@
 
 <%misc field_annotation_logic%>
 <%foreach declaration.fields as field%>
-        <%if (!field.is_first)%>else <%endif%>if (fieldName == "<%=field.name%>") {
+        if (fieldName == QLatin1String("<%=field.name%>")) {
             QList<QSharedPointer<IAnnotation>> result;
 <%foreach field.annotations as annotation%>
             result.append(QSharedPointer<IAnnotation>(new <%=annotation.class_name%>()));
@@ -72,7 +70,7 @@
 
 <%misc field_description_logic%>
 <%foreach declaration.fields as field%>
-        <%if (!field.is_first)%>else <%endif%>if (fieldName == "<%=field.name%>") {
+        if (fieldName == QLatin1String("<%=field.name%>")) {
             return "<%=escape_string(field.name)%>";
         }
 <%endforeach%>
@@ -80,17 +78,16 @@
 
 <%misc value_getter_logic%>
 <%foreach declaration.fields as field%>
-        <%if (!field.is_first)%>else <%endif%>if (fieldName == "<%=field.name%>") {
-            return QVariant::fromValue(<%=field.field_name%>_);
-        }
+        if (fieldName == QLatin1String("<%=field.name%>")) return QVariant::fromValue(<%=field.field_name%>_);
 <%endforeach%>
         return QVariant();
 <%endmisc%>
 
 <%misc value_setter_logic%>
 <%foreach declaration.fields as field%>
-        <%if (!field.is_first)%>else <%endif%>if (fieldName == "<%=field.name%>") {
+        if (fieldName == QLatin1String("<%=field.name%>")) {
             <%=field.field_name%>_ = value.value<<%call field_type%>>();
+            return;
         }
 <%endforeach%>
 <%endmisc%> 

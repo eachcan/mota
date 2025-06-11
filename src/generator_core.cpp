@@ -1,4 +1,5 @@
 #include "generator.h"
+#include "file_processor.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -29,21 +30,24 @@ GeneratorConfig GeneratorConfig::fromTemplateConfig(const config::TemplateConfig
 Generator::Generator() = default;
 
 bool Generator::initialize(const std::string& templateDir, const std::string& configPath) {
-    templateDir_ = templateDir;
-    
-    // 加载模板配置
-    std::string actualConfigPath = configPath;
-    if (actualConfigPath.empty()) {
-        actualConfigPath = templateDir + "/config.json5";
+    if (initialized_) {
+        return true;
     }
     
-    if (!templateConfig_.loadFromFile(actualConfigPath)) {
-        std::cerr << "Failed to load template config from: " << actualConfigPath << std::endl;
+    templateDir_ = templateDir;
+    
+    // 加载配置
+    std::string configFile = configPath.empty() ? templateDir + "/config.json5" : configPath;
+    if (!templateConfig_.loadFromFile(configFile)) {
+        std::cerr << "Failed to load template config from: " << configFile << std::endl;
         return false;
     }
     
     // 创建模板引擎
-    templateEngine_ = std::make_unique<template_engine::TemplateEngine>(templateConfig_, templateDir_);
+    templateEngine_ = std::make_unique<template_engine::TemplateEngine>(templateConfig_, templateDir);
+    
+    // 设置模板引擎的Generator引用
+    templateEngine_->setGenerator(this);
     
     initialized_ = true;
     return true;
@@ -97,6 +101,9 @@ TemplateVars Generator::buildTemplateVars(const std::unique_ptr<ast::Document>& 
     
     // 构建声明信息
     vars["DECLARATIONS"] = buildDeclarationsData(document);
+    
+    // 构建声明注册表信息
+    vars["DECLARATIONS_REGISTRY"] = buildDeclarationRegistryData();
     
     return vars;
 }
@@ -542,10 +549,45 @@ nlohmann::json Generator::buildTypeData(const std::unique_ptr<ast::Type>& type) 
 }
 
 std::string Generator::mapType(const std::string& motaType) {
+    // 1. 首先检查是否为基础类型
+    if (isBuiltinType(motaType)) {
+        auto it = templateConfig_.type_mapping.find(motaType);
+        if (it != templateConfig_.type_mapping.end()) {
+            return it->second;
+        }
+        return motaType; // 如果基础类型没有映射，返回原始类型
+    }
+    
+    // 2. 查询声明注册表
+    if (declarationRegistry_) {
+        // 首先尝试完全限定名查找
+        auto it = declarationRegistry_->find(motaType);
+        if (it != declarationRegistry_->end()) {
+            return it->second.getRelativeTypeName(currentNamespace_);
+        }
+        
+        // 如果没找到，尝试在当前命名空间中查找简单名称
+        std::string qualifiedName = currentNamespace_.empty() ? motaType : currentNamespace_ + "." + motaType;
+        it = declarationRegistry_->find(qualifiedName);
+        if (it != declarationRegistry_->end()) {
+            return it->second.getRelativeTypeName(currentNamespace_);
+        }
+        
+        // 遍历注册表查找匹配的简单名称
+        for (const auto& [regQualifiedName, info] : *declarationRegistry_) {
+            if (info.name == motaType) {
+                return info.getRelativeTypeName(currentNamespace_);
+            }
+        }
+    }
+    
+    // 3. 如果都没找到，检查传统类型映射
     auto it = templateConfig_.type_mapping.find(motaType);
     if (it != templateConfig_.type_mapping.end()) {
         return it->second;
     }
+    
+    // 4. 最后返回原始类型
     return motaType;
 }
 
@@ -624,6 +666,53 @@ std::string Generator::escapeString(const std::string& str) {
         }
     }
     return result;
+}
+
+void Generator::setDeclarationRegistry(const processor::DeclarationRegistry& registry) {
+    // 存储指针，避免复制大数据结构
+    static processor::DeclarationRegistry staticRegistry = registry;
+    declarationRegistry_ = &staticRegistry;
+}
+
+void Generator::setCurrentNamespace(const std::string& currentNamespace) {
+    currentNamespace_ = currentNamespace;
+}
+
+nlohmann::json Generator::buildDeclarationRegistryData() {
+    nlohmann::json registryData = nlohmann::json::object();
+    
+    if (!declarationRegistry_) {
+        return registryData;
+    }
+    
+    // 构建按类型分组的注册表
+    nlohmann::json allDeclarations = nlohmann::json::array();
+    nlohmann::json byType = nlohmann::json::object();
+    byType["struct"] = nlohmann::json::array();
+    byType["block"] = nlohmann::json::array();
+    byType["enum"] = nlohmann::json::array();
+    byType["annotation_decl"] = nlohmann::json::array();
+    
+    for (const auto& [qualifiedName, info] : *declarationRegistry_) {
+        nlohmann::json declInfo = {
+            {"name", info.name},
+            {"qualified_name", info.qualified_name},
+            {"class_name", info.class_name},
+            {"type", info.type},
+            {"namespace_name", info.namespace_name},
+            {"file_path", info.file_path},
+            {"relative_type_name", info.getRelativeTypeName(currentNamespace_)}
+        };
+        
+        allDeclarations.push_back(declInfo);
+        byType[info.type].push_back(declInfo);
+    }
+    
+    registryData["all"] = allDeclarations;
+    registryData["by_type"] = byType;
+    registryData["count"] = allDeclarations.size();
+    
+    return registryData;
 }
 
 } // namespace generator
