@@ -19,3 +19,4 @@ compile_commands.json
 mota-install/
 mota-installer-*.exe
 mota-installer-*.zip
+output/
