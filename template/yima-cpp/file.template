@@ -20,33 +20,16 @@
 
 <%if (INCLUDES.files)%><%foreach INCLUDES.files as file%>#include "<%=file.translated%>"
 <%endforeach%><%endif%>
-
 using namespace ymf;
-<%if (NAMESPACE.exists)%><%call namespace_declaration%><%endif%>
-<%foreach DECLARATIONS as declaration%>
-// DEBUG: Processing declaration type: <%=declaration.type%>, name: <%=declaration.name%>
-<%if (declaration.type == "enum")%>
-// DEBUG: Calling enum misc
+
+<%if (NAMESPACE.exists)%><%call namespace_declaration%><%endif%><%foreach DECLARATIONS as declaration%>
+<%if (declaration.type == "annotation_decl")%><%call annotation_decl%>
+<%endif%><%if (declaration.type == "enum")%>
 <%call enum%>
-<%endif%>
-
-<%if (declaration.type == "struct")%>
-// DEBUG: Calling struct misc
+<%endif%><%if (declaration.type == "struct")%>
 <%call struct%>
-<%endif%>
-
-<%if (declaration.type == "block")%>
-// DEBUG: Calling block misc
+<%endif%><%if (declaration.type == "block")%>
 <%call block%>
-<%endif%>
-
-<%if (declaration.type == "annotation_decl")%>
-// DEBUG: Calling annotation_decl misc
-<%call annotation_decl%>
-<%endif%>
-
-<%endforeach%>
-
-<%if (NAMESPACE.exists)%>
+<%endif%><%endforeach%><%if (NAMESPACE.exists)%>
 <%call namespace_closing%>
 <%endif%> 

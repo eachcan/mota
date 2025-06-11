@@ -1,11 +1,3 @@
-<%misc test%>
-TEST_MISC_WORKING
-<%endmisc%>
-
-<%misc simple_test%>
-SIMPLE_TEST_WORKING
-<%endmisc%>
-
 <%misc private_field_suffix%>_<%endmisc%>
 
 <%misc empty_variant%>QVariant()<%endmisc%>
@@ -55,10 +47,29 @@ SIMPLE_TEST_WORKING
 
 <%misc inheritance_declaration%><%if (declaration.parent)%>public <%=declaration.parent_class_name%>, <%endif%>public <%call interface_name%><%endmisc%>
 
-<%misc map_type%><%if (field.type_name == "int8")%>int8_t<%endif%><%if (field.type_name == "int16")%>int16_t<%endif%><%if (field.type_name == "int32")%>int32_t<%endif%><%if (field.type_name == "int64")%>int64_t<%endif%><%if (field.type_name == "uint8")%>uint8_t<%endif%><%if (field.type_name == "uint16")%>uint16_t<%endif%><%if (field.type_name == "uint32")%>uint32_t<%endif%><%if (field.type_name == "uint64")%>uint64_t<%endif%><%if (field.type_name == "float32")%>float<%endif%><%if (field.type_name == "float64")%>double<%endif%><%if (field.type_name == "string")%>QString<%endif%><%if (field.type_name == "bool")%>bool<%endif%><%if (field.type_name == "bytes")%>QByteArray<%endif%><%if (field.type_name != "int8" && field.type_name != "int16" && field.type_name != "int32" && field.type_name != "int64" && field.type_name != "uint8" && field.type_name != "uint16" && field.type_name != "uint32" && field.type_name != "uint64" && field.type_name != "float32" && field.type_name != "float64" && field.type_name != "string" && field.type_name != "bool" && field.type_name != "bytes")%><%=field.type_name%><%endif%><%endmisc%>
-
 <%misc capitalize%><%=first_char_upper(field_name)%><%endmisc%>
 
 <%misc escape_string%><%=escape_string(STRING_VALUE)%><%endmisc%>
 
-<%misc field_type%><%if (field.container_type == "array")%>QVector<<%call map_type%>><%else%><%call map_type%><%endif%><%endmisc%> 
+<%misc field_type%><%if (field.container_type == "array")%>QVector<<%=map_type(field.type_name)%>><%else%><%if field.container_type == "map"%>QMap<QString, <%=map_type(field.type_name)%>><%else%><%=map_type(field.type_name)%><%endif%><%endif%><%endmisc%>
+
+<%misc annotation_constructor%><%endmisc%>
+
+<%misc annotation_argument_logic%><%foreach declaration.fields as field%>
+        if (argumentName == QLatin1String("<%=field.name%>")) return QVariant::fromValue(<%=field.field_name%><%call private_field_suffix%>);<%endforeach%><%endmisc%>
+
+<%misc annotation_argument_names%><%foreach declaration.fields as field%>QLatin1String("<%=field.name%>")<%if (is_last == false)%>, <%endif%><%endforeach%><%endmisc%>
+
+<%misc annotation_accessors%><%foreach declaration.fields as field%>
+    // <%=field.name%>字段的访问器
+    <%call field_type%> get<%=pascal_case(field.name)%>() const {
+        return <%=field.field_name%><%call private_field_suffix%>;
+    }
+    
+    void set<%=pascal_case(field.name)%>(const <%call field_type%>& value) {
+        <%=field.field_name%><%call private_field_suffix%> = value;
+    } 
+<%endforeach%><%endmisc%>
+
+<%misc annotation_private_fields%><%foreach declaration.fields as field%>
+    <%call field_type%> <%=field.field_name%><%call private_field_suffix%>;<%endforeach%><%endmisc%> 

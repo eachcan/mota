@@ -41,16 +41,8 @@ public:
     // 初始化生成器
     bool initialize(const std::string& templateDir, const std::string& configPath = "");
     
-    // 从配置对象初始化
-    bool initializeWithConfig(const config::TemplateConfig& templateConfig, const std::string& templateDir);
-    
     // 生成代码
     std::string generateCode(const std::unique_ptr<ast::Document>& document, const std::string& templateName);
-    
-    // 生成到文件
-    bool generateToFile(const std::unique_ptr<ast::Document>& document, 
-                       const std::string& templateName, 
-                       const std::string& outputPath);
     
     // 获取配置
     const config::TemplateConfig& getConfig() const { return templateConfig_; }
@@ -73,18 +65,9 @@ private:
     nlohmann::json buildExprData(const std::unique_ptr<ast::Expr>& expr);
     nlohmann::json buildTypeData(const std::unique_ptr<ast::Type>& type);
     
-    // 生成各种声明的代码（渲染逻辑）
-    std::string generateAnnotationDecl(const ast::AnnotationDecl& annotation);
-    std::string generateStructDecl(const ast::Struct& struct_);
-    std::string generateBlockDecl(const ast::Block& block);
-    std::string generateEnumDecl(const ast::Enum& enum_);
+
     
-    // 字段相关数据构建（保留兼容性）
-    std::string buildFieldsData(const std::vector<std::unique_ptr<ast::Field>>& fields);
-    TemplateVars buildAnnotationVars(const std::unique_ptr<ast::Annotation>& annotation);
-    TemplateVars buildStructVars(const std::unique_ptr<ast::Struct>& struct_);
-    TemplateVars buildBlockVars(const std::unique_ptr<ast::Block>& block);
-    TemplateVars buildEnumVars(const std::unique_ptr<ast::Enum>& enum_);
+
     
     // 类型相关方法
     std::string mapType(const std::string& motaType);

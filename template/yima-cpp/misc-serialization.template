@@ -65,7 +65,7 @@
             QCborArray <%=field.name%>Array = map["<%=field.name%>"].toArray();
             <%=field.field_name%>_.clear();
             for (const auto& item : <%=field.name%>Array) {
-                <%call map_type%> element;
+                <%=map_type(field.type_name)%> element;
                 element.fromCbor(item);
                 <%=field.field_name%>_.append(element);
             }

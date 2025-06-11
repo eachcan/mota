@@ -68,7 +68,6 @@ public:
     
     // 为了兼容旧代码，保留原有方法
     std::vector<SyntaxDiagnostic> check(const ast::Document& doc, const std::string& entryFile = "");
-    std::vector<SyntaxDiagnostic> checkWithExternalAnnotations(const ast::Document& doc, const std::string& entryFile, const std::set<std::string>& externalAnnotations);
 };
 
 } // namespace checker

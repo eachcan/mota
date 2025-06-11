@@ -79,9 +79,6 @@ public:
     // 直接渲染模板内容
     std::string renderContent(const std::string& templateContent, const TemplateVars& vars);
     
-    // 为注解参数提供特殊的递归生成函数
-    std::string renderAnnoArgValue(const std::string& argType, const TemplateVars& vars);
-    
     // 获取模板配置
     const config::TemplateConfig& getConfig() const { return config_; }
     

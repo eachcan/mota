@@ -106,8 +106,7 @@ public:
 };
 <%endmisc%>
 
-<%misc annotation_decl%>
-// <%=declaration.name%>注解
+<%misc annotation_decl%>// <%=declaration.name%>注解
 class MODEL_EXPORT <%=declaration.class_name%> : <%call inheritance_declaration%> {
 public:
     <%=declaration.class_name%>() = default;
@@ -117,20 +116,18 @@ public:
         return "<%=declaration.name%>";
     }
     
-    QCborValue toCbor() const override {
-        QCborMap map;
-        // TODO: 序列化字段
-        return map;
+    QVariant argument(const QString& argumentName) const override {<%call annotation_argument_logic%>
+        return QVariant();
     }
     
-    void fromCbor(const QCborValue& cbor) override {
-        QCborMap map = cbor.toMap();
-        // TODO: 反序列化字段
+    QStringList argumentNames() const override {
+        return QStringList{<%call annotation_argument_names%>};
     }
     
-    // TODO: 访问器方法
+    // 特定于<%=declaration.name%>的访问器
+<%call annotation_accessors%>
     
 private:
-    // TODO: 私有字段
+<%call annotation_private_fields%>
 };
 <%endmisc%> 

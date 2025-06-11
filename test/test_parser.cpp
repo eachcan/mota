@@ -117,9 +117,9 @@ TEST_F(ParserTest, ParseNamespaceAndInclude) {
     
     auto doc = parse(source);
     ASSERT_NE(doc, nullptr);
-    ASSERT_EQ(doc->declarations.size(), 3); // namespace, include, struct
+    ASSERT_EQ(doc->declarations.size(), 1); // namespace, include, struct
     
-    auto ns = dynamic_cast<Namespace*>(doc->declarations[0].get());
+    auto ns = dynamic_cast<Namespace*>(doc->m_namespace.get());
     ASSERT_NE(ns, nullptr);
     ASSERT_EQ(ns->name.size(), 2);
     EXPECT_EQ(ns->name[0], "example");
@@ -283,8 +283,8 @@ TEST_F(ParserTest, Parse_OnlyInclude) {
     )";
     auto doc = parse(source);
     ASSERT_NE(doc, nullptr);
-    ASSERT_EQ(doc->declarations.size(), 1);
-    auto inc = dynamic_cast<Include*>(doc->declarations[0].get());
+    ASSERT_EQ(doc->declarations.size(), 0);
+    auto inc = dynamic_cast<Include*>(doc->includes[0].get());
     ASSERT_NE(inc, nullptr);
     EXPECT_EQ(inc->path, "a.mota");
 }
@@ -295,8 +295,8 @@ TEST_F(ParserTest, Parse_OnlyNamespace) {
     )";
     auto doc = parse(source);
     ASSERT_NE(doc, nullptr);
-    ASSERT_EQ(doc->declarations.size(), 1);
-    auto ns = dynamic_cast<Namespace*>(doc->declarations[0].get());
+    ASSERT_EQ(doc->declarations.size(), 0);
+    auto ns = dynamic_cast<Namespace*>(doc->m_namespace.get());
     ASSERT_NE(ns, nullptr);
     EXPECT_EQ(ns->name.size(), 3);
     EXPECT_EQ(ns->name[0], "a");
@@ -317,7 +317,7 @@ TEST_F(ParserTest, Parse_EmptyStructBlockEnumAnnotation) {
     ASSERT_NE(dynamic_cast<Struct*>(doc->declarations[0].get()), nullptr);
     ASSERT_NE(dynamic_cast<Block*>(doc->declarations[1].get()), nullptr);
     ASSERT_NE(dynamic_cast<Enum*>(doc->declarations[2].get()), nullptr);
-    ASSERT_NE(dynamic_cast<Annotation*>(doc->declarations[3].get()), nullptr);
+    ASSERT_NE(dynamic_cast<AnnotationDecl*>(doc->declarations[3].get()), nullptr);
 }
 
 TEST_F(ParserTest, Parse_AnnotationNoParam) {
@@ -478,7 +478,7 @@ TEST_F(ParserTest, Parse_MultiDeclarationOrder) {
     ASSERT_NE(dynamic_cast<Enum*>(doc->declarations[0].get()), nullptr);
     ASSERT_NE(dynamic_cast<Struct*>(doc->declarations[1].get()), nullptr);
     ASSERT_NE(dynamic_cast<Block*>(doc->declarations[2].get()), nullptr);
-    ASSERT_NE(dynamic_cast<Annotation*>(doc->declarations[3].get()), nullptr);
+    ASSERT_NE(dynamic_cast<AnnotationDecl*>(doc->declarations[3].get()), nullptr);
 }
 
 TEST_F(ParserTest, Parse_FieldInitWithExpression) {

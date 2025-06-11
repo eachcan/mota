@@ -34,25 +34,7 @@ std::string TemplateEngine::renderContent(const std::string& templateContent, co
     return renderTagTree(tree, vars);
 }
 
-std::string TemplateEngine::renderAnnoArgValue(const std::string& argType, const TemplateVars& vars) {
-    // 根据注解参数类型调用不同的misc进行渲染
-    std::string miscName;
-    
-    if (argType == "string") {
-        miscName = "anno_arg_string";
-    } else if (argType == "int32" || argType == "int64" || argType == "uint32" || argType == "uint64") {
-        miscName = "anno_arg_int";
-    } else if (argType == "bool") {
-        miscName = "anno_arg_bool";
-    } else if (argType == "float32" || argType == "float64") {
-        miscName = "anno_arg_float";
-    } else {
-        // 对于其他注解类型，使用通用的注解参数misc
-        miscName = "anno_arg_complex";
-    }
-    
-    return renderMiscCall(miscName, vars);
-}
+
 
 std::string TemplateEngine::loadTemplate(const std::string& templateName) {
     // 检查缓存
@@ -88,10 +70,17 @@ std::string TemplateEngine::loadTemplate(const std::string& templateName) {
 
 std::string TemplateEngine::loadMisc(const std::string& miscName) {
     // Check cache
-    auto it = miscCache_.find(miscName);
-    if (it != miscCache_.end()) {
-        return it->second;
+    static bool loaded = false;
+    if (loaded) {
+        auto it = miscCache_.find(miscName);
+        if (it != miscCache_.end()) {
+            return it->second;
+        }
+
+        return "";
     }
+
+    loaded = true;
     
     // Load all misc files and parse
     for (const auto& miscFile : config_.miscs) {
@@ -312,6 +301,21 @@ std::shared_ptr<TemplateToken> TemplateEngine::parseForeachTag(const std::string
 
 nlohmann::json TemplateEngine::getVarValue(const std::string &varName, const TemplateVars &vars)
 {
+    if (varName.empty()) {
+        return nlohmann::json();
+    }
+    if (varName == "true") {
+        return true;
+    }
+    if (varName == "false") {
+        return false;
+    }
+    
+    // 如果是数字则直接返回
+    if (isdigit(varName[0])) {
+        return std::stoi(varName);
+    }
+
     // 循环访问属性，不支持数组，可访问 a.b.c.d 这样的属性
     nlohmann::json result = vars;
     std::vector<std::string> parts = splitString(varName, '.');
@@ -580,12 +584,17 @@ bool TemplateEngine::evaluateCondition(const std::string& condition, const Templ
         std::string left = condition.substr(0, eqPos);
         std::string right = condition.substr(eqPos + 2);
         
+        try {
         // 使用 evaluateExpression 执行等号两侧的表达式
-        std::string leftValue = evaluateExpression(left, vars);
-        std::string rightValue = evaluateExpression(right, vars);
-        
-        // 比较结果
-        return leftValue == rightValue;
+            auto leftValue = evaluateExpression(left, vars);
+            auto rightValue = evaluateExpression(right, vars);
+            
+            // 比较结果
+            return leftValue == rightValue;
+        } catch (const std::exception& e) {
+            std::cerr << "Error: " << e.what() << std::endl;
+            return false;
+        }
     }
 
     size_t notPos = condition.find("!=");
@@ -593,12 +602,17 @@ bool TemplateEngine::evaluateCondition(const std::string& condition, const Templ
         std::string left = condition.substr(0, notPos);
         std::string right = condition.substr(notPos + 2);
         
-        // 使用 evaluateExpression 执行不等号两侧的表达式
-        std::string leftValue = evaluateExpression(left, vars);
-        std::string rightValue = evaluateExpression(right, vars);
+        try {
+            // 使用 evaluateExpression 执行不等号两侧的表达式
+            auto leftValue = evaluateExpression(left, vars);
+            auto rightValue = evaluateExpression(right, vars);
         
-        // 比较结果
-        return leftValue != rightValue;
+            // 比较结果
+            return leftValue != rightValue;
+        } catch (const std::exception& e) {
+            std::cerr << "Error: " << e.what() << std::endl;
+            return true;
+        }
     }
 
     size_t gtPos = condition.find(">");
@@ -606,12 +620,17 @@ bool TemplateEngine::evaluateCondition(const std::string& condition, const Templ
         std::string left = condition.substr(0, gtPos);
         std::string right = condition.substr(gtPos + 1);
         
-        // 使用 evaluateExpression 执行不等号两侧的表达式，并转为数字
-        double leftValue = std::stod(evaluateExpression(left, vars).get<std::string>());
-        double rightValue = std::stod(evaluateExpression(right, vars).get<std::string>());
+        try {
+            // 使用 evaluateExpression 执行不等号两侧的表达式，并转为数字
+            auto leftValue = evaluateExpression(left, vars);
+            auto rightValue = evaluateExpression(right, vars);
         
-        // 比较结果
-        return leftValue > rightValue;
+            // 比较结果
+            return leftValue > rightValue;
+        } catch (const std::exception& e) {
+            std::cerr << "Error: " << e.what() << std::endl;
+            return false;
+        }
     }
 
     size_t ltPos = condition.find("<");
@@ -619,12 +638,17 @@ bool TemplateEngine::evaluateCondition(const std::string& condition, const Templ
         std::string left = condition.substr(0, ltPos);
         std::string right = condition.substr(ltPos + 1);
         
-        // 使用 evaluateExpression 执行不等号两侧的表达式，并转为数字
-        double leftValue = std::stod(evaluateExpression(left, vars).get<std::string>());
-        double rightValue = std::stod(evaluateExpression(right, vars).get<std::string>());
+        try {
+            // 使用 evaluateExpression 执行不等号两侧的表达式，并转为数字
+            auto leftValue = evaluateExpression(left, vars);
+            auto rightValue = evaluateExpression(right, vars);
         
-        // 比较结果
-        return leftValue < rightValue;
+            // 比较结果
+            return leftValue < rightValue;
+        } catch (const std::exception& e) {
+            std::cerr << "Error: " << e.what() << std::endl;
+            return false;
+        }
     }
 
     size_t gtePos = condition.find(">=");
@@ -632,12 +656,17 @@ bool TemplateEngine::evaluateCondition(const std::string& condition, const Templ
         std::string left = condition.substr(0, gtePos);
         std::string right = condition.substr(gtePos + 2);
         
-        // 使用 evaluateExpression 执行不等号两侧的表达式，并转为数字
-        double leftValue = std::stod(evaluateExpression(left, vars).get<std::string>());
-        double rightValue = std::stod(evaluateExpression(right, vars).get<std::string>());
+        try {
+            // 使用 evaluateExpression 执行不等号两侧的表达式，并转为数字
+            auto leftValue = evaluateExpression(left, vars);
+            auto rightValue = evaluateExpression(right, vars);
         
         // 比较结果
         return leftValue >= rightValue;
+        } catch (const std::exception& e) {
+            std::cerr << "Error: " << e.what() << std::endl;
+            return false;
+        }
     }
 
     size_t ltePos = condition.find("<=");
@@ -645,12 +674,17 @@ bool TemplateEngine::evaluateCondition(const std::string& condition, const Templ
         std::string left = condition.substr(0, ltePos);
         std::string right = condition.substr(ltePos + 2);
         
-        // 使用 evaluateExpression 执行不等号两侧的表达式，并转为数字
-        double leftValue = std::stod(evaluateExpression(left, vars).get<std::string>());
-        double rightValue = std::stod(evaluateExpression(right, vars).get<std::string>());
+        try {
+            // 使用 evaluateExpression 执行不等号两侧的表达式，并转为数字
+            auto leftValue = evaluateExpression(left, vars);
+            auto rightValue = evaluateExpression(right, vars);
         
         // 比较结果
         return leftValue <= rightValue;
+        } catch (const std::exception& e) {
+            std::cerr << "Error: " << e.what() << std::endl;
+            return false;
+        }
     }
 
     // 检查变量存在性
@@ -922,7 +956,17 @@ nlohmann::json TemplateEngine::callBuiltinFunction(const std::string& funcName, 
         } else if (funcName == "namespace_path") {
             return formatNamespacePath(arg.get<std::string>());
         } else if (funcName == "as_string") {
-            return arg.get<std::string>();
+            if (arg.is_number()) {
+                return std::to_string(arg.get<int>());
+            } else if (arg.is_boolean()) {
+                return arg.get<bool>() ? "true" : "false";
+            } else if (arg.is_null()) {
+                return "null";
+            } else if (arg.is_string()) {
+                return arg.get<std::string>();
+            } else {
+                return arg.dump();
+            }
         } else if (funcName == "reverse") {
             nlohmann::json result = arg;
             if (result.is_array()) {

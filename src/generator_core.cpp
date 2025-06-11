@@ -49,17 +49,6 @@ bool Generator::initialize(const std::string& templateDir, const std::string& co
     return true;
 }
 
-bool Generator::initializeWithConfig(const config::TemplateConfig& templateConfig, const std::string& templateDir) {
-    templateConfig_ = templateConfig;
-    templateDir_ = templateDir;
-    
-    // 创建模板引擎
-    templateEngine_ = std::make_unique<template_engine::TemplateEngine>(templateConfig_, templateDir_);
-    
-    initialized_ = true;
-    return true;
-}
-
 std::string Generator::generateCode(const std::unique_ptr<ast::Document>& document, const std::string& templateName) {
     if (!initialized_) {
         std::cerr << "Generator not initialized" << std::endl;
@@ -91,30 +80,7 @@ std::string Generator::generateCode(const std::unique_ptr<ast::Document>& docume
     }
 }
 
-bool Generator::generateToFile(const std::unique_ptr<ast::Document>& document, 
-                              const std::string& templateName, 
-                              const std::string& outputPath) {
-    std::string code = generateCode(document, templateName);
-    if (code.empty()) {
-        return false;
-    }
-    
-    // 确保输出目录存在
-    std::filesystem::path outputPathObj(outputPath);
-    std::filesystem::create_directories(outputPathObj.parent_path());
-    
-    // 写入文件
-    std::ofstream outFile(outputPath);
-    if (!outFile.is_open()) {
-        std::cerr << "Cannot create output file: " << outputPath << std::endl;
-        return false;
-    }
-    
-    outFile << code;
-    outFile.close();
-    
-    return true;
-}
+
 
 TemplateVars Generator::buildTemplateVars(const std::unique_ptr<ast::Document>& document) {
     TemplateVars vars;

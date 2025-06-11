@@ -131,29 +131,7 @@ ParseError Parser::error(const lexer::Token& token, const std::string& message) 
     throw ParseError(message, token.line, token.column);
 }
 
-void Parser::synchronize() {
-    panicMode_ = true;
-    
-    advance();
-    
-    while (!isAtEnd()) {
-        if (previous_.type == lexer::TokenType::Semicolon) return;
-        
-        switch (current_.type) {
-            case lexer::TokenType::Struct:
-            case lexer::TokenType::Enum:
-            case lexer::TokenType::Block:
-            case lexer::TokenType::Annotation:
-            case lexer::TokenType::Include:
-            case lexer::TokenType::Namespace:
-                return;
-            default:
-                break;
-        }
-        
-        advance();
-    }
-}
+
 
 } // namespace parser
 } // namespace mota

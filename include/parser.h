@@ -50,7 +50,6 @@ private:
     // 错误处理
     lexer::Token consume(lexer::TokenType type, const std::string& message);
     ParseError error(const lexer::Token& token, const std::string& message);
-    void synchronize();
     
     // 解析方法
     std::unique_ptr<ast::Node> declaration();
