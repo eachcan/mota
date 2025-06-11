@@ -18,39 +18,30 @@
 #include "framework/IModel.h"
 #include "framework/IAnnotation.h"
 
-<%if (INCLUDES.count > 0)%>
-<%foreach INCLUDES.files as file%>
-#include "<%=file.translated%>"
-<%endforeach%>
-<%endif%>
+<%if (INCLUDES.files)%><%foreach INCLUDES.files as file%>#include "<%=file.translated%>"
+<%endforeach%><%endif%>
 
 using namespace ymf;
-
-<%if (NAMESPACE.exists)%>
-<%call namespace_declaration%>
-<%endif%>
-
-<%call test%>
-
+<%if (NAMESPACE.exists)%><%call namespace_declaration%><%endif%>
 <%foreach DECLARATIONS as declaration%>
-// DEBUG: Processing type: <%=declaration.type%>, name: <%=declaration.name%>
+// DEBUG: Processing declaration type: <%=declaration.type%>, name: <%=declaration.name%>
 <%if (declaration.type == "enum")%>
-// Found enum, calling enum misc
+// DEBUG: Calling enum misc
 <%call enum%>
 <%endif%>
 
 <%if (declaration.type == "struct")%>
-// Found struct, calling struct misc
+// DEBUG: Calling struct misc
 <%call struct%>
 <%endif%>
 
 <%if (declaration.type == "block")%>
-// Found block, calling block misc  
+// DEBUG: Calling block misc
 <%call block%>
 <%endif%>
 
 <%if (declaration.type == "annotation_decl")%>
-// Found annotation_decl, calling annotation_decl misc
+// DEBUG: Calling annotation_decl misc
 <%call annotation_decl%>
 <%endif%>
 

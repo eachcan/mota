@@ -1,0 +1,22 @@
+DEBUG模板开始
+
+当前时间: <%=CURRENT_TIME%>
+源文件: <%=SOURCE_FILE%>
+
+NAMESPACE测试:
+namespace.exists: <%=NAMESPACE.exists%>
+namespace.path: <%=NAMESPACE.path%>
+
+DECLARATIONS测试:
+declarations数组: <%=DECLARATIONS%>
+
+遍历DECLARATIONS:
+<%foreach DECLARATIONS as declaration%>
+  - 声明类型: <%=declaration.type%>
+  - 声明名称: <%=declaration.name%>
+<%endforeach%>
+
+调用test片段:
+<%call test%>
+
+结束调试模板 

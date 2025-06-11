@@ -1,5 +1,5 @@
 <%misc struct%>
-// <%=declaration.name%>结构体
+// <%=declaration.name%>结构体 - STRUCT MISC CALLED
 class MODEL_EXPORT <%=declaration.class_name%> {
 public:
     <%=declaration.class_name%>() = default;
@@ -11,7 +11,7 @@ private:
 <%endmisc%>
 
 <%misc block%>
-// <%=declaration.name%>块定义
+// <%=declaration.name%>块定义 - BLOCK MISC CALLED
 class MODEL_EXPORT <%=declaration.class_name%> : <%call inheritance_declaration%> {
 public:
     <%=declaration.class_name%>() = default;

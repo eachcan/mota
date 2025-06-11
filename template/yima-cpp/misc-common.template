@@ -2,7 +2,9 @@
 TEST_MISC_WORKING
 <%endmisc%>
 
-
+<%misc simple_test%>
+SIMPLE_TEST_WORKING
+<%endmisc%>
 
 <%misc private_field_suffix%>_<%endmisc%>
 
@@ -53,10 +55,10 @@ TEST_MISC_WORKING
 
 <%misc inheritance_declaration%><%if (declaration.parent)%>public <%=declaration.parent_class_name%>, <%endif%>public <%call interface_name%><%endmisc%>
 
-<%misc map_type%><%if (type_name == "int8")%>int8_t<%endif%><%if (type_name == "int16")%>int16_t<%endif%><%if (type_name == "int32")%>int32_t<%endif%><%if (type_name == "int64")%>int64_t<%endif%><%if (type_name == "uint8")%>uint8_t<%endif%><%if (type_name == "uint16")%>uint16_t<%endif%><%if (type_name == "uint32")%>uint32_t<%endif%><%if (type_name == "uint64")%>uint64_t<%endif%><%if (type_name == "float32")%>float<%endif%><%if (type_name == "float64")%>double<%endif%><%if (type_name == "string")%>QString<%endif%><%if (type_name == "bool")%>bool<%endif%><%if (type_name == "bytes")%>QByteArray<%endif%><%if (type_name != "int8" && type_name != "int16" && type_name != "int32" && type_name != "int64" && type_name != "uint8" && type_name != "uint16" && type_name != "uint32" && type_name != "uint64" && type_name != "float32" && type_name != "float64" && type_name != "string" && type_name != "bool" && type_name != "bytes")%><%=type_name%><%endif%><%endmisc%>
+<%misc map_type%><%if (field.type_name == "int8")%>int8_t<%endif%><%if (field.type_name == "int16")%>int16_t<%endif%><%if (field.type_name == "int32")%>int32_t<%endif%><%if (field.type_name == "int64")%>int64_t<%endif%><%if (field.type_name == "uint8")%>uint8_t<%endif%><%if (field.type_name == "uint16")%>uint16_t<%endif%><%if (field.type_name == "uint32")%>uint32_t<%endif%><%if (field.type_name == "uint64")%>uint64_t<%endif%><%if (field.type_name == "float32")%>float<%endif%><%if (field.type_name == "float64")%>double<%endif%><%if (field.type_name == "string")%>QString<%endif%><%if (field.type_name == "bool")%>bool<%endif%><%if (field.type_name == "bytes")%>QByteArray<%endif%><%if (field.type_name != "int8" && field.type_name != "int16" && field.type_name != "int32" && field.type_name != "int64" && field.type_name != "uint8" && field.type_name != "uint16" && field.type_name != "uint32" && field.type_name != "uint64" && field.type_name != "float32" && field.type_name != "float64" && field.type_name != "string" && field.type_name != "bool" && field.type_name != "bytes")%><%=field.type_name%><%endif%><%endmisc%>
 
 <%misc capitalize%><%=first_char_upper(field_name)%><%endmisc%>
 
 <%misc escape_string%><%=escape_string(STRING_VALUE)%><%endmisc%>
 
-<%misc field_type%><%if (field.container_type == "array")%>QVector<<%=map_type(field.type_name)%>><%else%><%=map_type(field.type_name)%><%endif%><%endmisc%> 
+<%misc field_type%><%if (field.container_type == "array")%>QVector<<%call map_type%>><%else%><%call map_type%><%endif%><%endmisc%> 

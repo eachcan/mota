@@ -503,7 +503,7 @@ std::string TemplateEngine::renderTagNode(const std::shared_ptr<TagNode>& node, 
 }
 
 std::string TemplateEngine::renderVariable(const std::string& varName, const TemplateVars& vars) {
-    return getVarValue(varName, vars).dump();
+    return getVarValue(varName, vars);
 }
 
 std::string TemplateEngine::renderFunctionCall(const std::string& funcName, const std::string& args, const TemplateVars& vars) {
@@ -511,7 +511,7 @@ std::string TemplateEngine::renderFunctionCall(const std::string& funcName, cons
     std::vector<std::string> parsedArgs = parseArguments(args);
     
     // 对每个参数进行求值，支持嵌套函数调用和变量引用
-    std::vector<std::string> evaluatedArgs;
+    std::vector<nlohmann::json> evaluatedArgs;
     for (const auto& arg : parsedArgs) {
         evaluatedArgs.push_back(evaluateExpression(arg, vars));
     }
@@ -607,8 +607,8 @@ bool TemplateEngine::evaluateCondition(const std::string& condition, const Templ
         std::string right = condition.substr(gtPos + 1);
         
         // 使用 evaluateExpression 执行不等号两侧的表达式，并转为数字
-        double leftValue = std::stod(evaluateExpression(left, vars));
-        double rightValue = std::stod(evaluateExpression(right, vars));
+        double leftValue = std::stod(evaluateExpression(left, vars).get<std::string>());
+        double rightValue = std::stod(evaluateExpression(right, vars).get<std::string>());
         
         // 比较结果
         return leftValue > rightValue;
@@ -620,8 +620,8 @@ bool TemplateEngine::evaluateCondition(const std::string& condition, const Templ
         std::string right = condition.substr(ltPos + 1);
         
         // 使用 evaluateExpression 执行不等号两侧的表达式，并转为数字
-        double leftValue = std::stod(evaluateExpression(left, vars));
-        double rightValue = std::stod(evaluateExpression(right, vars));
+        double leftValue = std::stod(evaluateExpression(left, vars).get<std::string>());
+        double rightValue = std::stod(evaluateExpression(right, vars).get<std::string>());
         
         // 比较结果
         return leftValue < rightValue;
@@ -633,8 +633,8 @@ bool TemplateEngine::evaluateCondition(const std::string& condition, const Templ
         std::string right = condition.substr(gtePos + 2);
         
         // 使用 evaluateExpression 执行不等号两侧的表达式，并转为数字
-        double leftValue = std::stod(evaluateExpression(left, vars));
-        double rightValue = std::stod(evaluateExpression(right, vars));
+        double leftValue = std::stod(evaluateExpression(left, vars).get<std::string>());
+        double rightValue = std::stod(evaluateExpression(right, vars).get<std::string>());
         
         // 比较结果
         return leftValue >= rightValue;
@@ -646,8 +646,8 @@ bool TemplateEngine::evaluateCondition(const std::string& condition, const Templ
         std::string right = condition.substr(ltePos + 2);
         
         // 使用 evaluateExpression 执行不等号两侧的表达式，并转为数字
-        double leftValue = std::stod(evaluateExpression(left, vars));
-        double rightValue = std::stod(evaluateExpression(right, vars));
+        double leftValue = std::stod(evaluateExpression(left, vars).get<std::string>());
+        double rightValue = std::stod(evaluateExpression(right, vars).get<std::string>());
         
         // 比较结果
         return leftValue <= rightValue;
@@ -656,7 +656,7 @@ bool TemplateEngine::evaluateCondition(const std::string& condition, const Templ
     // 检查变量存在性
     std::string varName = trimWhitespace(condition);
     
-    const auto& value = getVarValue(varName, vars);
+    const auto& value = evaluateExpression(varName, vars);
     if (value.is_boolean()) {
         return value.get<bool>();
     } else if (value.is_string()) {
@@ -854,7 +854,7 @@ std::vector<std::string> TemplateEngine::parseArguments(const std::string& args)
     return result;
 }
 
-std::string TemplateEngine::evaluateExpression(const std::string& expr, const TemplateVars& vars) {
+nlohmann::json TemplateEngine::evaluateExpression(const std::string& expr, const TemplateVars& vars) {
     std::string trimmedExpr = trimWhitespace(expr);
     if (trimmedExpr.empty()) {
         return "";
@@ -899,33 +899,55 @@ std::string TemplateEngine::evaluateExpression(const std::string& expr, const Te
         return renderFunctionCall(funcName, funcArgs, vars);
     }
     
-    return getVarValue(trimmedExpr, vars).dump();
+    return getVarValue(trimmedExpr, vars);
 }
 
-std::string TemplateEngine::callBuiltinFunction(const std::string& funcName, const std::vector<std::string>& args, const TemplateVars& vars) {
+nlohmann::json TemplateEngine::callBuiltinFunction(const std::string& funcName, const std::vector<nlohmann::json>& args, const TemplateVars& vars) {
     // 单参数函数
     if (args.size() == 1) {
-        const auto& arg = evaluateExpression(args[0], vars);
+        const auto& arg = args[0];
         
         if (funcName == "pascal_case") {
-            return toPascalCase(arg);
+            return toPascalCase(arg.get<std::string>());
         } else if (funcName == "camel_case") {
-            return toCamelCase(arg);
+            return toCamelCase(arg.get<std::string>());
         } else if (funcName == "map_type") {
-            return mapType(arg);
+            return mapType(arg.get<std::string>());
         } else if (funcName == "escape_string") {
-            return escapeString(arg);
+            return escapeString(arg.get<std::string>());
         } else if (funcName == "first_namespace_part") {
-            return getFirstNamespacePart(arg);
+            return getFirstNamespacePart(arg.get<std::string>());
         } else if (funcName == "has_nested_namespace") {
-            return hasNestedNamespace(arg) ? "true" : "false";
+            return hasNestedNamespace(arg.get<std::string>()) ? "true" : "false";
         } else if (funcName == "namespace_path") {
-            return formatNamespacePath(arg);
+            return formatNamespacePath(arg.get<std::string>());
         } else if (funcName == "as_string") {
-            return arg;
+            return arg.get<std::string>();
+        } else if (funcName == "reverse") {
+            nlohmann::json result = arg;
+            if (result.is_array()) {
+                std::reverse(result.begin(), result.end());
+            } else if (result.is_string()) {
+                std::reverse(result.begin(), result.end());
+            } else {
+                return arg;
+            }
+            return result;
+        } else if (funcName == "length" || funcName == "size" || funcName == "count") {
+            if (arg.is_array()) {
+                return arg.size();
+            } else if (arg.is_string()) {
+                return arg.get<std::string>().size();
+            } else if (arg.is_object()) {
+                return arg.size();
+            } else if (arg.is_null()) {
+                return 0;
+            } else {
+                return 1;
+            }
         } else if (funcName == "basename") {
             // 提取文件名（不包含路径和扩展名）
-            std::string filename = arg;
+            std::string filename = arg.get<std::string>();
             size_t lastSlash = filename.find_last_of("/\\");
             if (lastSlash != std::string::npos) {
                 filename = filename.substr(lastSlash + 1);

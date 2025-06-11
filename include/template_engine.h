@@ -126,8 +126,8 @@ private:
     
     // 增强的函数调用处理
     std::vector<std::string> parseArguments(const std::string& args);
-    std::string evaluateExpression(const std::string& expr, const TemplateVars& vars);
-    std::string callBuiltinFunction(const std::string& funcName, const std::vector<std::string>& args, const TemplateVars& vars);
+    nlohmann::json evaluateExpression(const std::string& expr, const TemplateVars& vars);
+    nlohmann::json callBuiltinFunction(const std::string& funcName, const std::vector<nlohmann::json>& args, const TemplateVars& vars);
     
     // 条件评估
     bool evaluateCondition(const std::string& condition, const TemplateVars& vars);
