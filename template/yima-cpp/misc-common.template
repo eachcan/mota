@@ -57,7 +57,7 @@
 <%misc field_type%>
     <%if (field.container_type == "array")%>
 QVector<<%=map_type(field.type_name)%>><%else%>
-        <%if field.container_type == "map"%>
+        <%if (field.container_type == "map")%>
 QMap<QString, <%=map_type(field.type_name)%>><%else%>
 <%=map_type(field.type_name)%><%endif%>
     <%endif%>

@@ -1,13 +1,52 @@
 <%misc struct%>
-// <%=declaration.name%>结构体 - STRUCT MISC CALLED
-class MODEL_EXPORT <%=declaration.class_name%> {
+// <%=declaration.name%>结构体
+class MODEL_EXPORT <%=declaration.class_name%> : <%call inheritance_declaration_struct%> {
 public:
     <%=declaration.class_name%>() = default;
     
-    // TODO: 基本实现
+    // 实现 IModel 接口
+    QCborMap toCbor() const override {
+        QCborMap map<%if (declaration.parent)%> = <%=declaration.parent_class_name%>::toCbor()<%endif%>;
+<%call serialize_fields%>
+        return map;
+    }
+    
+    void fromCbor(const QCborMap& map) override {<%if (declaration.parent)%>
+
+        <%=declaration.parent_class_name%>::fromCbor(map);
+<%endif%>
+<%call deserialize_fields%>
+    }
+    
+    QString name() const override {
+        return "<%=declaration.name%>";
+    }
+    
+    QStringList fields() const override {
+        return QStringList{<%call field_names%>};
+    }
+    
+    QString fieldType(const QString& fieldName) const override {
+<%foreach declaration.fields as field%>
+            if (fieldName == QLatin1String("<%=field.name%>")) return QLatin1String("<%=field.type_name%>");
+<%endforeach%>
+            return QLatin1String("");
+    }
+    
+    QString fieldContainerType(const QString& fieldName) const override {
+<%foreach declaration.fields as field%>
+            if (fieldName == QLatin1String("<%=field.name%>")) return QLatin1String("<%=field.container_type%>");
+<%endforeach%>
+            return QLatin1String("none");
+    }
+
+    // 特定于<%=declaration.name%>的访问器
+<%call accessors%>
+    
 private:
-    // TODO: 字段
+<%call private_fields%>
 };
+Q_DECLARE_METATYPE(<%=declaration.class_name%>)
 <%endmisc%>
 
 <%misc block%>// <%=declaration.name%>块定义
@@ -39,7 +78,17 @@ public:
     }
     
     virtual QString fieldType(const QString& fieldName) const override {
-<%call field_type_logic%>
+<%foreach declaration.fields as field%>
+            if (fieldName == QLatin1String("<%=field.name%>")) return QLatin1String("<%=field.type_name%>");
+<%endforeach%>
+            return QLatin1String("");
+    }
+    
+    virtual QString fieldContainerType(const QString& fieldName) const override {
+<%foreach declaration.fields as field%>
+            if (fieldName == QLatin1String("<%=field.name%>")) return QLatin1String("<%=field.container_type%>");
+<%endforeach%>
+            return QLatin1String("none");
     }
     
     virtual QList<QSharedPointer<IAnnotation>> annotations() const override {

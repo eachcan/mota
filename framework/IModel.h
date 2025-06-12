@@ -33,8 +33,11 @@ namespace ymf {
         virtual ~IModel() = default;
         
         // 序列化/反序列化接口
-        virtual QCborValue toCbor() const = 0;
-        virtual void fromCbor(const QCborValue& cbor) = 0;
+        virtual QCborMap toCbor() const = 0;
+        virtual void fromCbor(const QCborMap& cbor) = 0;
+
+        // 获取模型名称
+        virtual QString name() const = 0;
         
         // 存储接口
         bool save();    // 根据模型配置自动保存
@@ -58,7 +61,10 @@ namespace ymf {
         virtual QStringList fields() const = 0;
         
         // 获取字段类型
-        virtual QString fieldOriginTypeName(const QString& fieldName) const = 0;
+        virtual QString fieldType(const QString& fieldName) const = 0;
+
+        // 获取字段容器类型
+        virtual QString fieldContainerType(const QString& fieldName) const = 0;
 
         // 获取模型注解
         virtual QList<QSharedPointer<IAnnotation>> annotations() const = 0;
