@@ -1,0 +1,1167 @@
+﻿{
+    "DECLARATIONS": [
+    {
+        "annotations": [],
+        "class_name": "DateTimePickerAnnotation",
+        "fields": [
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "\"yyyy-MM-dd HH:mm:ss\"",
+                "field_name": "format",
+                "full_mapped_type_name": "QString",
+                "full_type_name": "string",
+                "mapped_type_name": "QString",
+                "name": "format",
+                "type_name": "string"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "\"请选择日期时间\"",
+                "field_name": "placeholder",
+                "full_mapped_type_name": "QString",
+                "full_type_name": "string",
+                "mapped_type_name": "QString",
+                "name": "placeholder",
+                "type_name": "string"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "field_name": "value",
+                "full_mapped_type_name": "QString",
+                "full_type_name": "string",
+                "mapped_type_name": "QString",
+                "name": "value",
+                "type_name": "string"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "\"datetime\"",
+                "field_name": "type",
+                "full_mapped_type_name": "QString",
+                "full_type_name": "string",
+                "mapped_type_name": "QString",
+                "name": "type",
+                "type_name": "string"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "field_name": "from",
+                "full_mapped_type_name": "QString",
+                "full_type_name": "string",
+                "mapped_type_name": "QString",
+                "name": "from",
+                "type_name": "string"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "field_name": "to",
+                "full_mapped_type_name": "QString",
+                "full_type_name": "string",
+                "mapped_type_name": "QString",
+                "name": "to",
+                "type_name": "string"
+            }
+        ],
+        "full_class_name": "examples:annotations::DateTimePickerAnnotation",
+        "full_name": "examples.annotations.DateTimePicker",
+        "name": "DateTimePicker",
+        "namespace": "examples.annotations",
+        "namespace_class_prefix": "examples:annotations::",
+        "parent": "",
+        "parent_class_name": "",
+        "parent_full_class_name": "",
+        "parent_full_name": "",
+        "parent_name": "",
+        "type": "annotation_decl"
+    },
+    {
+        "annotations": [],
+        "class_name": "ModeOptionAnnotation",
+        "fields": [
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "\"正常模式\"",
+                "field_name": "text",
+                "full_mapped_type_name": "QString",
+                "full_type_name": "string",
+                "mapped_type_name": "QString",
+                "name": "text",
+                "type_name": "string"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "\"normal\"",
+                "field_name": "value",
+                "full_mapped_type_name": "QString",
+                "full_type_name": "string",
+                "mapped_type_name": "QString",
+                "name": "value",
+                "type_name": "string"
+            }
+        ],
+        "full_class_name": "examples:annotations::ModeOptionAnnotation",
+        "full_name": "examples.annotations.ModeOption",
+        "name": "ModeOption",
+        "namespace": "examples.annotations",
+        "namespace_class_prefix": "examples:annotations::",
+        "parent": "",
+        "parent_class_name": "",
+        "parent_full_class_name": "",
+        "parent_full_name": "",
+        "parent_name": "",
+        "type": "annotation_decl"
+    },
+    {
+        "annotations": [],
+        "class_name": "OptionalModeOptionAnnotation",
+        "fields": [
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "false",
+                "field_name": "is_optional",
+                "full_mapped_type_name": "bool",
+                "full_type_name": "bool",
+                "mapped_type_name": "bool",
+                "name": "is_optional",
+                "type_name": "bool"
+            }
+        ],
+        "full_class_name": "examples:annotations::OptionalModeOptionAnnotation",
+        "full_name": "examples.annotations.OptionalModeOption",
+        "name": "OptionalModeOption",
+        "namespace": "examples.annotations",
+        "namespace_class_prefix": "examples:annotations::",
+        "parent": "ModeOption",
+        "parent_class_name": "ModeOptionAnnotation",
+        "parent_full_class_name": "examples:annotations::ModeOptionAnnotation",
+        "parent_full_name": "examples.annotations.ModeOption",
+        "parent_name": "ModeOption",
+        "type": "annotation_decl"
+    },
+    {
+        "annotations": [],
+        "class_name": "ModeSelectorAnnotation",
+        "fields": [
+            {
+                "annotations": [],
+                "container_type": "none",
+                "field_name": "default",
+                "full_mapped_type_name": "examples:annotations::ModeOptionAnnotation",
+                "full_type_name": "examples.annotations.ModeOption",
+                "mapped_type_name": "ModeOptionAnnotation",
+                "name": "default",
+                "type_name": "ModeOption"
+            },
+            {
+                "annotations": [],
+                "container_type": "array",
+                "field_name": "value",
+                "full_mapped_type_name": "examples:annotations::ModeOptionAnnotation",
+                "full_type_name": "examples.annotations.ModeOption",
+                "mapped_type_name": "ModeOptionAnnotation",
+                "name": "value",
+                "type_name": "ModeOption"
+            }
+        ],
+        "full_class_name": "examples:annotations::ModeSelectorAnnotation",
+        "full_name": "examples.annotations.ModeSelector",
+        "name": "ModeSelector",
+        "namespace": "examples.annotations",
+        "namespace_class_prefix": "examples:annotations::",
+        "parent": "",
+        "parent_class_name": "",
+        "parent_full_class_name": "",
+        "parent_full_name": "",
+        "parent_name": "",
+        "type": "annotation_decl"
+    },
+    {
+        "annotations": [
+            {
+                "arguments": [
+                    {
+                        "container_type": "none",
+                        "field_name": "default",
+                        "full_mapped_type_name": "examples:annotations::ModeOptionAnnotation",
+                        "full_type_name": "examples.annotations.ModeOption",
+                        "mapped_type_name": "ModeOptionAnnotation",
+                        "name": "default",
+                        "type_name": "ModeOption",
+                        "value": {
+                            "arguments": [
+                                {
+                                    "container_type": "none",
+                                    "field_name": "text",
+                                    "full_mapped_type_name": "QString",
+                                    "full_type_name": "string",
+                                    "mapped_type_name": "QString",
+                                    "name": "text",
+                                    "type_name": "string",
+                                    "value": "\"正常模式\""
+                                },
+                                {
+                                    "container_type": "none",
+                                    "field_name": "value",
+                                    "full_mapped_type_name": "QString",
+                                    "full_type_name": "string",
+                                    "mapped_type_name": "QString",
+                                    "name": "value",
+                                    "type_name": "string",
+                                    "value": "\"normal\""
+                                }
+                            ],
+                            "class_name": "ModeOptionAnnotation",
+                            "full_class_name": "examples:annotations::ModeOptionAnnotation",
+                            "full_name": "examples.annotations.ModeOption",
+                            "name": "ModeOption",
+                            "namespace": "examples.annotations",
+                            "type": "annotation"
+                        }
+                    },
+                    {
+                        "container_type": "array",
+                        "field_name": "value",
+                        "full_mapped_type_name": "examples:annotations::ModeOptionAnnotation",
+                        "full_type_name": "examples.annotations.ModeOption",
+                        "mapped_type_name": "ModeOptionAnnotation",
+                        "name": "value",
+                        "type_name": "ModeOption",
+                        "value": [
+                            {
+                                "arguments": [
+                                    {
+                                        "container_type": "none",
+                                        "field_name": "text",
+                                        "full_mapped_type_name": "QString",
+                                        "full_type_name": "string",
+                                        "mapped_type_name": "QString",
+                                        "name": "text",
+                                        "type_name": "string",
+                                        "value": "\"正常模式\""
+                                    },
+                                    {
+                                        "container_type": "none",
+                                        "field_name": "value",
+                                        "full_mapped_type_name": "QString",
+                                        "full_type_name": "string",
+                                        "mapped_type_name": "QString",
+                                        "name": "value",
+                                        "type_name": "string",
+                                        "value": "\"normal\""
+                                    }
+                                ],
+                                "class_name": "ModeOptionAnnotation",
+                                "full_class_name": "examples:annotations::ModeOptionAnnotation",
+                                "full_name": "examples.annotations.ModeOption",
+                                "name": "ModeOption",
+                                "namespace": "examples.annotations",
+                                "type": "annotation"
+                            },
+                            {
+                                "arguments": [
+                                    {
+                                        "container_type": "none",
+                                        "field_name": "text",
+                                        "full_mapped_type_name": "QString",
+                                        "full_type_name": "string",
+                                        "mapped_type_name": "QString",
+                                        "name": "text",
+                                        "type_name": "string",
+                                        "value": "\"调试模式\""
+                                    },
+                                    {
+                                        "container_type": "none",
+                                        "field_name": "value",
+                                        "full_mapped_type_name": "QString",
+                                        "full_type_name": "string",
+                                        "mapped_type_name": "QString",
+                                        "name": "value",
+                                        "type_name": "string",
+                                        "value": "\"debug\""
+                                    }
+                                ],
+                                "class_name": "ModeOptionAnnotation",
+                                "full_class_name": "examples:annotations::ModeOptionAnnotation",
+                                "full_name": "examples.annotations.ModeOption",
+                                "name": "ModeOption",
+                                "namespace": "examples.annotations",
+                                "type": "annotation"
+                            },
+                            {
+                                "arguments": [
+                                    {
+                                        "container_type": "none",
+                                        "field_name": "text",
+                                        "full_mapped_type_name": "QString",
+                                        "full_type_name": "string",
+                                        "mapped_type_name": "QString",
+                                        "name": "text",
+                                        "type_name": "string",
+                                        "value": "\"测试模式\""
+                                    },
+                                    {
+                                        "container_type": "none",
+                                        "field_name": "value",
+                                        "full_mapped_type_name": "QString",
+                                        "full_type_name": "string",
+                                        "mapped_type_name": "QString",
+                                        "name": "value",
+                                        "type_name": "string",
+                                        "value": "\"test\""
+                                    }
+                                ],
+                                "class_name": "ModeOptionAnnotation",
+                                "full_class_name": "examples:annotations::ModeOptionAnnotation",
+                                "full_name": "examples.annotations.ModeOption",
+                                "name": "ModeOption",
+                                "namespace": "examples.annotations",
+                                "type": "annotation"
+                            },
+                            {
+                                "arguments": [
+                                    {
+                                        "container_type": "none",
+                                        "field_name": "text",
+                                        "full_mapped_type_name": "QString",
+                                        "full_type_name": "string",
+                                        "mapped_type_name": "QString",
+                                        "name": "text",
+                                        "type_name": "string",
+                                        "value": "\"生产模式\""
+                                    },
+                                    {
+                                        "container_type": "none",
+                                        "field_name": "value",
+                                        "full_mapped_type_name": "QString",
+                                        "full_type_name": "string",
+                                        "mapped_type_name": "QString",
+                                        "name": "value",
+                                        "type_name": "string",
+                                        "value": "\"production\""
+                                    }
+                                ],
+                                "class_name": "ModeOptionAnnotation",
+                                "full_class_name": "examples:annotations::ModeOptionAnnotation",
+                                "full_name": "examples.annotations.ModeOption",
+                                "name": "ModeOption",
+                                "namespace": "examples.annotations",
+                                "type": "annotation"
+                            }
+                        ]
+                    }
+                ],
+                "class_name": "ModeSelectorAnnotation",
+                "full_class_name": "examples:annotations::ModeSelectorAnnotation",
+                "full_name": "examples.annotations.ModeSelector",
+                "name": "ModeSelector",
+                "namespace": "examples.annotations",
+                "namespace_class_prefix": "examples:annotations::",
+                "type": "annotation"
+            }
+        ],
+        "class_name": "RunModeModel",
+        "fields": [
+            {
+                "annotations": [
+                    {
+                        "arguments": [
+                            {
+                                "container_type": "none",
+                                "field_name": "default",
+                                "full_mapped_type_name": "examples:annotations::ModeOptionAnnotation",
+                                "full_type_name": "examples.annotations.ModeOption",
+                                "mapped_type_name": "ModeOptionAnnotation",
+                                "name": "default",
+                                "type_name": "ModeOption",
+                                "value": {
+                                    "arguments": [
+                                        {
+                                            "container_type": "none",
+                                            "field_name": "text",
+                                            "full_mapped_type_name": "QString",
+                                            "full_type_name": "string",
+                                            "mapped_type_name": "QString",
+                                            "name": "text",
+                                            "type_name": "string",
+                                            "value": "\"正常模式\""
+                                        },
+                                        {
+                                            "container_type": "none",
+                                            "field_name": "value",
+                                            "full_mapped_type_name": "QString",
+                                            "full_type_name": "string",
+                                            "mapped_type_name": "QString",
+                                            "name": "value",
+                                            "type_name": "string",
+                                            "value": "\"normal\""
+                                        }
+                                    ],
+                                    "class_name": "ModeOptionAnnotation",
+                                    "full_class_name": "examples:annotations::ModeOptionAnnotation",
+                                    "full_name": "examples.annotations.ModeOption",
+                                    "name": "ModeOption",
+                                    "namespace": "examples.annotations",
+                                    "type": "annotation"
+                                }
+                            },
+                            {
+                                "container_type": "array",
+                                "field_name": "value",
+                                "full_mapped_type_name": "examples:annotations::ModeOptionAnnotation",
+                                "full_type_name": "examples.annotations.ModeOption",
+                                "mapped_type_name": "ModeOptionAnnotation",
+                                "name": "value",
+                                "type_name": "ModeOption",
+                                "value": [
+                                    {
+                                        "arguments": [
+                                            {
+                                                "container_type": "none",
+                                                "field_name": "text",
+                                                "full_mapped_type_name": "QString",
+                                                "full_type_name": "string",
+                                                "mapped_type_name": "QString",
+                                                "name": "text",
+                                                "type_name": "string",
+                                                "value": "\"正常模式\""
+                                            },
+                                            {
+                                                "container_type": "none",
+                                                "field_name": "value",
+                                                "full_mapped_type_name": "QString",
+                                                "full_type_name": "string",
+                                                "mapped_type_name": "QString",
+                                                "name": "value",
+                                                "type_name": "string",
+                                                "value": "\"normal\""
+                                            }
+                                        ],
+                                        "class_name": "ModeOptionAnnotation",
+                                        "full_class_name": "examples:annotations::ModeOptionAnnotation",
+                                        "full_name": "examples.annotations.ModeOption",
+                                        "name": "ModeOption",
+                                        "namespace": "examples.annotations",
+                                        "type": "annotation"
+                                    },
+                                    {
+                                        "arguments": [
+                                            {
+                                                "container_type": "none",
+                                                "field_name": "text",
+                                                "full_mapped_type_name": "QString",
+                                                "full_type_name": "string",
+                                                "mapped_type_name": "QString",
+                                                "name": "text",
+                                                "type_name": "string",
+                                                "value": "\"调试模式\""
+                                            },
+                                            {
+                                                "container_type": "none",
+                                                "field_name": "value",
+                                                "full_mapped_type_name": "QString",
+                                                "full_type_name": "string",
+                                                "mapped_type_name": "QString",
+                                                "name": "value",
+                                                "type_name": "string",
+                                                "value": "\"debug\""
+                                            }
+                                        ],
+                                        "class_name": "ModeOptionAnnotation",
+                                        "full_class_name": "examples:annotations::ModeOptionAnnotation",
+                                        "full_name": "examples.annotations.ModeOption",
+                                        "name": "ModeOption",
+                                        "namespace": "examples.annotations",
+                                        "type": "annotation"
+                                    },
+                                    {
+                                        "arguments": [
+                                            {
+                                                "container_type": "none",
+                                                "field_name": "text",
+                                                "full_mapped_type_name": "QString",
+                                                "full_type_name": "string",
+                                                "mapped_type_name": "QString",
+                                                "name": "text",
+                                                "type_name": "string",
+                                                "value": "\"测试模式\""
+                                            },
+                                            {
+                                                "container_type": "none",
+                                                "field_name": "value",
+                                                "full_mapped_type_name": "QString",
+                                                "full_type_name": "string",
+                                                "mapped_type_name": "QString",
+                                                "name": "value",
+                                                "type_name": "string",
+                                                "value": "\"test\""
+                                            }
+                                        ],
+                                        "class_name": "ModeOptionAnnotation",
+                                        "full_class_name": "examples:annotations::ModeOptionAnnotation",
+                                        "full_name": "examples.annotations.ModeOption",
+                                        "name": "ModeOption",
+                                        "namespace": "examples.annotations",
+                                        "type": "annotation"
+                                    },
+                                    {
+                                        "arguments": [
+                                            {
+                                                "container_type": "none",
+                                                "field_name": "text",
+                                                "full_mapped_type_name": "QString",
+                                                "full_type_name": "string",
+                                                "mapped_type_name": "QString",
+                                                "name": "text",
+                                                "type_name": "string",
+                                                "value": "\"生产模式\""
+                                            },
+                                            {
+                                                "container_type": "none",
+                                                "field_name": "value",
+                                                "full_mapped_type_name": "QString",
+                                                "full_type_name": "string",
+                                                "mapped_type_name": "QString",
+                                                "name": "value",
+                                                "type_name": "string",
+                                                "value": "\"production\""
+                                            }
+                                        ],
+                                        "class_name": "ModeOptionAnnotation",
+                                        "full_class_name": "examples:annotations::ModeOptionAnnotation",
+                                        "full_name": "examples.annotations.ModeOption",
+                                        "name": "ModeOption",
+                                        "namespace": "examples.annotations",
+                                        "type": "annotation"
+                                    }
+                                ]
+                            }
+                        ],
+                        "class_name": "ModeSelectorAnnotation",
+                        "full_class_name": "examples:annotations::ModeSelectorAnnotation",
+                        "full_name": "examples.annotations.ModeSelector",
+                        "name": "ModeSelector",
+                        "namespace": "examples.annotations",
+                        "namespace_class_prefix": "examples:annotations::",
+                        "type": "annotation"
+                    }
+                ],
+                "container_type": "none",
+                "field_name": "name",
+                "full_mapped_type_name": "QString",
+                "full_type_name": "string",
+                "mapped_type_name": "QString",
+                "name": "name",
+                "type_name": "string"
+            }
+        ],
+        "full_class_name": "examples:annotations::RunModeModel",
+        "full_name": "examples.annotations.RunMode",
+        "name": "RunMode",
+        "namespace": "examples.annotations",
+        "namespace_class_prefix": "examples:annotations::",
+        "parent": "",
+        "parent_class_name": "",
+        "parent_full_class_name": "",
+        "parent_full_name": "",
+        "parent_name": "",
+        "type": "struct"
+    }
+],
+    "INCLUDES": {
+    "count": 2,
+    "files": [
+        {
+            "source": "yima.mota",
+            "translated": "yima.h"
+        },
+        {
+            "source": "yima-ui.mota",
+            "translated": "yima-ui.h"
+        }
+    ]
+},
+    "CURRENT_TIME": "2025-06-12 20:25:07",
+    "SOURCE_FILE": ".\examples\annotations.mota",
+    "NAMESPACE": {
+    "as_class_prefix": "examples::annotations::",
+    "exists": true,
+    "parts": [
+        {
+            "index": 0,
+            "is_first": true,
+            "is_last": false,
+            "name": "examples"
+        },
+        {
+            "index": 1,
+            "is_first": false,
+            "is_last": true,
+            "name": "annotations"
+        }
+    ],
+    "parts_count": 2,
+    "path": "examples\\annotations",
+    "qualified_name": "examples.annotations"
+},
+    "DECLARATIONS_REGISTRY": {
+    "all": [
+        {
+            "class_name": "DateTimePickerAnnotation",
+            "file_path": ".\\examples\\annotations.mota",
+            "name": "DateTimePicker",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "examples.annotations.DateTimePicker",
+            "relative_type_name": "DateTimePickerAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ModeOptionAnnotation",
+            "file_path": ".\\examples\\annotations.mota",
+            "name": "ModeOption",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "examples.annotations.ModeOption",
+            "relative_type_name": "ModeOptionAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ModeSelectorAnnotation",
+            "file_path": ".\\examples\\annotations.mota",
+            "name": "ModeSelector",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "examples.annotations.ModeSelector",
+            "relative_type_name": "ModeSelectorAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "OptionalModeOptionAnnotation",
+            "file_path": ".\\examples\\annotations.mota",
+            "name": "OptionalModeOption",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "examples.annotations.OptionalModeOption",
+            "relative_type_name": "OptionalModeOptionAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "RunModeModel",
+            "file_path": ".\\examples\\annotations.mota",
+            "name": "RunMode",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "examples.annotations.RunMode",
+            "relative_type_name": "RunModeModel",
+            "type": "struct"
+        },
+        {
+            "class_name": "ColorPickerAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "ColorPicker",
+            "namespace_name": "yima",
+            "qualified_name": "yima.ColorPicker",
+            "relative_type_name": "ColorPickerAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "DateAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "Date",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Date",
+            "relative_type_name": "DateAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "DrawCircleAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "DrawCircle",
+            "namespace_name": "yima",
+            "qualified_name": "yima.DrawCircle",
+            "relative_type_name": "DrawCircleAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "DrawLineAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "DrawLine",
+            "namespace_name": "yima",
+            "qualified_name": "yima.DrawLine",
+            "relative_type_name": "DrawLineAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "DrawPointAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "DrawPoint",
+            "namespace_name": "yima",
+            "qualified_name": "yima.DrawPoint",
+            "relative_type_name": "DrawPointAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "DrawPolygonAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "DrawPolygon",
+            "namespace_name": "yima",
+            "qualified_name": "yima.DrawPolygon",
+            "relative_type_name": "DrawPolygonAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "DrawRectangleAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "DrawRectangle",
+            "namespace_name": "yima",
+            "qualified_name": "yima.DrawRectangle",
+            "relative_type_name": "DrawRectangleAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "EnumValueAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "EnumValue",
+            "namespace_name": "yima",
+            "qualified_name": "yima.EnumValue",
+            "relative_type_name": "EnumValueAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "FileDialogAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "FileDialog",
+            "namespace_name": "yima",
+            "qualified_name": "yima.FileDialog",
+            "relative_type_name": "FileDialogAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "FloatAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "Float",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Float",
+            "relative_type_name": "FloatAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "FolderDialogAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "FolderDialog",
+            "namespace_name": "yima",
+            "qualified_name": "yima.FolderDialog",
+            "relative_type_name": "FolderDialogAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "HiddenAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "Hidden",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Hidden",
+            "relative_type_name": "HiddenAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "IniGroupAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "IniGroup",
+            "namespace_name": "yima",
+            "qualified_name": "yima.IniGroup",
+            "relative_type_name": "IniGroupAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "IntAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "Int",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Int",
+            "relative_type_name": "IntAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "LabelAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "Label",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Label",
+            "relative_type_name": "LabelAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ReadOnlyAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "ReadOnly",
+            "namespace_name": "yima",
+            "qualified_name": "yima.ReadOnly",
+            "relative_type_name": "ReadOnlyAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ScopeAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "Scope",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Scope",
+            "relative_type_name": "ScopeAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "SelectAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "Select",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Select",
+            "relative_type_name": "SelectAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "StorageAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "Storage",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Storage",
+            "relative_type_name": "StorageAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "SwitcherAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "Switcher",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Switcher",
+            "relative_type_name": "SwitcherAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "TextAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "Text",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Text",
+            "relative_type_name": "TextAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "TimeAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "Time",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Time",
+            "relative_type_name": "TimeAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "TooltipAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "Tooltip",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Tooltip",
+            "relative_type_name": "TooltipAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ValidateAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+            "name": "Validate",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Validate",
+            "relative_type_name": "ValidateAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "WindowAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "Window",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Window",
+            "relative_type_name": "WindowAnnotation",
+            "type": "annotation_decl"
+        }
+    ],
+    "by_type": {
+        "annotation_decl": [
+            {
+                "class_name": "DateTimePickerAnnotation",
+                "file_path": ".\\examples\\annotations.mota",
+                "name": "DateTimePicker",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "examples.annotations.DateTimePicker",
+                "relative_type_name": "DateTimePickerAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ModeOptionAnnotation",
+                "file_path": ".\\examples\\annotations.mota",
+                "name": "ModeOption",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "examples.annotations.ModeOption",
+                "relative_type_name": "ModeOptionAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ModeSelectorAnnotation",
+                "file_path": ".\\examples\\annotations.mota",
+                "name": "ModeSelector",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "examples.annotations.ModeSelector",
+                "relative_type_name": "ModeSelectorAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "OptionalModeOptionAnnotation",
+                "file_path": ".\\examples\\annotations.mota",
+                "name": "OptionalModeOption",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "examples.annotations.OptionalModeOption",
+                "relative_type_name": "OptionalModeOptionAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ColorPickerAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "ColorPicker",
+                "namespace_name": "yima",
+                "qualified_name": "yima.ColorPicker",
+                "relative_type_name": "ColorPickerAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "DateAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "Date",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Date",
+                "relative_type_name": "DateAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "DrawCircleAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "DrawCircle",
+                "namespace_name": "yima",
+                "qualified_name": "yima.DrawCircle",
+                "relative_type_name": "DrawCircleAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "DrawLineAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "DrawLine",
+                "namespace_name": "yima",
+                "qualified_name": "yima.DrawLine",
+                "relative_type_name": "DrawLineAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "DrawPointAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "DrawPoint",
+                "namespace_name": "yima",
+                "qualified_name": "yima.DrawPoint",
+                "relative_type_name": "DrawPointAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "DrawPolygonAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "DrawPolygon",
+                "namespace_name": "yima",
+                "qualified_name": "yima.DrawPolygon",
+                "relative_type_name": "DrawPolygonAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "DrawRectangleAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "DrawRectangle",
+                "namespace_name": "yima",
+                "qualified_name": "yima.DrawRectangle",
+                "relative_type_name": "DrawRectangleAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "EnumValueAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "EnumValue",
+                "namespace_name": "yima",
+                "qualified_name": "yima.EnumValue",
+                "relative_type_name": "EnumValueAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "FileDialogAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "FileDialog",
+                "namespace_name": "yima",
+                "qualified_name": "yima.FileDialog",
+                "relative_type_name": "FileDialogAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "FloatAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "Float",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Float",
+                "relative_type_name": "FloatAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "FolderDialogAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "FolderDialog",
+                "namespace_name": "yima",
+                "qualified_name": "yima.FolderDialog",
+                "relative_type_name": "FolderDialogAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "HiddenAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "Hidden",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Hidden",
+                "relative_type_name": "HiddenAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "IniGroupAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "IniGroup",
+                "namespace_name": "yima",
+                "qualified_name": "yima.IniGroup",
+                "relative_type_name": "IniGroupAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "IntAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "Int",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Int",
+                "relative_type_name": "IntAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "LabelAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "Label",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Label",
+                "relative_type_name": "LabelAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ReadOnlyAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "ReadOnly",
+                "namespace_name": "yima",
+                "qualified_name": "yima.ReadOnly",
+                "relative_type_name": "ReadOnlyAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ScopeAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "Scope",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Scope",
+                "relative_type_name": "ScopeAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "SelectAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "Select",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Select",
+                "relative_type_name": "SelectAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "StorageAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "Storage",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Storage",
+                "relative_type_name": "StorageAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "SwitcherAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "Switcher",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Switcher",
+                "relative_type_name": "SwitcherAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "TextAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "Text",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Text",
+                "relative_type_name": "TextAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "TimeAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "Time",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Time",
+                "relative_type_name": "TimeAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "TooltipAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "Tooltip",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Tooltip",
+                "relative_type_name": "TooltipAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ValidateAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima-ui.mota",
+                "name": "Validate",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Validate",
+                "relative_type_name": "ValidateAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "WindowAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "Window",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Window",
+                "relative_type_name": "WindowAnnotation",
+                "type": "annotation_decl"
+            }
+        ],
+        "block": [],
+        "enum": [],
+        "struct": [
+            {
+                "class_name": "RunModeModel",
+                "file_path": ".\\examples\\annotations.mota",
+                "name": "RunMode",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "examples.annotations.RunMode",
+                "relative_type_name": "RunModeModel",
+                "type": "struct"
+            }
+        ]
+    },
+    "count": 30
+}}

@@ -535,27 +535,85 @@ nlohmann::json Generator::buildAnnotationData(const std::unique_ptr<ast::Annotat
         {"class_name", classPrefix + annotationName + classSuffix},
         {"full_name", fullName},
         {"full_class_name", fullClassName},
-        {"type", "annotation_decl"},
+        {"type", "annotation"},
         {"namespace", currentNamespace},
         {"namespace_class_prefix", namespaceClassPrefix},
         {"arguments", nlohmann::json::array()}
     };
     
-    // 构建参数数据
-    for (const auto& argument : annotation->arguments) {
-        nlohmann::json typeData = buildExprData(argument->value);
-        
-        nlohmann::json argData = {
-            {"name", argument->name},
-            {"field_name", argument->name},  // 可以通过配置转换
-            {"container_type", "none"},  // 注解参数通常不是容器类型
-            {"type_name", "string"},  // 需要根据实际表达式类型推断
-            {"type_namespaces", nlohmann::json::array()},
-            {"qualified_type_name", "string"},
-            {"value", typeData}
-        };
-        
-        data["arguments"].push_back(argData);
+    // 构建参数数据 - 使用类型化的构建方法
+    if (declarationRegistry_) {
+        auto it = declarationRegistry_->find(fullName);
+        if (it != declarationRegistry_->end()) {
+            const auto& declInfo = it->second;
+            if (declInfo.node && declInfo.node->nodeType() == ast::NodeType::AnnotationDecl) {
+                const auto* annotationDecl = static_cast<const ast::AnnotationDecl*>(declInfo.node);
+                
+                // 为每个参数构建类型化的数据
+                for (const auto& argument : annotation->arguments) {
+                    // 查找对应的字段定义
+                    const ast::Field* fieldDef = nullptr;
+                    for (const auto& field : annotationDecl->fields) {
+                        if (field->name == argument->name) {
+                            fieldDef = field.get();
+                            break;
+                        }
+                    }
+                    
+                    if (fieldDef) {
+                        // 使用类型化的表达式构建
+                        nlohmann::json valueData = buildTypedExprData(argument->value, fieldDef->type);
+                        
+                        // 构建字段的类型信息
+                        nlohmann::json fieldTypeInfo = buildTypeData(fieldDef->type);
+                        std::string argTypeName = fieldTypeInfo["type_name"];
+                        std::string argFullTypeName = fieldTypeInfo["qualified_type_name"];
+                        
+                        // 如果全限定类型名不包含命名空间，且不是内置类型，则补充当前命名空间
+                        if (!isBuiltinType(argTypeName) && argFullTypeName.find('.') == std::string::npos && !currentNamespace_.empty()) {
+                            argFullTypeName = currentNamespace_ + "." + argFullTypeName;
+                        }
+                        
+                        std::string argContainerType = fieldTypeInfo["container_type"];
+                        
+                        // 获取映射类型
+                        std::string argMappedTypeName = mapType(argTypeName);
+                        std::string argFullMappedTypeName = argMappedTypeName;
+                        
+                        // 如果是自定义类型，查找完整的类名信息
+                        if (!isBuiltinType(argTypeName)) {
+                            auto typeIt = declarationRegistry_->find(argFullTypeName);
+                            if (typeIt != declarationRegistry_->end()) {
+                                argMappedTypeName = typeIt->second.class_name;
+                                
+                                // 构建完整的映射类型名，包含命名空间
+                                if (!typeIt->second.namespace_name.empty()) {
+                                    std::string namespaceClassPrefix = typeIt->second.namespace_name;
+                                    std::replace(namespaceClassPrefix.begin(), namespaceClassPrefix.end(), '.', ':');
+                                    namespaceClassPrefix += "::";
+                                    argFullMappedTypeName = namespaceClassPrefix + typeIt->second.class_name;
+                                } else {
+                                    argFullMappedTypeName = typeIt->second.class_name;
+                                }
+                            }
+                        }
+                        
+                        nlohmann::json argData = {
+                            {"name", argument->name},
+                            {"field_name", argument->name},
+                            {"container_type", argContainerType},
+                            {"type_name", argTypeName},
+                            {"mapped_type_name", argMappedTypeName},
+                            {"full_type_name", argFullTypeName},
+                            {"full_mapped_type_name", argFullMappedTypeName},
+                            {"value", valueData}
+                        };
+                        
+                        data["arguments"].push_back(argData);
+                    }
+                }
+            }
+        }
     }
     
     return data;
@@ -564,13 +622,48 @@ nlohmann::json Generator::buildAnnotationData(const std::unique_ptr<ast::Annotat
 nlohmann::json Generator::buildFieldData(const std::unique_ptr<ast::Field>& field) {
     nlohmann::json typeInfo = buildTypeData(field->type);
     
+    // 获取类型的完整信息
+    std::string typeName = typeInfo["type_name"];
+    std::string mappedTypeName = mapType(typeName);
+    std::string fullTypeName = typeInfo["qualified_type_name"];
+    
+    // 如果全限定类型名不包含命名空间，且不是内置类型，则补充当前命名空间
+    if (!isBuiltinType(typeName) && fullTypeName.find('.') == std::string::npos && !currentNamespace_.empty()) {
+        fullTypeName = currentNamespace_ + "." + fullTypeName;
+    }
+    
+    std::string fullMappedTypeName = mappedTypeName;
+    
+    // 如果是自定义类型，需要添加类名后缀
+    if (!isBuiltinType(typeName)) {
+        // 根据声明注册表查找类型信息
+        if (declarationRegistry_) {
+            auto it = declarationRegistry_->find(fullTypeName);
+            if (it != declarationRegistry_->end()) {
+                const auto& declInfo = it->second;
+                mappedTypeName = declInfo.class_name;
+                
+                // 构建完整的映射类型名，包含命名空间
+                if (!declInfo.namespace_name.empty()) {
+                    std::string namespaceClassPrefix = declInfo.namespace_name;
+                    std::replace(namespaceClassPrefix.begin(), namespaceClassPrefix.end(), '.', ':');
+                    namespaceClassPrefix += "::";
+                    fullMappedTypeName = namespaceClassPrefix + declInfo.class_name;
+                } else {
+                    fullMappedTypeName = declInfo.class_name;
+                }
+            }
+        }
+    }
+    
     nlohmann::json data = {
         {"name", field->name},
-        {"field_name", field->name},  // 可以通过配置转换
+        {"field_name", field->name},
         {"container_type", typeInfo["container_type"]},
-        {"type_name", typeInfo["type_name"]},
-        {"type_namespaces", typeInfo["type_namespaces"]},
-        {"qualified_type_name", typeInfo["qualified_type_name"]},
+        {"type_name", typeName},
+        {"mapped_type_name", mappedTypeName},
+        {"full_type_name", fullTypeName},
+        {"full_mapped_type_name", fullMappedTypeName},
         {"annotations", nlohmann::json::array()}
     };
     
@@ -640,36 +733,190 @@ nlohmann::json Generator::buildExprData(const std::unique_ptr<ast::Expr>& expr) 
         
         case ast::NodeType::Annotation: {
             auto annotation = static_cast<const ast::Annotation*>(expr.get());
-            // 直接构建注解数据，不使用 unique_ptr
-            nlohmann::json data = {
-                {"name", annotation->name},
-                {"class_name", annotation->name + "Annotation"},
-                {"arguments", nlohmann::json::array()}
-            };
-            
-            // 构建参数数据
-            for (const auto& argument : annotation->arguments) {
-                nlohmann::json typeData = buildExprData(argument->value);
-                
-                nlohmann::json argData = {
-                    {"name", argument->name},
-                    {"field_name", argument->name},
-                    {"container_type", "none"},
-                    {"type_name", "string"},
-                    {"type_namespaces", nlohmann::json::array()},
-                    {"qualified_type_name", "string"},
-                    {"value", typeData}
-                };
-                
-                data["arguments"].push_back(argData);
-            }
-            
-            return data;
+            return buildAnnotationValueData(annotation);
         }
         
         default:
             // 对于其他类型的表达式，返回字符串表示
             return "/* complex expression */";
+    }
+    
+    return nlohmann::json();
+}
+
+nlohmann::json Generator::buildAnnotationValueData(const ast::Annotation* annotation) {
+    // 获取注解类名后缀配置
+    std::string classPrefix = templateConfig_.declaration_types.annotation_decl.prefix;
+    std::string classSuffix = templateConfig_.declaration_types.annotation_decl.suffix;
+    
+    // 获取完整的注解信息
+    std::string annotationName = annotation->name;
+    std::string fullName = annotationName;
+    std::string className = classPrefix + annotationName + classSuffix;
+    std::string fullClassName = className;
+    
+    // 处理命名空间
+    if (annotationName.find('.') != std::string::npos) {
+        fullName = annotationName;
+        std::string simpleAnnotationName = annotationName.substr(annotationName.find_last_of('.') + 1);
+        className = classPrefix + simpleAnnotationName + classSuffix;
+        fullClassName = annotationName;
+        std::replace(fullClassName.begin(), fullClassName.end(), '.', ':');
+        fullClassName = classPrefix + fullClassName + classSuffix;
+        annotationName = simpleAnnotationName;
+    } else {
+        // 如果注解名不包含命名空间，假设在当前命名空间中
+        fullName = currentNamespace_.empty() ? annotationName : currentNamespace_ + "." + annotationName;
+        std::string namespaceClassPrefix = currentNamespace_.empty() ? "" : currentNamespace_ + "::";
+        std::replace(namespaceClassPrefix.begin(), namespaceClassPrefix.end(), '.', ':');
+        if (!namespaceClassPrefix.empty() && namespaceClassPrefix.back() != ':') {
+            namespaceClassPrefix += "::";
+        }
+        fullClassName = namespaceClassPrefix + className;
+    }
+    
+    nlohmann::json data = {
+        {"name", annotationName},
+        {"class_name", className},
+        {"full_name", fullName},
+        {"full_class_name", fullClassName},
+        {"type", "annotation"},
+        {"namespace", currentNamespace_},
+        {"arguments", nlohmann::json::array()}
+    };
+    
+    // 构建参数数据 - 需要从注解声明中获取类型信息
+    if (declarationRegistry_) {
+        auto it = declarationRegistry_->find(fullName);
+        if (it != declarationRegistry_->end()) {
+            const auto& declInfo = it->second;
+            if (declInfo.node && declInfo.node->nodeType() == ast::NodeType::AnnotationDecl) {
+                const auto* annotationDecl = static_cast<const ast::AnnotationDecl*>(declInfo.node);
+                
+                // 为每个参数构建类型化的数据
+                for (const auto& argument : annotation->arguments) {
+                    // 查找对应的字段定义
+                    const ast::Field* fieldDef = nullptr;
+                    for (const auto& field : annotationDecl->fields) {
+                        if (field->name == argument->name) {
+                            fieldDef = field.get();
+                            break;
+                        }
+                    }
+                    
+                    if (fieldDef) {
+                        // 使用类型化的表达式构建
+                        nlohmann::json valueData = buildTypedExprData(argument->value, fieldDef->type);
+                        
+                        // 构建字段的类型信息
+                        nlohmann::json fieldTypeInfo = buildTypeData(fieldDef->type);
+                        std::string argTypeName = fieldTypeInfo["type_name"];
+                        std::string argFullTypeName = fieldTypeInfo["qualified_type_name"];
+                        
+                        // 如果全限定类型名不包含命名空间，且不是内置类型，则补充当前命名空间
+                        if (!isBuiltinType(argTypeName) && argFullTypeName.find('.') == std::string::npos && !currentNamespace_.empty()) {
+                            argFullTypeName = currentNamespace_ + "." + argFullTypeName;
+                        }
+                        
+                        std::string argContainerType = fieldTypeInfo["container_type"];
+                        
+                        // 获取映射类型
+                        std::string argMappedTypeName = mapType(argTypeName);
+                        std::string argFullMappedTypeName = argMappedTypeName;
+                        
+                        // 如果是自定义类型，查找完整的类名信息
+                        if (!isBuiltinType(argTypeName)) {
+                            auto typeIt = declarationRegistry_->find(argFullTypeName);
+                            if (typeIt != declarationRegistry_->end()) {
+                                argMappedTypeName = typeIt->second.class_name;
+                                
+                                // 构建完整的映射类型名，包含命名空间
+                                if (!typeIt->second.namespace_name.empty()) {
+                                    std::string namespaceClassPrefix = typeIt->second.namespace_name;
+                                    std::replace(namespaceClassPrefix.begin(), namespaceClassPrefix.end(), '.', ':');
+                                    namespaceClassPrefix += "::";
+                                    argFullMappedTypeName = namespaceClassPrefix + typeIt->second.class_name;
+                                } else {
+                                    argFullMappedTypeName = typeIt->second.class_name;
+                                }
+                            }
+                        }
+                        
+                        nlohmann::json argData = {
+                            {"name", argument->name},
+                            {"field_name", argument->name},
+                            {"container_type", argContainerType},
+                            {"type_name", argTypeName},
+                            {"mapped_type_name", argMappedTypeName},
+                            {"full_type_name", argFullTypeName},
+                            {"full_mapped_type_name", argFullMappedTypeName},
+                            {"value", valueData}
+                        };
+                        
+                        data["arguments"].push_back(argData);
+                    }
+                }
+            }
+        }
+    }
+    
+    return data;
+}
+
+nlohmann::json Generator::buildTypedExprData(const std::unique_ptr<ast::Expr>& expr, const std::unique_ptr<ast::Type>& expectedType) {
+    if (!expr) {
+        return nlohmann::json();
+    }
+    
+    switch (expr->nodeType()) {
+        case ast::NodeType::Literal: {
+            auto literal = static_cast<const ast::Literal*>(expr.get());
+            
+            if (std::holds_alternative<std::string>(literal->value)) {
+                std::string str = std::get<std::string>(literal->value);
+                return "\"" + escapeString(str) + "\"";
+            } else if (std::holds_alternative<int64_t>(literal->value)) {
+                return std::to_string(std::get<int64_t>(literal->value));
+            } else if (std::holds_alternative<double>(literal->value)) {
+                return std::to_string(std::get<double>(literal->value));
+            } else if (std::holds_alternative<bool>(literal->value)) {
+                return std::get<bool>(literal->value) ? "true" : "false";
+            }
+            break;
+        }
+        
+        case ast::NodeType::ArrayLiteral: {
+            auto arrayLiteral = static_cast<const ast::ArrayLiteral*>(expr.get());
+            nlohmann::json arrayData = nlohmann::json::array();
+            
+            // 如果期望类型是数组，获取元素类型
+            std::unique_ptr<ast::Type> elementType = nullptr;
+            if (expectedType && expectedType->nodeType() == ast::NodeType::ContainerType) {
+                const auto* containerType = static_cast<const ast::ContainerType*>(expectedType.get());
+                if (containerType->kind == ast::ContainerType::Kind::Array) {
+                    // 这里需要克隆元素类型，但为了简化，我们使用递归调用
+                    for (const auto& element : arrayLiteral->elements) {
+                        arrayData.push_back(buildTypedExprData(element, containerType->elementType));
+                    }
+                    return arrayData;
+                }
+            }
+            
+            // 默认处理
+            for (const auto& element : arrayLiteral->elements) {
+                arrayData.push_back(buildExprData(element));
+            }
+            return arrayData;
+        }
+        
+        case ast::NodeType::Annotation: {
+            auto annotation = static_cast<const ast::Annotation*>(expr.get());
+            return buildAnnotationValueData(annotation);
+        }
+        
+        default:
+            // 对于其他类型的表达式，回退到普通处理
+            return buildExprData(expr);
     }
     
     return nlohmann::json();

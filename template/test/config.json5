@@ -5,7 +5,6 @@
     "file": "file.template"
   },
   "miscs": [
-    "misc.template"
   ],
   "type_mapping": {
     "int8": "int8_t",
@@ -25,7 +24,7 @@
   "file_path": [
     {
       "namespace_separator": "\\",
-      "path": "<%=as_string(NAMESPACE.path)%>/<%=basename(SOURCE_FILE)%>.h",
+      "path": "<%=basename(SOURCE_FILE)%>.json",
       "entry": "file"
     }
   ],

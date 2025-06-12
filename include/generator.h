@@ -78,6 +78,8 @@ private:
     nlohmann::json buildFieldData(const std::unique_ptr<ast::Field>& field);
     nlohmann::json buildEnumValueData(const std::unique_ptr<ast::EnumValue>& enumValue);
     nlohmann::json buildExprData(const std::unique_ptr<ast::Expr>& expr);
+    nlohmann::json buildAnnotationValueData(const ast::Annotation* annotation);
+    nlohmann::json buildTypedExprData(const std::unique_ptr<ast::Expr>& expr, const std::unique_ptr<ast::Type>& expectedType);
     nlohmann::json buildTypeData(const std::unique_ptr<ast::Type>& type);
     
     // 构建声明注册表数据（用于模板变量）

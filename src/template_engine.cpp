@@ -546,7 +546,7 @@ std::string TemplateEngine::renderVariable(const std::string& varName, const Tem
         } else if (result.is_null()) {
             return "";
         } else {
-            return result.dump();
+            return result.dump(4);
         }
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
