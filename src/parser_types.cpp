@@ -16,10 +16,19 @@ std::shared_ptr<ast::Type> Parser::primaryType() {
         return containerType();
     }
     
-    // 允许 identifier 作为类型（包括注解名）
+    // 允许 identifier 作为类型（包括注解名和完全限定名）
     if (check(lexer::TokenType::Identifier)) {
         auto ident = advance();
-        return makeNode<ast::NamedType>(ident.lexeme);
+        std::string typeName = ident.lexeme;
+        
+        // 处理完全限定名（如 examples.enums.SimpleEnum）
+        while (consume(lexer::TokenType::Dot)) {
+            typeName += ".";
+            auto nextIdent = consume(lexer::TokenType::Identifier, "Expected identifier after '.'");
+            typeName += nextIdent.lexeme;
+        }
+        
+        return makeNode<ast::NamedType>(typeName);
     }
     
     // 解析基本类型

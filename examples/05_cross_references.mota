@@ -1,0 +1,122 @@
+// 跨文件引用语法测试
+namespace examples.cross_references;
+
+include "yima.mota";
+include "01_annotations.mota";
+include "02_enums.mota";
+include "03_blocks.mota";
+include "04_structs.mota";
+
+// === 跨文件类型引用测试 ===
+
+// 1. 跨文件枚举作为字段类型（不使用跨命名空间注解）
+enum CrossEnum {
+    FIRST = 1;
+    SECOND = 2;
+    THIRD = 3;
+}
+
+// 2. 跨文件块作为字段类型和继承
+block CrossBlock {
+    int32 id = 0;
+    string name = "";
+    
+    // 跨文件枚举作为字段类型
+    examples.enums.SimpleEnum simpleStatus = VALUE1;
+    examples.enums.ValueEnum valueStatus = LOW;
+}
+
+// === 跨文件块继承测试 ===
+
+// 3. 继承其他文件的块
+block InheritedCrossBlock : examples.blocks.BaseBlock {
+    float64 score = 0.0;
+    
+    // 使用其他文件的枚举
+    examples.enums.SimpleEnum category = VALUE2;
+    examples.blocks.BlockStatus blockStatus = ACTIVE;
+}
+
+// 4. 继承其他文件的块，包含复杂字段
+block AdvancedCrossBlock : examples.blocks.ExtendedBlock {
+    string advancedField = "";
+    
+    // 跨文件容器类型
+    repeated examples.enums.ValueEnum valueEnumArray;
+    optional examples.blocks.AnnotatedBlock optionalAnnotatedBlock;
+    map examples.enums.SimpleEnum enumMap;
+}
+
+// === 跨文件结构体测试 ===
+
+// 5. 跨文件结构体
+struct CrossStruct {
+    string name = "";
+    
+    // 跨文件枚举字段
+    examples.enums.SimpleEnum enumField = VALUE3;
+    examples.enums.ValueEnum valueEnumField = MEDIUM;
+    
+    // 跨文件块字段
+    examples.blocks.BaseBlock baseBlock;
+    examples.blocks.ExtendedBlock extendedBlock;
+    examples.blocks.AnnotatedBlock annotatedBlock;
+    
+    // 本文件定义的类型
+    CrossEnum crossEnum = FIRST;
+    CrossBlock crossBlock;
+}
+
+// 6. 继承其他文件的块的结构体
+struct InheritedCrossStruct : examples.structs.StructBaseBlock {
+    string description = "";
+    
+    // 混合使用各文件的类型
+    examples.enums.SimpleEnum enumField = VALUE1;
+    examples.blocks.BaseBlock blockField;
+    examples.structs.StructStatus structStatus = DRAFT;
+    
+    // 容器类型的跨文件引用
+    repeated examples.enums.ValueEnum valueEnumArray = [LOW, HIGH];
+    optional examples.blocks.ExtendedBlock optionalBlock;
+    map examples.structs.StructCategory categoryMap;
+}
+
+// === 综合跨文件测试 ===
+
+// 7. 最复杂的跨文件引用测试
+struct UltimateCrossTest : examples.blocks.AllTypesBlock {
+    // 来自enums文件的字段
+    examples.enums.SimpleEnum simpleEnum = VALUE2;
+    examples.enums.ValueEnum valueEnum = HIGH;
+    
+    // 来自blocks文件的字段
+    examples.blocks.BaseBlock baseBlock;
+    examples.blocks.ExtendedBlock extendedBlock;
+    examples.blocks.AnnotatedBlock annotatedBlock;
+    examples.blocks.ContainerBlock containerBlock;
+    
+    // 来自structs文件的字段
+    examples.structs.StructBaseBlock structBaseBlock;
+    examples.structs.StructExtendedBlock structExtendedBlock;
+    examples.structs.BasicStruct basicStruct;
+    examples.structs.InheritedStruct inheritedStruct;
+    
+    // 本文件的字段
+    CrossEnum crossEnum = THIRD;
+    CrossBlock crossBlock;
+    InheritedCrossBlock inheritedCrossBlock;
+    
+    // 复杂容器的跨文件引用
+    repeated examples.enums.SimpleEnum enumArray = [VALUE1, VALUE3];
+    repeated examples.blocks.BaseBlock blockArray;
+    repeated examples.structs.StructStatus statusArray = [DRAFT, PUBLISHED];
+    
+    optional examples.enums.ValueEnum optionalEnum = MEDIUM;
+    optional examples.blocks.AnnotatedBlock optionalBlock;
+    optional examples.structs.StructCategory optionalCategory;
+    
+    map examples.enums.SimpleEnum enumMap;
+    map examples.blocks.BaseBlock blockMap;
+    map examples.structs.StructBaseBlock structBlockMap;
+} 

@@ -159,9 +159,15 @@ std::shared_ptr<ast::Struct> Parser::structDeclaration() {
     // 解析结构体名称
     std::string name = consume(lexer::TokenType::Identifier, "Expected struct name").lexeme;
     std::string baseName;
-    // 解析继承
+    // 解析继承（支持完全限定名）
     if (consume(lexer::TokenType::Colon)) {
         baseName = consume(lexer::TokenType::Identifier, "Expected base block name after ':'").lexeme;
+        // 支持带点的基类名称
+        while (consume(lexer::TokenType::Dot)) {
+            baseName += ".";
+            auto identToken = consume(lexer::TokenType::Identifier, "Expected identifier after '.'");
+            baseName += identToken.lexeme;
+        }
     }
     // 解析结构体体
     consume(lexer::TokenType::LeftBrace, "Expected '{' after struct name");
@@ -259,9 +265,15 @@ std::shared_ptr<ast::Block> Parser::blockDeclaration() {
     // 解析块名称
     std::string name = consume(lexer::TokenType::Identifier, "Expected block name").lexeme;
     std::string baseName;
-    // 解析继承
+    // 解析继承（支持完全限定名）
     if (consume(lexer::TokenType::Colon)) {
         baseName = consume(lexer::TokenType::Identifier, "Expected base block name after ':'").lexeme;
+        // 支持带点的基类名称
+        while (consume(lexer::TokenType::Dot)) {
+            baseName += ".";
+            auto identToken = consume(lexer::TokenType::Identifier, "Expected identifier after '.'");
+            baseName += identToken.lexeme;
+        }
     }
     // 解析块体
     consume(lexer::TokenType::LeftBrace, "Expected '{' after block name");

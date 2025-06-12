@@ -1598,7 +1598,7 @@
         }
     ]
 },
-    "CURRENT_TIME": "2025-06-12 22:28:25",
+    "CURRENT_TIME": "2025-06-12 22:40:39",
     "SOURCE_FILE": ".\examples\04_structs.mota",
     "NAMESPACE": {
     "as_class_prefix": "examples::structs::",
