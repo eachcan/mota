@@ -1,0 +1,339 @@
+{
+  "name": "Mota Template",
+  "scopeName": "source.mota-template",
+  "fileTypes": ["template"],
+  "patterns": [
+    { "include": "#template-tags" },
+    { "include": "#template-content" }
+  ],
+  "repository": {
+    "template-tags": {
+      "patterns": [
+        { "include": "#misc-definition-tags" },
+        { "include": "#control-flow-tags" },
+        { "include": "#expression-tag" }
+      ]
+    },
+    "misc-definition-tags": {
+      "patterns": [
+        { "include": "#misc-tag" },
+        { "include": "#endmisc-tag" }
+      ]
+    },
+    "control-flow-tags": {
+      "patterns": [
+        { "include": "#if-tag" },
+        { "include": "#elseif-tag" },
+        { "include": "#else-tag" },
+        { "include": "#endif-tag" },
+        { "include": "#foreach-tag" },
+        { "include": "#endforeach-tag" },
+        { "include": "#for-tag" },
+        { "include": "#endfor-tag" },
+        { "include": "#call-tag" }
+      ]
+    },
+    "misc-tag": {
+      "name": "meta.tag.misc.definition.mota-template",
+      "match": "(<%)(misc)\\s+([a-zA-Z_][a-zA-Z0-9_]*)(\\s*%>)",
+      "captures": {
+        "1": { "name": "punctuation.definition.tag.begin.mota-template" },
+        "2": { "name": "storage.type.misc.definition.mota-template" },
+        "3": { "name": "entity.name.function.misc.definition.mota-template" },
+        "4": { "name": "punctuation.definition.tag.end.mota-template" }
+      }
+    },
+    "endmisc-tag": {
+      "name": "meta.tag.endmisc.definition.mota-template",
+      "match": "(<%)(endmisc)(\\s*%>)",
+      "captures": {
+        "1": { "name": "punctuation.definition.tag.begin.mota-template" },
+        "2": { "name": "storage.type.misc.definition.mota-template" },
+        "3": { "name": "punctuation.definition.tag.end.mota-template" }
+      }
+    },
+    "if-tag": {
+      "name": "meta.tag.if.control.mota-template",
+      "begin": "(<%)(if)\\s*\\(",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.tag.begin.mota-template" },
+        "2": { "name": "keyword.control.conditional.if.mota-template" }
+      },
+      "end": "\\)(\\s*%>)",
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.tag.end.mota-template" }
+      },
+      "patterns": [
+        { "include": "#template-expressions" }
+      ]
+    },
+    "elseif-tag": {
+      "name": "meta.tag.elseif.control.mota-template",
+      "begin": "(<%)(elseif)\\s*\\(",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.tag.begin.mota-template" },
+        "2": { "name": "keyword.control.conditional.elseif.mota-template" }
+      },
+      "end": "\\)(\\s*%>)",
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.tag.end.mota-template" }
+      },
+      "patterns": [
+        { "include": "#template-expressions" }
+      ]
+    },
+    "else-tag": {
+      "name": "meta.tag.else.control.mota-template",
+      "match": "(<%)(else)(\\s*%>)",
+      "captures": {
+        "1": { "name": "punctuation.definition.tag.begin.mota-template" },
+        "2": { "name": "keyword.control.conditional.else.mota-template" },
+        "3": { "name": "punctuation.definition.tag.end.mota-template" }
+      }
+    },
+    "endif-tag": {
+      "name": "meta.tag.endif.control.mota-template",
+      "match": "(<%)(endif)(\\s*%>)",
+      "captures": {
+        "1": { "name": "punctuation.definition.tag.begin.mota-template" },
+        "2": { "name": "keyword.control.conditional.endif.mota-template" },
+        "3": { "name": "punctuation.definition.tag.end.mota-template" }
+      }
+    },
+    "foreach-tag": {
+      "name": "meta.tag.foreach.control.mota-template",
+      "begin": "(<%)(foreach)\\s+",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.tag.begin.mota-template" },
+        "2": { "name": "keyword.control.loop.foreach.mota-template" }
+      },
+      "end": "(\\s*%>)",
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.tag.end.mota-template" }
+      },
+      "patterns": [
+        {
+          "match": "([a-zA-Z_][a-zA-Z0-9_.]*|[A-Z_][A-Z0-9_]*)\\s+(as)\\s+([a-zA-Z_][a-zA-Z0-9_]*)",
+          "captures": {
+            "1": { "name": "variable.other.collection.mota-template" },
+            "2": { "name": "keyword.control.loop.as.mota-template" },
+            "3": { "name": "variable.other.iterator.mota-template" }
+          }
+        },
+        {
+          "match": "([a-zA-Z_][a-zA-Z0-9_.]*|[A-Z_][A-Z0-9_]*)\\s+(in)\\s+([a-zA-Z_][a-zA-Z0-9_.]*)",
+          "captures": {
+            "1": { "name": "variable.other.iterator.mota-template" },
+            "2": { "name": "keyword.control.loop.in.mota-template" },
+            "3": { "name": "variable.other.collection.mota-template" }
+          }
+        }
+      ]
+    },
+    "endforeach-tag": {
+      "name": "meta.tag.endforeach.control.mota-template",
+      "match": "(<%)(endforeach)(\\s*%>)",
+      "captures": {
+        "1": { "name": "punctuation.definition.tag.begin.mota-template" },
+        "2": { "name": "keyword.control.loop.endforeach.mota-template" },
+        "3": { "name": "punctuation.definition.tag.end.mota-template" }
+      }
+    },
+    "for-tag": {
+      "name": "meta.tag.for.control.mota-template",
+      "begin": "(<%)(for)\\s*\\(",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.tag.begin.mota-template" },
+        "2": { "name": "keyword.control.loop.for.mota-template" }
+      },
+      "end": "\\)(\\s*%>)",
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.tag.end.mota-template" }
+      },
+      "patterns": [
+        {
+          "match": "([a-zA-Z_][a-zA-Z0-9_]*),\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s+(in)\\s+([a-zA-Z_][a-zA-Z0-9_.]*)",
+          "captures": {
+            "1": { "name": "variable.other.key.mota-template" },
+            "2": { "name": "variable.other.value.mota-template" },
+            "3": { "name": "keyword.control.loop.in.mota-template" },
+            "4": { "name": "variable.other.map.mota-template" }
+          }
+        }
+      ]
+    },
+    "endfor-tag": {
+      "name": "meta.tag.endfor.control.mota-template",
+      "match": "(<%)(endfor)(\\s*%>)",
+      "captures": {
+        "1": { "name": "punctuation.definition.tag.begin.mota-template" },
+        "2": { "name": "keyword.control.loop.endfor.mota-template" },
+        "3": { "name": "punctuation.definition.tag.end.mota-template" }
+      }
+    },
+    "call-tag": {
+      "name": "meta.tag.call.control.mota-template",
+      "match": "(<%)(call)\\s+([a-zA-Z_][a-zA-Z0-9_]*)(\\s*%>)",
+      "captures": {
+        "1": { "name": "punctuation.definition.tag.begin.mota-template" },
+        "2": { "name": "keyword.control.invocation.call.mota-template" },
+        "3": { "name": "entity.name.function.misc.call.mota-template" },
+        "4": { "name": "punctuation.definition.tag.end.mota-template" }
+      }
+    },
+    "expression-tag": {
+      "name": "meta.tag.expression.output.mota-template",
+      "begin": "(<%)(=)",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.tag.begin.mota-template" },
+        "2": { "name": "keyword.operator.output.expression.mota-template" }
+      },
+      "end": "(%>)",
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.tag.end.mota-template" }
+      },
+      "patterns": [
+        { "include": "#template-expressions" }
+      ]
+    },
+    "template-expressions": {
+      "patterns": [
+        { "include": "#builtin-functions" },
+        { "include": "#variables" },
+        { "include": "#operators" },
+        { "include": "#strings" },
+        { "include": "#numbers" },
+        { "include": "#booleans" }
+      ]
+    },
+    "builtin-functions": {
+      "patterns": [
+        {
+          "name": "meta.function-call.builtin.mota-template",
+          "begin": "\\b(pascal_case|camel_case|snake_case|escape_string|map_type|namespace_path|join|field_type_template|is_base_type|first_char_upper)\\s*\\(",
+          "beginCaptures": {
+            "1": { "name": "entity.name.function.builtin.mota-template" }
+          },
+          "end": "\\)",
+          "endCaptures": {
+            "0": { "name": "punctuation.definition.parameters.end.mota-template" }
+          },
+          "patterns": [
+            { "include": "#template-expressions" },
+            {
+              "name": "punctuation.separator.arguments.mota-template",
+              "match": ","
+            }
+          ]
+        }
+      ]
+    },
+    "variables": {
+      "patterns": [
+        {
+          "name": "variable.other.constant.global.mota-template",
+          "match": "\\b(CURRENT_TIME|SOURCE_FILE|NAMESPACE|INCLUDES|DECLARATIONS|FILE_NAME|TYPE_NAME|DESCRIPTION|FIELDS|ANNOTATIONS|HAS_ANNOTATIONS|HAS_BASE_CLASS|BASE_CLASS|ENUM_NAME|ENUM_VALUES|FIELD_NAME|FIELD_TYPE|IS_REPEATED|IS_CUSTOM_TYPE|HAS_DEFAULT_VALUE|DEFAULT_VALUE|CONSTRUCTOR_PARAMS|ELEMENT_TYPE|STRING_VALUE|VALUE)\\b"
+        },
+        {
+          "name": "variable.other.property.mota-template",
+          "match": "\\b(declaration|field|file|item)\\.[a-zA-Z_][a-zA-Z0-9_]*\\b"
+        },
+        {
+          "name": "variable.other.local.mota-template",
+          "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.comparison.mota-template",
+          "match": "(==|!=|<=|>=|<|>)"
+        },
+        {
+          "name": "keyword.operator.logical.mota-template",
+          "match": "(&&|\\|\\||!)"
+        },
+        {
+          "name": "punctuation.accessor.mota-template",
+          "match": "\\."
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.mota-template",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.mota-template",
+              "match": "\\\\."
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.mota-template",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "name": "constant.character.escape.mota-template",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.decimal.mota-template",
+          "match": "\\b[0-9]+\\b"
+        },
+        {
+          "name": "constant.numeric.float.mota-template",
+          "match": "\\b[0-9]+\\.[0-9]+\\b"
+        }
+      ]
+    },
+    "booleans": {
+      "patterns": [
+        {
+          "name": "constant.language.boolean.mota-template",
+          "match": "\\b(true|false)\\b"
+        }
+      ]
+    },
+    "template-content": {
+      "patterns": [
+        { "include": "#comments" },
+        {
+          "name": "text.plain.mota-template",
+          "match": "[^<]+"
+        },
+        {
+          "name": "text.plain.mota-template",
+          "match": "<(?!%)"
+        }
+      ]
+    },
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.mota-template",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.block.mota-template",
+          "begin": "/\\*",
+          "end": "\\*/",
+          "captures": {
+            "0": { "name": "punctuation.definition.comment.mota-template" }
+          }
+        }
+      ]
+    }
+  }
+} 

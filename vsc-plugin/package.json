@@ -2,14 +2,15 @@
   "name": "mota-language",
   "displayName": "Mota Language",
   "description": "Mota 语言支持",
-  "version": "0.1.0",
+  "version": "0.2.3",
   "publisher": "eachcan",
   "engines": {
     "vscode": "^1.60.0"
   },
   "main": "./out/extension.js",
   "activationEvents": [
-    "onLanguage:mota"
+    "onLanguage:mota",
+    "onLanguage:mota-template"
   ],
   "categories": [
     "Programming Languages"
@@ -26,6 +27,17 @@
           ".mota"
         ],
         "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "mota-template",
+        "aliases": [
+          "Mota Template",
+          "mota-template"
+        ],
+        "extensions": [
+          ".template"
+        ],
+        "configuration": "./language-configuration-template.json"
       }
     ],
     "grammars": [
@@ -33,12 +45,21 @@
         "language": "mota",
         "scopeName": "source.mota",
         "path": "./syntaxes/mota.tmLanguage.json"
+      },
+      {
+        "language": "mota-template",
+        "scopeName": "source.mota-template",
+        "path": "./syntaxes/mota-template.tmLanguage.json"
       }
     ],
     "snippets": [
       {
         "language": "mota",
         "path": "./snippets/mota.json"
+      },
+      {
+        "language": "mota-template",
+        "path": "./snippets/mota-template.json"
       }
     ]
   },
@@ -59,7 +80,7 @@
     "vscode-languageclient": "^8.1.0"
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "echo 'Skipping compile'",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "postinstall": "cd server && npm install && cd ..",

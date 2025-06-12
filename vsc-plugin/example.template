@@ -1,0 +1,52 @@
+#pragma once
+
+// 此文件由 Mota 代码生成器自动生成
+// 生成时间: <%=CURRENT_TIME%>
+// 源文件: <%=SOURCE_FILE%>
+
+#include <QCborMap>
+#include <QString>
+
+<%if (NAMESPACE.exists)%>
+namespace <%=NAMESPACE.path%> {
+<%endif%>
+
+<%misc getter_method%>
+    <%=FIELD_TYPE%> get<%=pascal_case(FIELD_NAME)%>() const {
+        return <%=FIELD_NAME%>_;
+    }
+<%endmisc%>
+
+<%misc setter_method%>
+    void set<%=pascal_case(FIELD_NAME)%>(const <%=FIELD_TYPE%>& value) {
+        <%=FIELD_NAME%>_ = value;
+    }
+<%endmisc%>
+
+<%foreach DECLARATIONS as declaration%>
+    <%if (declaration.type == "struct")%>
+        // 生成Struct: <%=declaration.name%>
+        class <%=declaration.name%>Model : public IModel {
+        public:
+            <%foreach declaration.fields as field%>
+                <%call getter_method%>
+                <%call setter_method%>
+            <%endforeach%>
+        private:
+            <%foreach declaration.fields as field%>
+                <%=map_type(field.type_name)%> <%=field.name%>_;
+            <%endforeach%>
+        };
+    <%elseif (declaration.type == "block")%>
+        // 生成Block: <%=declaration.name%>
+        class <%=declaration.name%>Block : public IBlock {
+            // Block implementation
+        };
+    <%else%>
+        // 其他类型: <%=declaration.type%>
+    <%endif%>
+<%endforeach%>
+
+<%if (NAMESPACE.exists)%>
+}
+<%endif%> 

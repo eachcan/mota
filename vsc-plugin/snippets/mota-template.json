@@ -1,0 +1,175 @@
+{
+  "Misc Block": {
+    "prefix": "misc",
+    "body": [
+      "<%misc ${1:name}%>",
+      "$0",
+      "<%endmisc%>"
+    ],
+    "description": "创建一个misc代码块"
+  },
+  "If Block": {
+    "prefix": "if",
+    "body": [
+      "<%if (${1:condition})%>",
+      "$0",
+      "<%endif%>"
+    ],
+    "description": "创建一个if条件块"
+  },
+  "If-Else Block": {
+    "prefix": "ifelse",
+    "body": [
+      "<%if (${1:condition})%>",
+      "$2",
+      "<%else%>",
+      "$0",
+      "<%endif%>"
+    ],
+    "description": "创建一个if-else条件块"
+  },
+  "If-ElseIf-Else Block": {
+    "prefix": "ifelseif",
+    "body": [
+      "<%if (${1:condition})%>",
+      "$3",
+      "<%elseif (${2:condition2})%>",
+      "$4",
+      "<%else%>",
+      "$0",
+      "<%endif%>"
+    ],
+    "description": "创建一个if-elseif-else条件块"
+  },
+  "Foreach Block (as)": {
+    "prefix": "foreach",
+    "body": [
+      "<%foreach ${1:collection} as ${2:item}%>",
+      "$0",
+      "<%endforeach%>"
+    ],
+    "description": "创建一个foreach循环块(as语法)"
+  },
+  "Foreach Block (in)": {
+    "prefix": "foreachin",
+    "body": [
+      "<%foreach ${1:item} in ${2:collection}%>",
+      "$0",
+      "<%endforeach%>"
+    ],
+    "description": "创建一个foreach循环块(in语法)"
+  },
+  "For Block (map)": {
+    "prefix": "for",
+    "body": [
+      "<%for (${1:key}, ${2:value}) in ${3:map}%>",
+      "$0",
+      "<%endfor%>"
+    ],
+    "description": "创建一个for循环块遍历map"
+  },
+  "Call Tag": {
+    "prefix": "call",
+    "body": "<%call ${1:function_name}%>",
+    "description": "调用一个misc函数"
+  },
+  "Expression Tag": {
+    "prefix": "expr",
+    "body": "<%=${1:expression}%>",
+    "description": "插入一个表达式"
+  },
+  "Field Type Check": {
+    "prefix": "fieldtype",
+    "body": "<%if (${1:field}.type_name == \"${2:type}\")%>$0<%endif%>",
+    "description": "检查字段类型"
+  },
+  "Container Type Check": {
+    "prefix": "container",
+    "body": "<%if (${1:field}.container_type == \"${2:array|map|optional|none}\")%>$0<%endif%>",
+    "description": "检查容器类型"
+  },
+  "Declaration Type Check": {
+    "prefix": "decltype",
+    "body": "<%if (declaration.type == \"${1:struct|block|enum|annotation_decl}\")%>$0<%endif%>",
+    "description": "检查声明类型"
+  },
+  "Pascal Case": {
+    "prefix": "pascal",
+    "body": "<%=pascal_case(${1:field.name})%>",
+    "description": "转换为帕斯卡命名法"
+  },
+  "Is Base Type": {
+    "prefix": "isbase",
+    "body": "<%if (is_base_type(${1:field.type_name}))%>$0<%endif%>",
+    "description": "检查是否为基础类型"
+  },
+  "Map Type": {
+    "prefix": "maptype",
+    "body": "<%=map_type(${1:field.type_name})%>",
+    "description": "映射类型名称"
+  },
+  "Field foreach": {
+    "prefix": "fieldfor",
+    "body": [
+      "<%foreach declaration.fields as field%>",
+      "$0",
+      "<%endforeach%>"
+    ],
+    "description": "遍历声明的字段"
+  },
+  "Declaration foreach": {
+    "prefix": "declfor",
+    "body": [
+      "<%foreach DECLARATIONS as declaration%>",
+      "$0",
+      "<%endforeach%>"
+    ],
+    "description": "遍历所有声明"
+  },
+  "String Literal": {
+    "prefix": "qstring",
+    "body": "QLatin1String(\"<%=escape_string(${1:value})%>\")",
+    "description": "创建Qt字符串字面量"
+  },
+  "Namespace Check": {
+    "prefix": "nscheck",
+    "body": "<%if (NAMESPACE.exists)%>$0<%endif%>",
+    "description": "检查命名空间是否存在"
+  },
+  "Include Check": {
+    "prefix": "inccheck",
+    "body": [
+      "<%if (INCLUDES.files)%>",
+      "<%foreach INCLUDES.files as file%>",
+      "#include \"<%=file.translated%>\"",
+      "<%endforeach%>",
+      "<%endif%>"
+    ],
+    "description": "处理包含文件"
+  },
+  "Field Default Value": {
+    "prefix": "default",
+    "body": [
+      "<%if (field.default_value)%>",
+      " = <%=field.default_value%>",
+      "<%endif%>"
+    ],
+    "description": "添加字段默认值"
+  },
+  "Field Annotation Check": {
+    "prefix": "fieldann",
+    "body": [
+      "<%if (field.annotations)%>",
+      "<%foreach field.annotations as annotation%>",
+      "$0",
+      "<%endforeach%>",
+      "<%endif%>"
+    ],
+    "description": "检查和遍历字段注解"
+  },
+  "Is Last Check": {
+    "prefix": "islast",
+    "body": "<%if (is_last == false)%>, <%endif%>",
+    "description": "检查是否为最后一个元素"
+  }
+} 
