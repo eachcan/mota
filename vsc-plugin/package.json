@@ -80,7 +80,7 @@
     "vscode-languageclient": "^8.1.0"
   },
   "scripts": {
-    "vscode:prepublish": "echo 'Skipping compile'",
+    "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "postinstall": "cd server && npm install && cd ..",

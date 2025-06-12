@@ -38,7 +38,7 @@ class MotaTemplateDefinitionProvider {
     return null;
   }
   
-  private findMiscDefinition(document: TextDocument, functionName: string): Location[] {
+  private async findMiscDefinition(document: TextDocument, functionName: string): Promise<Location[]> {
     const text = document.getText();
     const lines = text.split('\n');
     const locations: Location[] = [];
@@ -50,8 +50,6 @@ class MotaTemplateDefinitionProvider {
       const line = lines[i];
       const match = miscRegex.exec(line);
       if (match) {
-        const startPos = new Position(i, match.index);
-        const endPos = new Position(i, match.index + match[0].length);
         const location = new Location(document.uri, new Position(i, match.index + match[0].indexOf(functionName)));
         locations.push(location);
         miscRegex.lastIndex = 0; // 重置正则表达式状态
@@ -60,7 +58,8 @@ class MotaTemplateDefinitionProvider {
     
     // 如果当前文档没找到，搜索工作区内的其他.template文件
     if (locations.length === 0) {
-      return this.findMiscDefinitionInWorkspace(functionName);
+      const workspaceLocations = await this.findMiscDefinitionInWorkspace(functionName);
+      locations.push(...workspaceLocations);
     }
     
     return locations;
