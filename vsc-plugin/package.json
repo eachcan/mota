@@ -2,7 +2,7 @@
   "name": "mota-language",
   "displayName": "Mota Language",
   "description": "Mota 语言支持",
-  "version": "0.2.3",
+  "version": "0.2.5",
   "publisher": "eachcan",
   "engines": {
     "vscode": "^1.60.0"
@@ -10,7 +10,8 @@
   "main": "./out/extension.js",
   "activationEvents": [
     "onLanguage:mota",
-    "onLanguage:mota-template"
+    "onLanguage:mota-template",
+    "onCommand:workbench.action.files.openFile"
   ],
   "categories": [
     "Programming Languages"

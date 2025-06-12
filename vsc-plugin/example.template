@@ -23,25 +23,49 @@ namespace <%=NAMESPACE.path%> {
     }
 <%endmisc%>
 
+<%misc class_declaration%>
+    class <%=declaration.name%><%call type_suffix%> : <%call inheritance_declaration%> {
+    public:
+        <%call constructor%>
+        <%call accessors%>
+    private:
+        <%call private_fields%>
+    };
+<%endmisc%>
+
+<%misc type_suffix%>
+    <%if (declaration.type == "struct")%>Model<%endif%>
+    <%if (declaration.type == "block")%>Block<%endif%>
+<%endmisc%>
+
+<%misc inheritance_declaration%>
+    <%if (declaration.parent)%>public <%=declaration.parent_class_name%>, <%endif%>public IModel
+<%endmisc%>
+
+<%misc constructor%>
+    <%=declaration.name%><%call type_suffix%>() = default;
+<%endmisc%>
+
+<%misc accessors%>
+    <%foreach declaration.fields as field%>
+        <%call getter_method%>
+        <%call setter_method%>
+    <%endforeach%>
+<%endmisc%>
+
+<%misc private_fields%>
+    <%foreach declaration.fields as field%>
+        <%=map_type(field.type_name)%> <%=field.name%>_;
+    <%endforeach%>
+<%endmisc%>
+
 <%foreach DECLARATIONS as declaration%>
     <%if (declaration.type == "struct")%>
         // 生成Struct: <%=declaration.name%>
-        class <%=declaration.name%>Model : public IModel {
-        public:
-            <%foreach declaration.fields as field%>
-                <%call getter_method%>
-                <%call setter_method%>
-            <%endforeach%>
-        private:
-            <%foreach declaration.fields as field%>
-                <%=map_type(field.type_name)%> <%=field.name%>_;
-            <%endforeach%>
-        };
+        <%call class_declaration%>
     <%elseif (declaration.type == "block")%>
         // 生成Block: <%=declaration.name%>
-        class <%=declaration.name%>Block : public IBlock {
-            // Block implementation
-        };
+        <%call class_declaration%>
     <%else%>
         // 其他类型: <%=declaration.type%>
     <%endif%>

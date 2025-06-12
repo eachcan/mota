@@ -19,6 +19,10 @@
   - 🟠 **内置函数**：`pascal_case()`, `map_type()` - 真正的函数调用
 - 变量和表达式高亮
 - 代码片段和自动补全
+- **🎯 Go to Definition 支持**：
+  - Ctrl+Click 或 F12 在 `<%call function_name%>` 上跳转到对应的 `<%misc function_name%>`
+  - 支持同文件内和跨文件的定义跳转
+  - 自动搜索工作区内所有 `.template` 文件
 
 ## 支持的语法
 
@@ -125,6 +129,7 @@
 - 使用代码片段前缀快速插入常用代码结构
 - 支持代码折叠和自动缩进
 - 模板文件中的 `<%` `%>` 标签会有特殊高亮，标签外的内容作为普通文本显示
+- **在模板文件中，Ctrl+Click 或按 F12 在 `<%call function_name%>` 上可以跳转到对应的 `<%misc function_name%>` 定义**
 
 ### 模板语法示例
 
@@ -133,6 +138,16 @@
     <%=FIELD_TYPE%> get<%=pascal_case(FIELD_NAME)%>() const {
         return <%=FIELD_NAME%>_;
     }
+<%endmisc%>
+
+<%misc class_declaration%>
+    class <%=declaration.name%><%call type_suffix%> : <%call inheritance_declaration%> {
+    public:
+        <%call constructor%>
+        <%call accessors%>  <!-- Ctrl+Click这里可以跳转到accessors的定义 -->
+    private:
+        <%call private_fields%>
+    };
 <%endmisc%>
 
 <%if (NAMESPACE.exists)%>

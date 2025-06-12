@@ -1,7 +1,7 @@
 {
   "name": "mota-language-server",
   "description": "Mota 语言服务器",
-  "version": "0.1.0",
+  "version": "0.2.5",
   "author": "eachcan",
   "license": "MIT",
   "engines": {

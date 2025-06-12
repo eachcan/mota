@@ -40,7 +40,21 @@ const connection = createConnection(ProposedFeatures.all);
 // 创建文档管理器
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
+// 输出日志函数
+function log(message: string): void {
+  connection.console.log(`[Mota Language Server] ${message}`);
+}
+
+function logError(message: string, error?: any): void {
+  connection.console.error(`[Mota Language Server] ERROR: ${message}`);
+  if (error) {
+    connection.console.error(JSON.stringify(error, null, 2));
+  }
+}
+
 connection.onInitialize((params: InitializeParams) => {
+  log('正在初始化 Mota 语言服务器...');
+  
   const result: InitializeResult = {
     capabilities: {
       textDocumentSync: TextDocumentSyncKind.Incremental,
@@ -63,21 +77,62 @@ connection.onInitialize((params: InitializeParams) => {
       documentFormattingProvider: true
     }
   };
+  
+  log('Mota 语言服务器初始化完成');
   return result;
 });
 
 // 当文档内容变化时，重新解析文档
 documents.onDidChangeContent(change => {
+  log(`文档内容发生变化: ${change.document.uri}`);
   validateTextDocumentAndSendDiagnostics(change.document);
+  parseDocumentAndUpdateSymbols(change.document);
 });
+
+// 当文档打开时，解析文档
+documents.onDidOpen(event => {
+  log(`文档已打开: ${event.document.uri}`);
+  parseDocumentAndUpdateSymbols(event.document);
+});
+
+// 当文档关闭时，清理符号
+documents.onDidClose(event => {
+  log(`文档已关闭: ${event.document.uri}`);
+  clearSymbolsForDocument(event.document.uri);
+});
+
+// 解析文档并更新符号表
+function parseDocumentAndUpdateSymbols(textDocument: TextDocument): void {
+  try {
+    log(`正在解析文档符号: ${textDocument.uri}`);
+    
+    // 清除旧的符号信息
+    clearSymbolsForDocument(textDocument.uri);
+    
+    // 解析新的符号信息
+    const result = parseDocument(textDocument.getText(), textDocument.uri);
+    
+    log(`文档解析完成，发现 ${symbols.size} 个符号`);
+  } catch (error) {
+    logError(`解析文档时发生错误: ${textDocument.uri}`, error);
+  }
+}
 
 // 验证文档并生成诊断信息
 async function validateTextDocumentAndSendDiagnostics(textDocument: TextDocument): Promise<void> {
-  // 使用模块化的验证函数
-  const diagnostics = await validateTextDocument(textDocument);
-  
-  // 发送诊断信息
-  connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
+  try {
+    // 使用模块化的验证函数
+    const diagnostics = await validateTextDocument(textDocument);
+    
+    // 发送诊断信息
+    connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
+    
+    if (diagnostics.length > 0) {
+      log(`发现 ${diagnostics.length} 个诊断问题: ${textDocument.uri}`);
+    }
+  } catch (error) {
+    logError(`验证文档时发生错误: ${textDocument.uri}`, error);
+  }
 }
 
 // 使用模块化的符号管理功能
@@ -88,20 +143,40 @@ async function validateTextDocumentAndSendDiagnostics(textDocument: TextDocument
 connection.onDefinition((params: TextDocumentPositionParams): Definition | null => {
   const document = documents.get(params.textDocument.uri);
   if (!document) {
+    logError(`找不到文档: ${params.textDocument.uri}`);
     return null;
   }
   
-  return provideDefinition(document, params);
+  try {
+    const result = provideDefinition(document, params);
+    if (result) {
+      log(`找到定义跳转目标: ${JSON.stringify(result)}`);
+    } else {
+      log(`未找到定义跳转目标，位置: ${params.position.line}:${params.position.character}`);
+    }
+    return result;
+  } catch (error) {
+    logError(`处理定义跳转请求时发生错误`, error);
+    return null;
+  }
 });
 
 // 处理查找引用请求
 connection.onReferences((params: ReferenceParams): Location[] => {
   const document = documents.get(params.textDocument.uri);
   if (!document) {
+    logError(`找不到文档: ${params.textDocument.uri}`);
     return [];
   }
   
-  return provideReferences(document, params);
+  try {
+    const result = provideReferences(document, params);
+    log(`找到 ${result.length} 个引用`);
+    return result;
+  } catch (error) {
+    logError(`处理查找引用请求时发生错误`, error);
+    return [];
+  }
 });
 
 // 处理准备重命名请求
