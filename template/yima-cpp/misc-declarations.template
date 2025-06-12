@@ -166,7 +166,8 @@ public:
         return "<%=declaration.name%>";
     }
     
-    QVariant argument(const QString& argumentName) const override {<%call annotation_argument_logic%>
+    QVariant argument(const QString& argumentName) const override {
+<%call annotation_argument_logic%>
         return QVariant();
     }
     
@@ -176,6 +177,9 @@ public:
     
     // 特定于<%=declaration.name%>的访问器
 <%call annotation_accessors%>
-private:<%call annotation_private_fields%>
+private:
+<%call annotation_private_fields%>
 };
-Q_DECLARE_METATYPE(<%=declaration.class_name%>)<%endmisc%> 
+Q_DECLARE_METATYPE(<%=declaration.class_name%>)
+
+<%endmisc%> 

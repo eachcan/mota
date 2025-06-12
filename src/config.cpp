@@ -50,6 +50,21 @@ void TemplateConfig::loadFromJson(const nlohmann::json& json) {
         type_mapping = json["type_mapping"].get<std::unordered_map<std::string, std::string>>();
     }
     
+    // 加载重复类型映射模板
+    if (json.contains("repeated_type_mapping_tpl")) {
+        repeated_type_mapping_tpl = json["repeated_type_mapping_tpl"].get<std::string>();
+    }
+    
+    // 加载映射类型映射模板
+    if (json.contains("map_type_mapping_tpl")) {
+        map_type_mapping_tpl = json["map_type_mapping_tpl"].get<std::string>();
+    }
+    
+    // 加载命名空间配置
+    if (json.contains("namespace")) {
+        namespace_config = json["namespace"].get<NamespaceConfig>();
+    }
+    
     // 加载文件路径配置
     if (json.contains("file_path")) {
         file_path = json["file_path"].get<std::vector<FilePathConfig>>();
@@ -79,6 +94,9 @@ nlohmann::json TemplateConfig::toJson() const {
     json["templates"] = templates;
     json["miscs"] = miscs;
     json["type_mapping"] = type_mapping;
+    json["repeated_type_mapping_tpl"] = repeated_type_mapping_tpl;
+    json["map_type_mapping_tpl"] = map_type_mapping_tpl;
+    json["namespace"] = namespace_config;
     json["file_path"] = file_path;
     json["include_directive"] = include_directive;
     json["declaration_types"] = declaration_types;
@@ -91,6 +109,9 @@ void TemplateConfig::setDefaults() {
     templates.clear();
     miscs.clear();
     type_mapping.clear();
+    repeated_type_mapping_tpl = "QVector<<%=field.mapped_type%>>";
+    map_type_mapping_tpl = "QMap<QString, <%=field.mapped_type%>>";
+    namespace_config = NamespaceConfig{};
     file_path.clear();
     include_directive = IncludeDirectiveConfig{};
     

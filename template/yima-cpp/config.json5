@@ -26,6 +26,14 @@
     "bool": "bool",
     "bytes": "QByteArray"
   },
+  "repeated_type_mapping_tpl": "QVector<<%=field.mapped_type%>>",
+  "map_type_mapping_tpl": "QMap<QString, <%=field.mapped_type%>>",
+  "namespace": {
+    "separator": {
+      "code": "::",
+      "dir": "\\"
+    }
+  },
   "declaration_types": {
     "struct_decl": {
       "prefix": "",

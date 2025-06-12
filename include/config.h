@@ -44,6 +44,21 @@ struct DeclarationTypesConfig {
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(DeclarationTypesConfig, struct_decl, block_decl, enum_decl, annotation_decl)
 };
 
+// 命名空间分隔符配置
+struct NamespaceSeparatorConfig {
+    std::string code = "::";
+    std::string dir = "\\";
+    
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(NamespaceSeparatorConfig, code, dir)
+};
+
+// 命名空间配置
+struct NamespaceConfig {
+    NamespaceSeparatorConfig separator;
+    
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(NamespaceConfig, separator)
+};
+
 // 模板配置类
 class TemplateConfig {
 public:
@@ -52,6 +67,9 @@ public:
     std::unordered_map<std::string, std::string> templates;
     std::vector<std::string> miscs;
     std::unordered_map<std::string, std::string> type_mapping;
+    std::string repeated_type_mapping_tpl;
+    std::string map_type_mapping_tpl;
+    NamespaceConfig namespace_config;
     std::vector<FilePathConfig> file_path;
     IncludeDirectiveConfig include_directive;
     DeclarationTypesConfig declaration_types;
