@@ -84,7 +84,7 @@ public:
 // 标识符
 class Identifier : public Expr {
 public:
-    explicit Identifier(std::string name) : name(std::move(name)) {}
+    explicit Identifier(std::string name) : name(name) {}
     
     NodeType nodeType() const override { return NodeType::Identifier; }
     
@@ -102,7 +102,7 @@ public:
         std::string      // 字符串
     >;
     
-    explicit Literal(ValueType value) : value(std::move(value)) {}
+    explicit Literal(ValueType value) : value(value) {}
     
     NodeType nodeType() const override { return NodeType::Literal; }
     
@@ -112,12 +112,12 @@ public:
 // 数组字面量
 class ArrayLiteral : public Expr {
 public:
-    explicit ArrayLiteral(std::vector<std::unique_ptr<Expr>> elements = {})
-        : elements(std::move(elements)) {}
+    explicit ArrayLiteral(std::vector<std::shared_ptr<Expr>> elements = {})
+        : elements(elements) {}
     
     NodeType nodeType() const override { return NodeType::ArrayLiteral; }
     
-    std::vector<std::unique_ptr<Expr>> elements;
+    std::vector<std::shared_ptr<Expr>> elements;
 };
 
 // 二元操作符
@@ -129,14 +129,14 @@ public:
         And, Or, Xor, Shl, Shr
     };
     
-    BinaryOp(Op op, std::unique_ptr<Expr> lhs, std::unique_ptr<Expr> rhs)
-        : op(op), lhs(std::move(lhs)), rhs(std::move(rhs)) {}
+    BinaryOp(Op op, std::shared_ptr<Expr> lhs, std::shared_ptr<Expr> rhs)
+        : op(op), lhs(lhs), rhs(rhs) {}
     
     NodeType nodeType() const override { return NodeType::BinaryOp; }
     
     Op op;
-    std::unique_ptr<Expr> lhs;
-    std::unique_ptr<Expr> rhs;
+    std::shared_ptr<Expr> lhs;
+    std::shared_ptr<Expr> rhs;
 };
 
 // 一元操作符
@@ -146,24 +146,24 @@ public:
         Plus, Minus, Not, BitNot
     };
     
-    UnaryOp(Op op, std::unique_ptr<Expr> operand)
-        : op(op), operand(std::move(operand)) {}
+    UnaryOp(Op op, std::shared_ptr<Expr> operand)
+        : op(op), operand(operand) {}
     
     NodeType nodeType() const override { return NodeType::UnaryOp; }
     
     Op op;
-    std::unique_ptr<Expr> operand;
+    std::shared_ptr<Expr> operand;
 };
 
 // 成员访问
 class MemberAccess : public Expr {
 public:
-    MemberAccess(std::unique_ptr<Expr> object, std::string member)
-        : object(std::move(object)), member(std::move(member)) {}
+    MemberAccess(std::shared_ptr<Expr> object, std::string member)
+        : object(object), member(member) {}
     
     NodeType nodeType() const override { return NodeType::MemberAccess; }
     
-    std::unique_ptr<Expr> object;
+    std::shared_ptr<Expr> object;
     std::string member;
 };
 
@@ -177,7 +177,7 @@ public:
 // 命名类型
 class NamedType : public Type {
 public:
-    explicit NamedType(std::string name) : name(std::move(name)) {}
+    explicit NamedType(std::string name) : name(name) {}
     
     std::string name;
     
@@ -194,12 +194,12 @@ public:
         Optional    // optional
     };
     
-    ContainerType(Kind kind, std::unique_ptr<Type> elementType)
-        : kind(kind), elementType(std::move(elementType)) {}
+    ContainerType(Kind kind, std::shared_ptr<Type> elementType)
+        : kind(kind), elementType(elementType) {}
     
     Kind kind;
-    std::unique_ptr<Type> elementType;
-    std::unique_ptr<Type> keyType;  // 仅用于Map
+    std::shared_ptr<Type> elementType;
+    std::shared_ptr<Type> keyType;  // 仅用于Map
     
     std::string toString() const override {
         switch(kind) {
@@ -221,11 +221,11 @@ public:
 // 注解参数 - 现在继承自Node
 class AnnotationArgument : public Node {
 public:
-    AnnotationArgument(std::string name, std::unique_ptr<Expr> value)
-        : name(std::move(name)), value(std::move(value)) {}
+    AnnotationArgument(std::string name, std::shared_ptr<Expr> value)
+        : name(name), value(value) {}
     
     std::string name;
-    std::unique_ptr<Expr> value;
+    std::shared_ptr<Expr> value;
     
     NodeType nodeType() const override { return NodeType::AnnotationArgument; }
 };
@@ -233,11 +233,11 @@ public:
 // 注解
 class Annotation : public Expr {
 public:
-    Annotation(std::string name, std::vector<std::unique_ptr<AnnotationArgument>> args = {})
-        : name(std::move(name)), arguments(std::move(args)) {}
+    Annotation(std::string name, std::vector<std::shared_ptr<AnnotationArgument>> args = {})
+        : name(name), arguments(args) {}
     
     std::string name;
-    std::vector<std::unique_ptr<AnnotationArgument>> arguments;
+    std::vector<std::shared_ptr<AnnotationArgument>> arguments;
     
     NodeType nodeType() const override { return NodeType::Annotation; }
 };
@@ -245,13 +245,13 @@ public:
 // 字段声明
 class Field : public Node {
 public:
-    Field(std::string name, std::unique_ptr<Type> type, std::unique_ptr<Expr> defaultValue = nullptr)
-        : name(std::move(name)), type(std::move(type)), defaultValue(std::move(defaultValue)) {}
+    Field(std::string name, std::shared_ptr<Type> type, std::shared_ptr<Expr> defaultValue = nullptr)
+        : name(name), type(type), defaultValue(defaultValue) {}
     
     std::string name;
-    std::unique_ptr<Type> type;
-    std::unique_ptr<Expr> defaultValue;
-    std::vector<std::unique_ptr<Annotation>> annotations;
+    std::shared_ptr<Type> type;
+    std::shared_ptr<Expr> defaultValue;
+    std::vector<std::shared_ptr<Annotation>> annotations;
     
     NodeType nodeType() const override { return NodeType::FieldDecl; }
 };
@@ -259,12 +259,12 @@ public:
 // 枚举值
 class EnumValue : public Node {
 public:
-    EnumValue(std::string name, std::unique_ptr<Expr> value = nullptr)
-        : name(std::move(name)), value(std::move(value)) {}
+    EnumValue(std::string name, std::shared_ptr<Expr> value = nullptr)
+        : name(name), value(value) {}
     
     std::string name;
-    std::unique_ptr<Expr> value;
-    std::vector<std::unique_ptr<Annotation>> annotations;
+    std::shared_ptr<Expr> value;
+    std::vector<std::shared_ptr<Annotation>> annotations;
     
     NodeType nodeType() const override { return NodeType::EnumValueDecl; }
 };
@@ -272,12 +272,12 @@ public:
 // 块定义
 class Block : public Node {
 public:
-    explicit Block(std::string name, std::string baseName = "") : name(std::move(name)), baseName(std::move(baseName)) {}
+    explicit Block(std::string name, std::string baseName = "") : name(name), baseName(baseName) {}
     
     std::string name;
     std::string baseName; // 继承的父 block 名称
-    std::vector<std::unique_ptr<Field>> fields;
-    std::vector<std::unique_ptr<Annotation>> annotations;
+    std::vector<std::shared_ptr<Field>> fields;
+    std::vector<std::shared_ptr<Annotation>> annotations;
     
     NodeType nodeType() const override { return NodeType::BlockDecl; }
 };
@@ -285,12 +285,12 @@ public:
 // 结构体定义
 class Struct : public Node {
 public:
-    explicit Struct(std::string name, std::string baseName = "") : name(std::move(name)), baseName(std::move(baseName)) {}
+    explicit Struct(std::string name, std::string baseName = "") : name(name), baseName(baseName) {}
     
     std::string name;
     std::string baseName; // 继承的父 block 名称（仅 struct 支持继承 block）
-    std::vector<std::unique_ptr<Field>> fields;
-    std::vector<std::unique_ptr<Annotation>> annotations;
+    std::vector<std::shared_ptr<Field>> fields;
+    std::vector<std::shared_ptr<Annotation>> annotations;
     
     NodeType nodeType() const override { return NodeType::StructDecl; }
 };
@@ -299,11 +299,11 @@ public:
 class AnnotationDecl : public Node {
 public:
     explicit AnnotationDecl(std::string name, std::string baseName = "") 
-        : name(std::move(name)), baseName(std::move(baseName)) {}
+        : name(name), baseName(baseName) {}
     
     std::string name;
     std::string baseName;  // 继承的父注解名称
-    std::vector<std::unique_ptr<Field>> fields;  // 注解字段
+    std::vector<std::shared_ptr<Field>> fields;  // 注解字段
     
     NodeType nodeType() const override { return NodeType::AnnotationDecl; }
 };
@@ -311,11 +311,11 @@ public:
 // 枚举定义
 class Enum : public Node {
 public:
-    explicit Enum(std::string name) : name(std::move(name)) {}
+    explicit Enum(std::string name) : name(name) {}
     
     std::string name;
-    std::vector<std::unique_ptr<EnumValue>> values;
-    std::vector<std::unique_ptr<Annotation>> annotations;
+    std::vector<std::shared_ptr<EnumValue>> values;
+    std::vector<std::shared_ptr<Annotation>> annotations;
     
     NodeType nodeType() const override { return NodeType::EnumDecl; }
 };
@@ -323,7 +323,7 @@ public:
 // 命名空间
 class Namespace : public Node {
 public:
-    explicit Namespace(std::vector<std::string> name) : name(std::move(name)) {}
+    explicit Namespace(std::vector<std::string> name) : name(name) {}
     
     std::vector<std::string> name;  // 完全限定名
     
@@ -333,7 +333,7 @@ public:
 // 包含声明
 class Include : public Node {
 public:
-    explicit Include(std::string path) : path(std::move(path)) {}
+    explicit Include(std::string path) : path(path) {}
     
     std::string path;
     
@@ -346,13 +346,13 @@ public:
     Document() = default;
     
     // 顶层声明（struct、block、enum、annotation）
-    std::vector<std::unique_ptr<Node>> declarations;
+    std::vector<std::shared_ptr<Node>> declarations;
     
     // 命名空间（一个文件只能有0个或1个）
-    std::unique_ptr<Namespace> m_namespace;
+    std::shared_ptr<Namespace> m_namespace;
     
     // 包含声明（可以有多个）
-    std::vector<std::unique_ptr<Include>> includes;
+    std::vector<std::shared_ptr<Include>> includes;
     
     NodeType nodeType() const override { return NodeType::Document; } // 使用现有的枚举值
     

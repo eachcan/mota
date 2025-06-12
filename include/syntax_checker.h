@@ -16,7 +16,7 @@ struct KnownDecl {
     ast::NodeType type;         // 声明类型（直接使用AST的NodeType）
     std::string name;           // 声明名称
     std::string file;           // 所在文件
-    const ast::Node* node;      // AST节点指针
+    std::shared_ptr<const ast::Node> node;      // AST节点指针
     
     // 获取完全限定名
     std::string getFullName() const {

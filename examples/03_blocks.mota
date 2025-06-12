@@ -1,0 +1,102 @@
+// 块语法完整示例
+namespace examples.blocks;
+
+include "yima.mota";
+
+// === 基础注解定义 ===
+annotation BlockAnnotation {
+    string description = "";
+}
+
+annotation BlockValueAnnotation {
+    string value;
+}
+
+// === 枚举定义 ===
+enum BlockStatus {
+    ACTIVE = 1;
+    INACTIVE = 2;
+    PENDING = 3;
+}
+
+enum BlockType {
+    PRIMARY;
+    SECONDARY;
+    AUXILIARY;
+}
+
+// === 基础块定义 ===
+block BaseBlock {
+    int32 id = 0;
+    string name = "";
+}
+
+// === 块继承 ===
+block ExtendedBlock : BaseBlock {
+    bool active = true;
+    BlockStatus status = ACTIVE;
+    BlockType type = PRIMARY;
+}
+
+// === 使用注解的块 ===
+@BlockValueAnnotation("test_block")
+@BlockAnnotation(description = "带注解的块")
+block AnnotatedBlock {
+    @BlockValueAnnotation("data_field")
+    string data = "";
+    @BlockAnnotation(description = "配置字段")
+    string config = "";
+}
+
+// === 全字段类型测试 ===
+block AllTypesBlock {
+    // 所有基础类型
+    int8 int8Field = 1;
+    int16 int16Field = 2;
+    int32 int32Field = 3;
+    int64 int64Field = 4;
+    uint8 uint8Field = 5;
+    uint16 uint16Field = 6;
+    uint32 uint32Field = 7;
+    uint64 uint64Field = 8;
+    float32 float32Field = 1.0;
+    float64 float64Field = 2.0;
+    bool boolField = true;
+    string stringField = "test";
+    bytes bytesField = "data";
+    
+    // 枚举类型
+    BlockStatus status = PENDING;
+    BlockType type = SECONDARY;
+    
+    // 块类型
+    BaseBlock baseBlock;
+    ExtendedBlock extendedBlock;
+}
+
+// === 容器类型测试 ===
+block ContainerBlock {
+    // repeated容器
+    @BlockAnnotation(description = "整数数组")
+    repeated int32 intArray = [1, 2, 3];
+    @BlockValueAnnotation("string_array")
+    repeated string stringArray;
+    repeated BlockStatus statusArray = [ACTIVE, PENDING];
+    repeated BaseBlock blockArray;
+    
+    // optional容器
+    @BlockValueAnnotation("optional_int")
+    optional int32 optionalInt = 42;
+    optional string optionalString;
+    @BlockAnnotation(description = "可选状态")
+    optional BlockStatus optionalStatus;
+    optional BaseBlock optionalBlock;
+    
+    // map容器
+    @BlockAnnotation(description = "整数映射")
+    map int32 intMap;
+    map string stringMap;
+    @BlockValueAnnotation("status_map")
+    map BlockStatus statusMap;
+    map BaseBlock blockMap;
+} 

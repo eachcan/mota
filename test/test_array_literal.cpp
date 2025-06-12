@@ -19,7 +19,7 @@ protected:
         // 清理工作
     }
     
-    std::unique_ptr<Document> parse(const std::string& source) {
+    std::shared_ptr<Document> parse(const std::string& source) {
         lexer::Lexer lexer(source);
         Parser parser(lexer);
         return parser.parse();

@@ -1,0 +1,587 @@
+﻿{
+    "DECLARATIONS": [
+    {
+        "annotations": [
+            {
+                "arguments": [],
+                "class_name": "ValueOnlyAnnotation",
+                "full_class_name": "examples:annotations:ValueOnlyAnnotation",
+                "full_name": "examples.annotations.ValueOnly",
+                "name": "ValueOnly",
+                "namespace": "examples.enums",
+                "namespace_class_prefix": "examples:enums::",
+                "type": "annotation"
+            }
+        ],
+        "class_name": "SimpleEnum",
+        "full_class_name": "examples:enums::SimpleEnum",
+        "full_name": "examples.enums.SimpleEnum",
+        "name": "SimpleEnum",
+        "namespace": "examples.enums",
+        "namespace_class_prefix": "examples:enums::",
+        "parent": "",
+        "parent_class_name": "",
+        "parent_full_class_name": "",
+        "parent_full_name": "",
+        "parent_name": "",
+        "type": "enum",
+        "values": [
+            {
+                "annotations": [
+                    {
+                        "arguments": [],
+                        "class_name": "BaseAnnotationAnnotation",
+                        "full_class_name": "examples:annotations:BaseAnnotationAnnotation",
+                        "full_name": "examples.annotations.BaseAnnotation",
+                        "name": "BaseAnnotation",
+                        "namespace": "examples.enums",
+                        "namespace_class_prefix": "examples:enums::",
+                        "type": "annotation"
+                    }
+                ],
+                "field_name": "VALUE1",
+                "name": "VALUE1"
+            },
+            {
+                "annotations": [
+                    {
+                        "arguments": [],
+                        "class_name": "BaseAnnotationAnnotation",
+                        "full_class_name": "examples:annotations:BaseAnnotationAnnotation",
+                        "full_name": "examples.annotations.BaseAnnotation",
+                        "name": "BaseAnnotation",
+                        "namespace": "examples.enums",
+                        "namespace_class_prefix": "examples:enums::",
+                        "type": "annotation"
+                    }
+                ],
+                "field_name": "VALUE2",
+                "name": "VALUE2"
+            },
+            {
+                "annotations": [
+                    {
+                        "arguments": [],
+                        "class_name": "BaseAnnotationAnnotation",
+                        "full_class_name": "examples:annotations:BaseAnnotationAnnotation",
+                        "full_name": "examples.annotations.BaseAnnotation",
+                        "name": "BaseAnnotation",
+                        "namespace": "examples.enums",
+                        "namespace_class_prefix": "examples:enums::",
+                        "type": "annotation"
+                    }
+                ],
+                "field_name": "VALUE3",
+                "name": "VALUE3"
+            }
+        ]
+    },
+    {
+        "annotations": [
+            {
+                "arguments": [],
+                "class_name": "ExtendedAnnotationAnnotation",
+                "full_class_name": "examples:annotations:ExtendedAnnotationAnnotation",
+                "full_name": "examples.annotations.ExtendedAnnotation",
+                "name": "ExtendedAnnotation",
+                "namespace": "examples.enums",
+                "namespace_class_prefix": "examples:enums::",
+                "type": "annotation"
+            }
+        ],
+        "class_name": "ValueEnum",
+        "full_class_name": "examples:enums::ValueEnum",
+        "full_name": "examples.enums.ValueEnum",
+        "name": "ValueEnum",
+        "namespace": "examples.enums",
+        "namespace_class_prefix": "examples:enums::",
+        "parent": "",
+        "parent_class_name": "",
+        "parent_full_class_name": "",
+        "parent_full_name": "",
+        "parent_name": "",
+        "type": "enum",
+        "values": [
+            {
+                "annotations": [
+                    {
+                        "arguments": [],
+                        "class_name": "BaseAnnotationAnnotation",
+                        "full_class_name": "examples:annotations:BaseAnnotationAnnotation",
+                        "full_name": "examples.annotations.BaseAnnotation",
+                        "name": "BaseAnnotation",
+                        "namespace": "examples.enums",
+                        "namespace_class_prefix": "examples:enums::",
+                        "type": "annotation"
+                    }
+                ],
+                "field_name": "LOW",
+                "name": "LOW",
+                "value": "1"
+            },
+            {
+                "annotations": [
+                    {
+                        "arguments": [],
+                        "class_name": "BaseAnnotationAnnotation",
+                        "full_class_name": "examples:annotations:BaseAnnotationAnnotation",
+                        "full_name": "examples.annotations.BaseAnnotation",
+                        "name": "BaseAnnotation",
+                        "namespace": "examples.enums",
+                        "namespace_class_prefix": "examples:enums::",
+                        "type": "annotation"
+                    }
+                ],
+                "field_name": "MEDIUM",
+                "name": "MEDIUM",
+                "value": "2"
+            },
+            {
+                "annotations": [
+                    {
+                        "arguments": [],
+                        "class_name": "BaseAnnotationAnnotation",
+                        "full_class_name": "examples:annotations:BaseAnnotationAnnotation",
+                        "full_name": "examples.annotations.BaseAnnotation",
+                        "name": "BaseAnnotation",
+                        "namespace": "examples.enums",
+                        "namespace_class_prefix": "examples:enums::",
+                        "type": "annotation"
+                    }
+                ],
+                "field_name": "HIGH",
+                "name": "HIGH",
+                "value": "3"
+            }
+        ]
+    },
+    {
+        "annotations": [],
+        "class_name": "EnumBlockBlock",
+        "fields": [
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "/* complex expression */",
+                "field_name": "simpleField",
+                "full_mapped_type_name": "examples:enums::SimpleEnum",
+                "full_type_name": "examples.enums.SimpleEnum",
+                "mapped_type_name": "SimpleEnum",
+                "name": "simpleField",
+                "type_name": "SimpleEnum"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "/* complex expression */",
+                "field_name": "valueField",
+                "full_mapped_type_name": "examples:enums::ValueEnum",
+                "full_type_name": "examples.enums.ValueEnum",
+                "mapped_type_name": "ValueEnum",
+                "name": "valueField",
+                "type_name": "ValueEnum"
+            },
+            {
+                "annotations": [],
+                "container_type": "array",
+                "field_name": "simpleArray",
+                "full_mapped_type_name": "examples:enums::SimpleEnum",
+                "full_type_name": "examples.enums.SimpleEnum",
+                "mapped_type_name": "SimpleEnum",
+                "name": "simpleArray",
+                "type_name": "SimpleEnum"
+            },
+            {
+                "annotations": [],
+                "container_type": "array",
+                "default_value": [
+                    "/* complex expression */",
+                    "/* complex expression */"
+                ],
+                "field_name": "valueArray",
+                "full_mapped_type_name": "examples:enums::ValueEnum",
+                "full_type_name": "examples.enums.ValueEnum",
+                "mapped_type_name": "ValueEnum",
+                "name": "valueArray",
+                "type_name": "ValueEnum"
+            },
+            {
+                "annotations": [],
+                "container_type": "optional",
+                "field_name": "optionalSimple",
+                "full_mapped_type_name": "examples:enums::SimpleEnum",
+                "full_type_name": "examples.enums.SimpleEnum",
+                "mapped_type_name": "SimpleEnum",
+                "name": "optionalSimple",
+                "type_name": "SimpleEnum"
+            },
+            {
+                "annotations": [],
+                "container_type": "optional",
+                "default_value": "/* complex expression */",
+                "field_name": "optionalValue",
+                "full_mapped_type_name": "examples:enums::ValueEnum",
+                "full_type_name": "examples.enums.ValueEnum",
+                "mapped_type_name": "ValueEnum",
+                "name": "optionalValue",
+                "type_name": "ValueEnum"
+            },
+            {
+                "annotations": [],
+                "container_type": "map",
+                "field_name": "simpleMap",
+                "full_mapped_type_name": "examples:enums::SimpleEnum",
+                "full_type_name": "examples.enums.SimpleEnum",
+                "mapped_type_name": "SimpleEnum",
+                "name": "simpleMap",
+                "type_name": "SimpleEnum"
+            },
+            {
+                "annotations": [],
+                "container_type": "map",
+                "field_name": "valueMap",
+                "full_mapped_type_name": "examples:enums::ValueEnum",
+                "full_type_name": "examples.enums.ValueEnum",
+                "mapped_type_name": "ValueEnum",
+                "name": "valueMap",
+                "type_name": "ValueEnum"
+            }
+        ],
+        "full_class_name": "examples:enums::EnumBlockBlock",
+        "full_name": "examples.enums.EnumBlock",
+        "name": "EnumBlock",
+        "namespace": "examples.enums",
+        "namespace_class_prefix": "examples:enums::",
+        "parent": "",
+        "parent_class_name": "",
+        "parent_full_class_name": "",
+        "parent_full_name": "",
+        "parent_name": "",
+        "type": "block"
+    },
+    {
+        "annotations": [],
+        "class_name": "EnumStructModel",
+        "fields": [
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "/* complex expression */",
+                "field_name": "simpleField",
+                "full_mapped_type_name": "examples:enums::SimpleEnum",
+                "full_type_name": "examples.enums.SimpleEnum",
+                "mapped_type_name": "SimpleEnum",
+                "name": "simpleField",
+                "type_name": "SimpleEnum"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "/* complex expression */",
+                "field_name": "valueField",
+                "full_mapped_type_name": "examples:enums::ValueEnum",
+                "full_type_name": "examples.enums.ValueEnum",
+                "mapped_type_name": "ValueEnum",
+                "name": "valueField",
+                "type_name": "ValueEnum"
+            },
+            {
+                "annotations": [],
+                "container_type": "array",
+                "default_value": [
+                    "/* complex expression */",
+                    "/* complex expression */"
+                ],
+                "field_name": "simpleArray",
+                "full_mapped_type_name": "examples:enums::SimpleEnum",
+                "full_type_name": "examples.enums.SimpleEnum",
+                "mapped_type_name": "SimpleEnum",
+                "name": "simpleArray",
+                "type_name": "SimpleEnum"
+            },
+            {
+                "annotations": [],
+                "container_type": "array",
+                "field_name": "valueArray",
+                "full_mapped_type_name": "examples:enums::ValueEnum",
+                "full_type_name": "examples.enums.ValueEnum",
+                "mapped_type_name": "ValueEnum",
+                "name": "valueArray",
+                "type_name": "ValueEnum"
+            },
+            {
+                "annotations": [],
+                "container_type": "optional",
+                "default_value": "/* complex expression */",
+                "field_name": "optionalSimple",
+                "full_mapped_type_name": "examples:enums::SimpleEnum",
+                "full_type_name": "examples.enums.SimpleEnum",
+                "mapped_type_name": "SimpleEnum",
+                "name": "optionalSimple",
+                "type_name": "SimpleEnum"
+            },
+            {
+                "annotations": [],
+                "container_type": "optional",
+                "field_name": "optionalValue",
+                "full_mapped_type_name": "examples:enums::ValueEnum",
+                "full_type_name": "examples.enums.ValueEnum",
+                "mapped_type_name": "ValueEnum",
+                "name": "optionalValue",
+                "type_name": "ValueEnum"
+            },
+            {
+                "annotations": [],
+                "container_type": "map",
+                "field_name": "simpleMap",
+                "full_mapped_type_name": "examples:enums::SimpleEnum",
+                "full_type_name": "examples.enums.SimpleEnum",
+                "mapped_type_name": "SimpleEnum",
+                "name": "simpleMap",
+                "type_name": "SimpleEnum"
+            },
+            {
+                "annotations": [],
+                "container_type": "map",
+                "field_name": "valueMap",
+                "full_mapped_type_name": "examples:enums::ValueEnum",
+                "full_type_name": "examples.enums.ValueEnum",
+                "mapped_type_name": "ValueEnum",
+                "name": "valueMap",
+                "type_name": "ValueEnum"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "field_name": "blockField",
+                "full_mapped_type_name": "examples:enums::EnumBlockBlock",
+                "full_type_name": "examples.enums.EnumBlock",
+                "mapped_type_name": "EnumBlockBlock",
+                "name": "blockField",
+                "type_name": "EnumBlock"
+            },
+            {
+                "annotations": [],
+                "container_type": "array",
+                "field_name": "blockArray",
+                "full_mapped_type_name": "examples:enums::EnumBlockBlock",
+                "full_type_name": "examples.enums.EnumBlock",
+                "mapped_type_name": "EnumBlockBlock",
+                "name": "blockArray",
+                "type_name": "EnumBlock"
+            },
+            {
+                "annotations": [],
+                "container_type": "optional",
+                "field_name": "optionalBlock",
+                "full_mapped_type_name": "examples:enums::EnumBlockBlock",
+                "full_type_name": "examples.enums.EnumBlock",
+                "mapped_type_name": "EnumBlockBlock",
+                "name": "optionalBlock",
+                "type_name": "EnumBlock"
+            }
+        ],
+        "full_class_name": "examples:enums::EnumStructModel",
+        "full_name": "examples.enums.EnumStruct",
+        "name": "EnumStruct",
+        "namespace": "examples.enums",
+        "namespace_class_prefix": "examples:enums::",
+        "parent": "",
+        "parent_class_name": "",
+        "parent_full_class_name": "",
+        "parent_full_name": "",
+        "parent_name": "",
+        "type": "struct"
+    }
+],
+    "INCLUDES": {
+    "count": 1,
+    "files": [
+        {
+            "source": "yima.mota",
+            "translated": "yima.h"
+        }
+    ]
+},
+    "CURRENT_TIME": "2025-06-12 22:28:25",
+    "SOURCE_FILE": ".\examples\02_enums.mota",
+    "NAMESPACE": {
+    "as_class_prefix": "examples::enums::",
+    "exists": true,
+    "parts": [
+        {
+            "index": 0,
+            "is_first": true,
+            "is_last": false,
+            "name": "examples"
+        },
+        {
+            "index": 1,
+            "is_first": false,
+            "is_last": true,
+            "name": "enums"
+        }
+    ],
+    "parts_count": 2,
+    "path": "examples\\enums",
+    "qualified_name": "examples.enums"
+},
+    "DECLARATIONS_REGISTRY": {
+    "all": [
+        {
+            "class_name": "EnumBlockBlock",
+            "file_path": ".\\examples\\02_enums.mota",
+            "name": "EnumBlock",
+            "namespace_name": "examples.enums",
+            "qualified_name": "examples.enums.EnumBlock",
+            "relative_type_name": "EnumBlockBlock",
+            "type": "block"
+        },
+        {
+            "class_name": "EnumStructModel",
+            "file_path": ".\\examples\\02_enums.mota",
+            "name": "EnumStruct",
+            "namespace_name": "examples.enums",
+            "qualified_name": "examples.enums.EnumStruct",
+            "relative_type_name": "EnumStructModel",
+            "type": "struct"
+        },
+        {
+            "class_name": "SimpleEnum",
+            "file_path": ".\\examples\\02_enums.mota",
+            "name": "SimpleEnum",
+            "namespace_name": "examples.enums",
+            "qualified_name": "examples.enums.SimpleEnum",
+            "relative_type_name": "SimpleEnum",
+            "type": "enum"
+        },
+        {
+            "class_name": "ValueEnum",
+            "file_path": ".\\examples\\02_enums.mota",
+            "name": "ValueEnum",
+            "namespace_name": "examples.enums",
+            "qualified_name": "examples.enums.ValueEnum",
+            "relative_type_name": "ValueEnum",
+            "type": "enum"
+        },
+        {
+            "class_name": "IniGroupAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "IniGroup",
+            "namespace_name": "yima",
+            "qualified_name": "yima.IniGroup",
+            "relative_type_name": "IniGroupAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ScopeAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "Scope",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Scope",
+            "relative_type_name": "ScopeAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "StorageAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "Storage",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Storage",
+            "relative_type_name": "StorageAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "WindowAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "Window",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Window",
+            "relative_type_name": "WindowAnnotation",
+            "type": "annotation_decl"
+        }
+    ],
+    "by_type": {
+        "annotation_decl": [
+            {
+                "class_name": "IniGroupAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "IniGroup",
+                "namespace_name": "yima",
+                "qualified_name": "yima.IniGroup",
+                "relative_type_name": "IniGroupAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ScopeAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "Scope",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Scope",
+                "relative_type_name": "ScopeAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "StorageAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "Storage",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Storage",
+                "relative_type_name": "StorageAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "WindowAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "Window",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Window",
+                "relative_type_name": "WindowAnnotation",
+                "type": "annotation_decl"
+            }
+        ],
+        "block": [
+            {
+                "class_name": "EnumBlockBlock",
+                "file_path": ".\\examples\\02_enums.mota",
+                "name": "EnumBlock",
+                "namespace_name": "examples.enums",
+                "qualified_name": "examples.enums.EnumBlock",
+                "relative_type_name": "EnumBlockBlock",
+                "type": "block"
+            }
+        ],
+        "enum": [
+            {
+                "class_name": "SimpleEnum",
+                "file_path": ".\\examples\\02_enums.mota",
+                "name": "SimpleEnum",
+                "namespace_name": "examples.enums",
+                "qualified_name": "examples.enums.SimpleEnum",
+                "relative_type_name": "SimpleEnum",
+                "type": "enum"
+            },
+            {
+                "class_name": "ValueEnum",
+                "file_path": ".\\examples\\02_enums.mota",
+                "name": "ValueEnum",
+                "namespace_name": "examples.enums",
+                "qualified_name": "examples.enums.ValueEnum",
+                "relative_type_name": "ValueEnum",
+                "type": "enum"
+            }
+        ],
+        "struct": [
+            {
+                "class_name": "EnumStructModel",
+                "file_path": ".\\examples\\02_enums.mota",
+                "name": "EnumStruct",
+                "namespace_name": "examples.enums",
+                "qualified_name": "examples.enums.EnumStruct",
+                "relative_type_name": "EnumStructModel",
+                "type": "struct"
+            }
+        ]
+    },
+    "count": 8
+}}

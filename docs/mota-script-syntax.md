@@ -146,12 +146,11 @@ int32 id = 0;
 
 ### 3.3 注解的 value 参数
 
-注解有且仅有一个 value 参数时，可以省略参数名，示例：
+注解有且仅有一个名为 value 的字段时，可以省略参数名，示例：
 
 ```mota
 annotation MyAnnotation {
-    @value
-    int32 id;
+    int32 value;
 }
 ```
 

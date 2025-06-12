@@ -23,7 +23,7 @@ protected:
         // 在每个测试用例之后执行
     }
 
-    std::unique_ptr<Document> parse(const std::string& source) {
+    std::shared_ptr<Document> parse(const std::string& source) {
         std::cout << "\n开始解析代码..." << std::endl;
         Lexer lexer(source);
         std::cout << "词法分析器创建成功" << std::endl;
@@ -232,7 +232,7 @@ TEST_F(ParserTest, ErrorMissingBrace) {
             int32 age;
     )";
     
-    std::unique_ptr<Document> doc;
+    std::shared_ptr<Document> doc;
     try {
         doc = parse(source);
         FAIL() << "Expected ParseError exception";
@@ -252,7 +252,7 @@ TEST_F(ParserTest, ErrorInvalidType) {
         }
     )";
     
-    std::unique_ptr<Document> doc;
+    std::shared_ptr<Document> doc;
     try {
         doc = parse(source);
     } catch (const ParseError& e) {

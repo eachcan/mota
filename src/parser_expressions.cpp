@@ -6,12 +6,12 @@ namespace parser {
 
 // ===== 表达式解析 =====
 
-std::unique_ptr<ast::Expr> Parser::expression() {
+std::shared_ptr<ast::Expr> Parser::expression() {
     // 表达式是字面量和操作符的组合
     return assignment();
 }
 
-std::unique_ptr<ast::Expr> Parser::assignment() {
+std::shared_ptr<ast::Expr> Parser::assignment() {
     
     auto expr = logicalOr();
     
@@ -23,15 +23,15 @@ std::unique_ptr<ast::Expr> Parser::assignment() {
             // 我们没有 Assign 类型，所以这里需要创建一个 BinaryOp 来表示赋值
             return makeNode<ast::BinaryOp>(
                 ast::BinaryOp::Op::Eq,  // 使用等于操作符表示赋值
-                std::move(expr),
-                std::move(value)
+                expr,
+                value
             );
         } else if (auto* memberAccess = dynamic_cast<ast::MemberAccess*>(expr.get())) {
             // 我们没有 Set 类型，所以这里需要创建一个 BinaryOp 来表示成员赋值
             return makeNode<ast::BinaryOp>(
                 ast::BinaryOp::Op::Eq,  // 使用等于操作符表示赋值
-                std::move(expr),
-                std::move(value)
+                expr,
+                value
             );
         }
         
@@ -41,7 +41,7 @@ std::unique_ptr<ast::Expr> Parser::assignment() {
     return expr;
 }
 
-std::unique_ptr<ast::Expr> Parser::logicalOr() {
+std::shared_ptr<ast::Expr> Parser::logicalOr() {
     
     auto expr = logicalAnd();
     
@@ -50,15 +50,15 @@ std::unique_ptr<ast::Expr> Parser::logicalOr() {
         auto right = logicalAnd();
         expr = makeNode<ast::BinaryOp>(
             ast::BinaryOp::Op::Or,
-            std::move(expr),
-            std::move(right)
+            expr,
+            right
         );
     }
     
     return expr;
 }
 
-std::unique_ptr<ast::Expr> Parser::logicalAnd() {
+std::shared_ptr<ast::Expr> Parser::logicalAnd() {
     
     auto expr = equality();
     
@@ -67,15 +67,15 @@ std::unique_ptr<ast::Expr> Parser::logicalAnd() {
         auto right = equality();
         expr = makeNode<ast::BinaryOp>(
             ast::BinaryOp::Op::And,
-            std::move(expr),
-            std::move(right)
+            expr,
+            right
         );
     }
     
     return expr;
 }
 
-std::unique_ptr<ast::Expr> Parser::equality() {
+std::shared_ptr<ast::Expr> Parser::equality() {
     
     auto expr = comparison();
     
@@ -92,15 +92,15 @@ std::unique_ptr<ast::Expr> Parser::equality() {
         
         expr = makeNode<ast::BinaryOp>(
             opType,
-            std::move(expr),
-            std::move(right)
+            expr,
+            right
         );
     }
     
     return expr;
 }
 
-std::unique_ptr<ast::Expr> Parser::comparison() {
+std::shared_ptr<ast::Expr> Parser::comparison() {
     auto nowToken = peek();
 
     
@@ -134,15 +134,15 @@ std::unique_ptr<ast::Expr> Parser::comparison() {
         
         expr = makeNode<ast::BinaryOp>(
             opType,
-            std::move(expr),
-            std::move(right)
+            expr,
+            right
         );
     }
     
     return expr;
 }
 
-std::unique_ptr<ast::Expr> Parser::term() {
+std::shared_ptr<ast::Expr> Parser::term() {
     
     auto expr = factor();
     
@@ -159,15 +159,15 @@ std::unique_ptr<ast::Expr> Parser::term() {
         
         expr = makeNode<ast::BinaryOp>(
             opType,
-            std::move(expr),
-            std::move(right)
+            expr,
+            right
         );
     }
     
     return expr;
 }
 
-std::unique_ptr<ast::Expr> Parser::factor() {
+std::shared_ptr<ast::Expr> Parser::factor() {
     
     auto expr = unary();
     
@@ -195,15 +195,15 @@ std::unique_ptr<ast::Expr> Parser::factor() {
         
         expr = makeNode<ast::BinaryOp>(
             opType,
-            std::move(expr),
-            std::move(right)
+            expr,
+            right
         );
     }
     
     return expr;
 }
 
-std::unique_ptr<ast::Expr> Parser::unary() {
+std::shared_ptr<ast::Expr> Parser::unary() {
     
     if (consume(lexer::TokenType::Bang) || consume(lexer::TokenType::Minus)) {
         auto op = previous_;
@@ -216,13 +216,13 @@ std::unique_ptr<ast::Expr> Parser::unary() {
             opType = ast::UnaryOp::Op::Minus;
         }
         
-        return makeNode<ast::UnaryOp>(opType, std::move(right));
+        return makeNode<ast::UnaryOp>(opType, right);
     }
     
     return primary();
 }
 
-std::unique_ptr<ast::Expr> Parser::primary() {
+std::shared_ptr<ast::Expr> Parser::primary() {
     
     if (consume(lexer::TokenType::False)) {
         return makeNode<ast::Literal>(false);
@@ -267,7 +267,7 @@ std::unique_ptr<ast::Expr> Parser::primary() {
     
     // 解析数组字面量 [expr1, expr2, ...]
     if (consume(lexer::TokenType::LeftBracket)) {
-        std::vector<std::unique_ptr<ast::Expr>> elements;
+        std::vector<std::shared_ptr<ast::Expr>> elements;
         
         // 处理空数组 []
         if (!check(lexer::TokenType::RightBracket)) {
@@ -282,7 +282,7 @@ std::unique_ptr<ast::Expr> Parser::primary() {
         }
         
         consume(lexer::TokenType::RightBracket, "Expected ']' after array elements");
-        return makeNode<ast::ArrayLiteral>(std::move(elements));
+        return makeNode<ast::ArrayLiteral>(elements);
     }
     
     throw error(peek(), "Expected expression");

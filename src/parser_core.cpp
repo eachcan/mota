@@ -4,9 +4,9 @@
 namespace mota {
 namespace parser {
 
-std::unique_ptr<ast::Document> Parser::parse() {
+std::shared_ptr<ast::Document> Parser::parse() {
     // 创建文档节点
-    auto document = std::make_unique<ast::Document>();
+    auto document = std::make_shared<ast::Document>();
     
     // 消耗第一个词法单元
     current_ = lexer_.nextToken();
@@ -31,10 +31,8 @@ std::unique_ptr<ast::Document> Parser::parse() {
                                        current_.line, current_.column);
                     }
                     // include声明放入includes数组
-                    auto includeDecl = std::unique_ptr<ast::Include>(
-                        static_cast<ast::Include*>(decl.release())
-                    );
-                    document->includes.push_back(std::move(includeDecl));
+                    auto includeDecl = std::static_pointer_cast<ast::Include>(decl);
+                    document->includes.push_back(includeDecl);
                     break;
                 }
                 case ast::NodeType::NamespaceDecl: {
@@ -47,15 +45,13 @@ std::unique_ptr<ast::Document> Parser::parse() {
                         throw ParseError("Namespace declaration must be the first declaration in the file", 
                                        current_.line, current_.column);
                     }
-                    auto namespaceDecl = std::unique_ptr<ast::Namespace>(
-                        static_cast<ast::Namespace*>(decl.release())
-                    );
-                    document->m_namespace = std::move(namespaceDecl);
+                    auto namespaceDecl = std::static_pointer_cast<ast::Namespace>(decl);
+                    document->m_namespace = namespaceDecl;
                     break;
                 }
                 default: {
                     // 其他声明（struct、block、enum、annotation）放入declarations
-                    document->declarations.push_back(std::move(decl));
+                    document->declarations.push_back(decl);
                     hasDeclaration = true;
                     break;
                 }

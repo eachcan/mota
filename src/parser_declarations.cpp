@@ -6,7 +6,7 @@ namespace parser {
 
 // ===== 声明解析 =====
 
-std::unique_ptr<ast::Node> Parser::declaration() {
+std::shared_ptr<ast::Node> Parser::declaration() {
     // 跳过注释 token
     while (check(lexer::TokenType::LineComment) ||
            check(lexer::TokenType::BlockComment) ||
@@ -14,14 +14,14 @@ std::unique_ptr<ast::Node> Parser::declaration() {
         advance();
     }
     
-    std::unique_ptr<ast::Node> node;
+    std::shared_ptr<ast::Node> node;
     
     // 处理注解
-    std::vector<std::unique_ptr<ast::Annotation>> annotations;
+    std::vector<std::shared_ptr<ast::Annotation>> annotations;
     while (check(lexer::TokenType::At)) {
         // 不捕获异常，让异常传递给测试用例
         auto ann = annotation();
-        annotations.push_back(std::move(ann));
+        annotations.push_back(ann);
     }
     
     // 根据当前词法单元类型选择解析方法
@@ -49,15 +49,15 @@ std::unique_ptr<ast::Node> Parser::declaration() {
         // 根据节点类型添加注解
         if (auto* structNode = dynamic_cast<ast::Struct*>(node.get())) {
             for (auto& ann : annotations) {
-                structNode->annotations.push_back(std::move(ann));
+                structNode->annotations.push_back(ann);
             }
         } else if (auto* enumNode = dynamic_cast<ast::Enum*>(node.get())) {
             for (auto& ann : annotations) {
-                enumNode->annotations.push_back(std::move(ann));
+                enumNode->annotations.push_back(ann);
             }
         } else if (auto* blockNode = dynamic_cast<ast::Block*>(node.get())) {
             for (auto& ann : annotations) {
-                blockNode->annotations.push_back(std::move(ann));
+                blockNode->annotations.push_back(ann);
             }
         } else if (!annotations.empty()) {
             error(nowToken, "Unexpected annotations");
@@ -71,7 +71,7 @@ std::unique_ptr<ast::Node> Parser::declaration() {
     return node;
 }
 
-std::unique_ptr<ast::Annotation> Parser::annotation() {
+std::shared_ptr<ast::Annotation> Parser::annotation() {
     auto nowToken = peek();
     
     // 消耗 @ 符号
@@ -90,31 +90,31 @@ std::unique_ptr<ast::Annotation> Parser::annotation() {
     }
     
     // 解析注解参数
-    std::vector<std::unique_ptr<ast::AnnotationArgument>> args;
+    std::vector<std::shared_ptr<ast::AnnotationArgument>> args;
     if (consume(lexer::TokenType::LeftParen)) {
         args = annotationArguments();
         consume(lexer::TokenType::RightParen, "Expected ')' after annotation arguments");
     }
     
-    return makeNode<ast::Annotation>(name, std::move(args));
+    return makeNode<ast::Annotation>(name, args);
 }
 
-std::vector<std::unique_ptr<ast::AnnotationArgument>> Parser::annotationArguments() {
-    std::vector<std::unique_ptr<ast::AnnotationArgument>> args;
+std::vector<std::shared_ptr<ast::AnnotationArgument>> Parser::annotationArguments() {
+    std::vector<std::shared_ptr<ast::AnnotationArgument>> args;
     
     if (!check(lexer::TokenType::RightParen)) {
         do {
             auto arg = annotationArgument();
-            args.push_back(std::move(arg));
+            args.push_back(arg);
         } while (consume(lexer::TokenType::Comma));
     }
     
     return args;
 }
 
-std::unique_ptr<ast::AnnotationArgument> Parser::annotationArgument() {
+std::shared_ptr<ast::AnnotationArgument> Parser::annotationArgument() {
     std::string name;
-    std::unique_ptr<ast::Expr> value;
+    std::shared_ptr<ast::Expr> value;
     
     // 解析注解参数，支持以下语法：
     // 1. name = value (命名参数)
@@ -151,10 +151,10 @@ std::unique_ptr<ast::AnnotationArgument> Parser::annotationArgument() {
         name = "value";
         value = expression();
     }
-    return makeNode<ast::AnnotationArgument>(name, std::move(value));
+    return makeNode<ast::AnnotationArgument>(name, value);
 }
 
-std::unique_ptr<ast::Struct> Parser::structDeclaration() {
+std::shared_ptr<ast::Struct> Parser::structDeclaration() {
     
     // 解析结构体名称
     std::string name = consume(lexer::TokenType::Identifier, "Expected struct name").lexeme;
@@ -166,11 +166,11 @@ std::unique_ptr<ast::Struct> Parser::structDeclaration() {
     // 解析结构体体
     consume(lexer::TokenType::LeftBrace, "Expected '{' after struct name");
     
-    std::vector<std::unique_ptr<ast::Field>> fields;
+    std::vector<std::shared_ptr<ast::Field>> fields;
     
     while (!check(lexer::TokenType::RightBrace) && !isAtEnd()) {
         // 处理字段前的注解
-        std::vector<std::unique_ptr<ast::Annotation>> annotations;
+        std::vector<std::shared_ptr<ast::Annotation>> annotations;
         while (consume(lexer::TokenType::At)) {
             annotations.push_back(annotation());
         }
@@ -180,10 +180,10 @@ std::unique_ptr<ast::Struct> Parser::structDeclaration() {
         
         // 将注解添加到字段
         for (auto& ann : annotations) {
-            field->annotations.push_back(std::move(ann));
+            field->annotations.push_back(ann);
         }
         
-        fields.push_back(std::move(field));
+        fields.push_back(field);
     }
     
     // 检查是否有右大括号，如果没有则抛出异常
@@ -202,11 +202,11 @@ std::unique_ptr<ast::Struct> Parser::structDeclaration() {
     
     // 先创建 Struct 对象，然后再添加字段
     auto structNode = makeNode<ast::Struct>(name, baseName);
-    structNode->fields = std::move(fields);
+    structNode->fields = fields;
     return structNode;
 }
 
-std::unique_ptr<ast::Enum> Parser::enumDeclaration() {
+std::shared_ptr<ast::Enum> Parser::enumDeclaration() {
     
     // 解析枚举名称
     std::string name = consume(lexer::TokenType::Identifier, "Expected enum name").lexeme;
@@ -214,11 +214,11 @@ std::unique_ptr<ast::Enum> Parser::enumDeclaration() {
     // 解析枚举体
     consume(lexer::TokenType::LeftBrace, "Expected '{' after enum name");
     
-    std::vector<std::unique_ptr<ast::EnumValue>> values;
+    std::vector<std::shared_ptr<ast::EnumValue>> values;
     
     while (!check(lexer::TokenType::RightBrace) && !isAtEnd()) {
         // 处理枚举值前的注解
-        std::vector<std::unique_ptr<ast::Annotation>> annotations;
+        std::vector<std::shared_ptr<ast::Annotation>> annotations;
         while (consume(lexer::TokenType::At)) {
             annotations.push_back(annotation());
         }
@@ -228,10 +228,10 @@ std::unique_ptr<ast::Enum> Parser::enumDeclaration() {
         
         // 将注解添加到枚举值
         for (auto& ann : annotations) {
-            value->annotations.push_back(std::move(ann));
+            value->annotations.push_back(ann);
         }
         
-        values.push_back(std::move(value));
+        values.push_back(value);
     }
     
     // 检查是否有右大括号，如果没有则抛出异常
@@ -250,11 +250,11 @@ std::unique_ptr<ast::Enum> Parser::enumDeclaration() {
     
     // 先创建 Enum 对象，然后再添加枚举值
     auto enumNode = makeNode<ast::Enum>(name);
-    enumNode->values = std::move(values);
+    enumNode->values = values;
     return enumNode;
 }
 
-std::unique_ptr<ast::Block> Parser::blockDeclaration() {
+std::shared_ptr<ast::Block> Parser::blockDeclaration() {
     
     // 解析块名称
     std::string name = consume(lexer::TokenType::Identifier, "Expected block name").lexeme;
@@ -266,11 +266,11 @@ std::unique_ptr<ast::Block> Parser::blockDeclaration() {
     // 解析块体
     consume(lexer::TokenType::LeftBrace, "Expected '{' after block name");
     
-    std::vector<std::unique_ptr<ast::Field>> fields;
+    std::vector<std::shared_ptr<ast::Field>> fields;
     
     while (!check(lexer::TokenType::RightBrace) && !isAtEnd()) {
         // 处理字段前的注解
-        std::vector<std::unique_ptr<ast::Annotation>> annotations;
+        std::vector<std::shared_ptr<ast::Annotation>> annotations;
         while (consume(lexer::TokenType::At)) {
             annotations.push_back(annotation());
         }
@@ -280,10 +280,10 @@ std::unique_ptr<ast::Block> Parser::blockDeclaration() {
         
         // 将注解添加到字段
         for (auto& ann : annotations) {
-            field->annotations.push_back(std::move(ann));
+            field->annotations.push_back(ann);
         }
         
-        fields.push_back(std::move(field));
+        fields.push_back(field);
     }
     
     // 如果到达文件末尾但没有右大括号，抛出异常
@@ -298,11 +298,11 @@ std::unique_ptr<ast::Block> Parser::blockDeclaration() {
     
     // 先创建 Block 对象，然后再添加字段
     auto blockNode = makeNode<ast::Block>(name, baseName);
-    blockNode->fields = std::move(fields);
+    blockNode->fields = fields;
     return blockNode;
 }
 
-std::unique_ptr<ast::AnnotationDecl> Parser::annotationDeclaration() {
+std::shared_ptr<ast::AnnotationDecl> Parser::annotationDeclaration() {
     // 解析注解名称（支持带点的命名空间）
     std::string name = consume(lexer::TokenType::Identifier, "Expected annotation name").lexeme;
     while (consume(lexer::TokenType::Dot)) {
@@ -323,14 +323,14 @@ std::unique_ptr<ast::AnnotationDecl> Parser::annotationDeclaration() {
         }
     }
     
-    std::vector<std::unique_ptr<ast::Field>> fields;
+    std::vector<std::shared_ptr<ast::Field>> fields;
     
     // 检查是否有注解体或者只是分号结尾
     if (consume(lexer::TokenType::LeftBrace)) {
         // 有注解体，解析字段
         while (!check(lexer::TokenType::RightBrace) && !isAtEnd()) {
             // 处理字段前的注解
-            std::vector<std::unique_ptr<ast::Annotation>> annotations;
+            std::vector<std::shared_ptr<ast::Annotation>> annotations;
             while (consume(lexer::TokenType::At)) {
                 annotations.push_back(annotation());
             }
@@ -338,9 +338,9 @@ std::unique_ptr<ast::AnnotationDecl> Parser::annotationDeclaration() {
             auto field = fieldDeclaration();
             // 将注解添加到字段
             for (auto& ann : annotations) {
-                field->annotations.push_back(std::move(ann));
+                field->annotations.push_back(ann);
             }
-            fields.push_back(std::move(field));
+            fields.push_back(field);
         }
         // 如果到达文件末尾但没有右大括号，抛出异常
         if (isAtEnd()) {
@@ -354,11 +354,11 @@ std::unique_ptr<ast::AnnotationDecl> Parser::annotationDeclaration() {
     
     // 创建 AnnotationDecl 对象，传入继承的基注解名称
     auto annotationNode = makeNode<ast::AnnotationDecl>(name, baseName);
-    annotationNode->fields = std::move(fields);
+    annotationNode->fields = fields;
     return annotationNode;
 }
 
-std::unique_ptr<ast::Field> Parser::fieldDeclaration() {
+std::shared_ptr<ast::Field> Parser::fieldDeclaration() {
     // 解析类型
     if (!check(lexer::TokenType::Identifier) &&
         !check(lexer::TokenType::Int8) && !check(lexer::TokenType::Int16) && !check(lexer::TokenType::Int32) && !check(lexer::TokenType::Int64) &&
@@ -374,7 +374,7 @@ std::unique_ptr<ast::Field> Parser::fieldDeclaration() {
     std::string name = consume(lexer::TokenType::Identifier, "Expected field name").lexeme;
     
     // 解析可选的初始值
-    std::unique_ptr<ast::Expr> initializer = nullptr;
+    std::shared_ptr<ast::Expr> initializer = nullptr;
     if (consume(lexer::TokenType::Equal)) {
         initializer = expression();
     }
@@ -382,26 +382,26 @@ std::unique_ptr<ast::Field> Parser::fieldDeclaration() {
     consume(lexer::TokenType::Semicolon, "Expected ';' after field declaration");
     
     // 调整参数顺序为 name, type, initializer
-    return makeNode<ast::Field>(name, std::move(type), std::move(initializer));
+    return makeNode<ast::Field>(name, type, initializer);
 }
 
-std::unique_ptr<ast::EnumValue> Parser::enumValueDeclaration() {
+std::shared_ptr<ast::EnumValue> Parser::enumValueDeclaration() {
     
     // 解析枚举值名称
     std::string name = consume(lexer::TokenType::Identifier, "Expected enum value name").lexeme;
     
     // 解析枚举值
-    std::unique_ptr<ast::Expr> value = nullptr;
+    std::shared_ptr<ast::Expr> value = nullptr;
     if (consume(lexer::TokenType::Equal)) {
         value = expression();
     }
     
     consume(lexer::TokenType::Semicolon, "Expected ';' after enum value");
     
-    return makeNode<ast::EnumValue>(name, std::move(value));
+    return makeNode<ast::EnumValue>(name, value);
 }
 
-std::unique_ptr<ast::Include> Parser::includeDeclaration() {
+std::shared_ptr<ast::Include> Parser::includeDeclaration() {
     
     // 解析包含路径
     auto path = consume(lexer::TokenType::String, "Expected string after 'include'");
@@ -410,7 +410,7 @@ std::unique_ptr<ast::Include> Parser::includeDeclaration() {
     return makeNode<ast::Include>(path.lexeme);
 }
 
-std::unique_ptr<ast::Namespace> Parser::namespaceDeclaration() {
+std::shared_ptr<ast::Namespace> Parser::namespaceDeclaration() {
     
     // 解析命名空间路径
     std::string fullPath;
@@ -443,7 +443,7 @@ std::unique_ptr<ast::Namespace> Parser::namespaceDeclaration() {
     // 添加最后一部分
     pathParts.push_back(fullPath.substr(start));
     
-    return makeNode<ast::Namespace>(std::move(pathParts));
+    return makeNode<ast::Namespace>(pathParts);
 }
 
 } // namespace parser

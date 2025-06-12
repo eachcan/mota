@@ -20,7 +20,17 @@ struct DeclarationInfo {
     std::string type;                     // 声明类型：struct|block|enum|annotation_decl
     std::string namespace_name;           // 命名空间
     std::string file_path;                // 所在文件路径
-    const ast::Node* node;                // AST节点指针
+    std::shared_ptr<const ast::Node> node;      // AST节点指针
+    
+    // 字段信息（仅用于注解声明）
+    struct FieldInfo {
+        std::string name;
+        std::string type_name;
+        std::string container_type;  // "none", "array", "optional", "map"
+        bool has_default_value = false;
+        std::string default_value;
+    };
+    std::vector<FieldInfo> fields;        // 字段信息（注解声明时使用）
     
     // 获取相对于指定命名空间的类型名称
     std::string getRelativeTypeName(const std::string& currentNamespace) const {
@@ -68,7 +78,7 @@ private:
     std::string readFile(const std::string& filePath) const;
     
     // 解析文件
-    std::unique_ptr<ast::Document> parseFile(const std::string& filePath) const;
+    std::shared_ptr<ast::Document> parseFile(const std::string& filePath) const;
     
     // 获取文档直接包含的文件路径
     std::vector<std::string> getDirectIncludes(const ast::Document& doc) const;

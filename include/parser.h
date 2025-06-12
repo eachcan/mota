@@ -36,7 +36,7 @@ public:
     explicit Parser(lexer::Lexer& lexer) : lexer_(lexer) {}
     
     // 解析整个文件
-    std::unique_ptr<ast::Document> parse();
+    std::shared_ptr<ast::Document> parse();
     
 private:
     // 辅助方法
@@ -52,39 +52,39 @@ private:
     ParseError error(const lexer::Token& token, const std::string& message);
     
     // 解析方法
-    std::unique_ptr<ast::Node> declaration();
-    std::unique_ptr<ast::Annotation> annotation();
-    std::vector<std::unique_ptr<ast::AnnotationArgument>> annotationArguments();
-    std::unique_ptr<ast::AnnotationArgument> annotationArgument();
-    std::unique_ptr<ast::Node> typeDeclaration();
-    std::unique_ptr<ast::Struct> structDeclaration();
-    std::unique_ptr<ast::Enum> enumDeclaration();
-    std::unique_ptr<ast::Block> blockDeclaration();
-    std::unique_ptr<ast::AnnotationDecl> annotationDeclaration();
-    std::unique_ptr<ast::Type> parseType();
-    std::unique_ptr<ast::Type> primaryType();
-    std::unique_ptr<ast::Type> containerType();
-    std::unique_ptr<ast::Field> fieldDeclaration();
-    std::unique_ptr<ast::EnumValue> enumValueDeclaration();
-    std::unique_ptr<ast::Include> includeDeclaration();
-    std::unique_ptr<ast::Namespace> namespaceDeclaration();
+    std::shared_ptr<ast::Node> declaration();
+    std::shared_ptr<ast::Annotation> annotation();
+    std::vector<std::shared_ptr<ast::AnnotationArgument>> annotationArguments();
+    std::shared_ptr<ast::AnnotationArgument> annotationArgument();
+    std::shared_ptr<ast::Node> typeDeclaration();
+    std::shared_ptr<ast::Struct> structDeclaration();
+    std::shared_ptr<ast::Enum> enumDeclaration();
+    std::shared_ptr<ast::Block> blockDeclaration();
+    std::shared_ptr<ast::AnnotationDecl> annotationDeclaration();
+    std::shared_ptr<ast::Type> parseType();
+    std::shared_ptr<ast::Type> primaryType();
+    std::shared_ptr<ast::Type> containerType();
+    std::shared_ptr<ast::Field> fieldDeclaration();
+    std::shared_ptr<ast::EnumValue> enumValueDeclaration();
+    std::shared_ptr<ast::Include> includeDeclaration();
+    std::shared_ptr<ast::Namespace> namespaceDeclaration();
     
     // 表达式解析
-    std::unique_ptr<ast::Expr> expression();
-    std::unique_ptr<ast::Expr> assignment();
-    std::unique_ptr<ast::Expr> logicalOr();
-    std::unique_ptr<ast::Expr> logicalAnd();
-    std::unique_ptr<ast::Expr> equality();
-    std::unique_ptr<ast::Expr> comparison();
-    std::unique_ptr<ast::Expr> term();
-    std::unique_ptr<ast::Expr> factor();
-    std::unique_ptr<ast::Expr> unary();
-    std::unique_ptr<ast::Expr> primary();
+    std::shared_ptr<ast::Expr> expression();
+    std::shared_ptr<ast::Expr> assignment();
+    std::shared_ptr<ast::Expr> logicalOr();
+    std::shared_ptr<ast::Expr> logicalAnd();
+    std::shared_ptr<ast::Expr> equality();
+    std::shared_ptr<ast::Expr> comparison();
+    std::shared_ptr<ast::Expr> term();
+    std::shared_ptr<ast::Expr> factor();
+    std::shared_ptr<ast::Expr> unary();
+    std::shared_ptr<ast::Expr> primary();
     
     // 实用函数
     template<typename T, typename... Args>
-    std::unique_ptr<T> makeNode(Args&&... args) {
-        auto node = std::make_unique<T>(std::forward<Args>(args)...);
+    std::shared_ptr<T> makeNode(Args&&... args) {
+        auto node = std::make_shared<T>(std::forward<Args>(args)...);
         node->location.filename = lexer_.getFilename();
         node->location.line = previous_.line;
         node->location.column = previous_.column;

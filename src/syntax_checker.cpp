@@ -418,13 +418,13 @@ std::vector<SyntaxDiagnostic> SyntaxChecker::check(
             continue;
         }
         
-        // 添加到当前声明中
+        // 添加到当前声明中  
         currentDeclarations[qualifiedName] = {
             currentNamespace,
             declType,
             declName,
             entryFile,
-            decl.get()
+            decl
         };
     }
     

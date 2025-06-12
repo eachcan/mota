@@ -11,6 +11,7 @@
 #include "ast.h"
 #include "config.h"
 #include "template_engine.h"
+#include "file_processor.h"
 
 namespace mota {
 namespace processor {
@@ -47,7 +48,7 @@ public:
     bool initialize(const std::string& templateDir, const std::string& configPath = "");
     
     // 生成代码
-    std::string generateCode(const std::unique_ptr<ast::Document>& document, const std::string& templateName);
+    std::string generateCode(const std::shared_ptr<ast::Document>& document, const std::string& templateName);
     
     // 获取配置
     const config::TemplateConfig& getConfig() const { return templateConfig_; }
@@ -67,20 +68,20 @@ public:
 
 private:
     // 构建模板变量
-    TemplateVars buildTemplateVars(const std::unique_ptr<ast::Document>& document);
+    TemplateVars buildTemplateVars(const std::shared_ptr<ast::Document>& document);
     
     // 数据构建方法（纯数据，无渲染逻辑）
-    nlohmann::json buildNamespaceData(const std::unique_ptr<ast::Document>& document);
-    nlohmann::json buildIncludesData(const std::unique_ptr<ast::Document>& document);
-    nlohmann::json buildDeclarationsData(const std::unique_ptr<ast::Document>& document);
-    nlohmann::json buildDeclarationData(const std::unique_ptr<ast::Node>& declaration);
-    nlohmann::json buildAnnotationData(const std::unique_ptr<ast::Annotation>& annotation);
-    nlohmann::json buildFieldData(const std::unique_ptr<ast::Field>& field);
-    nlohmann::json buildEnumValueData(const std::unique_ptr<ast::EnumValue>& enumValue);
-    nlohmann::json buildExprData(const std::unique_ptr<ast::Expr>& expr);
+    nlohmann::json buildNamespaceData(const std::shared_ptr<ast::Document>& document);
+    nlohmann::json buildIncludesData(const std::shared_ptr<ast::Document>& document);
+    nlohmann::json buildDeclarationsData(const std::shared_ptr<ast::Document>& document);
+    nlohmann::json buildDeclarationData(const std::shared_ptr<ast::Node>& declaration);
+    nlohmann::json buildAnnotationData(const std::shared_ptr<ast::Annotation>& annotation);
+    nlohmann::json buildFieldData(const std::shared_ptr<ast::Field>& field);
+    nlohmann::json buildEnumValueData(const std::shared_ptr<ast::EnumValue>& enumValue);
+    nlohmann::json buildExprData(const std::shared_ptr<ast::Expr>& expr);
     nlohmann::json buildAnnotationValueData(const ast::Annotation* annotation);
-    nlohmann::json buildTypedExprData(const std::unique_ptr<ast::Expr>& expr, const std::unique_ptr<ast::Type>& expectedType);
-    nlohmann::json buildTypeData(const std::unique_ptr<ast::Type>& type);
+    nlohmann::json buildTypedExprData(const std::shared_ptr<ast::Expr>& expr, const std::shared_ptr<ast::Type>& expectedType);
+    nlohmann::json buildTypeData(const std::shared_ptr<ast::Type>& type);
     
     // 构建声明注册表数据（用于模板变量）
     nlohmann::json buildDeclarationRegistryData();
@@ -99,7 +100,7 @@ private:
     std::string escapeString(const std::string& str);
     
     // Namespace处理
-    std::string extractNamespace(const std::unique_ptr<ast::Document>& document);
+    std::string extractNamespace(const std::shared_ptr<ast::Document>& document);
     std::string formatNamespacePath(const std::string& namespaceStr);
     
     // 时间相关
@@ -107,11 +108,12 @@ private:
     
 private:
     config::TemplateConfig templateConfig_;
-    std::unique_ptr<template_engine::TemplateEngine> templateEngine_;
+    std::shared_ptr<template_engine::TemplateEngine> templateEngine_;
     bool initialized_ = false;
     std::string templateDir_;
     
     // 声明注册表和当前命名空间
+    processor::DeclarationRegistry declarationRegistryStorage_;
     processor::DeclarationRegistry* declarationRegistry_ = nullptr;
     std::string currentNamespace_;
 };

@@ -1,0 +1,67 @@
+// 注解语法完整示例
+namespace examples.annotations;
+
+include "yima.mota";
+
+// === 基础注解 ===
+annotation BaseAnnotation {
+    string description = "";
+}
+
+annotation ValueAnnotation {
+    int32 min = 0;
+    int32 max = 100;
+}
+
+// === 注解继承 ===
+annotation ExtendedAnnotation : BaseAnnotation {
+    bool required = false;
+    ValueAnnotation range; // 注解作为字段类型
+}
+
+// === 全字段类型测试 ===
+annotation AllTypesAnnotation {
+    // 所有基础类型
+    int8 int8Field = 1;
+    int16 int16Field = 2;
+    int32 int32Field = 3;
+    int64 int64Field = 4;
+    uint8 uint8Field = 5;
+    uint16 uint16Field = 6;
+    uint32 uint32Field = 7;
+    uint64 uint64Field = 8;
+    float32 float32Field = 1.0;
+    float64 float64Field = 2.0;
+    bool boolField = true;
+    string stringField = "test";
+    bytes bytesField = "data";
+    
+    // 注解类型
+    BaseAnnotation baseRef;
+    ValueAnnotation valueRef;
+}
+
+// === 容器类型测试 ===
+annotation ContainerAnnotation {
+    // repeated容器
+    repeated int32 intArray;
+    repeated string stringArray;
+    repeated BaseAnnotation annotationArray;
+    
+    // optional容器
+    optional int32 optionalInt;
+    optional string optionalString;
+    optional BaseAnnotation optionalAnnotation;
+    
+    // map容器
+    map int32 intMap;
+    map string stringMap;
+    map BaseAnnotation annotationMap;
+}
+
+// === 特殊注解 ===
+annotation ValueOnly {
+    string value; // 字段名为value，使用时可省略参数名
+}
+
+annotation NoParams; 

@@ -92,11 +92,16 @@ bool FileProcessor::processMotaFile(
         }
         
         // 构建声明注册表
+        std::cout << "[DEBUG] 开始构建声明注册表..." << std::endl;
         DeclarationRegistry declarationRegistry;
         buildDeclarationRegistry(includedDeclarations, currentDeclarations, declarationRegistry, generator.getConfig());
+        std::cout << "[DEBUG] 声明注册表构建完成，包含 " << declarationRegistry.size() << " 个声明" << std::endl;
         
         // 设置声明注册表到生成器
+        std::cout << "[DEBUG] 开始设置声明注册表..." << std::endl;
         generator.setDeclarationRegistry(declarationRegistry);
+        std::cout << "[DEBUG] 声明注册表设置完成" << std::endl;
+        
         generator.setCurrentNamespace(root->hasNamespace() ? 
             [&]() {
                 std::string ns;
@@ -106,10 +111,17 @@ bool FileProcessor::processMotaFile(
                 }
                 return ns;
             }() : "");
+        std::cout << "[DEBUG] 命名空间设置完成" << std::endl;
         
+        std::cout << "[DEBUG] 准备获取配置..." << std::endl;
         auto filePaths = generator.getConfig().file_path;
+        std::cout << "[DEBUG] 配置获取成功" << std::endl;
+        std::cout << "[DEBUG] 找到 " << filePaths.size() << " 个文件路径配置" << std::endl;
+        
         for (const auto& filePath : filePaths) {
+            std::cout << "[DEBUG] 处理文件路径: " << filePath.entry << std::endl;
             std::string generatedCode = generator.generateCode(root, filePath.entry);
+            std::cout << "[DEBUG] generateCode 返回，长度: " << generatedCode.length() << std::endl;
             if (generatedCode.empty()) {
                 std::cerr << "错误: 代码生成失败 " << inputFile << std::endl;
                 return false;
@@ -252,7 +264,7 @@ std::string FileProcessor::readFile(const std::string& filePath) const {
     );
 }
 
-std::unique_ptr<ast::Document> FileProcessor::parseFile(const std::string& filePath) const {
+std::shared_ptr<ast::Document> FileProcessor::parseFile(const std::string& filePath) const {
     std::string source = readFile(filePath);
     if (source.empty()) {
         return nullptr;
@@ -393,6 +405,47 @@ void FileProcessor::buildDeclarationRegistry(
             case ast::NodeType::AnnotationDecl:
                 info.type = "annotation_decl";
                 info.class_name = prefix + knownDecl.name + suffix;
+                
+                // 提取注解字段信息
+                if (knownDecl.node) {
+                    const auto* annotationDecl = static_cast<const ast::AnnotationDecl*>(knownDecl.node.get());
+                    for (const auto& field : annotationDecl->fields) {
+                        DeclarationInfo::FieldInfo fieldInfo;
+                        fieldInfo.name = field->name;
+                        
+                        // 提取类型信息
+                        if (field->type->nodeType() == ast::NodeType::NamedType) {
+                            const auto* namedType = static_cast<const ast::NamedType*>(field->type.get());
+                            fieldInfo.type_name = namedType->name;
+                            fieldInfo.container_type = "none";
+                        } else if (field->type->nodeType() == ast::NodeType::ContainerType) {
+                            const auto* containerType = static_cast<const ast::ContainerType*>(field->type.get());
+                            if (containerType->elementType->nodeType() == ast::NodeType::NamedType) {
+                                const auto* elementType = static_cast<const ast::NamedType*>(containerType->elementType.get());
+                                fieldInfo.type_name = elementType->name;
+                                switch (containerType->kind) {
+                                    case ast::ContainerType::Kind::Array:
+                                        fieldInfo.container_type = "array";
+                                        break;
+                                    case ast::ContainerType::Kind::Optional:
+                                        fieldInfo.container_type = "optional";
+                                        break;
+                                    case ast::ContainerType::Kind::Map:
+                                        fieldInfo.container_type = "map";
+                                        break;
+                                }
+                            }
+                        }
+                        
+                        // 提取默认值信息
+                        if (field->defaultValue) {
+                            fieldInfo.has_default_value = true;
+                            // 这里可以根据需要提取默认值，暂时留空
+                        }
+                        
+                        info.fields.push_back(fieldInfo);
+                    }
+                }
                 break;
             default:
                 break;

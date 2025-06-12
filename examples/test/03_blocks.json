@@ -1,0 +1,1101 @@
+﻿{
+    "DECLARATIONS": [
+    {
+        "annotations": [],
+        "class_name": "BlockAnnotationAnnotation",
+        "fields": [
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "\"\"",
+                "field_name": "description",
+                "full_mapped_type_name": "QString",
+                "full_type_name": "string",
+                "mapped_type_name": "QString",
+                "name": "description",
+                "type_name": "string"
+            }
+        ],
+        "full_class_name": "examples:blocks::BlockAnnotationAnnotation",
+        "full_name": "examples.blocks.BlockAnnotation",
+        "name": "BlockAnnotation",
+        "namespace": "examples.blocks",
+        "namespace_class_prefix": "examples:blocks::",
+        "parent": "",
+        "parent_class_name": "",
+        "parent_full_class_name": "",
+        "parent_full_name": "",
+        "parent_name": "",
+        "type": "annotation_decl"
+    },
+    {
+        "annotations": [],
+        "class_name": "BlockValueAnnotationAnnotation",
+        "fields": [
+            {
+                "annotations": [],
+                "container_type": "none",
+                "field_name": "value",
+                "full_mapped_type_name": "QString",
+                "full_type_name": "string",
+                "mapped_type_name": "QString",
+                "name": "value",
+                "type_name": "string"
+            }
+        ],
+        "full_class_name": "examples:blocks::BlockValueAnnotationAnnotation",
+        "full_name": "examples.blocks.BlockValueAnnotation",
+        "name": "BlockValueAnnotation",
+        "namespace": "examples.blocks",
+        "namespace_class_prefix": "examples:blocks::",
+        "parent": "",
+        "parent_class_name": "",
+        "parent_full_class_name": "",
+        "parent_full_name": "",
+        "parent_name": "",
+        "type": "annotation_decl"
+    },
+    {
+        "annotations": [],
+        "class_name": "BlockStatus",
+        "full_class_name": "examples:blocks::BlockStatus",
+        "full_name": "examples.blocks.BlockStatus",
+        "name": "BlockStatus",
+        "namespace": "examples.blocks",
+        "namespace_class_prefix": "examples:blocks::",
+        "parent": "",
+        "parent_class_name": "",
+        "parent_full_class_name": "",
+        "parent_full_name": "",
+        "parent_name": "",
+        "type": "enum",
+        "values": [
+            {
+                "annotations": [],
+                "field_name": "ACTIVE",
+                "name": "ACTIVE",
+                "value": "1"
+            },
+            {
+                "annotations": [],
+                "field_name": "INACTIVE",
+                "name": "INACTIVE",
+                "value": "2"
+            },
+            {
+                "annotations": [],
+                "field_name": "PENDING",
+                "name": "PENDING",
+                "value": "3"
+            }
+        ]
+    },
+    {
+        "annotations": [],
+        "class_name": "BlockType",
+        "full_class_name": "examples:blocks::BlockType",
+        "full_name": "examples.blocks.BlockType",
+        "name": "BlockType",
+        "namespace": "examples.blocks",
+        "namespace_class_prefix": "examples:blocks::",
+        "parent": "",
+        "parent_class_name": "",
+        "parent_full_class_name": "",
+        "parent_full_name": "",
+        "parent_name": "",
+        "type": "enum",
+        "values": [
+            {
+                "annotations": [],
+                "field_name": "PRIMARY",
+                "name": "PRIMARY"
+            },
+            {
+                "annotations": [],
+                "field_name": "SECONDARY",
+                "name": "SECONDARY"
+            },
+            {
+                "annotations": [],
+                "field_name": "AUXILIARY",
+                "name": "AUXILIARY"
+            }
+        ]
+    },
+    {
+        "annotations": [],
+        "class_name": "BaseBlockBlock",
+        "fields": [
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "0",
+                "field_name": "id",
+                "full_mapped_type_name": "int32_t",
+                "full_type_name": "int32",
+                "mapped_type_name": "int32_t",
+                "name": "id",
+                "type_name": "int32"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "\"\"",
+                "field_name": "name",
+                "full_mapped_type_name": "QString",
+                "full_type_name": "string",
+                "mapped_type_name": "QString",
+                "name": "name",
+                "type_name": "string"
+            }
+        ],
+        "full_class_name": "examples:blocks::BaseBlockBlock",
+        "full_name": "examples.blocks.BaseBlock",
+        "name": "BaseBlock",
+        "namespace": "examples.blocks",
+        "namespace_class_prefix": "examples:blocks::",
+        "parent": "",
+        "parent_class_name": "",
+        "parent_full_class_name": "",
+        "parent_full_name": "",
+        "parent_name": "",
+        "type": "block"
+    },
+    {
+        "annotations": [],
+        "class_name": "ExtendedBlockBlock",
+        "fields": [
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "true",
+                "field_name": "active",
+                "full_mapped_type_name": "bool",
+                "full_type_name": "bool",
+                "mapped_type_name": "bool",
+                "name": "active",
+                "type_name": "bool"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "/* complex expression */",
+                "field_name": "status",
+                "full_mapped_type_name": "examples:blocks::BlockStatus",
+                "full_type_name": "examples.blocks.BlockStatus",
+                "mapped_type_name": "BlockStatus",
+                "name": "status",
+                "type_name": "BlockStatus"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "/* complex expression */",
+                "field_name": "type",
+                "full_mapped_type_name": "examples:blocks::BlockType",
+                "full_type_name": "examples.blocks.BlockType",
+                "mapped_type_name": "BlockType",
+                "name": "type",
+                "type_name": "BlockType"
+            }
+        ],
+        "full_class_name": "examples:blocks::ExtendedBlockBlock",
+        "full_name": "examples.blocks.ExtendedBlock",
+        "name": "ExtendedBlock",
+        "namespace": "examples.blocks",
+        "namespace_class_prefix": "examples:blocks::",
+        "parent": "BaseBlock",
+        "parent_class_name": "BaseBlockBlock",
+        "parent_full_class_name": "examples:blocks::BaseBlockBlock",
+        "parent_full_name": "examples.blocks.BaseBlock",
+        "parent_name": "BaseBlock",
+        "type": "block"
+    },
+    {
+        "annotations": [
+            {
+                "arguments": [
+                    {
+                        "container_type": "none",
+                        "field_name": "value",
+                        "full_mapped_type_name": "QString",
+                        "full_type_name": "string",
+                        "mapped_type_name": "QString",
+                        "name": "value",
+                        "type_name": "string",
+                        "value": "\"test_block\""
+                    }
+                ],
+                "class_name": "BlockValueAnnotationAnnotation",
+                "full_class_name": "examples:blocks::BlockValueAnnotationAnnotation",
+                "full_name": "examples.blocks.BlockValueAnnotation",
+                "name": "BlockValueAnnotation",
+                "namespace": "examples.blocks",
+                "namespace_class_prefix": "examples:blocks::",
+                "type": "annotation"
+            },
+            {
+                "arguments": [
+                    {
+                        "container_type": "none",
+                        "field_name": "description",
+                        "full_mapped_type_name": "QString",
+                        "full_type_name": "string",
+                        "mapped_type_name": "QString",
+                        "name": "description",
+                        "type_name": "string",
+                        "value": "\"带注解的块\""
+                    }
+                ],
+                "class_name": "BlockAnnotationAnnotation",
+                "full_class_name": "examples:blocks::BlockAnnotationAnnotation",
+                "full_name": "examples.blocks.BlockAnnotation",
+                "name": "BlockAnnotation",
+                "namespace": "examples.blocks",
+                "namespace_class_prefix": "examples:blocks::",
+                "type": "annotation"
+            }
+        ],
+        "class_name": "AnnotatedBlockBlock",
+        "fields": [
+            {
+                "annotations": [
+                    {
+                        "arguments": [
+                            {
+                                "container_type": "none",
+                                "field_name": "value",
+                                "full_mapped_type_name": "QString",
+                                "full_type_name": "string",
+                                "mapped_type_name": "QString",
+                                "name": "value",
+                                "type_name": "string",
+                                "value": "\"data_field\""
+                            }
+                        ],
+                        "class_name": "BlockValueAnnotationAnnotation",
+                        "full_class_name": "examples:blocks::BlockValueAnnotationAnnotation",
+                        "full_name": "examples.blocks.BlockValueAnnotation",
+                        "name": "BlockValueAnnotation",
+                        "namespace": "examples.blocks",
+                        "namespace_class_prefix": "examples:blocks::",
+                        "type": "annotation"
+                    }
+                ],
+                "container_type": "none",
+                "default_value": "\"\"",
+                "field_name": "data",
+                "full_mapped_type_name": "QString",
+                "full_type_name": "string",
+                "mapped_type_name": "QString",
+                "name": "data",
+                "type_name": "string"
+            },
+            {
+                "annotations": [
+                    {
+                        "arguments": [
+                            {
+                                "container_type": "none",
+                                "field_name": "description",
+                                "full_mapped_type_name": "QString",
+                                "full_type_name": "string",
+                                "mapped_type_name": "QString",
+                                "name": "description",
+                                "type_name": "string",
+                                "value": "\"配置字段\""
+                            }
+                        ],
+                        "class_name": "BlockAnnotationAnnotation",
+                        "full_class_name": "examples:blocks::BlockAnnotationAnnotation",
+                        "full_name": "examples.blocks.BlockAnnotation",
+                        "name": "BlockAnnotation",
+                        "namespace": "examples.blocks",
+                        "namespace_class_prefix": "examples:blocks::",
+                        "type": "annotation"
+                    }
+                ],
+                "container_type": "none",
+                "default_value": "\"\"",
+                "field_name": "config",
+                "full_mapped_type_name": "QString",
+                "full_type_name": "string",
+                "mapped_type_name": "QString",
+                "name": "config",
+                "type_name": "string"
+            }
+        ],
+        "full_class_name": "examples:blocks::AnnotatedBlockBlock",
+        "full_name": "examples.blocks.AnnotatedBlock",
+        "name": "AnnotatedBlock",
+        "namespace": "examples.blocks",
+        "namespace_class_prefix": "examples:blocks::",
+        "parent": "",
+        "parent_class_name": "",
+        "parent_full_class_name": "",
+        "parent_full_name": "",
+        "parent_name": "",
+        "type": "block"
+    },
+    {
+        "annotations": [],
+        "class_name": "AllTypesBlockBlock",
+        "fields": [
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "1",
+                "field_name": "int8Field",
+                "full_mapped_type_name": "int8_t",
+                "full_type_name": "int8",
+                "mapped_type_name": "int8_t",
+                "name": "int8Field",
+                "type_name": "int8"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "2",
+                "field_name": "int16Field",
+                "full_mapped_type_name": "int16_t",
+                "full_type_name": "int16",
+                "mapped_type_name": "int16_t",
+                "name": "int16Field",
+                "type_name": "int16"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "3",
+                "field_name": "int32Field",
+                "full_mapped_type_name": "int32_t",
+                "full_type_name": "int32",
+                "mapped_type_name": "int32_t",
+                "name": "int32Field",
+                "type_name": "int32"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "4",
+                "field_name": "int64Field",
+                "full_mapped_type_name": "int64_t",
+                "full_type_name": "int64",
+                "mapped_type_name": "int64_t",
+                "name": "int64Field",
+                "type_name": "int64"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "5",
+                "field_name": "uint8Field",
+                "full_mapped_type_name": "uint8_t",
+                "full_type_name": "uint8",
+                "mapped_type_name": "uint8_t",
+                "name": "uint8Field",
+                "type_name": "uint8"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "6",
+                "field_name": "uint16Field",
+                "full_mapped_type_name": "uint16_t",
+                "full_type_name": "uint16",
+                "mapped_type_name": "uint16_t",
+                "name": "uint16Field",
+                "type_name": "uint16"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "7",
+                "field_name": "uint32Field",
+                "full_mapped_type_name": "uint32_t",
+                "full_type_name": "uint32",
+                "mapped_type_name": "uint32_t",
+                "name": "uint32Field",
+                "type_name": "uint32"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "8",
+                "field_name": "uint64Field",
+                "full_mapped_type_name": "uint64_t",
+                "full_type_name": "uint64",
+                "mapped_type_name": "uint64_t",
+                "name": "uint64Field",
+                "type_name": "uint64"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "1.000000",
+                "field_name": "float32Field",
+                "full_mapped_type_name": "float",
+                "full_type_name": "float32",
+                "mapped_type_name": "float",
+                "name": "float32Field",
+                "type_name": "float32"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "2.000000",
+                "field_name": "float64Field",
+                "full_mapped_type_name": "double",
+                "full_type_name": "float64",
+                "mapped_type_name": "double",
+                "name": "float64Field",
+                "type_name": "float64"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "true",
+                "field_name": "boolField",
+                "full_mapped_type_name": "bool",
+                "full_type_name": "bool",
+                "mapped_type_name": "bool",
+                "name": "boolField",
+                "type_name": "bool"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "\"test\"",
+                "field_name": "stringField",
+                "full_mapped_type_name": "QString",
+                "full_type_name": "string",
+                "mapped_type_name": "QString",
+                "name": "stringField",
+                "type_name": "string"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "\"data\"",
+                "field_name": "bytesField",
+                "full_mapped_type_name": "QByteArray",
+                "full_type_name": "bytes",
+                "mapped_type_name": "QByteArray",
+                "name": "bytesField",
+                "type_name": "bytes"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "/* complex expression */",
+                "field_name": "status",
+                "full_mapped_type_name": "examples:blocks::BlockStatus",
+                "full_type_name": "examples.blocks.BlockStatus",
+                "mapped_type_name": "BlockStatus",
+                "name": "status",
+                "type_name": "BlockStatus"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "/* complex expression */",
+                "field_name": "type",
+                "full_mapped_type_name": "examples:blocks::BlockType",
+                "full_type_name": "examples.blocks.BlockType",
+                "mapped_type_name": "BlockType",
+                "name": "type",
+                "type_name": "BlockType"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "field_name": "baseBlock",
+                "full_mapped_type_name": "examples:blocks::BaseBlockBlock",
+                "full_type_name": "examples.blocks.BaseBlock",
+                "mapped_type_name": "BaseBlockBlock",
+                "name": "baseBlock",
+                "type_name": "BaseBlock"
+            },
+            {
+                "annotations": [],
+                "container_type": "none",
+                "field_name": "extendedBlock",
+                "full_mapped_type_name": "examples:blocks::ExtendedBlockBlock",
+                "full_type_name": "examples.blocks.ExtendedBlock",
+                "mapped_type_name": "ExtendedBlockBlock",
+                "name": "extendedBlock",
+                "type_name": "ExtendedBlock"
+            }
+        ],
+        "full_class_name": "examples:blocks::AllTypesBlockBlock",
+        "full_name": "examples.blocks.AllTypesBlock",
+        "name": "AllTypesBlock",
+        "namespace": "examples.blocks",
+        "namespace_class_prefix": "examples:blocks::",
+        "parent": "",
+        "parent_class_name": "",
+        "parent_full_class_name": "",
+        "parent_full_name": "",
+        "parent_name": "",
+        "type": "block"
+    },
+    {
+        "annotations": [],
+        "class_name": "ContainerBlockBlock",
+        "fields": [
+            {
+                "annotations": [
+                    {
+                        "arguments": [
+                            {
+                                "container_type": "none",
+                                "field_name": "description",
+                                "full_mapped_type_name": "QString",
+                                "full_type_name": "string",
+                                "mapped_type_name": "QString",
+                                "name": "description",
+                                "type_name": "string",
+                                "value": "\"整数数组\""
+                            }
+                        ],
+                        "class_name": "BlockAnnotationAnnotation",
+                        "full_class_name": "examples:blocks::BlockAnnotationAnnotation",
+                        "full_name": "examples.blocks.BlockAnnotation",
+                        "name": "BlockAnnotation",
+                        "namespace": "examples.blocks",
+                        "namespace_class_prefix": "examples:blocks::",
+                        "type": "annotation"
+                    }
+                ],
+                "container_type": "array",
+                "default_value": [
+                    "1",
+                    "2",
+                    "3"
+                ],
+                "field_name": "intArray",
+                "full_mapped_type_name": "int32_t",
+                "full_type_name": "int32",
+                "mapped_type_name": "int32_t",
+                "name": "intArray",
+                "type_name": "int32"
+            },
+            {
+                "annotations": [
+                    {
+                        "arguments": [
+                            {
+                                "container_type": "none",
+                                "field_name": "value",
+                                "full_mapped_type_name": "QString",
+                                "full_type_name": "string",
+                                "mapped_type_name": "QString",
+                                "name": "value",
+                                "type_name": "string",
+                                "value": "\"string_array\""
+                            }
+                        ],
+                        "class_name": "BlockValueAnnotationAnnotation",
+                        "full_class_name": "examples:blocks::BlockValueAnnotationAnnotation",
+                        "full_name": "examples.blocks.BlockValueAnnotation",
+                        "name": "BlockValueAnnotation",
+                        "namespace": "examples.blocks",
+                        "namespace_class_prefix": "examples:blocks::",
+                        "type": "annotation"
+                    }
+                ],
+                "container_type": "array",
+                "field_name": "stringArray",
+                "full_mapped_type_name": "QString",
+                "full_type_name": "string",
+                "mapped_type_name": "QString",
+                "name": "stringArray",
+                "type_name": "string"
+            },
+            {
+                "annotations": [],
+                "container_type": "array",
+                "default_value": [
+                    "/* complex expression */",
+                    "/* complex expression */"
+                ],
+                "field_name": "statusArray",
+                "full_mapped_type_name": "examples:blocks::BlockStatus",
+                "full_type_name": "examples.blocks.BlockStatus",
+                "mapped_type_name": "BlockStatus",
+                "name": "statusArray",
+                "type_name": "BlockStatus"
+            },
+            {
+                "annotations": [],
+                "container_type": "array",
+                "field_name": "blockArray",
+                "full_mapped_type_name": "examples:blocks::BaseBlockBlock",
+                "full_type_name": "examples.blocks.BaseBlock",
+                "mapped_type_name": "BaseBlockBlock",
+                "name": "blockArray",
+                "type_name": "BaseBlock"
+            },
+            {
+                "annotations": [
+                    {
+                        "arguments": [
+                            {
+                                "container_type": "none",
+                                "field_name": "value",
+                                "full_mapped_type_name": "QString",
+                                "full_type_name": "string",
+                                "mapped_type_name": "QString",
+                                "name": "value",
+                                "type_name": "string",
+                                "value": "\"optional_int\""
+                            }
+                        ],
+                        "class_name": "BlockValueAnnotationAnnotation",
+                        "full_class_name": "examples:blocks::BlockValueAnnotationAnnotation",
+                        "full_name": "examples.blocks.BlockValueAnnotation",
+                        "name": "BlockValueAnnotation",
+                        "namespace": "examples.blocks",
+                        "namespace_class_prefix": "examples:blocks::",
+                        "type": "annotation"
+                    }
+                ],
+                "container_type": "optional",
+                "default_value": "42",
+                "field_name": "optionalInt",
+                "full_mapped_type_name": "int32_t",
+                "full_type_name": "int32",
+                "mapped_type_name": "int32_t",
+                "name": "optionalInt",
+                "type_name": "int32"
+            },
+            {
+                "annotations": [],
+                "container_type": "optional",
+                "field_name": "optionalString",
+                "full_mapped_type_name": "QString",
+                "full_type_name": "string",
+                "mapped_type_name": "QString",
+                "name": "optionalString",
+                "type_name": "string"
+            },
+            {
+                "annotations": [
+                    {
+                        "arguments": [
+                            {
+                                "container_type": "none",
+                                "field_name": "description",
+                                "full_mapped_type_name": "QString",
+                                "full_type_name": "string",
+                                "mapped_type_name": "QString",
+                                "name": "description",
+                                "type_name": "string",
+                                "value": "\"可选状态\""
+                            }
+                        ],
+                        "class_name": "BlockAnnotationAnnotation",
+                        "full_class_name": "examples:blocks::BlockAnnotationAnnotation",
+                        "full_name": "examples.blocks.BlockAnnotation",
+                        "name": "BlockAnnotation",
+                        "namespace": "examples.blocks",
+                        "namespace_class_prefix": "examples:blocks::",
+                        "type": "annotation"
+                    }
+                ],
+                "container_type": "optional",
+                "field_name": "optionalStatus",
+                "full_mapped_type_name": "examples:blocks::BlockStatus",
+                "full_type_name": "examples.blocks.BlockStatus",
+                "mapped_type_name": "BlockStatus",
+                "name": "optionalStatus",
+                "type_name": "BlockStatus"
+            },
+            {
+                "annotations": [],
+                "container_type": "optional",
+                "field_name": "optionalBlock",
+                "full_mapped_type_name": "examples:blocks::BaseBlockBlock",
+                "full_type_name": "examples.blocks.BaseBlock",
+                "mapped_type_name": "BaseBlockBlock",
+                "name": "optionalBlock",
+                "type_name": "BaseBlock"
+            },
+            {
+                "annotations": [
+                    {
+                        "arguments": [
+                            {
+                                "container_type": "none",
+                                "field_name": "description",
+                                "full_mapped_type_name": "QString",
+                                "full_type_name": "string",
+                                "mapped_type_name": "QString",
+                                "name": "description",
+                                "type_name": "string",
+                                "value": "\"整数映射\""
+                            }
+                        ],
+                        "class_name": "BlockAnnotationAnnotation",
+                        "full_class_name": "examples:blocks::BlockAnnotationAnnotation",
+                        "full_name": "examples.blocks.BlockAnnotation",
+                        "name": "BlockAnnotation",
+                        "namespace": "examples.blocks",
+                        "namespace_class_prefix": "examples:blocks::",
+                        "type": "annotation"
+                    }
+                ],
+                "container_type": "map",
+                "field_name": "intMap",
+                "full_mapped_type_name": "int32_t",
+                "full_type_name": "int32",
+                "mapped_type_name": "int32_t",
+                "name": "intMap",
+                "type_name": "int32"
+            },
+            {
+                "annotations": [],
+                "container_type": "map",
+                "field_name": "stringMap",
+                "full_mapped_type_name": "QString",
+                "full_type_name": "string",
+                "mapped_type_name": "QString",
+                "name": "stringMap",
+                "type_name": "string"
+            },
+            {
+                "annotations": [
+                    {
+                        "arguments": [
+                            {
+                                "container_type": "none",
+                                "field_name": "value",
+                                "full_mapped_type_name": "QString",
+                                "full_type_name": "string",
+                                "mapped_type_name": "QString",
+                                "name": "value",
+                                "type_name": "string",
+                                "value": "\"status_map\""
+                            }
+                        ],
+                        "class_name": "BlockValueAnnotationAnnotation",
+                        "full_class_name": "examples:blocks::BlockValueAnnotationAnnotation",
+                        "full_name": "examples.blocks.BlockValueAnnotation",
+                        "name": "BlockValueAnnotation",
+                        "namespace": "examples.blocks",
+                        "namespace_class_prefix": "examples:blocks::",
+                        "type": "annotation"
+                    }
+                ],
+                "container_type": "map",
+                "field_name": "statusMap",
+                "full_mapped_type_name": "examples:blocks::BlockStatus",
+                "full_type_name": "examples.blocks.BlockStatus",
+                "mapped_type_name": "BlockStatus",
+                "name": "statusMap",
+                "type_name": "BlockStatus"
+            },
+            {
+                "annotations": [],
+                "container_type": "map",
+                "field_name": "blockMap",
+                "full_mapped_type_name": "examples:blocks::BaseBlockBlock",
+                "full_type_name": "examples.blocks.BaseBlock",
+                "mapped_type_name": "BaseBlockBlock",
+                "name": "blockMap",
+                "type_name": "BaseBlock"
+            }
+        ],
+        "full_class_name": "examples:blocks::ContainerBlockBlock",
+        "full_name": "examples.blocks.ContainerBlock",
+        "name": "ContainerBlock",
+        "namespace": "examples.blocks",
+        "namespace_class_prefix": "examples:blocks::",
+        "parent": "",
+        "parent_class_name": "",
+        "parent_full_class_name": "",
+        "parent_full_name": "",
+        "parent_name": "",
+        "type": "block"
+    }
+],
+    "INCLUDES": {
+    "count": 1,
+    "files": [
+        {
+            "source": "yima.mota",
+            "translated": "yima.h"
+        }
+    ]
+},
+    "CURRENT_TIME": "2025-06-12 22:28:25",
+    "SOURCE_FILE": ".\examples\03_blocks.mota",
+    "NAMESPACE": {
+    "as_class_prefix": "examples::blocks::",
+    "exists": true,
+    "parts": [
+        {
+            "index": 0,
+            "is_first": true,
+            "is_last": false,
+            "name": "examples"
+        },
+        {
+            "index": 1,
+            "is_first": false,
+            "is_last": true,
+            "name": "blocks"
+        }
+    ],
+    "parts_count": 2,
+    "path": "examples\\blocks",
+    "qualified_name": "examples.blocks"
+},
+    "DECLARATIONS_REGISTRY": {
+    "all": [
+        {
+            "class_name": "AllTypesBlockBlock",
+            "file_path": ".\\examples\\03_blocks.mota",
+            "name": "AllTypesBlock",
+            "namespace_name": "examples.blocks",
+            "qualified_name": "examples.blocks.AllTypesBlock",
+            "relative_type_name": "AllTypesBlockBlock",
+            "type": "block"
+        },
+        {
+            "class_name": "AnnotatedBlockBlock",
+            "file_path": ".\\examples\\03_blocks.mota",
+            "name": "AnnotatedBlock",
+            "namespace_name": "examples.blocks",
+            "qualified_name": "examples.blocks.AnnotatedBlock",
+            "relative_type_name": "AnnotatedBlockBlock",
+            "type": "block"
+        },
+        {
+            "class_name": "BaseBlockBlock",
+            "file_path": ".\\examples\\03_blocks.mota",
+            "name": "BaseBlock",
+            "namespace_name": "examples.blocks",
+            "qualified_name": "examples.blocks.BaseBlock",
+            "relative_type_name": "BaseBlockBlock",
+            "type": "block"
+        },
+        {
+            "class_name": "BlockAnnotationAnnotation",
+            "file_path": ".\\examples\\03_blocks.mota",
+            "name": "BlockAnnotation",
+            "namespace_name": "examples.blocks",
+            "qualified_name": "examples.blocks.BlockAnnotation",
+            "relative_type_name": "BlockAnnotationAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "BlockStatus",
+            "file_path": ".\\examples\\03_blocks.mota",
+            "name": "BlockStatus",
+            "namespace_name": "examples.blocks",
+            "qualified_name": "examples.blocks.BlockStatus",
+            "relative_type_name": "BlockStatus",
+            "type": "enum"
+        },
+        {
+            "class_name": "BlockType",
+            "file_path": ".\\examples\\03_blocks.mota",
+            "name": "BlockType",
+            "namespace_name": "examples.blocks",
+            "qualified_name": "examples.blocks.BlockType",
+            "relative_type_name": "BlockType",
+            "type": "enum"
+        },
+        {
+            "class_name": "BlockValueAnnotationAnnotation",
+            "file_path": ".\\examples\\03_blocks.mota",
+            "name": "BlockValueAnnotation",
+            "namespace_name": "examples.blocks",
+            "qualified_name": "examples.blocks.BlockValueAnnotation",
+            "relative_type_name": "BlockValueAnnotationAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ContainerBlockBlock",
+            "file_path": ".\\examples\\03_blocks.mota",
+            "name": "ContainerBlock",
+            "namespace_name": "examples.blocks",
+            "qualified_name": "examples.blocks.ContainerBlock",
+            "relative_type_name": "ContainerBlockBlock",
+            "type": "block"
+        },
+        {
+            "class_name": "ExtendedBlockBlock",
+            "file_path": ".\\examples\\03_blocks.mota",
+            "name": "ExtendedBlock",
+            "namespace_name": "examples.blocks",
+            "qualified_name": "examples.blocks.ExtendedBlock",
+            "relative_type_name": "ExtendedBlockBlock",
+            "type": "block"
+        },
+        {
+            "class_name": "IniGroupAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "IniGroup",
+            "namespace_name": "yima",
+            "qualified_name": "yima.IniGroup",
+            "relative_type_name": "IniGroupAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ScopeAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "Scope",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Scope",
+            "relative_type_name": "ScopeAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "StorageAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "Storage",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Storage",
+            "relative_type_name": "StorageAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "WindowAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "Window",
+            "namespace_name": "yima",
+            "qualified_name": "yima.Window",
+            "relative_type_name": "WindowAnnotation",
+            "type": "annotation_decl"
+        }
+    ],
+    "by_type": {
+        "annotation_decl": [
+            {
+                "class_name": "BlockAnnotationAnnotation",
+                "file_path": ".\\examples\\03_blocks.mota",
+                "name": "BlockAnnotation",
+                "namespace_name": "examples.blocks",
+                "qualified_name": "examples.blocks.BlockAnnotation",
+                "relative_type_name": "BlockAnnotationAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "BlockValueAnnotationAnnotation",
+                "file_path": ".\\examples\\03_blocks.mota",
+                "name": "BlockValueAnnotation",
+                "namespace_name": "examples.blocks",
+                "qualified_name": "examples.blocks.BlockValueAnnotation",
+                "relative_type_name": "BlockValueAnnotationAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "IniGroupAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "IniGroup",
+                "namespace_name": "yima",
+                "qualified_name": "yima.IniGroup",
+                "relative_type_name": "IniGroupAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ScopeAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "Scope",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Scope",
+                "relative_type_name": "ScopeAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "StorageAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "Storage",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Storage",
+                "relative_type_name": "StorageAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "WindowAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "Window",
+                "namespace_name": "yima",
+                "qualified_name": "yima.Window",
+                "relative_type_name": "WindowAnnotation",
+                "type": "annotation_decl"
+            }
+        ],
+        "block": [
+            {
+                "class_name": "AllTypesBlockBlock",
+                "file_path": ".\\examples\\03_blocks.mota",
+                "name": "AllTypesBlock",
+                "namespace_name": "examples.blocks",
+                "qualified_name": "examples.blocks.AllTypesBlock",
+                "relative_type_name": "AllTypesBlockBlock",
+                "type": "block"
+            },
+            {
+                "class_name": "AnnotatedBlockBlock",
+                "file_path": ".\\examples\\03_blocks.mota",
+                "name": "AnnotatedBlock",
+                "namespace_name": "examples.blocks",
+                "qualified_name": "examples.blocks.AnnotatedBlock",
+                "relative_type_name": "AnnotatedBlockBlock",
+                "type": "block"
+            },
+            {
+                "class_name": "BaseBlockBlock",
+                "file_path": ".\\examples\\03_blocks.mota",
+                "name": "BaseBlock",
+                "namespace_name": "examples.blocks",
+                "qualified_name": "examples.blocks.BaseBlock",
+                "relative_type_name": "BaseBlockBlock",
+                "type": "block"
+            },
+            {
+                "class_name": "ContainerBlockBlock",
+                "file_path": ".\\examples\\03_blocks.mota",
+                "name": "ContainerBlock",
+                "namespace_name": "examples.blocks",
+                "qualified_name": "examples.blocks.ContainerBlock",
+                "relative_type_name": "ContainerBlockBlock",
+                "type": "block"
+            },
+            {
+                "class_name": "ExtendedBlockBlock",
+                "file_path": ".\\examples\\03_blocks.mota",
+                "name": "ExtendedBlock",
+                "namespace_name": "examples.blocks",
+                "qualified_name": "examples.blocks.ExtendedBlock",
+                "relative_type_name": "ExtendedBlockBlock",
+                "type": "block"
+            }
+        ],
+        "enum": [
+            {
+                "class_name": "BlockStatus",
+                "file_path": ".\\examples\\03_blocks.mota",
+                "name": "BlockStatus",
+                "namespace_name": "examples.blocks",
+                "qualified_name": "examples.blocks.BlockStatus",
+                "relative_type_name": "BlockStatus",
+                "type": "enum"
+            },
+            {
+                "class_name": "BlockType",
+                "file_path": ".\\examples\\03_blocks.mota",
+                "name": "BlockType",
+                "namespace_name": "examples.blocks",
+                "qualified_name": "examples.blocks.BlockType",
+                "relative_type_name": "BlockType",
+                "type": "enum"
+            }
+        ],
+        "struct": []
+    },
+    "count": 13
+}}

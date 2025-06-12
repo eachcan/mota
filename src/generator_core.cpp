@@ -44,7 +44,7 @@ bool Generator::initialize(const std::string& templateDir, const std::string& co
     }
     
     // 创建模板引擎
-    templateEngine_ = std::make_unique<template_engine::TemplateEngine>(templateConfig_, templateDir);
+    templateEngine_ = std::make_shared<template_engine::TemplateEngine>(templateConfig_, templateDir);
     
     // 设置模板引擎的Generator引用
     templateEngine_->setGenerator(this);
@@ -53,16 +53,19 @@ bool Generator::initialize(const std::string& templateDir, const std::string& co
     return true;
 }
 
-std::string Generator::generateCode(const std::unique_ptr<ast::Document>& document, const std::string& templateName) {
+std::string Generator::generateCode(const std::shared_ptr<ast::Document>& document, const std::string& templateName) {
     if (!initialized_) {
         std::cerr << "Generator not initialized" << std::endl;
         return "";
     }
+    
+    std::cout << "[DEBUG] 开始构建模板变量..." << std::endl;
         
     // 构建模板变量
     TemplateVars vars;
     try {
         vars = buildTemplateVars(document);
+        std::cout << "[DEBUG] 模板变量构建完成" << std::endl;
     } catch (const std::exception& e) {
         std::cerr << "Generator: Exception in buildTemplateVars: " << e.what() << std::endl;
         return "";
@@ -71,9 +74,12 @@ std::string Generator::generateCode(const std::unique_ptr<ast::Document>& docume
         return "";
     }
     
+    std::cout << "[DEBUG] 开始渲染模板: " << templateName << std::endl;
+    
     // 使用模板引擎渲染
     try {
         std::string result = templateEngine_->renderTemplate(templateName, vars);
+        std::cout << "[DEBUG] 模板渲染完成，结果长度: " << result.length() << std::endl;
         return result;
     } catch (const std::exception& e) {
         std::cerr << "Generator: Exception in renderTemplate: " << e.what() << std::endl;
@@ -86,7 +92,7 @@ std::string Generator::generateCode(const std::unique_ptr<ast::Document>& docume
 
 
 
-TemplateVars Generator::buildTemplateVars(const std::unique_ptr<ast::Document>& document) {
+TemplateVars Generator::buildTemplateVars(const std::shared_ptr<ast::Document>& document) {
     TemplateVars vars;
     
     // 设置当前命名空间
@@ -111,7 +117,7 @@ TemplateVars Generator::buildTemplateVars(const std::unique_ptr<ast::Document>& 
     return vars;
 }
 
-std::string Generator::extractNamespace(const std::unique_ptr<ast::Document>& document) {
+std::string Generator::extractNamespace(const std::shared_ptr<ast::Document>& document) {
     // 从document中提取namespace
     if (document->hasNamespace()) {
         std::string namespaceStr = "";
@@ -142,7 +148,7 @@ std::string Generator::getCurrentTime() {
 }
 
 // 数据构建方法实现
-nlohmann::json Generator::buildNamespaceData(const std::unique_ptr<ast::Document>& document) {
+nlohmann::json Generator::buildNamespaceData(const std::shared_ptr<ast::Document>& document) {
     nlohmann::json namespaceData;
     
     if (document->hasNamespace()) {
@@ -203,7 +209,7 @@ nlohmann::json Generator::buildNamespaceData(const std::unique_ptr<ast::Document
     return namespaceData;
 }
 
-nlohmann::json Generator::buildIncludesData(const std::unique_ptr<ast::Document>& document) {
+nlohmann::json Generator::buildIncludesData(const std::shared_ptr<ast::Document>& document) {
     nlohmann::json includesData;
     nlohmann::json filesArray = nlohmann::json::array();
     
@@ -237,7 +243,7 @@ nlohmann::json Generator::buildIncludesData(const std::unique_ptr<ast::Document>
     return includesData;
 }
 
-nlohmann::json Generator::buildDeclarationsData(const std::unique_ptr<ast::Document>& document) {
+nlohmann::json Generator::buildDeclarationsData(const std::shared_ptr<ast::Document>& document) {
     nlohmann::json declarationsArray = nlohmann::json::array();
     
     for (const auto& declaration : document->declarations) {
@@ -250,7 +256,7 @@ nlohmann::json Generator::buildDeclarationsData(const std::unique_ptr<ast::Docum
     return declarationsArray;
 }
 
-nlohmann::json Generator::buildDeclarationData(const std::unique_ptr<ast::Node>& declaration) {
+nlohmann::json Generator::buildDeclarationData(const std::shared_ptr<ast::Node>& declaration) {
     switch (declaration->nodeType()) {
         case ast::NodeType::AnnotationDecl: {
             auto annotationDecl = static_cast<const ast::AnnotationDecl*>(declaration.get());
@@ -498,7 +504,7 @@ nlohmann::json Generator::buildDeclarationData(const std::unique_ptr<ast::Node>&
     }
 }
 
-nlohmann::json Generator::buildAnnotationData(const std::unique_ptr<ast::Annotation>& annotation) {
+nlohmann::json Generator::buildAnnotationData(const std::shared_ptr<ast::Annotation>& annotation) {
     // 获取当前命名空间信息
     std::string currentNamespace = currentNamespace_;
     std::string namespaceClassPrefix = currentNamespace.empty() ? "" : currentNamespace + "::";
@@ -541,40 +547,36 @@ nlohmann::json Generator::buildAnnotationData(const std::unique_ptr<ast::Annotat
         {"arguments", nlohmann::json::array()}
     };
     
-    // 构建参数数据 - 使用类型化的构建方法
+    // 构建参数数据 - 使用字段信息
     if (declarationRegistry_) {
         auto it = declarationRegistry_->find(fullName);
         if (it != declarationRegistry_->end()) {
             const auto& declInfo = it->second;
-            if (declInfo.node && declInfo.node->nodeType() == ast::NodeType::AnnotationDecl) {
-                const auto* annotationDecl = static_cast<const ast::AnnotationDecl*>(declInfo.node);
-                
+            if (declInfo.type == "annotation_decl") {
                 // 为每个参数构建类型化的数据
                 for (const auto& argument : annotation->arguments) {
                     // 查找对应的字段定义
-                    const ast::Field* fieldDef = nullptr;
-                    for (const auto& field : annotationDecl->fields) {
-                        if (field->name == argument->name) {
-                            fieldDef = field.get();
+                    const processor::DeclarationInfo::FieldInfo* fieldDef = nullptr;
+                    for (const auto& field : declInfo.fields) {
+                        if (field.name == argument->name) {
+                            fieldDef = &field;
                             break;
                         }
                     }
                     
                     if (fieldDef) {
-                        // 使用类型化的表达式构建
-                        nlohmann::json valueData = buildTypedExprData(argument->value, fieldDef->type);
+                        // 使用简化的表达式构建
+                        nlohmann::json valueData = buildExprData(argument->value);
                         
-                        // 构建字段的类型信息
-                        nlohmann::json fieldTypeInfo = buildTypeData(fieldDef->type);
-                        std::string argTypeName = fieldTypeInfo["type_name"];
-                        std::string argFullTypeName = fieldTypeInfo["qualified_type_name"];
+                        std::string argTypeName = fieldDef->type_name;
+                        std::string argFullTypeName = argTypeName;
                         
                         // 如果全限定类型名不包含命名空间，且不是内置类型，则补充当前命名空间
                         if (!isBuiltinType(argTypeName) && argFullTypeName.find('.') == std::string::npos && !currentNamespace_.empty()) {
                             argFullTypeName = currentNamespace_ + "." + argFullTypeName;
                         }
                         
-                        std::string argContainerType = fieldTypeInfo["container_type"];
+                        std::string argContainerType = fieldDef->container_type;
                         
                         // 获取映射类型
                         std::string argMappedTypeName = mapType(argTypeName);
@@ -619,7 +621,7 @@ nlohmann::json Generator::buildAnnotationData(const std::unique_ptr<ast::Annotat
     return data;
 }
 
-nlohmann::json Generator::buildFieldData(const std::unique_ptr<ast::Field>& field) {
+nlohmann::json Generator::buildFieldData(const std::shared_ptr<ast::Field>& field) {
     nlohmann::json typeInfo = buildTypeData(field->type);
     
     // 获取类型的完整信息
@@ -680,7 +682,7 @@ nlohmann::json Generator::buildFieldData(const std::unique_ptr<ast::Field>& fiel
     return data;
 }
 
-nlohmann::json Generator::buildEnumValueData(const std::unique_ptr<ast::EnumValue>& enumValue) {
+nlohmann::json Generator::buildEnumValueData(const std::shared_ptr<ast::EnumValue>& enumValue) {
     nlohmann::json data = {
         {"name", enumValue->name},
         {"field_name", enumValue->name},  // 可以通过配置转换
@@ -700,7 +702,7 @@ nlohmann::json Generator::buildEnumValueData(const std::unique_ptr<ast::EnumValu
     return data;
 }
 
-nlohmann::json Generator::buildExprData(const std::unique_ptr<ast::Expr>& expr) {
+nlohmann::json Generator::buildExprData(const std::shared_ptr<ast::Expr>& expr) {
     if (!expr) {
         return nlohmann::json();
     }
@@ -785,40 +787,36 @@ nlohmann::json Generator::buildAnnotationValueData(const ast::Annotation* annota
         {"arguments", nlohmann::json::array()}
     };
     
-    // 构建参数数据 - 需要从注解声明中获取类型信息
+    // 构建参数数据 - 使用字段信息
     if (declarationRegistry_) {
         auto it = declarationRegistry_->find(fullName);
         if (it != declarationRegistry_->end()) {
             const auto& declInfo = it->second;
-            if (declInfo.node && declInfo.node->nodeType() == ast::NodeType::AnnotationDecl) {
-                const auto* annotationDecl = static_cast<const ast::AnnotationDecl*>(declInfo.node);
-                
+            if (declInfo.type == "annotation_decl") {
                 // 为每个参数构建类型化的数据
                 for (const auto& argument : annotation->arguments) {
                     // 查找对应的字段定义
-                    const ast::Field* fieldDef = nullptr;
-                    for (const auto& field : annotationDecl->fields) {
-                        if (field->name == argument->name) {
-                            fieldDef = field.get();
+                    const processor::DeclarationInfo::FieldInfo* fieldDef = nullptr;
+                    for (const auto& field : declInfo.fields) {
+                        if (field.name == argument->name) {
+                            fieldDef = &field;
                             break;
                         }
                     }
                     
                     if (fieldDef) {
-                        // 使用类型化的表达式构建
-                        nlohmann::json valueData = buildTypedExprData(argument->value, fieldDef->type);
+                        // 使用简化的表达式构建
+                        nlohmann::json valueData = buildExprData(argument->value);
                         
-                        // 构建字段的类型信息
-                        nlohmann::json fieldTypeInfo = buildTypeData(fieldDef->type);
-                        std::string argTypeName = fieldTypeInfo["type_name"];
-                        std::string argFullTypeName = fieldTypeInfo["qualified_type_name"];
+                        std::string argTypeName = fieldDef->type_name;
+                        std::string argFullTypeName = argTypeName;
                         
                         // 如果全限定类型名不包含命名空间，且不是内置类型，则补充当前命名空间
                         if (!isBuiltinType(argTypeName) && argFullTypeName.find('.') == std::string::npos && !currentNamespace_.empty()) {
                             argFullTypeName = currentNamespace_ + "." + argFullTypeName;
                         }
                         
-                        std::string argContainerType = fieldTypeInfo["container_type"];
+                        std::string argContainerType = fieldDef->container_type;
                         
                         // 获取映射类型
                         std::string argMappedTypeName = mapType(argTypeName);
@@ -863,7 +861,7 @@ nlohmann::json Generator::buildAnnotationValueData(const ast::Annotation* annota
     return data;
 }
 
-nlohmann::json Generator::buildTypedExprData(const std::unique_ptr<ast::Expr>& expr, const std::unique_ptr<ast::Type>& expectedType) {
+nlohmann::json Generator::buildTypedExprData(const std::shared_ptr<ast::Expr>& expr, const std::shared_ptr<ast::Type>& expectedType) {
     if (!expr) {
         return nlohmann::json();
     }
@@ -890,7 +888,7 @@ nlohmann::json Generator::buildTypedExprData(const std::unique_ptr<ast::Expr>& e
             nlohmann::json arrayData = nlohmann::json::array();
             
             // 如果期望类型是数组，获取元素类型
-            std::unique_ptr<ast::Type> elementType = nullptr;
+            std::shared_ptr<ast::Type> elementType = nullptr;
             if (expectedType && expectedType->nodeType() == ast::NodeType::ContainerType) {
                 const auto* containerType = static_cast<const ast::ContainerType*>(expectedType.get());
                 if (containerType->kind == ast::ContainerType::Kind::Array) {
@@ -922,7 +920,7 @@ nlohmann::json Generator::buildTypedExprData(const std::unique_ptr<ast::Expr>& e
     return nlohmann::json();
 }
 
-nlohmann::json Generator::buildTypeData(const std::unique_ptr<ast::Type>& type) {
+nlohmann::json Generator::buildTypeData(const std::shared_ptr<ast::Type>& type) {
     nlohmann::json data;
     
     switch (type->nodeType()) {
@@ -1113,9 +1111,9 @@ std::string Generator::escapeString(const std::string& str) {
 }
 
 void Generator::setDeclarationRegistry(const processor::DeclarationRegistry& registry) {
-    // 存储指针，避免复制大数据结构
-    static processor::DeclarationRegistry staticRegistry = registry;
-    declarationRegistry_ = &staticRegistry;
+    // 复制声明注册表以确保数据有效性
+    declarationRegistryStorage_ = registry;
+    declarationRegistry_ = &declarationRegistryStorage_;
 }
 
 void Generator::setCurrentNamespace(const std::string& currentNamespace) {

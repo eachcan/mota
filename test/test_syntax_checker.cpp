@@ -10,7 +10,7 @@ using namespace mota;
 
 class SyntaxCheckerTest : public ::testing::Test {
 protected:
-    std::unique_ptr<ast::Document> parse(const std::string& source) {
+    std::shared_ptr<ast::Document> parse(const std::string& source) {
         lexer::Lexer lexer(source);
         parser::Parser parser(lexer);
         return parser.parse();

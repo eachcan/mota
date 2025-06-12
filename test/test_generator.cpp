@@ -41,21 +41,21 @@ protected:
             templateDir_ = "template/yima-cpp"; // 默认路径
         }
         
-        generator_ = std::make_unique<generator::Generator>();
+        generator_ = std::make_shared<generator::Generator>();
         
         // 初始化生成器
         bool success = generator_->initialize(templateDir_);
         ASSERT_TRUE(success) << "Failed to initialize generator with template directory: " << templateDir_;
     }
     
-    std::unique_ptr<ast::Document> parse(const std::string& source) {
+    std::shared_ptr<ast::Document> parse(const std::string& source) {
         lexer::Lexer lexer(source);
         parser::Parser parser(lexer);
         return parser.parse();
     }
     
     std::string templateDir_;
-    std::unique_ptr<generator::Generator> generator_;
+    std::shared_ptr<generator::Generator> generator_;
 };
 
 TEST_F(GeneratorTest, GenerateSimpleStruct) {

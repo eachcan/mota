@@ -1,0 +1,65 @@
+// 枚举语法完整示例
+namespace examples.enums;
+
+include "yima.mota";
+
+// === 枚举定义 ===
+@examples.annotations.ValueOnly("simple_enum")
+enum SimpleEnum {
+    @examples.annotations.BaseAnnotation(description = "第一个值")
+    VALUE1;
+    @examples.annotations.BaseAnnotation(description = "第二个值")
+    VALUE2;
+    @examples.annotations.BaseAnnotation(description = "第三个值")
+    VALUE3;
+}
+
+@examples.annotations.ExtendedAnnotation(
+    description = "优先级枚举",
+    required = true,
+    range = @examples.annotations.ValueAnnotation(min = 1, max = 10)
+)
+enum ValueEnum {
+    @examples.annotations.BaseAnnotation(description = "低优先级")
+    LOW = 1;
+    @examples.annotations.BaseAnnotation(description = "中优先级")
+    MEDIUM = 2;
+    @examples.annotations.BaseAnnotation(description = "高优先级")
+    HIGH = 3;
+}
+
+// === 枚举在block中使用 ===
+block EnumBlock {
+    SimpleEnum simpleField = VALUE1;
+    ValueEnum valueField = MEDIUM;
+    
+    // 容器类型
+    repeated SimpleEnum simpleArray;
+    repeated ValueEnum valueArray = [LOW, HIGH];
+    
+    optional SimpleEnum optionalSimple;
+    optional ValueEnum optionalValue = HIGH;
+    
+    map SimpleEnum simpleMap;
+    map ValueEnum valueMap;
+}
+
+// === 枚举在struct中使用 ===
+struct EnumStruct {
+    SimpleEnum simpleField = VALUE2;
+    ValueEnum valueField = LOW;
+    
+    repeated SimpleEnum simpleArray = [VALUE1, VALUE3];
+    repeated ValueEnum valueArray;
+    
+    optional SimpleEnum optionalSimple = VALUE1;
+    optional ValueEnum optionalValue;
+    
+    map SimpleEnum simpleMap;
+    map ValueEnum valueMap;
+    
+    // 包含枚举的block
+    EnumBlock blockField;
+    repeated EnumBlock blockArray;
+    optional EnumBlock optionalBlock;
+} 
