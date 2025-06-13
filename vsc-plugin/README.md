@@ -52,6 +52,7 @@
 - **内置变量**：
   - `CURRENT_TIME` - 当前时间
   - `SOURCE_FILE` - 源文件路径
+  - `MOTA_VERSION` - MOTA编译器版本号
   - `NAMESPACE` - 命名空间信息
   - `INCLUDES` - 包含文件信息
   - `DECLARATIONS` - 声明列表
@@ -155,7 +156,7 @@ namespace <%=NAMESPACE.path%> {
 <%endif%>
 
 <%foreach DECLARATIONS as declaration%>
-    <%if (declaration.type == "struct")%>
+    <%if (declaration.super_type == "struct")%>
         class <%=declaration.name%>Model : public IModel {
             // 结构体实现
         };

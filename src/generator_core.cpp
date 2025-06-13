@@ -1,5 +1,6 @@
 #include "generator.h"
 #include "file_processor.h"
+#include "version.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -112,6 +113,7 @@ TemplateVars Generator::buildTemplateVars(const std::shared_ptr<ast::Document>& 
     // 基本信息
     vars["CURRENT_TIME"] = getCurrentTime();
     vars["SOURCE_FILE"] = document->location.filename;
+    vars["MOTA_VERSION"] = MOTA_VERSION;
     
     // 构建命名空间信息
     vars["NAMESPACE"] = buildNamespaceData(document);
@@ -307,7 +309,7 @@ nlohmann::json Generator::buildDeclarationData(const std::shared_ptr<ast::Node>&
             }
             
             nlohmann::json data = {
-                {"type", "annotation_decl"},
+                {"super_type", "annotation_decl"},
                 {"name", annotationDecl->name},
                 {"class_name", classPrefix + annotationDecl->name + classSuffix},
                 {"full_name", currentNamespace.empty() ? annotationDecl->name : currentNamespace + "." + annotationDecl->name},
@@ -373,7 +375,7 @@ nlohmann::json Generator::buildDeclarationData(const std::shared_ptr<ast::Node>&
             }
             
             nlohmann::json data = {
-                {"type", "struct"},
+                {"super_type", "struct"},
                 {"name", structDecl->name},
                 {"class_name", classPrefix + structDecl->name + classSuffix},
                 {"full_name", currentNamespace.empty() ? structDecl->name : currentNamespace + "." + structDecl->name},
@@ -384,13 +386,12 @@ nlohmann::json Generator::buildDeclarationData(const std::shared_ptr<ast::Node>&
                 {"parent_full_class_name", parentFullClassName},
                 {"namespace", currentNamespace},
                 {"namespace_class_prefix", namespaceClassPrefix},
-                {"parent", structDecl->baseName},  // 保持向后兼容
-                {"annotations", nlohmann::json::array()},
-                {"fields", nlohmann::json::array()},
-                {"relative_name", (currentNamespace == currentNamespace ? structDecl->name : (currentNamespace.empty() ? structDecl->name : currentNamespace + "." + structDecl->name))},
-                {"relative_class_name", (currentNamespace == currentNamespace ? classPrefix + structDecl->name + classSuffix : namespaceClassPrefix + classPrefix + structDecl->name + classSuffix)},
+                {"relative_name", structDecl->name},
+                {"relative_class_name", classPrefix + structDecl->name + classSuffix},
                 {"parent_relative_name", (parentName.empty() ? "" : (currentNamespace == currentNamespace ? parentName : parentFullName))},
-                {"parent_relative_class_name", (parentName.empty() ? "" : (currentNamespace == currentNamespace ? parentClassName : parentFullClassName))}
+                {"parent_relative_class_name", (parentName.empty() ? "" : (currentNamespace == currentNamespace ? parentClassName : parentFullClassName))},
+                {"annotations", nlohmann::json::array()},
+                {"fields", nlohmann::json::array()}
             };
             
             // 构建注解数据
@@ -444,7 +445,7 @@ nlohmann::json Generator::buildDeclarationData(const std::shared_ptr<ast::Node>&
             }
             
             nlohmann::json data = {
-                {"type", "block"},
+                {"super_type", "block"},
                 {"name", blockDecl->name},
                 {"class_name", classPrefix + blockDecl->name + classSuffix},
                 {"full_name", currentNamespace.empty() ? blockDecl->name : currentNamespace + "." + blockDecl->name},
@@ -493,7 +494,7 @@ nlohmann::json Generator::buildDeclarationData(const std::shared_ptr<ast::Node>&
             std::string classSuffix = templateConfig_.declaration_types.enum_decl.suffix;
             
             nlohmann::json data = {
-                {"type", "enum"},
+                {"super_type", "enum"},
                 {"name", enumDecl->name},
                 {"class_name", classPrefix + enumDecl->name + classSuffix},
                 {"full_name", currentNamespace.empty() ? enumDecl->name : currentNamespace + "." + enumDecl->name},
@@ -566,11 +567,11 @@ nlohmann::json Generator::buildAnnotationData(const std::shared_ptr<ast::Annotat
     }
     
     nlohmann::json data = {
+        {"super_type", "annotation"},
         {"name", annotationName},
         {"class_name", classPrefix + annotationName + classSuffix},
         {"full_name", fullName},
         {"full_class_name", fullClassName},
-        {"type", "annotation"},
         {"namespace", currentNamespace},
         {"arguments", nlohmann::json::array()},
         {"relative_name", (currentNamespace == currentNamespace ? annotationName : (currentNamespace.empty() ? annotationName : currentNamespace + "." + annotationName))},
@@ -632,6 +633,17 @@ nlohmann::json Generator::buildAnnotationData(const std::shared_ptr<ast::Annotat
                             {"relative_type_name", (currentNamespace_ == argNamespaceName ? argTypeName : argFullTypeName)},
                             {"relative_mapped_type_name", (currentNamespace_ == argNamespaceName ? argMappedTypeName : argFullMappedTypeName)}
                         };
+                        
+                        // 添加super_type字段，表示type_name的超类型
+                        std::string argTypeSuperType = "builtin";
+                        if (!isBuiltinType(argTypeName) && declarationRegistry_) {
+                            auto argTypeIt = declarationRegistry_->find(argFullTypeName);
+                            if (argTypeIt != declarationRegistry_->end()) {
+                                argTypeSuperType = argTypeIt->second.type;
+                            }
+                        }
+                        argData["super_type"] = argTypeSuperType;
+                        
                         data["arguments"].push_back(argData);
                     }
                 }
@@ -668,6 +680,7 @@ nlohmann::json Generator::buildFieldData(const std::shared_ptr<ast::Field>& fiel
         }
     }
     nlohmann::json data = {
+        {"super_type", "field"},
         {"name", field->name},
         {"field_name", field->name},
         {"container_type", typeInfo["container_type"]},
@@ -679,6 +692,17 @@ nlohmann::json Generator::buildFieldData(const std::shared_ptr<ast::Field>& fiel
         {"relative_type_name", (currentNamespace_ == fieldNamespaceName ? typeName : fullTypeName)},
         {"relative_mapped_type_name", (currentNamespace_ == fieldNamespaceName ? mappedTypeName : fullMappedTypeName)}
     };
+    
+    // 添加super_type字段，表示type_name的超类型
+    std::string typeSuperType = "builtin";
+    if (!isBuiltinType(typeName) && declarationRegistry_) {
+        auto it = declarationRegistry_->find(fullTypeName);
+        if (it != declarationRegistry_->end()) {
+            typeSuperType = it->second.type;
+        }
+    }
+    data["super_type"] = typeSuperType;
+    
     if (field->defaultValue) {
         data["default_value"] = buildExprData(field->defaultValue);
     }
@@ -690,6 +714,7 @@ nlohmann::json Generator::buildFieldData(const std::shared_ptr<ast::Field>& fiel
 
 nlohmann::json Generator::buildEnumValueData(const std::shared_ptr<ast::EnumValue>& enumValue) {
     nlohmann::json data = {
+        {"super_type", "enum_value"},
         {"name", enumValue->name},
         {"field_name", enumValue->name},  // 可以通过配置转换
         {"annotations", nlohmann::json::array()}
@@ -791,11 +816,11 @@ nlohmann::json Generator::buildAnnotationValueData(const ast::Annotation* annota
     }
     
     nlohmann::json data = {
+        {"super_type", "annotation"},
         {"name", annotationName},
         {"class_name", className},
         {"full_name", fullName},
         {"full_class_name", fullClassName},
-        {"type", "annotation"},
         {"namespace", currentNamespace_},
         {"arguments", nlohmann::json::array()},
         {"relative_name", (currentNamespace_ == currentNamespace_ ? annotationName : (currentNamespace_.empty() ? annotationName : currentNamespace_ + "." + annotationName))},
@@ -857,6 +882,17 @@ nlohmann::json Generator::buildAnnotationValueData(const ast::Annotation* annota
                             {"relative_type_name", (currentNamespace_ == argNamespaceName ? argTypeName : argFullTypeName)},
                             {"relative_mapped_type_name", (currentNamespace_ == argNamespaceName ? argMappedTypeName : argFullMappedTypeName)}
                         };
+                        
+                        // 添加super_type字段，表示type_name的超类型
+                        std::string argTypeSuperType = "builtin";
+                        if (!isBuiltinType(argTypeName) && declarationRegistry_) {
+                            auto argTypeIt = declarationRegistry_->find(argFullTypeName);
+                            if (argTypeIt != declarationRegistry_->end()) {
+                                argTypeSuperType = argTypeIt->second.type;
+                            }
+                        }
+                        argData["super_type"] = argTypeSuperType;
+                        
                         data["arguments"].push_back(argData);
                     }
                 }

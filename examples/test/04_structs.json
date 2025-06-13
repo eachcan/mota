@@ -1376,8 +1376,9 @@
         }
     ]
 },
-    "CURRENT_TIME": "2025-06-13 16:48:20",
+    "CURRENT_TIME": "2025-06-13 21:49:10",
     "SOURCE_FILE": "",
+    "MOTA_VERSION": "0.2.0",
     "NAMESPACE": {
     "as_class_prefix": "examples::structs::",
     "exists": true,

@@ -15,6 +15,7 @@ TemplateVars (Root)
 ├── CURRENT_TIME: string
 ├── SOURCE_FILE: string
 ├── FILE_NAME: string
+├── MOTA_VERSION: string
 ├── NAMESPACE: NamespaceInfo
 ├── INCLUDES: IncludesInfo
 └── DECLARATIONS: Declaration[]
@@ -37,6 +38,12 @@ TemplateVars (Root)
 - **描述**: 不带扩展名的文件名
 - **示例**: `"simple"`
 - **用法**: `<%=FILE_NAME%>`
+
+#### MOTA_VERSION
+- **类型**: `string`
+- **描述**: MOTA编译器的版本号
+- **示例**: `"0.2.0"`
+- **用法**: `<%=MOTA_VERSION%>`
 
 ### NAMESPACE 对象
 

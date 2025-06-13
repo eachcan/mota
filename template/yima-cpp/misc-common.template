@@ -80,27 +80,27 @@ QVariant::fromValue(<%=VALUE%>)
 <%endmisc%>
 
 <%misc type_suffix%>
-<%if (declaration.type == "block")%>
+<%if (declaration.super_type == "block")%>
 Block
 <%endif%>
-<%if (declaration.type == "struct")%>
+<%if (declaration.super_type == "struct")%>
 Model
 <%endif%>
-<%if (declaration.type == "enum")%>
+<%if (declaration.super_type == "enum")%>
 <%endif%>
-<%if (declaration.type == "annotation")%>
+<%if (declaration.super_type == "annotation")%>
 Annotation
 <%endif%>
 <%endmisc%>
 
 <%misc interface_name%>
-<%if (declaration.type == "block")%>
+<%if (declaration.super_type == "block")%>
 IBlock
 <%endif%>
-<%if (declaration.type == "struct")%>
+<%if (declaration.super_type == "struct")%>
 IModel
 <%endif%>
-<%if (declaration.type == "annotation_decl")%>
+<%if (declaration.super_type == "annotation_decl")%>
 IAnnotation
 <%endif%>
 <%endmisc%>

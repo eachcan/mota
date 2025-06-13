@@ -90,7 +90,7 @@
   },
   "Declaration Type Check": {
     "prefix": "decltype",
-    "body": "<%if (declaration.type == \"${1:struct|block|enum|annotation_decl}\")%>$0<%endif%>",
+    		"body": "<%if (declaration.super_type == \"${1:struct|block|enum|annotation_decl}\")%>$0<%endif%>",
     "description": "检查声明类型"
   },
   "Pascal Case": {

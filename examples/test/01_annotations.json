@@ -533,8 +533,9 @@
         }
     ]
 },
-    "CURRENT_TIME": "2025-06-13 17:45:14",
+    "CURRENT_TIME": "2025-06-13 21:49:10",
     "SOURCE_FILE": "",
+    "MOTA_VERSION": "0.2.0",
     "NAMESPACE": {
     "as_class_prefix": "examples::annotations::",
     "exists": true,

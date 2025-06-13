@@ -1,6 +1,7 @@
 #pragma once
 
 // 此文件由 Mota 代码生成器自动生成
+// Mota 版本: <%=MOTA_VERSION%>
 // 生成时间: <%=CURRENT_TIME%>
 // 源文件: <%=SOURCE_FILE%>
 
@@ -33,16 +34,16 @@ namespace <%=part.name%> {
 <%endif%>
 
 <%foreach DECLARATIONS as declaration%>
-    <%if (declaration.type == "annotation_decl")%>
+    <%if (declaration.super_type == "annotation_decl")%>
         <%call annotation_decl%>
     <%endif%>
-    <%if (declaration.type == "enum")%>
+    <%if (declaration.super_type == "enum")%>
         <%call enum%>
     <%endif%>
-    <%if (declaration.type == "struct")%>
+    <%if (declaration.super_type == "struct")%>
         <%call struct%>
     <%endif%>
-    <%if (declaration.type == "block")%>
+    <%if (declaration.super_type == "block")%>
         <%call block%>
     <%endif%>
 <%endforeach%>

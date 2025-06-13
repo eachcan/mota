@@ -34,8 +34,8 @@ namespace <%=NAMESPACE.path%> {
 <%endmisc%>
 
 <%misc type_suffix%>
-    <%if (declaration.type == "struct")%>Model<%endif%>
-    <%if (declaration.type == "block")%>Block<%endif%>
+    <%if (declaration.super_type == "struct")%>Model<%endif%>
+<%if (declaration.super_type == "block")%>Block<%endif%>
 <%endmisc%>
 
 <%misc inheritance_declaration%>
@@ -60,14 +60,14 @@ namespace <%=NAMESPACE.path%> {
 <%endmisc%>
 
 <%foreach DECLARATIONS as declaration%>
-    <%if (declaration.type == "struct")%>
+    <%if (declaration.super_type == "struct")%>
         // 生成Struct: <%=declaration.name%>
         <%call class_declaration%>
-    <%elseif (declaration.type == "block")%>
+    <%elseif (declaration.super_type == "block")%>
         // 生成Block: <%=declaration.name%>
         <%call class_declaration%>
     <%else%>
-        // 其他类型: <%=declaration.type%>
+        // 其他类型: <%=declaration.super_type%>
     <%endif%>
 <%endforeach%>
 

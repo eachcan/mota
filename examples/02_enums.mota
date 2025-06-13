@@ -2,6 +2,7 @@
 namespace examples.enums;
 
 include "yima.mota";
+include "01_annotations.mota";
 
 // === 枚举定义 ===
 @examples.annotations.ValueOnly("simple_enum")

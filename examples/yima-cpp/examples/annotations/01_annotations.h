@@ -1,7 +1,8 @@
 #pragma once
 
 // 此文件由 Mota 代码生成器自动生成
-// 生成时间: 2025-06-13 21:30:24
+// Mota 版本: 0.2.0
+// 生成时间: 2025-06-13 21:41:40
 // 源文件: .\examples\01_annotations.mota
 
 #include <QCborMap>
