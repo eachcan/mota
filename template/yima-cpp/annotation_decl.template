@@ -1,0 +1,94 @@
+﻿
+<%misc annotation_decl%>
+// <%=declaration.name%>注解
+class MODEL_EXPORT <%=declaration.relative_class_name%> : <%if (declaration.parent)%>public <%=declaration.parent_relative_class_name%><%else%>public IAnnotation<%endif%> {
+public:
+    <%=declaration.relative_class_name%>() = default;
+    
+    // 实现IAnnotation接口
+    QString name() const override {
+        return QLatin1String("<%=declaration.relative_name%>");
+    }
+    
+    virtual QVariant argument(const QString& argumentName) const override {
+<%foreach declaration.fields as field%>
+        if (argumentName == QLatin1String("<%=field.name%>")) {
+            <%if (field.container_type == "array")%>
+            QVariantList list;
+            for (const auto& item : <%=field.name%>_) {
+                list.append(QVariant::fromValue(item));
+            }
+            return list;
+            <%else%>
+            return QVariant::fromValue(<%=field.name%>_);
+            <%endif%>
+        }
+<%endforeach%>
+<%if (declaration.parent)%>
+        return <%=declaration.parent_relative_class_name%>::argument(argumentName);
+<%else%>
+        return QVariant();
+<%endif%>
+    }
+    
+    virtual QStringList argumentNames() const override {
+        QStringList names = QStringList{<%foreach declaration.fields as field%>QLatin1String("<%=field.name%>")<%if (is_last == false)%>, <%endif%><%endforeach%>};
+        <%if (declaration.parent)%>
+        names.append(<%=declaration.parent_relative_class_name%>::argumentNames());
+        <%endif%>
+        return names;
+    }
+    
+    // 字段访问器
+<%foreach declaration.fields as field%>
+    <%if (field.container_type == "array")%>
+    QVector<<%=field.relative_mapped_type_name%>> get<%=pascal_case(field.name)%>() const {
+        return <%=field.name%>_; 
+    }
+    void set<%=pascal_case(field.name)%>(const QVector<<%=field.relative_mapped_type_name%>>& value) {
+        <%=field.name%>_ = value;
+    }
+    <%endif%>
+    <%if (field.container_type == "map")%>
+    QMap<QString, <%=field.relative_mapped_type_name%>> get<%=pascal_case(field.name)%>() const {
+        return <%=field.name%>_;
+    }
+    void set<%=pascal_case(field.name)%>(const QMap<QString, <%=field.relative_mapped_type_name%>>& value) {
+        <%=field.name%>_ = value;
+    }
+    <%endif%>
+    <%if (field.container_type == "optional")%>
+    std::optional<<%=field.relative_mapped_type_name%>> get<%=pascal_case(field.name)%>() const {
+        return <%=field.name%>_;
+    }
+    void set<%=pascal_case(field.name)%>(const std::optional<<%=field.relative_mapped_type_name%>>& value) {
+        <%=field.name%>_ = value;
+    }
+    <%endif%>
+    <%if (field.container_type == "none")%>
+    <%=field.relative_mapped_type_name%> get<%=pascal_case(field.name)%>() const {
+        return <%=field.name%>_;
+    }
+    void set<%=pascal_case(field.name)%>(const <%=field.relative_mapped_type_name%>& value) {
+        <%=field.name%>_ = value;
+    }
+    <%endif%>
+<%endforeach%>    
+private:
+<%foreach declaration.fields as field%>
+    <%if (field.container_type == "array")%>
+    QVector<<%=field.relative_mapped_type_name%>> <%=field.name%>_<%if (exists(field.default_value))%> = <%=field.default_value%><%endif%>;
+    <%endif%>
+    <%if (field.container_type == "map")%>
+    QMap<QString, <%=field.relative_mapped_type_name%>> <%=field.name%>_<%if (exists(field.default_value))%> = <%=field.default_value%><%endif%>;
+    <%endif%>
+    <%if (field.container_type == "optional")%>
+    std::optional<<%=field.relative_mapped_type_name%>> <%=field.name%>_<%if (exists(field.default_value))%> = <%=field.default_value%><%endif%>;
+    <%endif%>
+    <%if (field.container_type == "none")%>
+    <%=field.relative_mapped_type_name%> <%=field.name%>_<%if (exists(field.default_value))%> = <%=field.default_value%><%endif%>;
+    <%endif%>
+<%endforeach%>};
+Q_DECLARE_METATYPE(<%=declaration.relative_class_name%>)
+    
+<%endmisc%> 

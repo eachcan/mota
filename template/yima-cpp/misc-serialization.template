@@ -1,1 +1,90 @@
-<%misc empty_placeholder%><%endmisc%> 
+<%misc serialize_array%>
+        QCborArray __<%=field.name%>Array;
+        for (const auto& item : get<%=pascal_case(field.name)%>()) {
+<%if (is_base_type(field.type_name))%>
+            __<%=field.name%>Array.append(QCborValue(item));<%else%>
+            __<%=field.name%>Array.append(item.toCbor());
+<%endif%>
+        }
+        map.insert(QLatin1String("<%=field.name%>"), __<%=field.name%>Array);
+<%endmisc%>
+
+<%misc serialize_map%>
+        QCborMap __<%=field.name%>Map;
+        for (const auto& item : get<%=pascal_case(field.name)%>()) {<%if (is_base_type(field.type_name))%>
+            __<%=field.name%>Map.insert(QLatin1String(item.first), QCborValue(item.second));<%else%>
+            __<%=field.name%>Map.insert(QLatin1String(item.first), item.second.toCbor());<%endif%>
+        }
+        map.insert(QLatin1String("<%=field.name%>"), __<%=field.name%>Map);
+<%endmisc%>
+
+<%misc deserialize_array%>
+        QCborArray __<%=field.name%>Array = map.value(QLatin1String("<%=field.name%>")).toArray();
+        QVector<<%=map_type(field.type_name)%>> <%=field.name%>;
+        for (const auto& itemValue : __<%=field.name%>Array) {
+            <%=map_type(field.type_name)%> item;
+            item.fromCbor(itemValue.toMap());
+            <%=field.name%>.append(item);
+        }
+        set<%=pascal_case(field.name)%>(<%=field.name%>);
+<%endmisc%>
+
+<%misc deserialize_complex%>
+        <%=map_type(field.type_name)%> <%=field.name%>;
+        <%=field.name%>.fromCbor(map.value(QLatin1String("<%=field.name%>")));
+        set<%=pascal_case(field.name)%>(<%=field.name%>);
+<%endmisc%>
+
+<%misc serialize_fields%>
+<%foreach declaration.fields as field%>
+                <%if (field.container_type == "array")%>
+                        <%call serialize_array%>
+                <%endif%>
+                <%if (field.container_type == "map")%>
+                        <%call serialize_map%>
+                <%endif%>
+                <%if (field.container_type == "none")%>
+<%if (is_base_type(field.type_name))%>
+        map.insert(QLatin1String("<%=field.name%>"), QCborValue(get<%=pascal_case(field.name)%>()));
+<%else%>
+            map.insert(QLatin1String("<%=field.name%>"), get<%=pascal_case(field.name)%>().toCbor());
+<%endif%>
+                <%endif%>
+                <%if (field.container_type == "optional")%>
+                        <%if (is_base_type(field.type_name))%>
+        if (get<%=pascal_case(field.name)%>()) {
+            map.insert(QLatin1String("<%=field.name%>"), QCborValue(get<%=pascal_case(field.name)%>()));
+        }<%else%>
+        if (get<%=pascal_case(field.name)%>()) {
+            map.insert(QLatin1String("<%=field.name%>"), get<%=pascal_case(field.name)%>()->toCbor());
+        }<%endif%>
+                <%endif%>
+        <%endforeach%>
+<%endmisc%>
+
+<%misc deserialize_fields%>
+        QCborValue tmp;
+<%foreach declaration.fields as field%>
+        <%if (field.container_type == "array")%>
+                <%call deserialize_array%>
+        <%endif%>
+<%if (field.container_type == "map")%>
+        <%call deserialize_map%>
+<%endif%>
+<%if (field.container_type == "none")%>
+        tmp = map.value(QLatin1String("<%=field.name%>"));
+        if (!tmp.isNull() && !tmp.isUndefined() || !tmp.isInvalid()) {
+        <%if (is_base_type(field.type_name))%>
+<%if (field.type_name == "int8")%>
+            set<%=pascal_case(field.name)%>(tmp.toInteger());<%endif%><%if (field.type_name == "int16")%>            set<%=pascal_case(field.name)%>(tmp.toInteger());<%endif%><%if (field.type_name == "int32")%>            set<%=pascal_case(field.name)%>(tmp.toInteger());<%endif%><%if (field.type_name == "int64")%>            set<%=pascal_case(field.name)%>(tmp.toInteger());<%endif%><%if (field.type_name == "uint8")%>            set<%=pascal_case(field.name)%>(tmp.toInteger());<%endif%><%if (field.type_name == "uint16")%>            set<%=pascal_case(field.name)%>(tmp.toInteger());<%endif%><%if (field.type_name == "uint32")%>            set<%=pascal_case(field.name)%>(tmp.toInteger());<%endif%><%if (field.type_name == "uint64")%>            set<%=pascal_case(field.name)%>(tmp.toInteger());<%endif%><%if (field.type_name == "float32")%>            set<%=pascal_case(field.name)%>(tmp.toDouble());<%endif%><%if (field.type_name == "float64")%>            set<%=pascal_case(field.name)%>(tmp.toDouble());<%endif%><%if (field.type_name == "string")%>            set<%=pascal_case(field.name)%>(tmp.toString());<%endif%><%if (field.type_name == "bool")%>            set<%=pascal_case(field.name)%>(tmp.toBool());<%endif%><%if (field.type_name == "bytes")%>            set<%=pascal_case(field.name)%>(tmp.toByteArray());<%endif%><%else%>
+        set<%=pascal_case(field.name)%>(tmp.toMap());<%endif%>
+        }
+<%endif%><%if (field.container_type == "optional")%><%if (is_base_type(field.type_name))%>
+        if (get<%=pascal_case(field.name)%>()) {
+            map.insert(QLatin1String("<%=field.name%>"), QCborValue(get<%=pascal_case(field.name)%>()));
+        }<%else%>
+        if (get<%=pascal_case(field.name)%>()) {
+            map.insert(QLatin1String("<%=field.name%>"), get<%=pascal_case(field.name)%>()->toCbor());
+        }<%endif%>
+<%endif%><%endforeach%>
+<%endmisc%> 

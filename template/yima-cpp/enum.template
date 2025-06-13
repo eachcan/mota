@@ -1,0 +1,7 @@
+﻿<%misc enum%>
+    // <%=declaration.name%>枚举
+enum class <%=declaration.relative_class_name%> {
+<%foreach declaration.values as value%>    <%=value.name%><%if (value.value)%> = <%=value.value%><%endif%><%if (is_last == false)%>,<%endif%>
+<%endforeach%>};
+
+<%endmisc%>

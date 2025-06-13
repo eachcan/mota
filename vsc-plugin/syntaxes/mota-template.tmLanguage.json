@@ -210,7 +210,7 @@
       "patterns": [
         {
           "name": "meta.function-call.builtin.mota-template",
-          "begin": "\\b(pascal_case|camel_case|snake_case|escape_string|map_type|namespace_path|join|field_type_template|is_base_type|first_char_upper)\\s*\\(",
+          "begin": "\\b(pascal_case|camel_case|snake_case|escape_string|map_type|namespace_path|join|field_type_template|is_builtin_type|first_char_upper)\\s*\\(",
           "beginCaptures": {
             "1": { "name": "entity.name.function.builtin.mota-template" }
           },

@@ -1128,8 +1128,10 @@ nlohmann::json TemplateEngine::callBuiltinFunction(const std::string& funcName, 
             return toCamelCase(arg.get<std::string>());
         } else if (funcName == "map_type") {
             return mapType(arg.get<std::string>());
-        } else if (funcName == "is_base_type") {
+        } else if (funcName == "is_builtin_type") {
             return generator_->isBuiltinType(arg.get<std::string>());
+        } else if (funcName == "is_enum") {
+            return generator_->isEnumType(arg.get<std::string>());
         } else if (funcName == "escape_string") {
             return escapeString(arg.get<std::string>());
         } else if (funcName == "first_namespace_part") {

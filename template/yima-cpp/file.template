@@ -18,10 +18,10 @@
 #include "framework/IBlock.h"
 #include "framework/IModel.h"
 #include "framework/IAnnotation.h"
-<%if (INCLUDES.count > 0)%>   
+<%if (INCLUDES.count > 0)%>
     <%foreach INCLUDES.files as file%>
 #include "<%=file.translated%>"
-    <%endforeach%>  
+    <%endforeach%>
 <%endif%>
 
 using namespace ymf;
@@ -33,21 +33,22 @@ namespace <%=part.name%> {
 <%endif%>
 
 <%foreach DECLARATIONS as declaration%>
-<%if (declaration.type == "annotation_decl")%><%call annotation_decl%>
-
-<%endif%>
-<%if (declaration.type == "enum")%><%call enum%>
-
-<%endif%>
-<%if (declaration.type == "struct")%><%call struct%>
-
-<%endif%>
-<%if (declaration.type == "block")%><%call block%>
-
-<%endif%>
+    <%if (declaration.type == "annotation_decl")%>
+        <%call annotation_decl%>
+    <%endif%>
+    <%if (declaration.type == "enum")%>
+        <%call enum%>
+    <%endif%>
+    <%if (declaration.type == "struct")%>
+        <%call struct%>
+    <%endif%>
+    <%if (declaration.type == "block")%>
+        <%call block%>
+    <%endif%>
 <%endforeach%>
+
 <%if (NAMESPACE.exists)%>
-    <%foreach NAMESPACE.parts as part%>
+<%foreach NAMESPACE.parts as part%>
 } // namespace <%=part.name%>
-    <%endforeach%>
+<%endforeach%>
 <%endif%> 

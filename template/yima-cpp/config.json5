@@ -9,7 +9,10 @@
     "misc-namespace.template", 
     "misc-accessors.template",
     "misc-serialization.template",
-    "misc-declarations.template"
+    "annotation_decl.template",
+    "enum.template",
+    "struct.template",
+    "block.template"
   ],
   "type_mapping": {
     "int8": "int8_t",

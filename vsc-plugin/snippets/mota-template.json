@@ -100,7 +100,7 @@
   },
   "Is Base Type": {
     "prefix": "isbase",
-    "body": "<%if (is_base_type(${1:field.type_name}))%>$0<%endif%>",
+    "body": "<%if (is_builtin_type(${1:field.type_name}))%>$0<%endif%>",
     "description": "检查是否为基础类型"
   },
   "Map Type": {

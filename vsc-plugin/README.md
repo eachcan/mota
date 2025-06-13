@@ -59,7 +59,7 @@
 - **内置函数**：
   - `pascal_case()` - 转换为帕斯卡命名法
   - `map_type()` - 映射类型名称
-  - `is_base_type()` - 检查是否为基础类型
+  - `is_builtin_type()` - 检查是否为基础类型
   - `escape_string()` - 转义字符串
   - `join()` - 连接数组元素
 

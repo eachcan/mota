@@ -1046,6 +1046,35 @@ bool Generator::isBuiltinType(const std::string& type) {
     return std::find(builtinTypes.begin(), builtinTypes.end(), type) != builtinTypes.end();
 }
 
+bool Generator::isEnumType(const std::string& type) {
+    // 如果没有声明注册表，无法判断
+    if (!declarationRegistry_) {
+        return false;
+    }
+    
+    // 首先尝试完全限定名查找
+    auto it = declarationRegistry_->find(type);
+    if (it != declarationRegistry_->end()) {
+        return it->second.type == "enum";
+    }
+    
+    // 如果没找到，尝试在当前命名空间中查找简单名称
+    std::string qualifiedName = currentNamespace_.empty() ? type : currentNamespace_ + "." + type;
+    it = declarationRegistry_->find(qualifiedName);
+    if (it != declarationRegistry_->end()) {
+        return it->second.type == "enum";
+    }
+    
+    // 遍历注册表查找匹配的简单名称
+    for (const auto& [regQualifiedName, info] : *declarationRegistry_) {
+        if (info.name == type && info.type == "enum") {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
 bool Generator::isRepeatedType(const ast::Type& type) {
     // 检查是否为数组类型
     if (type.nodeType() == ast::NodeType::ContainerType) {

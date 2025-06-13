@@ -65,6 +65,7 @@ public:
     // 类型映射方法（模板引擎需要访问）
     std::string mapType(const std::string& motaType);
     bool isBuiltinType(const std::string& type);
+    bool isEnumType(const std::string& type);
 
 private:
     // 构建模板变量
