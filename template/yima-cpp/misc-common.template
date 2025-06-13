@@ -45,10 +45,7 @@
 
 <%misc interface_name%><%if (declaration.type == "block")%>IBlock<%endif%><%if (declaration.type == "struct")%>IModel<%endif%><%if (declaration.type == "annotation_decl")%>IAnnotation<%endif%><%endmisc%>
 
-<%misc inheritance_declaration%><%if (declaration.parent)%>public <%=declaration.parent_class_name%>, <%endif%>public <%call interface_name%><%endmisc%>
-<%misc inheritance_declaration_annotation%><%if (declaration.parent)%>public <%=declaration.parent_class_name%><%else%>public IAnnotation<%endif%><%endmisc%>
-<%misc inheritance_declaration_block%><%if (declaration.parent)%>public <%=declaration.parent_class_name%><%else%>public IBlock<%endif%><%endmisc%>
-<%misc inheritance_declaration_struct%><%if (declaration.parent)%>public <%=declaration.parent_class_name%>, <%endif%>public IModel<%endmisc%>
+
 
 <%misc capitalize%><%=first_char_upper(field_name)%><%endmisc%>
 
@@ -63,28 +60,4 @@ QMap<QString, <%=map_type(field.type_name)%>><%else%>
     <%endif%>
 <%endmisc%>
 
-<%misc annotation_constructor%><%endmisc%>
-
-<%misc annotation_argument_logic%>
-<%foreach declaration.fields as field%>
-        if (argumentName == QLatin1String("<%=field.name%>")) return QVariant::fromValue(<%=field.field_name%><%call private_field_suffix%>);
-<%endforeach%>
-<%endmisc%>
-
-<%misc annotation_argument_names%><%foreach declaration.fields as field%>QLatin1String("<%=field.name%>")<%if (is_last == false)%>, <%endif%><%endforeach%><%endmisc%>
-
-<%misc annotation_accessors%><%foreach declaration.fields as field%>    // <%=field.name%>字段的访问器
-    <%call field_type%> get<%=pascal_case(field.name)%>() const {
-        return <%=field.field_name%><%call private_field_suffix%>;
-    }
-    
-    void set<%=pascal_case(field.name)%>(const <%call field_type%>& value) {
-        <%=field.field_name%><%call private_field_suffix%> = value;
-    } 
-<%endforeach%><%endmisc%>
-
-<%misc annotation_private_fields%>
-    <%foreach declaration.fields as field%>
-        <%=repeat(" ", 4)%><%call field_type%> <%=repeat(" ", 1)%><%=field.field_name%><%call private_field_suffix%>;
-<%endforeach%>
-<%endmisc%> 
+ 

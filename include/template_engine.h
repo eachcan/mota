@@ -41,6 +41,7 @@ struct TemplateToken {
     std::string outer_content;            // 整个标签的内容
     size_t start_pos;               // 在原文本中的起始位置 <%if 的开头
     size_t end_pos;                 // 在原文本中的结束位置 endif%> 的结尾
+    bool is_on_own_line = false;    // 标签是否独占一行
     
     // 特定于不同类型的属性
     std::string variable_name;      // 变量名
@@ -52,7 +53,7 @@ struct TemplateToken {
     std::string item_name;          // 循环项变量名
     std::string else_content;       // else 分支的内容
     
-    TemplateToken(TokenType t = TokenType::TEXT) : type(t), start_pos(0), end_pos(0) {}
+    TemplateToken(TokenType t = TokenType::TEXT) : type(t), start_pos(0), end_pos(0), is_on_own_line(false) {}
 };
 
 struct TagNode {

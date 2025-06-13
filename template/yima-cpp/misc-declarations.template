@@ -1,185 +1,296 @@
 <%misc struct%>
 // <%=declaration.name%>结构体
-class MODEL_EXPORT <%=declaration.class_name%> : <%call inheritance_declaration_struct%> {
+class MODEL_EXPORT <%=declaration.relative_class_name%> : <%if (declaration.parent)%>public <%=declaration.parent_relative_class_name%>, <%endif%>public IModel {
 public:
-    <%=declaration.class_name%>() = default;
+    <%=declaration.relative_class_name%>() = default;
     
     // 实现 IModel 接口
     QCborMap toCbor() const override {
-        QCborMap map<%if (declaration.parent)%> = <%=declaration.parent_class_name%>::toCbor()<%endif%>;
-<%call serialize_fields%>
-        return map;
+        QCborMap map<%if (declaration.parent)%> = <%=declaration.parent_relative_class_name%>::toCbor()<%endif%>;
+<%foreach declaration.fields as field%>        <%if (field.container_type == "array")%>QCborArray <%=field.name%>Array;
+        for (const auto& item : <%=field.name%>_) {
+            <%if (field.type_name == "string" || field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64" || field.type_name == "float32" || field.type_name == "float64" || field.type_name == "bool" || field.type_name == "bytes")%><%=field.name%>Array.append(QCborValue(item));<%else%><%=field.name%>Array.append(item.toCbor());<%endif%>
+        }
+        map.insert(QLatin1String("<%=field.name%>"), <%=field.name%>Array);<%endif%><%if (field.container_type == "map")%>QCborMap <%=field.name%>Map;
+        for (auto it = <%=field.name%>_.cbegin(); it != <%=field.name%>_.cend(); ++it) {
+            <%if (field.type_name == "string" || field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64" || field.type_name == "float32" || field.type_name == "float64" || field.type_name == "bool" || field.type_name == "bytes")%><%=field.name%>Map.insert(it.key(), QCborValue(it.value()));<%else%><%=field.name%>Map.insert(it.key(), it.value().toCbor());<%endif%>
+        }
+        map.insert(QLatin1String("<%=field.name%>"), <%=field.name%>Map);<%endif%><%if (field.container_type == "none")%>        <%if (field.type_name == "string" || field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64" || field.type_name == "float32" || field.type_name == "float64" || field.type_name == "bool" || field.type_name == "bytes")%>map.insert(QLatin1String("<%=field.name%>"), QCborValue(<%=field.name%>_));<%else%>map.insert(QLatin1String("<%=field.name%>"), <%=field.name%>_.toCbor());<%endif%><%endif%><%if (field.container_type == "optional")%>        if (<%=field.name%>_) {
+            <%if (field.type_name == "string" || field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64" || field.type_name == "float32" || field.type_name == "float64" || field.type_name == "bool" || field.type_name == "bytes")%>map.insert(QLatin1String("<%=field.name%>"), QCborValue(*<%=field.name%>_));<%else%>map.insert(QLatin1String("<%=field.name%>"), <%=field.name%>_->toCbor());<%endif%>
+        }<%endif%>
+<%endforeach%>        return map;
     }
     
     void fromCbor(const QCborMap& map) override {<%if (declaration.parent)%>
-
-        <%=declaration.parent_class_name%>::fromCbor(map);
-<%endif%>
-<%call deserialize_fields%>
-    }
+        <%=declaration.parent_relative_class_name%>::fromCbor(map);<%endif%>
+        QCborValue tmpValue;
+<%foreach declaration.fields as field%>        <%if (field.container_type == "array")%>tmpValue = map.value(QLatin1String("<%=field.name%>"));
+        if (tmpValue.isArray()) {
+            QCborArray <%=field.name%>Array = tmpValue.toArray();
+            <%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "optional")%>std::optional<<%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%><%endif%> <%=field.name%>List;
+            for (const auto& item : <%=field.name%>Array) {
+                <%if (field.type_name == "string")%><%=field.name%>List.append(item.toString());<%endif%><%if (field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64")%><%=field.name%>List.append(item.toInteger());<%endif%><%if (field.type_name == "float32" || field.type_name == "float64")%><%=field.name%>List.append(item.toDouble());<%endif%><%if (field.type_name == "bool")%><%=field.name%>List.append(item.toBool());<%endif%><%if (field.type_name == "bytes")%><%=field.name%>List.append(item.toByteArray());<%endif%><%if (field.type_name != "string" && field.type_name != "int8" && field.type_name != "int16" && field.type_name != "int32" && field.type_name != "int64" && field.type_name != "uint8" && field.type_name != "uint16" && field.type_name != "uint32" && field.type_name != "uint64" && field.type_name != "float32" && field.type_name != "float64" && field.type_name != "bool" && field.type_name != "bytes")%><%=field.relative_mapped_type_name%> itemValue;
+                itemValue.fromCbor(item.toMap());
+                <%=field.name%>List.append(itemValue);<%endif%>
+            }
+            <%=field.name%>_ = <%=field.name%>List;
+        }<%endif%><%if (field.container_type == "map")%>tmpValue = map.value(QLatin1String("<%=field.name%>"));
+        if (tmpValue.isMap()) {
+            QCborMap <%=field.name%>Map = tmpValue.toMap();
+            <%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "optional")%>std::optional<<%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%><%endif%> <%=field.name%>Result;
+            for (auto it = <%=field.name%>Map.cbegin(); it != <%=field.name%>Map.cend(); ++it) {
+                <%if (field.type_name == "string")%><%=field.name%>Result.insert(it.key().toString(), it.value().toString());<%endif%><%if (field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64")%><%=field.name%>Result.insert(it.key().toString(), it.value().toInteger());<%endif%><%if (field.type_name == "float32" || field.type_name == "float64")%><%=field.name%>Result.insert(it.key().toString(), it.value().toDouble());<%endif%><%if (field.type_name == "bool")%><%=field.name%>Result.insert(it.key().toString(), it.value().toBool());<%endif%><%if (field.type_name == "bytes")%><%=field.name%>Result.insert(it.key().toString(), it.value().toByteArray());<%endif%><%if (field.type_name != "string" && field.type_name != "int8" && field.type_name != "int16" && field.type_name != "int32" && field.type_name != "int64" && field.type_name != "uint8" && field.type_name != "uint16" && field.type_name != "uint32" && field.type_name != "uint64" && field.type_name != "float32" && field.type_name != "float64" && field.type_name != "bool" && field.type_name != "bytes")%><%=field.relative_mapped_type_name%> itemValue;
+                itemValue.fromCbor(it.value().toMap());
+                <%=field.name%>Result.insert(it.key().toString(), itemValue);<%endif%>
+            }
+            <%=field.name%>_ = <%=field.name%>Result;
+        }<%endif%><%if (field.container_type == "none")%>tmpValue = map.value(QLatin1String("<%=field.name%>"));
+        if (!tmpValue.isNull()) {
+            <%if (field.type_name == "string")%><%=field.name%>_ = tmpValue.toString();<%endif%><%if (field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64")%><%=field.name%>_ = tmpValue.toInteger();<%endif%><%if (field.type_name == "float32" || field.type_name == "float64")%><%=field.name%>_ = tmpValue.toDouble();<%endif%><%if (field.type_name == "bool")%><%=field.name%>_ = tmpValue.toBool();<%endif%><%if (field.type_name == "bytes")%><%=field.name%>_ = tmpValue.toByteArray();<%endif%><%if (field.type_name != "string" && field.type_name != "int8" && field.type_name != "int16" && field.type_name != "int32" && field.type_name != "int64" && field.type_name != "uint8" && field.type_name != "uint16" && field.type_name != "uint32" && field.type_name != "uint64" && field.type_name != "float32" && field.type_name != "float64" && field.type_name != "bool" && field.type_name != "bytes")%><%=field.name%>_.fromCbor(tmpValue.toMap());<%endif%>
+        }<%endif%><%if (field.container_type == "optional")%>tmpValue = map.value(QLatin1String("<%=field.name%>"));
+        if (!tmpValue.isNull()) {
+            <%if (field.type_name == "string")%><%=field.name%>_ = tmpValue.toString();<%endif%><%if (field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64")%><%=field.name%>_ = tmpValue.toInteger();<%endif%><%if (field.type_name == "float32" || field.type_name == "float64")%><%=field.name%>_ = tmpValue.toDouble();<%endif%><%if (field.type_name == "bool")%><%=field.name%>_ = tmpValue.toBool();<%endif%><%if (field.type_name == "bytes")%><%=field.name%>_ = tmpValue.toByteArray();<%endif%><%if (field.type_name != "string" && field.type_name != "int8" && field.type_name != "int16" && field.type_name != "int32" && field.type_name != "int64" && field.type_name != "uint8" && field.type_name != "uint16" && field.type_name != "uint32" && field.type_name != "uint64" && field.type_name != "float32" && field.type_name != "float64" && field.type_name != "bool" && field.type_name != "bytes")%><%=field.relative_mapped_type_name%> itemValue;
+            itemValue.fromCbor(tmpValue.toMap());
+            <%=field.name%>_ = itemValue;<%endif%>
+        }<%endif%>
+<%endforeach%>    }
     
     QString name() const override {
-        return "<%=declaration.name%>";
+        return QLatin1String("<%=declaration.relative_name%>");
     }
     
     QStringList fields() const override {
-        return QStringList{<%call field_names%>};
+        return QStringList{<%foreach declaration.fields as field%>QLatin1String("<%=field.name%>")<%if (is_last == false)%>, <%endif%><%endforeach%>};
     }
     
     QString fieldType(const QString& fieldName) const override {
-<%foreach declaration.fields as field%>
-            if (fieldName == QLatin1String("<%=field.name%>")) return QLatin1String("<%=field.type_name%>");
-<%endforeach%>
-            return QLatin1String("");
+<%foreach declaration.fields as field%>        if (fieldName == QLatin1String("<%=field.name%>")) return QLatin1String("<%=field.relative_type_name%>");
+<%endforeach%>        return QString();
     }
     
     QString fieldContainerType(const QString& fieldName) const override {
-<%foreach declaration.fields as field%>
-            if (fieldName == QLatin1String("<%=field.name%>")) return QLatin1String("<%=field.container_type%>");
-<%endforeach%>
-            return QLatin1String("none");
+<%foreach declaration.fields as field%>        if (fieldName == QLatin1String("<%=field.name%>")) return QLatin1String("<%=field.container_type%>");
+<%endforeach%>        return QLatin1String("none");
     }
 
-    // 特定于<%=declaration.name%>的访问器
-<%call accessors%>
-    
+    // 字段访问器
+<%foreach declaration.fields as field%>    <%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "optional")%>std::optional<<%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%><%endif%> get<%=pascal_case(field.name)%>() const { return <%=field.name%>_; }
+    void set<%=pascal_case(field.name)%>(const <%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "optional")%>std::optional<<%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%><%endif%>& value) { <%=field.name%>_ = value; }
+<%endforeach%>    
 private:
-<%call private_fields%>
-};
-Q_DECLARE_METATYPE(<%=declaration.class_name%>)
+<%foreach declaration.fields as field%>    <%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "optional")%>std::optional<<%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%><%endif%> <%=field.name%>_<%if (exists(field.default_value))%> = <%=field.default_value%><%endif%>;
+<%endforeach%>};
+Q_DECLARE_METATYPE(<%=declaration.relative_class_name%>)
+
 <%endmisc%>
 
-<%misc block%>// <%=declaration.name%>块定义
-class MODEL_EXPORT <%=declaration.class_name%> : <%call inheritance_declaration_block%> {
+<%misc block%>
+// <%=declaration.name%>块定义
+class MODEL_EXPORT <%=declaration.relative_class_name%> : <%if (declaration.parent)%>public <%=declaration.parent_relative_class_name%>, <%endif%>public IBlock {
 public:
-    <%=declaration.class_name%>() = default;
+    <%=declaration.relative_class_name%>() = default;
     
     // 实现 IBlock 接口
-    virtual QCborMap toCbor() const override {
-        QCborMap map<%if (declaration.parent)%> = <%=declaration.parent_class_name%>::toCbor()<%endif%>;
-<%call serialize_fields%>
-        return map;
+    QCborMap toCbor() const override {
+        QCborMap map<%if (declaration.parent)%> = <%=declaration.parent_relative_class_name%>::toCbor()<%endif%>;
+<%foreach declaration.fields as field%>        <%if (field.container_type == "array")%>QCborArray <%=field.name%>Array;
+        for (const auto& item : <%=field.name%>_) {
+            <%if (field.type_name == "string" || field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64" || field.type_name == "float32" || field.type_name == "float64" || field.type_name == "bool" || field.type_name == "bytes")%><%=field.name%>Array.append(QCborValue(item));<%else%><%=field.name%>Array.append(item.toCbor());<%endif%>
+        }
+        map.insert(QLatin1String("<%=field.name%>"), <%=field.name%>Array);<%endif%><%if (field.container_type == "map")%>QCborMap <%=field.name%>Map;
+        for (auto it = <%=field.name%>_.cbegin(); it != <%=field.name%>_.cend(); ++it) {
+            <%if (field.type_name == "string" || field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64" || field.type_name == "float32" || field.type_name == "float64" || field.type_name == "bool" || field.type_name == "bytes")%><%=field.name%>Map.insert(it.key(), QCborValue(it.value()));<%else%><%=field.name%>Map.insert(it.key(), it.value().toCbor());<%endif%>
+        }
+        map.insert(QLatin1String("<%=field.name%>"), <%=field.name%>Map);<%endif%><%if (field.container_type == "none")%>        <%if (field.type_name == "string" || field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64" || field.type_name == "float32" || field.type_name == "float64" || field.type_name == "bool" || field.type_name == "bytes")%>map.insert(QLatin1String("<%=field.name%>"), QCborValue(<%=field.name%>_));<%else%>map.insert(QLatin1String("<%=field.name%>"), <%=field.name%>_.toCbor());<%endif%><%endif%><%if (field.container_type == "optional")%>        if (<%=field.name%>_) {
+            <%if (field.type_name == "string" || field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64" || field.type_name == "float32" || field.type_name == "float64" || field.type_name == "bool" || field.type_name == "bytes")%>map.insert(QLatin1String("<%=field.name%>"), QCborValue(*<%=field.name%>_));<%else%>map.insert(QLatin1String("<%=field.name%>"), <%=field.name%>_->toCbor());<%endif%>
+        }<%endif%>
+<%endforeach%>        return map;
     }
     
-    virtual void fromCbor(const QCborMap& map) override {<%if (declaration.parent)%>
-
-        <%=declaration.parent_class_name%>::fromCbor(map);
-
-<%endif%>
-<%call deserialize_fields%>
+    void fromCbor(const QCborMap& map) override {<%if (declaration.parent)%>
+        <%=declaration.parent_relative_class_name%>::fromCbor(map);<%endif%>
+        QCborValue tmpValue;
+<%foreach declaration.fields as field%>        <%if (field.container_type == "array")%>tmpValue = map.value(QLatin1String("<%=field.name%>"));
+        if (tmpValue.isArray()) {
+            QCborArray <%=field.name%>Array = tmpValue.toArray();
+            <%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "optional")%>std::optional<<%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%><%endif%> <%=field.name%>List;
+            for (const auto& item : <%=field.name%>Array) {
+                <%if (field.type_name == "string")%><%=field.name%>List.append(item.toString());<%endif%><%if (field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64")%><%=field.name%>List.append(item.toInteger());<%endif%><%if (field.type_name == "float32" || field.type_name == "float64")%><%=field.name%>List.append(item.toDouble());<%endif%><%if (field.type_name == "bool")%><%=field.name%>List.append(item.toBool());<%endif%><%if (field.type_name == "bytes")%><%=field.name%>List.append(item.toByteArray());<%endif%><%if (field.type_name != "string" && field.type_name != "int8" && field.type_name != "int16" && field.type_name != "int32" && field.type_name != "int64" && field.type_name != "uint8" && field.type_name != "uint16" && field.type_name != "uint32" && field.type_name != "uint64" && field.type_name != "float32" && field.type_name != "float64" && field.type_name != "bool" && field.type_name != "bytes")%><%=field.relative_mapped_type_name%> itemValue;
+                itemValue.fromCbor(item.toMap());
+                <%=field.name%>List.append(itemValue);<%endif%>
+            }
+            <%=field.name%>_ = <%=field.name%>List;
+        }<%endif%><%if (field.container_type == "map")%>tmpValue = map.value(QLatin1String("<%=field.name%>"));
+        if (tmpValue.isMap()) {
+            QCborMap <%=field.name%>Map = tmpValue.toMap();
+            <%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "optional")%>std::optional<<%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%><%endif%> <%=field.name%>Result;
+            for (auto it = <%=field.name%>Map.cbegin(); it != <%=field.name%>Map.cend(); ++it) {
+                <%if (field.type_name == "string")%><%=field.name%>Result.insert(it.key().toString(), it.value().toString());<%endif%><%if (field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64")%><%=field.name%>Result.insert(it.key().toString(), it.value().toInteger());<%endif%><%if (field.type_name == "float32" || field.type_name == "float64")%><%=field.name%>Result.insert(it.key().toString(), it.value().toDouble());<%endif%><%if (field.type_name == "bool")%><%=field.name%>Result.insert(it.key().toString(), it.value().toBool());<%endif%><%if (field.type_name == "bytes")%><%=field.name%>Result.insert(it.key().toString(), it.value().toByteArray());<%endif%><%if (field.type_name != "string" && field.type_name != "int8" && field.type_name != "int16" && field.type_name != "int32" && field.type_name != "int64" && field.type_name != "uint8" && field.type_name != "uint16" && field.type_name != "uint32" && field.type_name != "uint64" && field.type_name != "float32" && field.type_name != "float64" && field.type_name != "bool" && field.type_name != "bytes")%><%=field.relative_mapped_type_name%> itemValue;
+                itemValue.fromCbor(it.value().toMap());
+                <%=field.name%>Result.insert(it.key().toString(), itemValue);<%endif%>
+            }
+            <%=field.name%>_ = <%=field.name%>Result;
+        }<%endif%><%if (field.container_type == "none")%>tmpValue = map.value(QLatin1String("<%=field.name%>"));
+        if (!tmpValue.isNull()) {
+            <%if (field.type_name == "string")%><%=field.name%>_ = tmpValue.toString();<%endif%><%if (field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64")%><%=field.name%>_ = tmpValue.toInteger();<%endif%><%if (field.type_name == "float32" || field.type_name == "float64")%><%=field.name%>_ = tmpValue.toDouble();<%endif%><%if (field.type_name == "bool")%><%=field.name%>_ = tmpValue.toBool();<%endif%><%if (field.type_name == "bytes")%><%=field.name%>_ = tmpValue.toByteArray();<%endif%><%if (field.type_name != "string" && field.type_name != "int8" && field.type_name != "int16" && field.type_name != "int32" && field.type_name != "int64" && field.type_name != "uint8" && field.type_name != "uint16" && field.type_name != "uint32" && field.type_name != "uint64" && field.type_name != "float32" && field.type_name != "float64" && field.type_name != "bool" && field.type_name != "bytes")%><%=field.name%>_.fromCbor(tmpValue.toMap());<%endif%>
+        }<%endif%><%if (field.container_type == "optional")%>tmpValue = map.value(QLatin1String("<%=field.name%>"));
+        if (!tmpValue.isNull()) {
+            <%if (field.type_name == "string")%><%=field.name%>_ = tmpValue.toString();<%endif%><%if (field.type_name == "int8" || field.type_name == "int16" || field.type_name == "int32" || field.type_name == "int64" || field.type_name == "uint8" || field.type_name == "uint16" || field.type_name == "uint32" || field.type_name == "uint64")%><%=field.name%>_ = tmpValue.toInteger();<%endif%><%if (field.type_name == "float32" || field.type_name == "float64")%><%=field.name%>_ = tmpValue.toDouble();<%endif%><%if (field.type_name == "bool")%><%=field.name%>_ = tmpValue.toBool();<%endif%><%if (field.type_name == "bytes")%><%=field.name%>_ = tmpValue.toByteArray();<%endif%><%if (field.type_name != "string" && field.type_name != "int8" && field.type_name != "int16" && field.type_name != "int32" && field.type_name != "int64" && field.type_name != "uint8" && field.type_name != "uint16" && field.type_name != "uint32" && field.type_name != "uint64" && field.type_name != "float32" && field.type_name != "float64" && field.type_name != "bool" && field.type_name != "bytes")%><%=field.relative_mapped_type_name%> itemValue;
+            itemValue.fromCbor(tmpValue.toMap());
+            <%=field.name%>_ = itemValue;<%endif%>
+        }<%endif%>
+<%endforeach%>    }
+    
+    QString name() const override {
+        return QLatin1String("<%=declaration.relative_name%>");
     }
     
-    virtual QString name() const override {
-        return "<%=declaration.name%>";
+    QStringList fields() const override {
+        return QStringList{<%foreach declaration.fields as field%>QLatin1String("<%=field.name%>")<%if (is_last == false)%>, <%endif%><%endforeach%>};
     }
     
-    virtual QStringList fields() const override {
-        return QStringList{<%call field_names%>};
+    QString fieldType(const QString& fieldName) const override {
+<%foreach declaration.fields as field%>        if (fieldName == QLatin1String("<%=field.name%>")) return QLatin1String("<%=field.relative_type_name%>");
+<%endforeach%>        return QString();
     }
     
-    virtual QString fieldType(const QString& fieldName) const override {
-<%foreach declaration.fields as field%>
-            if (fieldName == QLatin1String("<%=field.name%>")) return QLatin1String("<%=field.type_name%>");
-<%endforeach%>
-            return QLatin1String("");
+    QString fieldContainerType(const QString& fieldName) const override {
+<%foreach declaration.fields as field%>        if (fieldName == QLatin1String("<%=field.name%>")) return QLatin1String("<%=field.container_type%>");
+<%endforeach%>        return QLatin1String("none");
     }
     
-    virtual QString fieldContainerType(const QString& fieldName) const override {
-<%foreach declaration.fields as field%>
-            if (fieldName == QLatin1String("<%=field.name%>")) return QLatin1String("<%=field.container_type%>");
-<%endforeach%>
-            return QLatin1String("none");
+    QList<QSharedPointer<IAnnotation>> annotations() const override {
+        QList<QSharedPointer<IAnnotation>> result;
+<%foreach declaration.annotations as annotation%>        result.append(QSharedPointer<IAnnotation>(new <%=annotation.relative_class_name%>()));
+<%endforeach%>        return result;
     }
     
-    virtual QList<QSharedPointer<IAnnotation>> annotations() const override {
-<%call model_annotation_logic%>
+    QList<QSharedPointer<IAnnotation>> fieldAnnotation(const QString& fieldName) const override {
+<%foreach declaration.fields as field%>        if (fieldName == QLatin1String("<%=field.name%>")) {
+            QList<QSharedPointer<IAnnotation>> result;
+<%foreach field.annotations as annotation%>            result.append(QSharedPointer<IAnnotation>(new <%=annotation.relative_class_name%>()));
+<%endforeach%>            return result;
+        }
+<%endforeach%>        return QList<QSharedPointer<IAnnotation>>();
     }
     
-    virtual QList<QSharedPointer<IAnnotation>> fieldAnnotation(const QString& fieldName) const override {
-<%call field_annotation_logic%>
-        return QList<QSharedPointer<IAnnotation>>();
+    QString description() const override {
+        return QLatin1String("<%=declaration.relative_name%>");
     }
     
-    virtual QString description() const override {
-        return "<%=escape_string(declaration.name)%>";
+    QString fieldDescription(const QString& fieldName) const override {
+<%foreach declaration.fields as field%>        if (fieldName == QLatin1String("<%=field.name%>")) return QLatin1String("<%=field.name%>");
+<%endforeach%>        return QString();
     }
     
-    virtual QString fieldDescription(const QString& fieldName) const override {
-<%call field_description_logic%>
-        return QString();
+    QVariant value(const QString& fieldName) const override {
+<%foreach declaration.fields as field%>        if (fieldName == QLatin1String("<%=field.name%>")) return QVariant::fromValue(<%=field.name%>_);
+<%endforeach%>        return QVariant();
     }
     
-    virtual QVariant value(const QString& fieldName) const override {
-<%call value_getter_logic%>
-    }
+    void value(const QString& fieldName, const QVariant& value) override {
+<%foreach declaration.fields as field%>        if (fieldName == QLatin1String("<%=field.name%>")) {
+            <%=field.name%>_ = value.value<<%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "optional")%>std::optional<<%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%><%endif%>>();
+            return;
+        }
+<%endforeach%>    }
     
-    virtual void value(const QString& fieldName, const QVariant& value) override {
-<%call value_setter_logic%>
-    }
-    
-    // 特定于<%=declaration.name%>的访问器
-<%call accessors%>
-    
+    // 字段访问器
+<%foreach declaration.fields as field%>    <%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "optional")%>std::optional<<%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%><%endif%> get<%=pascal_case(field.name)%>() const { return <%=field.name%>_; }
+    void set<%=pascal_case(field.name)%>(const <%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "optional")%>std::optional<<%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%><%endif%>& value) { <%=field.name%>_ = value; }
+<%endforeach%>    
 private:
-<%call private_fields%>
-};
-Q_DECLARE_METATYPE(<%=declaration.class_name%>)
+<%foreach declaration.fields as field%>    <%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "optional")%>std::optional<<%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%><%endif%> <%=field.name%>_<%if (exists(field.default_value))%> = <%=field.default_value%><%endif%>;
+<%endforeach%>};
+Q_DECLARE_METATYPE(<%=declaration.relative_class_name%>)
+
 <%endmisc%>
 
 <%misc enum%>
 // <%=declaration.name%>枚举
-enum class <%=declaration.class_name%> {
-    // TODO: 枚举值
-};
+enum class <%=declaration.relative_class_name%> {
+<%foreach declaration.values as value%>    <%=value.name%><%if (value.value)%> = <%=value.value%><%endif%><%if (is_last == false)%>,<%endif%>
+<%endforeach%>};
 
-// <%=declaration.name%>枚举辅助函数
-class <%=declaration.class_name%>Helper {
-public:
-    static QString toString(<%=declaration.class_name%> value) {
-        switch (value) {
-            // TODO: 枚举值处理
-            default:
-                return "Unknown";
-        }
-    }
-    
-    static <%=declaration.class_name%> fromString(const QString& str) {
-        // TODO: 字符串转枚举
-        return static_cast<<%=declaration.class_name%>>(0); // 默认值
-    }
-    
-    static QStringList allValues() {
-        return QStringList{
-            // TODO: 所有枚举值
-        };
-    }
-};
 <%endmisc%>
 
-<%misc annotation_decl%>// <%=declaration.name%>注解
-class MODEL_EXPORT <%=declaration.class_name%> : <%call inheritance_declaration_annotation%> {
+<%misc annotation_decl%>
+// <%=declaration.name%>注解
+class MODEL_EXPORT <%=declaration.relative_class_name%> : <%if (declaration.parent)%>public <%=declaration.parent_relative_class_name%><%else%>public IAnnotation<%endif%> {
 public:
-    <%=declaration.class_name%>() = default;
+    <%=declaration.relative_class_name%>() = default;
     
     // 实现IAnnotation接口
     QString name() const override {
-        return "<%=declaration.name%>";
+        return QLatin1String("<%=declaration.relative_name%>");
     }
     
     QVariant argument(const QString& argumentName) const override {
-<%call annotation_argument_logic%>
-        return QVariant();
+<%foreach declaration.fields as field%>        if (argumentName == QLatin1String("<%=field.name%>")) {
+            <%if (field.container_type == "array")%>QVariantList list;
+            for (const auto& item : <%=field.name%>_) {
+                list.append(QVariant::fromValue(item));
+            }
+            return list;<%else%>return QVariant::fromValue(<%=field.name%>_);
+<%endif%>
+        }
+<%endforeach%>        return QVariant();
     }
     
     QStringList argumentNames() const override {
-        return QStringList{<%call annotation_argument_names%>};
+        return QStringList{<%foreach declaration.fields as field%>QLatin1String("<%=field.name%>")<%if (is_last == false)%>, <%endif%><%endforeach%>};
     }
     
-    // 特定于<%=declaration.name%>的访问器
-<%call annotation_accessors%>
+    // 字段访问器
+<%foreach declaration.fields as field%>
+    <%if (field.container_type == "array")%>
+    QVector<<%=field.relative_mapped_type_name%>> get<%=pascal_case(field.name)%>() const {
+        return <%=field.name%>_; 
+    }
+    void set<%=pascal_case(field.name)%>(const QVector<<%=field.relative_mapped_type_name%>>& value) {
+        <%=field.name%>_ = value;
+    }
+    <%endif%>
+    <%if (field.container_type == "map")%>
+    QMap<QString, <%=field.relative_mapped_type_name%>> get<%=pascal_case(field.name)%>() const {
+        return <%=field.name%>_;
+    }
+    void set<%=pascal_case(field.name)%>(const QMap<QString, <%=field.relative_mapped_type_name%>>& value) {
+        <%=field.name%>_ = value;
+    }
+    <%endif%>
+    <%if (field.container_type == "optional")%>
+    std::optional<<%=field.relative_mapped_type_name%>> get<%=pascal_case(field.name)%>() const {
+        return <%=field.name%>_;
+    }
+    void set<%=pascal_case(field.name)%>(const std::optional<<%=field.relative_mapped_type_name%>>& value) {
+        <%=field.name%>_ = value;
+    }
+    <%endif%>
+    <%if (field.container_type == "none")%>
+    <%=field.relative_mapped_type_name%> get<%=pascal_case(field.name)%>() const {
+        return <%=field.name%>_;
+    }
+    void set<%=pascal_case(field.name)%>(const <%=field.relative_mapped_type_name%>& value) {
+        <%=field.name%>_ = value;
+    }
+    <%endif%>
+<%endforeach%>    
 private:
-<%call annotation_private_fields%>
-};
-Q_DECLARE_METATYPE(<%=declaration.class_name%>)
+<%foreach declaration.fields as field%>
+    <%if (field.container_type == "array")%>
+    QVector<<%=field.relative_mapped_type_name%>>_<%if (exists(field.default_value))%> = <%=field.default_value%><%endif%>;
+    <%endif%>
+    <%if (field.container_type == "map")%>
+    QMap<QString, <%=field.relative_mapped_type_name%>>_<%if (exists(field.default_value))%> = <%=field.default_value%><%endif%>;
+    <%endif%>
+    <%if (field.container_type == "optional")%>
+    std::optional<<%=field.relative_mapped_type_name%>>_<%if (exists(field.default_value))%> = <%=field.default_value%><%endif%>;
+    <%endif%>
+    <%if (field.container_type == "none")%>
+    <%=field.relative_mapped_type_name%> <%=field.name%>_<%if (exists(field.default_value))%> = <%=field.default_value%><%endif%>;
+    <%endif%>
+<%endforeach%>};
+Q_DECLARE_METATYPE(<%=declaration.relative_class_name%>)
 
 <%endmisc%> 

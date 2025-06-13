@@ -1,19 +1,19 @@
 <%misc private_fields%>
 <%foreach declaration.fields as field%>
- <%=repeat(" ", 4)%><%call field_type%><%=repeat(" ", 1)%><%=field.field_name%>_<%if (field.default_value)%> = <%=field.default_value%><%endif%>;
+ <%=repeat(" ", 4)%><%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%> <%=field.field_name%>_<%if (field.default_value)%> = <%=field.default_value%><%endif%>;
 <%endforeach%>
 <%endmisc%>
 
 <%misc field_names%><%foreach declaration.fields as field%>QLatin1String("<%=field.name%>")<%if (is_last == false)%>, <%endif%><%endforeach%><%endmisc%>
 
 <%misc getter_method%>
-<%=repeat(" ", 4)%><%call field_type%> get<%=pascal_case(field.name)%>() const {
+<%=repeat(" ", 4)%><%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%> get<%=pascal_case(field.name)%>() const {
         return <%=field.field_name%>_;
     }
 <%endmisc%>
 
 <%misc setter_method%>
-    void set<%=pascal_case(field.name)%>(const <%call field_type%>& value) {
+    void set<%=pascal_case(field.name)%>(const <%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%>& value) {
         <%=field.field_name%>_ = value;
     }
 <%endmisc%>
@@ -28,7 +28,7 @@
 
 <%misc field_type_logic%>
 <%foreach declaration.fields as field%>
-        if (fieldName == QLatin1String("<%=field.name%>")) return QLatin1String("<%=field.type_name%>");
+        if (fieldName == QLatin1String("<%=field.name%>")) return QLatin1String("<%=field.relative_type_name%>");
 <%endforeach%>
         return QLatin1String("");
 <%endmisc%>
@@ -36,7 +36,7 @@
 <%misc model_annotation_logic%>
         QList<QSharedPointer<IAnnotation>> result;
 <%foreach declaration.annotations as annotation%>
-        result.append(QSharedPointer<IAnnotation>(new <%=annotation.class_name%>()));
+        result.append(QSharedPointer<IAnnotation>(new <%=annotation.relative_class_name%>()));
 <%endforeach%>
         return result;
 <%endmisc%>
@@ -46,7 +46,7 @@
         if (fieldName == QLatin1String("<%=field.name%>")) {
             QList<QSharedPointer<IAnnotation>> result;
 <%foreach field.annotations as annotation%>
-            result.append(QSharedPointer<IAnnotation>(new <%=annotation.class_name%>()));
+            result.append(QSharedPointer<IAnnotation>(new <%=annotation.relative_class_name%>()));
 <%endforeach%>
             return result;
         }
@@ -71,8 +71,12 @@
 <%misc value_setter_logic%>
 <%foreach declaration.fields as field%>
         if (fieldName == QLatin1String("<%=field.name%>")) {
-            <%=field.field_name%>_ = value.value<<%call field_type%>>();
+            <%=field.field_name%>_ = value.value<<%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%>>();
             return;
         }
 <%endforeach%>
-<%endmisc%> 
+<%endmisc%>
+
+<%misc pascal_case%><%=pascal_case(STRING_VALUE)%><%endmisc%>
+
+<%misc repeat%><%=repeat(STRING_VALUE, COUNT)%><%endmisc%> 

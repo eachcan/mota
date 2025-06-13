@@ -117,6 +117,23 @@ std::string TemplateEngine::loadMisc(const std::string& miscName) {
             
             // Trim whitespace
             name = trimWhitespace(name);
+            
+            // 对misc内容应用独占一行处理逻辑
+            // 去掉开头的空格+换行符（<%misc name%>后面可能有空格然后换行）
+            size_t pos = 0;
+            // 跳过开头的空格和制表符
+            while (pos < miscContent.length() && (miscContent[pos] == ' ' || miscContent[pos] == '\t')) {
+                pos++;
+            }
+            // 如果接下来是换行符，则去掉空格+换行
+            if (pos < miscContent.length() && miscContent[pos] == '\n') {
+                miscContent = miscContent.substr(pos + 1);
+            } else if (pos + 1 < miscContent.length() && miscContent[pos] == '\r' && miscContent[pos + 1] == '\n') {
+                miscContent = miscContent.substr(pos + 2);
+            }
+            
+            // 不去掉结尾的换行符，因为那是misc内容自己带的
+            
             miscCache_[name] = miscContent;
             fragmentCount++;
             ++iter;
@@ -145,8 +162,6 @@ std::vector<std::shared_ptr<TemplateToken>> TemplateEngine::buildTokenSequence(c
     std::regex tagRegex("<%([\\s\\S]*?)%>");
     std::sregex_iterator iter(content.begin(), content.end(), tagRegex);
     std::sregex_iterator end;
-
-    std::regex spaceRegex("^[\t ]*([\r\n$])");
     
     size_t lastPos = 0;
     
@@ -155,22 +170,57 @@ std::vector<std::shared_ptr<TemplateToken>> TemplateEngine::buildTokenSequence(c
         size_t tagStart = match.position();
         size_t tagEnd = tagStart + match.length();
         
+        // 检查标签是否独占一行
+        bool tagOnOwnLine = false;
+        size_t lineStart = tagStart;
+        size_t lineEnd = tagEnd;
+        
+        // 向前查找行首，检查是否只有空白字符
+        while (lineStart > 0 && content[lineStart - 1] != '\n' && content[lineStart - 1] != '\r') {
+            lineStart--;
+        }
+        bool onlySpacesBeforeTag = true;
+        for (size_t i = lineStart; i < tagStart; i++) {
+            if (content[i] != ' ' && content[i] != '\t') {
+                onlySpacesBeforeTag = false;
+                break;
+            }
+        }
+        
+        // 向后查找行尾，检查是否只有空格然后是换行符
+        bool directlyFollowedByNewline = false;
+        size_t pos = tagEnd;
+        // 跳过标签后面的空格和制表符
+        while (pos < content.length() && (content[pos] == ' ' || content[pos] == '\t')) {
+            pos++;
+        }
+        // 检查是否是换行符
+        if (pos < content.length() && (content[pos] == '\n' || content[pos] == '\r')) {
+            directlyFollowedByNewline = true;
+            lineEnd = pos + 1;
+            if (pos + 1 < content.length() && content[pos] == '\r' && content[pos + 1] == '\n') {
+                lineEnd = pos + 2;
+            }
+        }
+        
+        tagOnOwnLine = onlySpacesBeforeTag && directlyFollowedByNewline;
+        
         // 添加Tag之前的文本
         if (tagStart > lastPos) {
             auto textNode = std::make_shared<TemplateToken>(TokenType::TEXT);
             std::string text;
-            if (content[lastPos] == '\n') {
-                text = content.substr(lastPos + 1, tagStart - lastPos - 1);
+            
+            if (tagOnOwnLine) {
+                // 如果标签独占一行，则去掉前面的空白字符
+                text = content.substr(lastPos, lineStart - lastPos);
             } else {
                 text = content.substr(lastPos, tagStart - lastPos);
             }
             
-            text = std::regex_replace(text, spaceRegex, "$1");
-            // 如果是单行空格，则去掉
             if (!text.empty()) {
                 textNode->outer_content = text;
                 textNode->start_pos = lastPos;
-                textNode->end_pos = tagStart;
+                textNode->end_pos = tagOnOwnLine ? lineStart : tagStart;
                 tokens.push_back(textNode);
             }
         }
@@ -180,24 +230,20 @@ std::vector<std::shared_ptr<TemplateToken>> TemplateEngine::buildTokenSequence(c
         auto tagNode = parseTag(tagContent, tagStart, tagEnd);
         if (tagNode) {
             tagNode->tag_content = match[0].str();
+            tagNode->is_on_own_line = tagOnOwnLine;
             tokens.push_back(tagNode);
         }
         
-        lastPos = tagEnd;
+        // 如果标签独占一行，跳过后面的换行符
+        lastPos = tagOnOwnLine ? lineEnd : tagEnd;
         ++iter;
     }
     
     // 添加最后的文本
     if (lastPos < content.length()) {
         auto textNode = std::make_shared<TemplateToken>(TokenType::TEXT);
-        std::string text;
-        if (content[lastPos] == '\n') {
-            text = content.substr(lastPos + 1);
-        } else {
-            text = content.substr(lastPos);
-        }
-        text = std::regex_replace(text, spaceRegex, "$1");
-        // 如果是单行空格，则去掉
+        std::string text = content.substr(lastPos);
+        
         if (!text.empty()) {
             textNode->outer_content = text;
             textNode->start_pos = lastPos;
@@ -410,13 +456,36 @@ std::vector<std::shared_ptr<TagNode>> TemplateEngine::buildTagTree(const std::st
             ifNode->end_pos = tokens[endIndex]->end_pos;
             ifNode->condition = token->condition;
 
-            if (elseIndex == SIZE_MAX) {
-                ifNode->else_text = "";
-                ifNode->inner_text = templateContent.substr(token->end_pos, tokens[endIndex]->start_pos - token->end_pos);
-            } else {
-                ifNode->else_text = templateContent.substr(tokens[elseIndex]->end_pos, tokens[endIndex]->start_pos - tokens[elseIndex]->end_pos);
-                ifNode->inner_text = templateContent.substr(token->end_pos, tokens[elseIndex]->start_pos - token->end_pos);
+            // 从token序列中重建内容，而不是直接从原始内容提取
+            std::string innerContent;
+            std::string elseContent;
+            
+            size_t contentStart = i + 1;
+            size_t contentEnd = (elseIndex == SIZE_MAX) ? endIndex : elseIndex;
+            size_t elseStart = (elseIndex == SIZE_MAX) ? SIZE_MAX : elseIndex + 1;
+            
+            // 构建if块内容
+            for (size_t k = contentStart; k < contentEnd; k++) {
+                if (tokens[k]->type == TokenType::TEXT) {
+                    innerContent += tokens[k]->outer_content;
+                } else {
+                    innerContent += tokens[k]->tag_content;
+                }
             }
+            
+            // 构建else块内容
+            if (elseIndex != SIZE_MAX) {
+                for (size_t k = elseStart; k < endIndex; k++) {
+                    if (tokens[k]->type == TokenType::TEXT) {
+                        elseContent += tokens[k]->outer_content;
+                    } else {
+                        elseContent += tokens[k]->tag_content;
+                    }
+                }
+            }
+            
+            ifNode->inner_text = innerContent;
+            ifNode->else_text = elseContent;
             
             result.push_back(ifNode);
             i = endIndex + 1; // 跳过整个if块
@@ -450,8 +519,16 @@ std::vector<std::shared_ptr<TagNode>> TemplateEngine::buildTagTree(const std::st
             foreachNode->collection = token->collection;
             foreachNode->item_name = token->item_name;
             
-            // 提取foreach块的内容
-            foreachNode->inner_text = templateContent.substr(token->end_pos, tokens[endIndex]->start_pos - token->end_pos);
+            // 从token序列中重建内容，而不是直接从原始内容提取
+            std::string innerContent;
+            for (size_t k = i + 1; k < endIndex; k++) {
+                if (tokens[k]->type == TokenType::TEXT) {
+                    innerContent += tokens[k]->outer_content;
+                } else {
+                    innerContent += tokens[k]->tag_content;
+                }
+            }
+            foreachNode->inner_text = innerContent;
             
             result.push_back(foreachNode);
             i = endIndex + 1; // 跳过整个foreach块

@@ -13,16 +13,41 @@
 #include <QVector>
 #include <QSharedPointer>
 #include <memory>
+#include <optional>
 
 #include "framework/IBlock.h"
 #include "framework/IModel.h"
 #include "framework/IAnnotation.h"
+<%if (INCLUDES.count > 0)%>   
+    <%foreach INCLUDES.files as file%>
+#include "<%=file.translated%>"
+    <%endforeach%>  
+<%endif%>
 
-<%if (INCLUDES.files)%><%foreach INCLUDES.files as file%>#include "<%=file.translated%>"
-<%endforeach%><%endif%>
 using namespace ymf;
 
-<%if (NAMESPACE.exists)%><%call namespace_declaration%><%endif%><%foreach DECLARATIONS as declaration%>
-<%if (declaration.type == "annotation_decl")%><%call annotation_decl%><%endif%><%if (declaration.type == "enum")%><%call enum%><%endif%><%if (declaration.type == "struct")%><%call struct%><%endif%><%if (declaration.type == "block")%><%call block%><%endif%><%endforeach%>
-<%if (NAMESPACE.exists)%><%call namespace_closing%>
+<%if (NAMESPACE.exists)%>
+    <%foreach NAMESPACE.parts as part%>
+namespace <%=part.name%> {
+    <%endforeach%>
+<%endif%>
+
+<%foreach DECLARATIONS as declaration%>
+<%if (declaration.type == "annotation_decl")%><%call annotation_decl%>
+
+<%endif%>
+<%if (declaration.type == "enum")%><%call enum%>
+
+<%endif%>
+<%if (declaration.type == "struct")%><%call struct%>
+
+<%endif%>
+<%if (declaration.type == "block")%><%call block%>
+
+<%endif%>
+<%endforeach%>
+<%if (NAMESPACE.exists)%>
+    <%foreach NAMESPACE.parts as part%>
+} // namespace <%=part.name%>
+    <%endforeach%>
 <%endif%> 
