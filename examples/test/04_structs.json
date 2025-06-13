@@ -13,6 +13,8 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "description",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             }
         ],
@@ -26,6 +28,10 @@
         "parent_full_class_name": "",
         "parent_full_name": "",
         "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "StructAnnotationAnnotation",
+        "relative_name": "StructAnnotation",
         "type": "annotation_decl"
     },
     {
@@ -40,6 +46,8 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "value",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             }
         ],
@@ -53,6 +61,10 @@
         "parent_full_class_name": "",
         "parent_full_name": "",
         "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "StructValueAnnotationAnnotation",
+        "relative_name": "StructValueAnnotation",
         "type": "annotation_decl"
     },
     {
@@ -68,6 +80,8 @@
                 "full_type_name": "bool",
                 "mapped_type_name": "bool",
                 "name": "required",
+                "relative_mapped_type_name": "bool",
+                "relative_type_name": "bool",
                 "type_name": "bool"
             },
             {
@@ -79,6 +93,8 @@
                 "full_type_name": "int32",
                 "mapped_type_name": "int32_t",
                 "name": "priority",
+                "relative_mapped_type_name": "int32_t",
+                "relative_type_name": "int32",
                 "type_name": "int32"
             }
         ],
@@ -92,6 +108,10 @@
         "parent_full_class_name": "examples:structs::StructAnnotationAnnotation",
         "parent_full_name": "examples.structs.StructAnnotation",
         "parent_name": "StructAnnotation",
+        "parent_relative_class_name": "StructAnnotationAnnotation",
+        "parent_relative_name": "StructAnnotation",
+        "relative_class_name": "StructConfigAnnotationAnnotation",
+        "relative_name": "StructConfigAnnotation",
         "type": "annotation_decl"
     },
     {
@@ -107,6 +127,10 @@
         "parent_full_class_name": "",
         "parent_full_name": "",
         "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "StructStatus",
+        "relative_name": "StructStatus",
         "type": "enum",
         "values": [
             {
@@ -142,6 +166,10 @@
         "parent_full_class_name": "",
         "parent_full_name": "",
         "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "StructCategory",
+        "relative_name": "StructCategory",
         "type": "enum",
         "values": [
             {
@@ -174,6 +202,8 @@
                 "full_type_name": "int32",
                 "mapped_type_name": "int32_t",
                 "name": "id",
+                "relative_mapped_type_name": "int32_t",
+                "relative_type_name": "int32",
                 "type_name": "int32"
             },
             {
@@ -185,6 +215,8 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "name",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             }
         ],
@@ -198,6 +230,10 @@
         "parent_full_class_name": "",
         "parent_full_name": "",
         "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "StructBaseBlockBlock",
+        "relative_name": "StructBaseBlock",
         "type": "block"
     },
     {
@@ -213,6 +249,8 @@
                 "full_type_name": "bool",
                 "mapped_type_name": "bool",
                 "name": "enabled",
+                "relative_mapped_type_name": "bool",
+                "relative_type_name": "bool",
                 "type_name": "bool"
             },
             {
@@ -224,6 +262,8 @@
                 "full_type_name": "examples.structs.StructStatus",
                 "mapped_type_name": "StructStatus",
                 "name": "status",
+                "relative_mapped_type_name": "StructStatus",
+                "relative_type_name": "StructStatus",
                 "type_name": "StructStatus"
             }
         ],
@@ -237,6 +277,10 @@
         "parent_full_class_name": "examples:structs::StructBaseBlockBlock",
         "parent_full_name": "examples.structs.StructBaseBlock",
         "parent_name": "StructBaseBlock",
+        "parent_relative_class_name": "StructBaseBlockBlock",
+        "parent_relative_name": "StructBaseBlock",
+        "relative_class_name": "StructExtendedBlockBlock",
+        "relative_name": "StructExtendedBlock",
         "type": "block"
     },
     {
@@ -252,6 +296,8 @@
                 "full_type_name": "int32",
                 "mapped_type_name": "int32_t",
                 "name": "id",
+                "relative_mapped_type_name": "int32_t",
+                "relative_type_name": "int32",
                 "type_name": "int32"
             },
             {
@@ -263,6 +309,8 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "name",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             }
         ],
@@ -276,6 +324,10 @@
         "parent_full_class_name": "",
         "parent_full_name": "",
         "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "BasicStructModel",
+        "relative_name": "BasicStruct",
         "type": "struct"
     },
     {
@@ -285,24 +337,14 @@
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "description",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "description",
-                                "type_name": "string",
-                                "value": "\"分数字段\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructAnnotationAnnotation",
-                        "full_name": "examples.structs.StructAnnotation",
+                        "full_class_name": "StructAnnotationAnnotation",
+                        "full_name": "StructAnnotation",
                         "name": "StructAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructAnnotationAnnotation",
+                        "relative_name": "StructAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -313,29 +355,21 @@
                 "full_type_name": "float64",
                 "mapped_type_name": "double",
                 "name": "score",
+                "relative_mapped_type_name": "double",
+                "relative_type_name": "float64",
                 "type_name": "float64"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "value",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "value",
-                                "type_name": "string",
-                                "value": "\"category_field\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructValueAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructValueAnnotationAnnotation",
-                        "full_name": "examples.structs.StructValueAnnotation",
+                        "full_class_name": "StructValueAnnotationAnnotation",
+                        "full_name": "StructValueAnnotation",
                         "name": "StructValueAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructValueAnnotationAnnotation",
+                        "relative_name": "StructValueAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -346,6 +380,8 @@
                 "full_type_name": "examples.structs.StructCategory",
                 "mapped_type_name": "StructCategory",
                 "name": "category",
+                "relative_mapped_type_name": "StructCategory",
+                "relative_type_name": "StructCategory",
                 "type_name": "StructCategory"
             }
         ],
@@ -359,60 +395,34 @@
         "parent_full_class_name": "examples:structs::StructBaseBlockModel",
         "parent_full_name": "examples.structs.StructBaseBlock",
         "parent_name": "StructBaseBlock",
+        "parent_relative_class_name": "StructBaseBlockModel",
+        "parent_relative_name": "StructBaseBlock",
+        "relative_class_name": "InheritedStructModel",
+        "relative_name": "InheritedStruct",
         "type": "struct"
     },
     {
         "annotations": [
             {
-                "arguments": [
-                    {
-                        "container_type": "none",
-                        "field_name": "value",
-                        "full_mapped_type_name": "QString",
-                        "full_type_name": "string",
-                        "mapped_type_name": "QString",
-                        "name": "value",
-                        "type_name": "string",
-                        "value": "\"main_config\""
-                    }
-                ],
+                "arguments": [],
                 "class_name": "StructValueAnnotationAnnotation",
-                "full_class_name": "examples:structs::StructValueAnnotationAnnotation",
-                "full_name": "examples.structs.StructValueAnnotation",
+                "full_class_name": "StructValueAnnotationAnnotation",
+                "full_name": "StructValueAnnotation",
                 "name": "StructValueAnnotation",
                 "namespace": "examples.structs",
-                "namespace_class_prefix": "examples:structs::",
+                "relative_class_name": "StructValueAnnotationAnnotation",
+                "relative_name": "StructValueAnnotation",
                 "type": "annotation"
             },
             {
-                "arguments": [
-                    {
-                        "container_type": "none",
-                        "field_name": "required",
-                        "full_mapped_type_name": "bool",
-                        "full_type_name": "bool",
-                        "mapped_type_name": "bool",
-                        "name": "required",
-                        "type_name": "bool",
-                        "value": "true"
-                    },
-                    {
-                        "container_type": "none",
-                        "field_name": "priority",
-                        "full_mapped_type_name": "int32_t",
-                        "full_type_name": "int32",
-                        "mapped_type_name": "int32_t",
-                        "name": "priority",
-                        "type_name": "int32",
-                        "value": "10"
-                    }
-                ],
+                "arguments": [],
                 "class_name": "StructConfigAnnotationAnnotation",
-                "full_class_name": "examples:structs::StructConfigAnnotationAnnotation",
-                "full_name": "examples.structs.StructConfigAnnotation",
+                "full_class_name": "StructConfigAnnotationAnnotation",
+                "full_name": "StructConfigAnnotation",
                 "name": "StructConfigAnnotation",
                 "namespace": "examples.structs",
-                "namespace_class_prefix": "examples:structs::",
+                "relative_class_name": "StructConfigAnnotationAnnotation",
+                "relative_name": "StructConfigAnnotation",
                 "type": "annotation"
             }
         ],
@@ -421,24 +431,14 @@
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "value",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "value",
-                                "type_name": "string",
-                                "value": "\"title_field\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructValueAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructValueAnnotationAnnotation",
-                        "full_name": "examples.structs.StructValueAnnotation",
+                        "full_class_name": "StructValueAnnotationAnnotation",
+                        "full_name": "StructValueAnnotation",
                         "name": "StructValueAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructValueAnnotationAnnotation",
+                        "relative_name": "StructValueAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -449,29 +449,21 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "title",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "description",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "description",
-                                "type_name": "string",
-                                "value": "\"优先级字段\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructAnnotationAnnotation",
-                        "full_name": "examples.structs.StructAnnotation",
+                        "full_class_name": "StructAnnotationAnnotation",
+                        "full_name": "StructAnnotation",
                         "name": "StructAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructAnnotationAnnotation",
+                        "relative_name": "StructAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -482,6 +474,8 @@
                 "full_type_name": "int32",
                 "mapped_type_name": "int32_t",
                 "name": "priority",
+                "relative_mapped_type_name": "int32_t",
+                "relative_type_name": "int32",
                 "type_name": "int32"
             }
         ],
@@ -495,6 +489,10 @@
         "parent_full_class_name": "",
         "parent_full_name": "",
         "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "AnnotatedStructModel",
+        "relative_name": "AnnotatedStruct",
         "type": "struct"
     },
     {
@@ -504,24 +502,14 @@
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "value",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "value",
-                                "type_name": "string",
-                                "value": "\"int8_field\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructValueAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructValueAnnotationAnnotation",
-                        "full_name": "examples.structs.StructValueAnnotation",
+                        "full_class_name": "StructValueAnnotationAnnotation",
+                        "full_name": "StructValueAnnotation",
                         "name": "StructValueAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructValueAnnotationAnnotation",
+                        "relative_name": "StructValueAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -532,29 +520,21 @@
                 "full_type_name": "int8",
                 "mapped_type_name": "int8_t",
                 "name": "int8Field",
+                "relative_mapped_type_name": "int8_t",
+                "relative_type_name": "int8",
                 "type_name": "int8"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "description",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "description",
-                                "type_name": "string",
-                                "value": "\"16位整数字段\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructAnnotationAnnotation",
-                        "full_name": "examples.structs.StructAnnotation",
+                        "full_class_name": "StructAnnotationAnnotation",
+                        "full_name": "StructAnnotation",
                         "name": "StructAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructAnnotationAnnotation",
+                        "relative_name": "StructAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -565,39 +545,21 @@
                 "full_type_name": "int16",
                 "mapped_type_name": "int16_t",
                 "name": "int16Field",
+                "relative_mapped_type_name": "int16_t",
+                "relative_type_name": "int16",
                 "type_name": "int16"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "required",
-                                "full_mapped_type_name": "bool",
-                                "full_type_name": "bool",
-                                "mapped_type_name": "bool",
-                                "name": "required",
-                                "type_name": "bool",
-                                "value": "true"
-                            },
-                            {
-                                "container_type": "none",
-                                "field_name": "priority",
-                                "full_mapped_type_name": "int32_t",
-                                "full_type_name": "int32",
-                                "mapped_type_name": "int32_t",
-                                "name": "priority",
-                                "type_name": "int32",
-                                "value": "5"
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructConfigAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructConfigAnnotationAnnotation",
-                        "full_name": "examples.structs.StructConfigAnnotation",
+                        "full_class_name": "StructConfigAnnotationAnnotation",
+                        "full_name": "StructConfigAnnotation",
                         "name": "StructConfigAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructConfigAnnotationAnnotation",
+                        "relative_name": "StructConfigAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -608,6 +570,8 @@
                 "full_type_name": "int32",
                 "mapped_type_name": "int32_t",
                 "name": "int32Field",
+                "relative_mapped_type_name": "int32_t",
+                "relative_type_name": "int32",
                 "type_name": "int32"
             },
             {
@@ -619,6 +583,8 @@
                 "full_type_name": "int64",
                 "mapped_type_name": "int64_t",
                 "name": "int64Field",
+                "relative_mapped_type_name": "int64_t",
+                "relative_type_name": "int64",
                 "type_name": "int64"
             },
             {
@@ -630,6 +596,8 @@
                 "full_type_name": "uint8",
                 "mapped_type_name": "uint8_t",
                 "name": "uint8Field",
+                "relative_mapped_type_name": "uint8_t",
+                "relative_type_name": "uint8",
                 "type_name": "uint8"
             },
             {
@@ -641,6 +609,8 @@
                 "full_type_name": "uint16",
                 "mapped_type_name": "uint16_t",
                 "name": "uint16Field",
+                "relative_mapped_type_name": "uint16_t",
+                "relative_type_name": "uint16",
                 "type_name": "uint16"
             },
             {
@@ -652,6 +622,8 @@
                 "full_type_name": "uint32",
                 "mapped_type_name": "uint32_t",
                 "name": "uint32Field",
+                "relative_mapped_type_name": "uint32_t",
+                "relative_type_name": "uint32",
                 "type_name": "uint32"
             },
             {
@@ -663,29 +635,21 @@
                 "full_type_name": "uint64",
                 "mapped_type_name": "uint64_t",
                 "name": "uint64Field",
+                "relative_mapped_type_name": "uint64_t",
+                "relative_type_name": "uint64",
                 "type_name": "uint64"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "description",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "description",
-                                "type_name": "string",
-                                "value": "\"32位浮点数\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructAnnotationAnnotation",
-                        "full_name": "examples.structs.StructAnnotation",
+                        "full_class_name": "StructAnnotationAnnotation",
+                        "full_name": "StructAnnotation",
                         "name": "StructAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructAnnotationAnnotation",
+                        "relative_name": "StructAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -696,29 +660,21 @@
                 "full_type_name": "float32",
                 "mapped_type_name": "float",
                 "name": "float32Field",
+                "relative_mapped_type_name": "float",
+                "relative_type_name": "float32",
                 "type_name": "float32"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "value",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "value",
-                                "type_name": "string",
-                                "value": "\"double_field\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructValueAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructValueAnnotationAnnotation",
-                        "full_name": "examples.structs.StructValueAnnotation",
+                        "full_class_name": "StructValueAnnotationAnnotation",
+                        "full_name": "StructValueAnnotation",
                         "name": "StructValueAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructValueAnnotationAnnotation",
+                        "relative_name": "StructValueAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -729,6 +685,8 @@
                 "full_type_name": "float64",
                 "mapped_type_name": "double",
                 "name": "float64Field",
+                "relative_mapped_type_name": "double",
+                "relative_type_name": "float64",
                 "type_name": "float64"
             },
             {
@@ -740,29 +698,21 @@
                 "full_type_name": "bool",
                 "mapped_type_name": "bool",
                 "name": "boolField",
+                "relative_mapped_type_name": "bool",
+                "relative_type_name": "bool",
                 "type_name": "bool"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "description",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "description",
-                                "type_name": "string",
-                                "value": "\"字符串字段\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructAnnotationAnnotation",
-                        "full_name": "examples.structs.StructAnnotation",
+                        "full_class_name": "StructAnnotationAnnotation",
+                        "full_name": "StructAnnotation",
                         "name": "StructAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructAnnotationAnnotation",
+                        "relative_name": "StructAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -773,6 +723,8 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "stringField",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             },
             {
@@ -784,29 +736,21 @@
                 "full_type_name": "bytes",
                 "mapped_type_name": "QByteArray",
                 "name": "bytesField",
+                "relative_mapped_type_name": "QByteArray",
+                "relative_type_name": "bytes",
                 "type_name": "bytes"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "value",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "value",
-                                "type_name": "string",
-                                "value": "\"status_field\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructValueAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructValueAnnotationAnnotation",
-                        "full_name": "examples.structs.StructValueAnnotation",
+                        "full_class_name": "StructValueAnnotationAnnotation",
+                        "full_name": "StructValueAnnotation",
                         "name": "StructValueAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructValueAnnotationAnnotation",
+                        "relative_name": "StructValueAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -817,39 +761,21 @@
                 "full_type_name": "examples.structs.StructStatus",
                 "mapped_type_name": "StructStatus",
                 "name": "status",
+                "relative_mapped_type_name": "StructStatus",
+                "relative_type_name": "StructStatus",
                 "type_name": "StructStatus"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "required",
-                                "full_mapped_type_name": "bool",
-                                "full_type_name": "bool",
-                                "mapped_type_name": "bool",
-                                "name": "required",
-                                "type_name": "bool",
-                                "value": "false"
-                            },
-                            {
-                                "container_type": "none",
-                                "field_name": "priority",
-                                "full_mapped_type_name": "int32_t",
-                                "full_type_name": "int32",
-                                "mapped_type_name": "int32_t",
-                                "name": "priority",
-                                "type_name": "int32",
-                                "value": "3"
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructConfigAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructConfigAnnotationAnnotation",
-                        "full_name": "examples.structs.StructConfigAnnotation",
+                        "full_class_name": "StructConfigAnnotationAnnotation",
+                        "full_name": "StructConfigAnnotation",
                         "name": "StructConfigAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructConfigAnnotationAnnotation",
+                        "relative_name": "StructConfigAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -860,29 +786,21 @@
                 "full_type_name": "examples.structs.StructCategory",
                 "mapped_type_name": "StructCategory",
                 "name": "category",
+                "relative_mapped_type_name": "StructCategory",
+                "relative_type_name": "StructCategory",
                 "type_name": "StructCategory"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "description",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "description",
-                                "type_name": "string",
-                                "value": "\"基础块字段\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructAnnotationAnnotation",
-                        "full_name": "examples.structs.StructAnnotation",
+                        "full_class_name": "StructAnnotationAnnotation",
+                        "full_name": "StructAnnotation",
                         "name": "StructAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructAnnotationAnnotation",
+                        "relative_name": "StructAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -892,6 +810,8 @@
                 "full_type_name": "examples.structs.StructBaseBlock",
                 "mapped_type_name": "StructBaseBlockBlock",
                 "name": "baseBlock",
+                "relative_mapped_type_name": "StructBaseBlockBlock",
+                "relative_type_name": "StructBaseBlock",
                 "type_name": "StructBaseBlock"
             },
             {
@@ -902,6 +822,8 @@
                 "full_type_name": "examples.structs.StructExtendedBlock",
                 "mapped_type_name": "StructExtendedBlockBlock",
                 "name": "extendedBlock",
+                "relative_mapped_type_name": "StructExtendedBlockBlock",
+                "relative_type_name": "StructExtendedBlock",
                 "type_name": "StructExtendedBlock"
             }
         ],
@@ -915,6 +837,10 @@
         "parent_full_class_name": "",
         "parent_full_name": "",
         "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "AllTypesStructModel",
+        "relative_name": "AllTypesStruct",
         "type": "struct"
     },
     {
@@ -924,24 +850,14 @@
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "description",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "description",
-                                "type_name": "string",
-                                "value": "\"整数数组\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructAnnotationAnnotation",
-                        "full_name": "examples.structs.StructAnnotation",
+                        "full_class_name": "StructAnnotationAnnotation",
+                        "full_name": "StructAnnotation",
                         "name": "StructAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructAnnotationAnnotation",
+                        "relative_name": "StructAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -956,29 +872,21 @@
                 "full_type_name": "int32",
                 "mapped_type_name": "int32_t",
                 "name": "intArray",
+                "relative_mapped_type_name": "int32_t",
+                "relative_type_name": "int32",
                 "type_name": "int32"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "value",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "value",
-                                "type_name": "string",
-                                "value": "\"string_array\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructValueAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructValueAnnotationAnnotation",
-                        "full_name": "examples.structs.StructValueAnnotation",
+                        "full_class_name": "StructValueAnnotationAnnotation",
+                        "full_name": "StructValueAnnotation",
                         "name": "StructValueAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructValueAnnotationAnnotation",
+                        "relative_name": "StructValueAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -988,39 +896,21 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "stringArray",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "required",
-                                "full_mapped_type_name": "bool",
-                                "full_type_name": "bool",
-                                "mapped_type_name": "bool",
-                                "name": "required",
-                                "type_name": "bool",
-                                "value": "true"
-                            },
-                            {
-                                "container_type": "none",
-                                "field_name": "priority",
-                                "full_mapped_type_name": "int32_t",
-                                "full_type_name": "int32",
-                                "mapped_type_name": "int32_t",
-                                "name": "priority",
-                                "type_name": "int32",
-                                "value": "7"
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructConfigAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructConfigAnnotationAnnotation",
-                        "full_name": "examples.structs.StructConfigAnnotation",
+                        "full_class_name": "StructConfigAnnotationAnnotation",
+                        "full_name": "StructConfigAnnotation",
                         "name": "StructConfigAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructConfigAnnotationAnnotation",
+                        "relative_name": "StructConfigAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -1034,6 +924,8 @@
                 "full_type_name": "examples.structs.StructStatus",
                 "mapped_type_name": "StructStatus",
                 "name": "statusArray",
+                "relative_mapped_type_name": "StructStatus",
+                "relative_type_name": "StructStatus",
                 "type_name": "StructStatus"
             },
             {
@@ -1044,29 +936,21 @@
                 "full_type_name": "examples.structs.StructCategory",
                 "mapped_type_name": "StructCategory",
                 "name": "categoryArray",
+                "relative_mapped_type_name": "StructCategory",
+                "relative_type_name": "StructCategory",
                 "type_name": "StructCategory"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "description",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "description",
-                                "type_name": "string",
-                                "value": "\"块数组\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructAnnotationAnnotation",
-                        "full_name": "examples.structs.StructAnnotation",
+                        "full_class_name": "StructAnnotationAnnotation",
+                        "full_name": "StructAnnotation",
                         "name": "StructAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructAnnotationAnnotation",
+                        "relative_name": "StructAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -1076,29 +960,21 @@
                 "full_type_name": "examples.structs.StructBaseBlock",
                 "mapped_type_name": "StructBaseBlockBlock",
                 "name": "blockArray",
+                "relative_mapped_type_name": "StructBaseBlockBlock",
+                "relative_type_name": "StructBaseBlock",
                 "type_name": "StructBaseBlock"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "value",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "value",
-                                "type_name": "string",
-                                "value": "\"optional_int\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructValueAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructValueAnnotationAnnotation",
-                        "full_name": "examples.structs.StructValueAnnotation",
+                        "full_class_name": "StructValueAnnotationAnnotation",
+                        "full_name": "StructValueAnnotation",
                         "name": "StructValueAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructValueAnnotationAnnotation",
+                        "relative_name": "StructValueAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -1109,6 +985,8 @@
                 "full_type_name": "int32",
                 "mapped_type_name": "int32_t",
                 "name": "optionalInt",
+                "relative_mapped_type_name": "int32_t",
+                "relative_type_name": "int32",
                 "type_name": "int32"
             },
             {
@@ -1119,29 +997,21 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "optionalString",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "description",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "description",
-                                "type_name": "string",
-                                "value": "\"可选状态\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructAnnotationAnnotation",
-                        "full_name": "examples.structs.StructAnnotation",
+                        "full_class_name": "StructAnnotationAnnotation",
+                        "full_name": "StructAnnotation",
                         "name": "StructAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructAnnotationAnnotation",
+                        "relative_name": "StructAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -1151,6 +1021,8 @@
                 "full_type_name": "examples.structs.StructStatus",
                 "mapped_type_name": "StructStatus",
                 "name": "optionalStatus",
+                "relative_mapped_type_name": "StructStatus",
+                "relative_type_name": "StructStatus",
                 "type_name": "StructStatus"
             },
             {
@@ -1162,29 +1034,21 @@
                 "full_type_name": "examples.structs.StructCategory",
                 "mapped_type_name": "StructCategory",
                 "name": "optionalCategory",
+                "relative_mapped_type_name": "StructCategory",
+                "relative_type_name": "StructCategory",
                 "type_name": "StructCategory"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "value",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "value",
-                                "type_name": "string",
-                                "value": "\"optional_block\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructValueAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructValueAnnotationAnnotation",
-                        "full_name": "examples.structs.StructValueAnnotation",
+                        "full_class_name": "StructValueAnnotationAnnotation",
+                        "full_name": "StructValueAnnotation",
                         "name": "StructValueAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructValueAnnotationAnnotation",
+                        "relative_name": "StructValueAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -1194,29 +1058,21 @@
                 "full_type_name": "examples.structs.StructBaseBlock",
                 "mapped_type_name": "StructBaseBlockBlock",
                 "name": "optionalBlock",
+                "relative_mapped_type_name": "StructBaseBlockBlock",
+                "relative_type_name": "StructBaseBlock",
                 "type_name": "StructBaseBlock"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "description",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "description",
-                                "type_name": "string",
-                                "value": "\"整数映射\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructAnnotationAnnotation",
-                        "full_name": "examples.structs.StructAnnotation",
+                        "full_class_name": "StructAnnotationAnnotation",
+                        "full_name": "StructAnnotation",
                         "name": "StructAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructAnnotationAnnotation",
+                        "relative_name": "StructAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -1226,6 +1082,8 @@
                 "full_type_name": "int32",
                 "mapped_type_name": "int32_t",
                 "name": "intMap",
+                "relative_mapped_type_name": "int32_t",
+                "relative_type_name": "int32",
                 "type_name": "int32"
             },
             {
@@ -1236,29 +1094,21 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "stringMap",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "value",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "value",
-                                "type_name": "string",
-                                "value": "\"status_map\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructValueAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructValueAnnotationAnnotation",
-                        "full_name": "examples.structs.StructValueAnnotation",
+                        "full_class_name": "StructValueAnnotationAnnotation",
+                        "full_name": "StructValueAnnotation",
                         "name": "StructValueAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructValueAnnotationAnnotation",
+                        "relative_name": "StructValueAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -1268,6 +1118,8 @@
                 "full_type_name": "examples.structs.StructStatus",
                 "mapped_type_name": "StructStatus",
                 "name": "statusMap",
+                "relative_mapped_type_name": "StructStatus",
+                "relative_type_name": "StructStatus",
                 "type_name": "StructStatus"
             },
             {
@@ -1278,29 +1130,21 @@
                 "full_type_name": "examples.structs.StructCategory",
                 "mapped_type_name": "StructCategory",
                 "name": "categoryMap",
+                "relative_mapped_type_name": "StructCategory",
+                "relative_type_name": "StructCategory",
                 "type_name": "StructCategory"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "description",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "description",
-                                "type_name": "string",
-                                "value": "\"块映射\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructAnnotationAnnotation",
-                        "full_name": "examples.structs.StructAnnotation",
+                        "full_class_name": "StructAnnotationAnnotation",
+                        "full_name": "StructAnnotation",
                         "name": "StructAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructAnnotationAnnotation",
+                        "relative_name": "StructAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -1310,6 +1154,8 @@
                 "full_type_name": "examples.structs.StructBaseBlock",
                 "mapped_type_name": "StructBaseBlockBlock",
                 "name": "blockMap",
+                "relative_mapped_type_name": "StructBaseBlockBlock",
+                "relative_type_name": "StructBaseBlock",
                 "type_name": "StructBaseBlock"
             }
         ],
@@ -1323,6 +1169,10 @@
         "parent_full_class_name": "",
         "parent_full_name": "",
         "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "ContainerStructModel",
+        "relative_name": "ContainerStruct",
         "type": "struct"
     },
     {
@@ -1332,24 +1182,14 @@
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "value",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "value",
-                                "type_name": "string",
-                                "value": "\"struct_name\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructValueAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructValueAnnotationAnnotation",
-                        "full_name": "examples.structs.StructValueAnnotation",
+                        "full_class_name": "StructValueAnnotationAnnotation",
+                        "full_name": "StructValueAnnotation",
                         "name": "StructValueAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructValueAnnotationAnnotation",
+                        "relative_name": "StructValueAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -1360,39 +1200,21 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "name",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "required",
-                                "full_mapped_type_name": "bool",
-                                "full_type_name": "bool",
-                                "mapped_type_name": "bool",
-                                "name": "required",
-                                "type_name": "bool",
-                                "value": "true"
-                            },
-                            {
-                                "container_type": "none",
-                                "field_name": "priority",
-                                "full_mapped_type_name": "int32_t",
-                                "full_type_name": "int32",
-                                "mapped_type_name": "int32_t",
-                                "name": "priority",
-                                "type_name": "int32",
-                                "value": "9"
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructConfigAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructConfigAnnotationAnnotation",
-                        "full_name": "examples.structs.StructConfigAnnotation",
+                        "full_class_name": "StructConfigAnnotationAnnotation",
+                        "full_name": "StructConfigAnnotation",
                         "name": "StructConfigAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructConfigAnnotationAnnotation",
+                        "relative_name": "StructConfigAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -1403,29 +1225,21 @@
                 "full_type_name": "examples.structs.StructStatus",
                 "mapped_type_name": "StructStatus",
                 "name": "status",
+                "relative_mapped_type_name": "StructStatus",
+                "relative_type_name": "StructStatus",
                 "type_name": "StructStatus"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "description",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "description",
-                                "type_name": "string",
-                                "value": "\"基础块字段\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructAnnotationAnnotation",
-                        "full_name": "examples.structs.StructAnnotation",
+                        "full_class_name": "StructAnnotationAnnotation",
+                        "full_name": "StructAnnotation",
                         "name": "StructAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructAnnotationAnnotation",
+                        "relative_name": "StructAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -1435,29 +1249,21 @@
                 "full_type_name": "examples.structs.StructBaseBlock",
                 "mapped_type_name": "StructBaseBlockBlock",
                 "name": "baseBlock",
+                "relative_mapped_type_name": "StructBaseBlockBlock",
+                "relative_type_name": "StructBaseBlock",
                 "type_name": "StructBaseBlock"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "value",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "value",
-                                "type_name": "string",
-                                "value": "\"extended_block\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructValueAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructValueAnnotationAnnotation",
-                        "full_name": "examples.structs.StructValueAnnotation",
+                        "full_class_name": "StructValueAnnotationAnnotation",
+                        "full_name": "StructValueAnnotation",
                         "name": "StructValueAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructValueAnnotationAnnotation",
+                        "relative_name": "StructValueAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -1467,39 +1273,21 @@
                 "full_type_name": "examples.structs.StructExtendedBlock",
                 "mapped_type_name": "StructExtendedBlockBlock",
                 "name": "extendedBlock",
+                "relative_mapped_type_name": "StructExtendedBlockBlock",
+                "relative_type_name": "StructExtendedBlock",
                 "type_name": "StructExtendedBlock"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "required",
-                                "full_mapped_type_name": "bool",
-                                "full_type_name": "bool",
-                                "mapped_type_name": "bool",
-                                "name": "required",
-                                "type_name": "bool",
-                                "value": "false"
-                            },
-                            {
-                                "container_type": "none",
-                                "field_name": "priority",
-                                "full_mapped_type_name": "int32_t",
-                                "full_type_name": "int32",
-                                "mapped_type_name": "int32_t",
-                                "name": "priority",
-                                "type_name": "int32",
-                                "value": "2"
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructConfigAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructConfigAnnotationAnnotation",
-                        "full_name": "examples.structs.StructConfigAnnotation",
+                        "full_class_name": "StructConfigAnnotationAnnotation",
+                        "full_name": "StructConfigAnnotation",
                         "name": "StructConfigAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructConfigAnnotationAnnotation",
+                        "relative_name": "StructConfigAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -1509,29 +1297,21 @@
                 "full_type_name": "examples.structs.StructBaseBlock",
                 "mapped_type_name": "StructBaseBlockBlock",
                 "name": "blockList",
+                "relative_mapped_type_name": "StructBaseBlockBlock",
+                "relative_type_name": "StructBaseBlock",
                 "type_name": "StructBaseBlock"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "value",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "value",
-                                "type_name": "string",
-                                "value": "\"optional_category\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructValueAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructValueAnnotationAnnotation",
-                        "full_name": "examples.structs.StructValueAnnotation",
+                        "full_class_name": "StructValueAnnotationAnnotation",
+                        "full_name": "StructValueAnnotation",
                         "name": "StructValueAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructValueAnnotationAnnotation",
+                        "relative_name": "StructValueAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -1541,29 +1321,21 @@
                 "full_type_name": "examples.structs.StructCategory",
                 "mapped_type_name": "StructCategory",
                 "name": "optionalCategory",
+                "relative_mapped_type_name": "StructCategory",
+                "relative_type_name": "StructCategory",
                 "type_name": "StructCategory"
             },
             {
                 "annotations": [
                     {
-                        "arguments": [
-                            {
-                                "container_type": "none",
-                                "field_name": "description",
-                                "full_mapped_type_name": "QString",
-                                "full_type_name": "string",
-                                "mapped_type_name": "QString",
-                                "name": "description",
-                                "type_name": "string",
-                                "value": "\"配置映射\""
-                            }
-                        ],
+                        "arguments": [],
                         "class_name": "StructAnnotationAnnotation",
-                        "full_class_name": "examples:structs::StructAnnotationAnnotation",
-                        "full_name": "examples.structs.StructAnnotation",
+                        "full_class_name": "StructAnnotationAnnotation",
+                        "full_name": "StructAnnotation",
                         "name": "StructAnnotation",
                         "namespace": "examples.structs",
-                        "namespace_class_prefix": "examples:structs::",
+                        "relative_class_name": "StructAnnotationAnnotation",
+                        "relative_name": "StructAnnotation",
                         "type": "annotation"
                     }
                 ],
@@ -1573,6 +1345,8 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "configMap",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             }
         ],
@@ -1586,6 +1360,10 @@
         "parent_full_class_name": "",
         "parent_full_name": "",
         "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "ComprehensiveStructModel",
+        "relative_name": "ComprehensiveStruct",
         "type": "struct"
     }
 ],
@@ -1598,8 +1376,8 @@
         }
     ]
 },
-    "CURRENT_TIME": "2025-06-12 22:40:39",
-    "SOURCE_FILE": ".\examples\04_structs.mota",
+    "CURRENT_TIME": "2025-06-13 16:48:20",
+    "SOURCE_FILE": "",
     "NAMESPACE": {
     "as_class_prefix": "examples::structs::",
     "exists": true,
@@ -1629,7 +1407,7 @@
             "name": "AllTypesStruct",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.AllTypesStruct",
-            "relative_type_name": "AllTypesStructModel",
+            "relative_type_name": "AllTypesStruct",
             "type": "struct"
         },
         {
@@ -1638,7 +1416,7 @@
             "name": "AnnotatedStruct",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.AnnotatedStruct",
-            "relative_type_name": "AnnotatedStructModel",
+            "relative_type_name": "AnnotatedStruct",
             "type": "struct"
         },
         {
@@ -1647,7 +1425,7 @@
             "name": "BasicStruct",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.BasicStruct",
-            "relative_type_name": "BasicStructModel",
+            "relative_type_name": "BasicStruct",
             "type": "struct"
         },
         {
@@ -1656,7 +1434,7 @@
             "name": "ComprehensiveStruct",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.ComprehensiveStruct",
-            "relative_type_name": "ComprehensiveStructModel",
+            "relative_type_name": "ComprehensiveStruct",
             "type": "struct"
         },
         {
@@ -1665,7 +1443,7 @@
             "name": "ContainerStruct",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.ContainerStruct",
-            "relative_type_name": "ContainerStructModel",
+            "relative_type_name": "ContainerStruct",
             "type": "struct"
         },
         {
@@ -1674,7 +1452,7 @@
             "name": "InheritedStruct",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.InheritedStruct",
-            "relative_type_name": "InheritedStructModel",
+            "relative_type_name": "InheritedStruct",
             "type": "struct"
         },
         {
@@ -1683,7 +1461,7 @@
             "name": "StructAnnotation",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.StructAnnotation",
-            "relative_type_name": "StructAnnotationAnnotation",
+            "relative_type_name": "StructAnnotation",
             "type": "annotation_decl"
         },
         {
@@ -1692,7 +1470,7 @@
             "name": "StructBaseBlock",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.StructBaseBlock",
-            "relative_type_name": "StructBaseBlockBlock",
+            "relative_type_name": "StructBaseBlock",
             "type": "block"
         },
         {
@@ -1710,7 +1488,7 @@
             "name": "StructConfigAnnotation",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.StructConfigAnnotation",
-            "relative_type_name": "StructConfigAnnotationAnnotation",
+            "relative_type_name": "StructConfigAnnotation",
             "type": "annotation_decl"
         },
         {
@@ -1719,7 +1497,7 @@
             "name": "StructExtendedBlock",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.StructExtendedBlock",
-            "relative_type_name": "StructExtendedBlockBlock",
+            "relative_type_name": "StructExtendedBlock",
             "type": "block"
         },
         {
@@ -1737,7 +1515,7 @@
             "name": "StructValueAnnotation",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.StructValueAnnotation",
-            "relative_type_name": "StructValueAnnotationAnnotation",
+            "relative_type_name": "StructValueAnnotation",
             "type": "annotation_decl"
         },
         {
@@ -1746,7 +1524,7 @@
             "name": "IniGroup",
             "namespace_name": "yima",
             "qualified_name": "yima.IniGroup",
-            "relative_type_name": "IniGroupAnnotation",
+            "relative_type_name": "yima.IniGroup",
             "type": "annotation_decl"
         },
         {
@@ -1755,7 +1533,7 @@
             "name": "Scope",
             "namespace_name": "yima",
             "qualified_name": "yima.Scope",
-            "relative_type_name": "ScopeAnnotation",
+            "relative_type_name": "yima.Scope",
             "type": "annotation_decl"
         },
         {
@@ -1764,7 +1542,7 @@
             "name": "Storage",
             "namespace_name": "yima",
             "qualified_name": "yima.Storage",
-            "relative_type_name": "StorageAnnotation",
+            "relative_type_name": "yima.Storage",
             "type": "annotation_decl"
         },
         {
@@ -1773,7 +1551,7 @@
             "name": "Window",
             "namespace_name": "yima",
             "qualified_name": "yima.Window",
-            "relative_type_name": "WindowAnnotation",
+            "relative_type_name": "yima.Window",
             "type": "annotation_decl"
         }
     ],
@@ -1785,7 +1563,7 @@
                 "name": "StructAnnotation",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.StructAnnotation",
-                "relative_type_name": "StructAnnotationAnnotation",
+                "relative_type_name": "StructAnnotation",
                 "type": "annotation_decl"
             },
             {
@@ -1794,7 +1572,7 @@
                 "name": "StructConfigAnnotation",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.StructConfigAnnotation",
-                "relative_type_name": "StructConfigAnnotationAnnotation",
+                "relative_type_name": "StructConfigAnnotation",
                 "type": "annotation_decl"
             },
             {
@@ -1803,7 +1581,7 @@
                 "name": "StructValueAnnotation",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.StructValueAnnotation",
-                "relative_type_name": "StructValueAnnotationAnnotation",
+                "relative_type_name": "StructValueAnnotation",
                 "type": "annotation_decl"
             },
             {
@@ -1812,7 +1590,7 @@
                 "name": "IniGroup",
                 "namespace_name": "yima",
                 "qualified_name": "yima.IniGroup",
-                "relative_type_name": "IniGroupAnnotation",
+                "relative_type_name": "yima.IniGroup",
                 "type": "annotation_decl"
             },
             {
@@ -1821,7 +1599,7 @@
                 "name": "Scope",
                 "namespace_name": "yima",
                 "qualified_name": "yima.Scope",
-                "relative_type_name": "ScopeAnnotation",
+                "relative_type_name": "yima.Scope",
                 "type": "annotation_decl"
             },
             {
@@ -1830,7 +1608,7 @@
                 "name": "Storage",
                 "namespace_name": "yima",
                 "qualified_name": "yima.Storage",
-                "relative_type_name": "StorageAnnotation",
+                "relative_type_name": "yima.Storage",
                 "type": "annotation_decl"
             },
             {
@@ -1839,7 +1617,7 @@
                 "name": "Window",
                 "namespace_name": "yima",
                 "qualified_name": "yima.Window",
-                "relative_type_name": "WindowAnnotation",
+                "relative_type_name": "yima.Window",
                 "type": "annotation_decl"
             }
         ],
@@ -1850,7 +1628,7 @@
                 "name": "StructBaseBlock",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.StructBaseBlock",
-                "relative_type_name": "StructBaseBlockBlock",
+                "relative_type_name": "StructBaseBlock",
                 "type": "block"
             },
             {
@@ -1859,7 +1637,7 @@
                 "name": "StructExtendedBlock",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.StructExtendedBlock",
-                "relative_type_name": "StructExtendedBlockBlock",
+                "relative_type_name": "StructExtendedBlock",
                 "type": "block"
             }
         ],
@@ -1890,7 +1668,7 @@
                 "name": "AllTypesStruct",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.AllTypesStruct",
-                "relative_type_name": "AllTypesStructModel",
+                "relative_type_name": "AllTypesStruct",
                 "type": "struct"
             },
             {
@@ -1899,7 +1677,7 @@
                 "name": "AnnotatedStruct",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.AnnotatedStruct",
-                "relative_type_name": "AnnotatedStructModel",
+                "relative_type_name": "AnnotatedStruct",
                 "type": "struct"
             },
             {
@@ -1908,7 +1686,7 @@
                 "name": "BasicStruct",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.BasicStruct",
-                "relative_type_name": "BasicStructModel",
+                "relative_type_name": "BasicStruct",
                 "type": "struct"
             },
             {
@@ -1917,7 +1695,7 @@
                 "name": "ComprehensiveStruct",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.ComprehensiveStruct",
-                "relative_type_name": "ComprehensiveStructModel",
+                "relative_type_name": "ComprehensiveStruct",
                 "type": "struct"
             },
             {
@@ -1926,7 +1704,7 @@
                 "name": "ContainerStruct",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.ContainerStruct",
-                "relative_type_name": "ContainerStructModel",
+                "relative_type_name": "ContainerStruct",
                 "type": "struct"
             },
             {
@@ -1935,10 +1713,11 @@
                 "name": "InheritedStruct",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.InheritedStruct",
-                "relative_type_name": "InheritedStructModel",
+                "relative_type_name": "InheritedStruct",
                 "type": "struct"
             }
         ]
     },
     "count": 17
-}}
+}
+}

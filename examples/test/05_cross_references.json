@@ -13,6 +13,10 @@
         "parent_full_class_name": "",
         "parent_full_name": "",
         "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "CrossEnum",
+        "relative_name": "CrossEnum",
         "type": "enum",
         "values": [
             {
@@ -48,6 +52,8 @@
                 "full_type_name": "int32",
                 "mapped_type_name": "int32_t",
                 "name": "id",
+                "relative_mapped_type_name": "int32_t",
+                "relative_type_name": "int32",
                 "type_name": "int32"
             },
             {
@@ -59,6 +65,8 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "name",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             },
             {
@@ -70,6 +78,8 @@
                 "full_type_name": "examples.enums.SimpleEnum",
                 "mapped_type_name": "SimpleEnum",
                 "name": "simpleStatus",
+                "relative_mapped_type_name": "examples:enums::SimpleEnum",
+                "relative_type_name": "examples.enums.SimpleEnum",
                 "type_name": "SimpleEnum"
             },
             {
@@ -81,6 +91,8 @@
                 "full_type_name": "examples.enums.ValueEnum",
                 "mapped_type_name": "ValueEnum",
                 "name": "valueStatus",
+                "relative_mapped_type_name": "examples:enums::ValueEnum",
+                "relative_type_name": "examples.enums.ValueEnum",
                 "type_name": "ValueEnum"
             }
         ],
@@ -94,6 +106,10 @@
         "parent_full_class_name": "",
         "parent_full_name": "",
         "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "CrossBlockBlock",
+        "relative_name": "CrossBlock",
         "type": "block"
     },
     {
@@ -109,6 +125,8 @@
                 "full_type_name": "float64",
                 "mapped_type_name": "double",
                 "name": "score",
+                "relative_mapped_type_name": "double",
+                "relative_type_name": "float64",
                 "type_name": "float64"
             },
             {
@@ -120,6 +138,8 @@
                 "full_type_name": "examples.enums.SimpleEnum",
                 "mapped_type_name": "SimpleEnum",
                 "name": "category",
+                "relative_mapped_type_name": "examples:enums::SimpleEnum",
+                "relative_type_name": "examples.enums.SimpleEnum",
                 "type_name": "SimpleEnum"
             },
             {
@@ -131,6 +151,8 @@
                 "full_type_name": "examples.blocks.BlockStatus",
                 "mapped_type_name": "BlockStatus",
                 "name": "blockStatus",
+                "relative_mapped_type_name": "examples:blocks::BlockStatus",
+                "relative_type_name": "examples.blocks.BlockStatus",
                 "type_name": "BlockStatus"
             }
         ],
@@ -144,6 +166,10 @@
         "parent_full_class_name": "examples:blocks:BaseBlockBlock",
         "parent_full_name": "examples.blocks.BaseBlock",
         "parent_name": "examples.blocks.BaseBlock",
+        "parent_relative_class_name": "BaseBlockBlock",
+        "parent_relative_name": "examples.blocks.BaseBlock",
+        "relative_class_name": "InheritedCrossBlockBlock",
+        "relative_name": "InheritedCrossBlock",
         "type": "block"
     },
     {
@@ -159,6 +185,8 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "advancedField",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             },
             {
@@ -169,6 +197,8 @@
                 "full_type_name": "examples.enums.ValueEnum",
                 "mapped_type_name": "ValueEnum",
                 "name": "valueEnumArray",
+                "relative_mapped_type_name": "examples:enums::ValueEnum",
+                "relative_type_name": "examples.enums.ValueEnum",
                 "type_name": "ValueEnum"
             },
             {
@@ -179,6 +209,8 @@
                 "full_type_name": "examples.blocks.AnnotatedBlock",
                 "mapped_type_name": "AnnotatedBlockBlock",
                 "name": "optionalAnnotatedBlock",
+                "relative_mapped_type_name": "examples:blocks::AnnotatedBlockBlock",
+                "relative_type_name": "examples.blocks.AnnotatedBlock",
                 "type_name": "AnnotatedBlock"
             },
             {
@@ -189,6 +221,8 @@
                 "full_type_name": "examples.enums.SimpleEnum",
                 "mapped_type_name": "SimpleEnum",
                 "name": "enumMap",
+                "relative_mapped_type_name": "examples:enums::SimpleEnum",
+                "relative_type_name": "examples.enums.SimpleEnum",
                 "type_name": "SimpleEnum"
             }
         ],
@@ -202,6 +236,10 @@
         "parent_full_class_name": "examples:blocks:ExtendedBlockBlock",
         "parent_full_name": "examples.blocks.ExtendedBlock",
         "parent_name": "examples.blocks.ExtendedBlock",
+        "parent_relative_class_name": "ExtendedBlockBlock",
+        "parent_relative_name": "examples.blocks.ExtendedBlock",
+        "relative_class_name": "AdvancedCrossBlockBlock",
+        "relative_name": "AdvancedCrossBlock",
         "type": "block"
     },
     {
@@ -217,6 +255,8 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "name",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             },
             {
@@ -228,6 +268,8 @@
                 "full_type_name": "examples.enums.SimpleEnum",
                 "mapped_type_name": "SimpleEnum",
                 "name": "enumField",
+                "relative_mapped_type_name": "examples:enums::SimpleEnum",
+                "relative_type_name": "examples.enums.SimpleEnum",
                 "type_name": "SimpleEnum"
             },
             {
@@ -239,6 +281,8 @@
                 "full_type_name": "examples.enums.ValueEnum",
                 "mapped_type_name": "ValueEnum",
                 "name": "valueEnumField",
+                "relative_mapped_type_name": "examples:enums::ValueEnum",
+                "relative_type_name": "examples.enums.ValueEnum",
                 "type_name": "ValueEnum"
             },
             {
@@ -249,6 +293,8 @@
                 "full_type_name": "examples.blocks.BaseBlock",
                 "mapped_type_name": "BaseBlockBlock",
                 "name": "baseBlock",
+                "relative_mapped_type_name": "examples:blocks::BaseBlockBlock",
+                "relative_type_name": "examples.blocks.BaseBlock",
                 "type_name": "BaseBlock"
             },
             {
@@ -259,6 +305,8 @@
                 "full_type_name": "examples.blocks.ExtendedBlock",
                 "mapped_type_name": "ExtendedBlockBlock",
                 "name": "extendedBlock",
+                "relative_mapped_type_name": "examples:blocks::ExtendedBlockBlock",
+                "relative_type_name": "examples.blocks.ExtendedBlock",
                 "type_name": "ExtendedBlock"
             },
             {
@@ -269,6 +317,8 @@
                 "full_type_name": "examples.blocks.AnnotatedBlock",
                 "mapped_type_name": "AnnotatedBlockBlock",
                 "name": "annotatedBlock",
+                "relative_mapped_type_name": "examples:blocks::AnnotatedBlockBlock",
+                "relative_type_name": "examples.blocks.AnnotatedBlock",
                 "type_name": "AnnotatedBlock"
             },
             {
@@ -280,6 +330,8 @@
                 "full_type_name": "examples.cross_references.CrossEnum",
                 "mapped_type_name": "CrossEnum",
                 "name": "crossEnum",
+                "relative_mapped_type_name": "CrossEnum",
+                "relative_type_name": "CrossEnum",
                 "type_name": "CrossEnum"
             },
             {
@@ -290,6 +342,8 @@
                 "full_type_name": "examples.cross_references.CrossBlock",
                 "mapped_type_name": "CrossBlockBlock",
                 "name": "crossBlock",
+                "relative_mapped_type_name": "CrossBlockBlock",
+                "relative_type_name": "CrossBlock",
                 "type_name": "CrossBlock"
             }
         ],
@@ -303,6 +357,10 @@
         "parent_full_class_name": "",
         "parent_full_name": "",
         "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "CrossStructModel",
+        "relative_name": "CrossStruct",
         "type": "struct"
     },
     {
@@ -318,6 +376,8 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "description",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             },
             {
@@ -329,6 +389,8 @@
                 "full_type_name": "examples.enums.SimpleEnum",
                 "mapped_type_name": "SimpleEnum",
                 "name": "enumField",
+                "relative_mapped_type_name": "examples:enums::SimpleEnum",
+                "relative_type_name": "examples.enums.SimpleEnum",
                 "type_name": "SimpleEnum"
             },
             {
@@ -339,6 +401,8 @@
                 "full_type_name": "examples.blocks.BaseBlock",
                 "mapped_type_name": "BaseBlockBlock",
                 "name": "blockField",
+                "relative_mapped_type_name": "examples:blocks::BaseBlockBlock",
+                "relative_type_name": "examples.blocks.BaseBlock",
                 "type_name": "BaseBlock"
             },
             {
@@ -350,6 +414,8 @@
                 "full_type_name": "examples.structs.StructStatus",
                 "mapped_type_name": "StructStatus",
                 "name": "structStatus",
+                "relative_mapped_type_name": "examples:structs::StructStatus",
+                "relative_type_name": "examples.structs.StructStatus",
                 "type_name": "StructStatus"
             },
             {
@@ -364,6 +430,8 @@
                 "full_type_name": "examples.enums.ValueEnum",
                 "mapped_type_name": "ValueEnum",
                 "name": "valueEnumArray",
+                "relative_mapped_type_name": "examples:enums::ValueEnum",
+                "relative_type_name": "examples.enums.ValueEnum",
                 "type_name": "ValueEnum"
             },
             {
@@ -374,6 +442,8 @@
                 "full_type_name": "examples.blocks.ExtendedBlock",
                 "mapped_type_name": "ExtendedBlockBlock",
                 "name": "optionalBlock",
+                "relative_mapped_type_name": "examples:blocks::ExtendedBlockBlock",
+                "relative_type_name": "examples.blocks.ExtendedBlock",
                 "type_name": "ExtendedBlock"
             },
             {
@@ -384,6 +454,8 @@
                 "full_type_name": "examples.structs.StructCategory",
                 "mapped_type_name": "StructCategory",
                 "name": "categoryMap",
+                "relative_mapped_type_name": "examples:structs::StructCategory",
+                "relative_type_name": "examples.structs.StructCategory",
                 "type_name": "StructCategory"
             }
         ],
@@ -397,6 +469,10 @@
         "parent_full_class_name": "examples:structs:StructBaseBlockModel",
         "parent_full_name": "examples.structs.StructBaseBlock",
         "parent_name": "examples.structs.StructBaseBlock",
+        "parent_relative_class_name": "StructBaseBlockModel",
+        "parent_relative_name": "examples.structs.StructBaseBlock",
+        "relative_class_name": "InheritedCrossStructModel",
+        "relative_name": "InheritedCrossStruct",
         "type": "struct"
     },
     {
@@ -412,6 +488,8 @@
                 "full_type_name": "examples.enums.SimpleEnum",
                 "mapped_type_name": "SimpleEnum",
                 "name": "simpleEnum",
+                "relative_mapped_type_name": "examples:enums::SimpleEnum",
+                "relative_type_name": "examples.enums.SimpleEnum",
                 "type_name": "SimpleEnum"
             },
             {
@@ -423,6 +501,8 @@
                 "full_type_name": "examples.enums.ValueEnum",
                 "mapped_type_name": "ValueEnum",
                 "name": "valueEnum",
+                "relative_mapped_type_name": "examples:enums::ValueEnum",
+                "relative_type_name": "examples.enums.ValueEnum",
                 "type_name": "ValueEnum"
             },
             {
@@ -433,6 +513,8 @@
                 "full_type_name": "examples.blocks.BaseBlock",
                 "mapped_type_name": "BaseBlockBlock",
                 "name": "baseBlock",
+                "relative_mapped_type_name": "examples:blocks::BaseBlockBlock",
+                "relative_type_name": "examples.blocks.BaseBlock",
                 "type_name": "BaseBlock"
             },
             {
@@ -443,6 +525,8 @@
                 "full_type_name": "examples.blocks.ExtendedBlock",
                 "mapped_type_name": "ExtendedBlockBlock",
                 "name": "extendedBlock",
+                "relative_mapped_type_name": "examples:blocks::ExtendedBlockBlock",
+                "relative_type_name": "examples.blocks.ExtendedBlock",
                 "type_name": "ExtendedBlock"
             },
             {
@@ -453,6 +537,8 @@
                 "full_type_name": "examples.blocks.AnnotatedBlock",
                 "mapped_type_name": "AnnotatedBlockBlock",
                 "name": "annotatedBlock",
+                "relative_mapped_type_name": "examples:blocks::AnnotatedBlockBlock",
+                "relative_type_name": "examples.blocks.AnnotatedBlock",
                 "type_name": "AnnotatedBlock"
             },
             {
@@ -463,6 +549,8 @@
                 "full_type_name": "examples.blocks.ContainerBlock",
                 "mapped_type_name": "ContainerBlockBlock",
                 "name": "containerBlock",
+                "relative_mapped_type_name": "examples:blocks::ContainerBlockBlock",
+                "relative_type_name": "examples.blocks.ContainerBlock",
                 "type_name": "ContainerBlock"
             },
             {
@@ -473,6 +561,8 @@
                 "full_type_name": "examples.structs.StructBaseBlock",
                 "mapped_type_name": "StructBaseBlockBlock",
                 "name": "structBaseBlock",
+                "relative_mapped_type_name": "examples:structs::StructBaseBlockBlock",
+                "relative_type_name": "examples.structs.StructBaseBlock",
                 "type_name": "StructBaseBlock"
             },
             {
@@ -483,6 +573,8 @@
                 "full_type_name": "examples.structs.StructExtendedBlock",
                 "mapped_type_name": "StructExtendedBlockBlock",
                 "name": "structExtendedBlock",
+                "relative_mapped_type_name": "examples:structs::StructExtendedBlockBlock",
+                "relative_type_name": "examples.structs.StructExtendedBlock",
                 "type_name": "StructExtendedBlock"
             },
             {
@@ -493,6 +585,8 @@
                 "full_type_name": "examples.structs.BasicStruct",
                 "mapped_type_name": "BasicStructModel",
                 "name": "basicStruct",
+                "relative_mapped_type_name": "examples:structs::BasicStructModel",
+                "relative_type_name": "examples.structs.BasicStruct",
                 "type_name": "BasicStruct"
             },
             {
@@ -503,6 +597,8 @@
                 "full_type_name": "examples.structs.InheritedStruct",
                 "mapped_type_name": "InheritedStructModel",
                 "name": "inheritedStruct",
+                "relative_mapped_type_name": "examples:structs::InheritedStructModel",
+                "relative_type_name": "examples.structs.InheritedStruct",
                 "type_name": "InheritedStruct"
             },
             {
@@ -514,6 +610,8 @@
                 "full_type_name": "examples.cross_references.CrossEnum",
                 "mapped_type_name": "CrossEnum",
                 "name": "crossEnum",
+                "relative_mapped_type_name": "CrossEnum",
+                "relative_type_name": "CrossEnum",
                 "type_name": "CrossEnum"
             },
             {
@@ -524,6 +622,8 @@
                 "full_type_name": "examples.cross_references.CrossBlock",
                 "mapped_type_name": "CrossBlockBlock",
                 "name": "crossBlock",
+                "relative_mapped_type_name": "CrossBlockBlock",
+                "relative_type_name": "CrossBlock",
                 "type_name": "CrossBlock"
             },
             {
@@ -534,6 +634,8 @@
                 "full_type_name": "examples.cross_references.InheritedCrossBlock",
                 "mapped_type_name": "InheritedCrossBlockBlock",
                 "name": "inheritedCrossBlock",
+                "relative_mapped_type_name": "InheritedCrossBlockBlock",
+                "relative_type_name": "InheritedCrossBlock",
                 "type_name": "InheritedCrossBlock"
             },
             {
@@ -548,6 +650,8 @@
                 "full_type_name": "examples.enums.SimpleEnum",
                 "mapped_type_name": "SimpleEnum",
                 "name": "enumArray",
+                "relative_mapped_type_name": "examples:enums::SimpleEnum",
+                "relative_type_name": "examples.enums.SimpleEnum",
                 "type_name": "SimpleEnum"
             },
             {
@@ -558,6 +662,8 @@
                 "full_type_name": "examples.blocks.BaseBlock",
                 "mapped_type_name": "BaseBlockBlock",
                 "name": "blockArray",
+                "relative_mapped_type_name": "examples:blocks::BaseBlockBlock",
+                "relative_type_name": "examples.blocks.BaseBlock",
                 "type_name": "BaseBlock"
             },
             {
@@ -572,6 +678,8 @@
                 "full_type_name": "examples.structs.StructStatus",
                 "mapped_type_name": "StructStatus",
                 "name": "statusArray",
+                "relative_mapped_type_name": "examples:structs::StructStatus",
+                "relative_type_name": "examples.structs.StructStatus",
                 "type_name": "StructStatus"
             },
             {
@@ -583,6 +691,8 @@
                 "full_type_name": "examples.enums.ValueEnum",
                 "mapped_type_name": "ValueEnum",
                 "name": "optionalEnum",
+                "relative_mapped_type_name": "examples:enums::ValueEnum",
+                "relative_type_name": "examples.enums.ValueEnum",
                 "type_name": "ValueEnum"
             },
             {
@@ -593,6 +703,8 @@
                 "full_type_name": "examples.blocks.AnnotatedBlock",
                 "mapped_type_name": "AnnotatedBlockBlock",
                 "name": "optionalBlock",
+                "relative_mapped_type_name": "examples:blocks::AnnotatedBlockBlock",
+                "relative_type_name": "examples.blocks.AnnotatedBlock",
                 "type_name": "AnnotatedBlock"
             },
             {
@@ -603,6 +715,8 @@
                 "full_type_name": "examples.structs.StructCategory",
                 "mapped_type_name": "StructCategory",
                 "name": "optionalCategory",
+                "relative_mapped_type_name": "examples:structs::StructCategory",
+                "relative_type_name": "examples.structs.StructCategory",
                 "type_name": "StructCategory"
             },
             {
@@ -613,6 +727,8 @@
                 "full_type_name": "examples.enums.SimpleEnum",
                 "mapped_type_name": "SimpleEnum",
                 "name": "enumMap",
+                "relative_mapped_type_name": "examples:enums::SimpleEnum",
+                "relative_type_name": "examples.enums.SimpleEnum",
                 "type_name": "SimpleEnum"
             },
             {
@@ -623,6 +739,8 @@
                 "full_type_name": "examples.blocks.BaseBlock",
                 "mapped_type_name": "BaseBlockBlock",
                 "name": "blockMap",
+                "relative_mapped_type_name": "examples:blocks::BaseBlockBlock",
+                "relative_type_name": "examples.blocks.BaseBlock",
                 "type_name": "BaseBlock"
             },
             {
@@ -633,6 +751,8 @@
                 "full_type_name": "examples.structs.StructBaseBlock",
                 "mapped_type_name": "StructBaseBlockBlock",
                 "name": "structBlockMap",
+                "relative_mapped_type_name": "examples:structs::StructBaseBlockBlock",
+                "relative_type_name": "examples.structs.StructBaseBlock",
                 "type_name": "StructBaseBlock"
             }
         ],
@@ -646,6 +766,10 @@
         "parent_full_class_name": "examples:blocks:AllTypesBlockModel",
         "parent_full_name": "examples.blocks.AllTypesBlock",
         "parent_name": "examples.blocks.AllTypesBlock",
+        "parent_relative_class_name": "AllTypesBlockModel",
+        "parent_relative_name": "examples.blocks.AllTypesBlock",
+        "relative_class_name": "UltimateCrossTestModel",
+        "relative_name": "UltimateCrossTest",
         "type": "struct"
     }
 ],
@@ -674,8 +798,8 @@
         }
     ]
 },
-    "CURRENT_TIME": "2025-06-12 22:40:39",
-    "SOURCE_FILE": ".\examples\05_cross_references.mota",
+    "CURRENT_TIME": "2025-06-13 16:48:20",
+    "SOURCE_FILE": "",
     "NAMESPACE": {
     "as_class_prefix": "examples::cross_references::",
     "exists": true,
@@ -705,7 +829,7 @@
             "name": "AllTypesAnnotation",
             "namespace_name": "examples.annotations",
             "qualified_name": "examples.annotations.AllTypesAnnotation",
-            "relative_type_name": "AllTypesAnnotationAnnotation",
+            "relative_type_name": "examples.annotations.AllTypesAnnotation",
             "type": "annotation_decl"
         },
         {
@@ -714,7 +838,7 @@
             "name": "BaseAnnotation",
             "namespace_name": "examples.annotations",
             "qualified_name": "examples.annotations.BaseAnnotation",
-            "relative_type_name": "BaseAnnotationAnnotation",
+            "relative_type_name": "examples.annotations.BaseAnnotation",
             "type": "annotation_decl"
         },
         {
@@ -723,7 +847,7 @@
             "name": "ContainerAnnotation",
             "namespace_name": "examples.annotations",
             "qualified_name": "examples.annotations.ContainerAnnotation",
-            "relative_type_name": "ContainerAnnotationAnnotation",
+            "relative_type_name": "examples.annotations.ContainerAnnotation",
             "type": "annotation_decl"
         },
         {
@@ -732,7 +856,7 @@
             "name": "ExtendedAnnotation",
             "namespace_name": "examples.annotations",
             "qualified_name": "examples.annotations.ExtendedAnnotation",
-            "relative_type_name": "ExtendedAnnotationAnnotation",
+            "relative_type_name": "examples.annotations.ExtendedAnnotation",
             "type": "annotation_decl"
         },
         {
@@ -741,7 +865,7 @@
             "name": "NoParams",
             "namespace_name": "examples.annotations",
             "qualified_name": "examples.annotations.NoParams",
-            "relative_type_name": "NoParamsAnnotation",
+            "relative_type_name": "examples.annotations.NoParams",
             "type": "annotation_decl"
         },
         {
@@ -750,7 +874,7 @@
             "name": "ValueAnnotation",
             "namespace_name": "examples.annotations",
             "qualified_name": "examples.annotations.ValueAnnotation",
-            "relative_type_name": "ValueAnnotationAnnotation",
+            "relative_type_name": "examples.annotations.ValueAnnotation",
             "type": "annotation_decl"
         },
         {
@@ -759,7 +883,7 @@
             "name": "ValueOnly",
             "namespace_name": "examples.annotations",
             "qualified_name": "examples.annotations.ValueOnly",
-            "relative_type_name": "ValueOnlyAnnotation",
+            "relative_type_name": "examples.annotations.ValueOnly",
             "type": "annotation_decl"
         },
         {
@@ -768,7 +892,7 @@
             "name": "AllTypesBlock",
             "namespace_name": "examples.blocks",
             "qualified_name": "examples.blocks.AllTypesBlock",
-            "relative_type_name": "AllTypesBlockBlock",
+            "relative_type_name": "examples.blocks.AllTypesBlock",
             "type": "block"
         },
         {
@@ -777,7 +901,7 @@
             "name": "AnnotatedBlock",
             "namespace_name": "examples.blocks",
             "qualified_name": "examples.blocks.AnnotatedBlock",
-            "relative_type_name": "AnnotatedBlockBlock",
+            "relative_type_name": "examples.blocks.AnnotatedBlock",
             "type": "block"
         },
         {
@@ -786,7 +910,7 @@
             "name": "BaseBlock",
             "namespace_name": "examples.blocks",
             "qualified_name": "examples.blocks.BaseBlock",
-            "relative_type_name": "BaseBlockBlock",
+            "relative_type_name": "examples.blocks.BaseBlock",
             "type": "block"
         },
         {
@@ -795,7 +919,7 @@
             "name": "BlockAnnotation",
             "namespace_name": "examples.blocks",
             "qualified_name": "examples.blocks.BlockAnnotation",
-            "relative_type_name": "BlockAnnotationAnnotation",
+            "relative_type_name": "examples.blocks.BlockAnnotation",
             "type": "annotation_decl"
         },
         {
@@ -804,7 +928,7 @@
             "name": "BlockStatus",
             "namespace_name": "examples.blocks",
             "qualified_name": "examples.blocks.BlockStatus",
-            "relative_type_name": "BlockStatus",
+            "relative_type_name": "examples.blocks.BlockStatus",
             "type": "enum"
         },
         {
@@ -813,7 +937,7 @@
             "name": "BlockType",
             "namespace_name": "examples.blocks",
             "qualified_name": "examples.blocks.BlockType",
-            "relative_type_name": "BlockType",
+            "relative_type_name": "examples.blocks.BlockType",
             "type": "enum"
         },
         {
@@ -822,7 +946,7 @@
             "name": "BlockValueAnnotation",
             "namespace_name": "examples.blocks",
             "qualified_name": "examples.blocks.BlockValueAnnotation",
-            "relative_type_name": "BlockValueAnnotationAnnotation",
+            "relative_type_name": "examples.blocks.BlockValueAnnotation",
             "type": "annotation_decl"
         },
         {
@@ -831,7 +955,7 @@
             "name": "ContainerBlock",
             "namespace_name": "examples.blocks",
             "qualified_name": "examples.blocks.ContainerBlock",
-            "relative_type_name": "ContainerBlockBlock",
+            "relative_type_name": "examples.blocks.ContainerBlock",
             "type": "block"
         },
         {
@@ -840,7 +964,7 @@
             "name": "ExtendedBlock",
             "namespace_name": "examples.blocks",
             "qualified_name": "examples.blocks.ExtendedBlock",
-            "relative_type_name": "ExtendedBlockBlock",
+            "relative_type_name": "examples.blocks.ExtendedBlock",
             "type": "block"
         },
         {
@@ -849,7 +973,7 @@
             "name": "AdvancedCrossBlock",
             "namespace_name": "examples.cross_references",
             "qualified_name": "examples.cross_references.AdvancedCrossBlock",
-            "relative_type_name": "AdvancedCrossBlockBlock",
+            "relative_type_name": "AdvancedCrossBlock",
             "type": "block"
         },
         {
@@ -858,7 +982,7 @@
             "name": "CrossBlock",
             "namespace_name": "examples.cross_references",
             "qualified_name": "examples.cross_references.CrossBlock",
-            "relative_type_name": "CrossBlockBlock",
+            "relative_type_name": "CrossBlock",
             "type": "block"
         },
         {
@@ -876,7 +1000,7 @@
             "name": "CrossStruct",
             "namespace_name": "examples.cross_references",
             "qualified_name": "examples.cross_references.CrossStruct",
-            "relative_type_name": "CrossStructModel",
+            "relative_type_name": "CrossStruct",
             "type": "struct"
         },
         {
@@ -885,7 +1009,7 @@
             "name": "InheritedCrossBlock",
             "namespace_name": "examples.cross_references",
             "qualified_name": "examples.cross_references.InheritedCrossBlock",
-            "relative_type_name": "InheritedCrossBlockBlock",
+            "relative_type_name": "InheritedCrossBlock",
             "type": "block"
         },
         {
@@ -894,7 +1018,7 @@
             "name": "InheritedCrossStruct",
             "namespace_name": "examples.cross_references",
             "qualified_name": "examples.cross_references.InheritedCrossStruct",
-            "relative_type_name": "InheritedCrossStructModel",
+            "relative_type_name": "InheritedCrossStruct",
             "type": "struct"
         },
         {
@@ -903,7 +1027,7 @@
             "name": "UltimateCrossTest",
             "namespace_name": "examples.cross_references",
             "qualified_name": "examples.cross_references.UltimateCrossTest",
-            "relative_type_name": "UltimateCrossTestModel",
+            "relative_type_name": "UltimateCrossTest",
             "type": "struct"
         },
         {
@@ -912,7 +1036,7 @@
             "name": "EnumBlock",
             "namespace_name": "examples.enums",
             "qualified_name": "examples.enums.EnumBlock",
-            "relative_type_name": "EnumBlockBlock",
+            "relative_type_name": "examples.enums.EnumBlock",
             "type": "block"
         },
         {
@@ -921,7 +1045,7 @@
             "name": "EnumStruct",
             "namespace_name": "examples.enums",
             "qualified_name": "examples.enums.EnumStruct",
-            "relative_type_name": "EnumStructModel",
+            "relative_type_name": "examples.enums.EnumStruct",
             "type": "struct"
         },
         {
@@ -930,7 +1054,7 @@
             "name": "SimpleEnum",
             "namespace_name": "examples.enums",
             "qualified_name": "examples.enums.SimpleEnum",
-            "relative_type_name": "SimpleEnum",
+            "relative_type_name": "examples.enums.SimpleEnum",
             "type": "enum"
         },
         {
@@ -939,7 +1063,7 @@
             "name": "ValueEnum",
             "namespace_name": "examples.enums",
             "qualified_name": "examples.enums.ValueEnum",
-            "relative_type_name": "ValueEnum",
+            "relative_type_name": "examples.enums.ValueEnum",
             "type": "enum"
         },
         {
@@ -948,7 +1072,7 @@
             "name": "AllTypesStruct",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.AllTypesStruct",
-            "relative_type_name": "AllTypesStructModel",
+            "relative_type_name": "examples.structs.AllTypesStruct",
             "type": "struct"
         },
         {
@@ -957,7 +1081,7 @@
             "name": "AnnotatedStruct",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.AnnotatedStruct",
-            "relative_type_name": "AnnotatedStructModel",
+            "relative_type_name": "examples.structs.AnnotatedStruct",
             "type": "struct"
         },
         {
@@ -966,7 +1090,7 @@
             "name": "BasicStruct",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.BasicStruct",
-            "relative_type_name": "BasicStructModel",
+            "relative_type_name": "examples.structs.BasicStruct",
             "type": "struct"
         },
         {
@@ -975,7 +1099,7 @@
             "name": "ComprehensiveStruct",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.ComprehensiveStruct",
-            "relative_type_name": "ComprehensiveStructModel",
+            "relative_type_name": "examples.structs.ComprehensiveStruct",
             "type": "struct"
         },
         {
@@ -984,7 +1108,7 @@
             "name": "ContainerStruct",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.ContainerStruct",
-            "relative_type_name": "ContainerStructModel",
+            "relative_type_name": "examples.structs.ContainerStruct",
             "type": "struct"
         },
         {
@@ -993,7 +1117,7 @@
             "name": "InheritedStruct",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.InheritedStruct",
-            "relative_type_name": "InheritedStructModel",
+            "relative_type_name": "examples.structs.InheritedStruct",
             "type": "struct"
         },
         {
@@ -1002,7 +1126,7 @@
             "name": "StructAnnotation",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.StructAnnotation",
-            "relative_type_name": "StructAnnotationAnnotation",
+            "relative_type_name": "examples.structs.StructAnnotation",
             "type": "annotation_decl"
         },
         {
@@ -1011,7 +1135,7 @@
             "name": "StructBaseBlock",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.StructBaseBlock",
-            "relative_type_name": "StructBaseBlockBlock",
+            "relative_type_name": "examples.structs.StructBaseBlock",
             "type": "block"
         },
         {
@@ -1020,7 +1144,7 @@
             "name": "StructCategory",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.StructCategory",
-            "relative_type_name": "StructCategory",
+            "relative_type_name": "examples.structs.StructCategory",
             "type": "enum"
         },
         {
@@ -1029,7 +1153,7 @@
             "name": "StructConfigAnnotation",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.StructConfigAnnotation",
-            "relative_type_name": "StructConfigAnnotationAnnotation",
+            "relative_type_name": "examples.structs.StructConfigAnnotation",
             "type": "annotation_decl"
         },
         {
@@ -1038,7 +1162,7 @@
             "name": "StructExtendedBlock",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.StructExtendedBlock",
-            "relative_type_name": "StructExtendedBlockBlock",
+            "relative_type_name": "examples.structs.StructExtendedBlock",
             "type": "block"
         },
         {
@@ -1047,7 +1171,7 @@
             "name": "StructStatus",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.StructStatus",
-            "relative_type_name": "StructStatus",
+            "relative_type_name": "examples.structs.StructStatus",
             "type": "enum"
         },
         {
@@ -1056,7 +1180,7 @@
             "name": "StructValueAnnotation",
             "namespace_name": "examples.structs",
             "qualified_name": "examples.structs.StructValueAnnotation",
-            "relative_type_name": "StructValueAnnotationAnnotation",
+            "relative_type_name": "examples.structs.StructValueAnnotation",
             "type": "annotation_decl"
         },
         {
@@ -1065,7 +1189,7 @@
             "name": "IniGroup",
             "namespace_name": "yima",
             "qualified_name": "yima.IniGroup",
-            "relative_type_name": "IniGroupAnnotation",
+            "relative_type_name": "yima.IniGroup",
             "type": "annotation_decl"
         },
         {
@@ -1074,7 +1198,7 @@
             "name": "Scope",
             "namespace_name": "yima",
             "qualified_name": "yima.Scope",
-            "relative_type_name": "ScopeAnnotation",
+            "relative_type_name": "yima.Scope",
             "type": "annotation_decl"
         },
         {
@@ -1083,7 +1207,7 @@
             "name": "Storage",
             "namespace_name": "yima",
             "qualified_name": "yima.Storage",
-            "relative_type_name": "StorageAnnotation",
+            "relative_type_name": "yima.Storage",
             "type": "annotation_decl"
         },
         {
@@ -1092,7 +1216,7 @@
             "name": "Window",
             "namespace_name": "yima",
             "qualified_name": "yima.Window",
-            "relative_type_name": "WindowAnnotation",
+            "relative_type_name": "yima.Window",
             "type": "annotation_decl"
         }
     ],
@@ -1104,7 +1228,7 @@
                 "name": "AllTypesAnnotation",
                 "namespace_name": "examples.annotations",
                 "qualified_name": "examples.annotations.AllTypesAnnotation",
-                "relative_type_name": "AllTypesAnnotationAnnotation",
+                "relative_type_name": "examples.annotations.AllTypesAnnotation",
                 "type": "annotation_decl"
             },
             {
@@ -1113,7 +1237,7 @@
                 "name": "BaseAnnotation",
                 "namespace_name": "examples.annotations",
                 "qualified_name": "examples.annotations.BaseAnnotation",
-                "relative_type_name": "BaseAnnotationAnnotation",
+                "relative_type_name": "examples.annotations.BaseAnnotation",
                 "type": "annotation_decl"
             },
             {
@@ -1122,7 +1246,7 @@
                 "name": "ContainerAnnotation",
                 "namespace_name": "examples.annotations",
                 "qualified_name": "examples.annotations.ContainerAnnotation",
-                "relative_type_name": "ContainerAnnotationAnnotation",
+                "relative_type_name": "examples.annotations.ContainerAnnotation",
                 "type": "annotation_decl"
             },
             {
@@ -1131,7 +1255,7 @@
                 "name": "ExtendedAnnotation",
                 "namespace_name": "examples.annotations",
                 "qualified_name": "examples.annotations.ExtendedAnnotation",
-                "relative_type_name": "ExtendedAnnotationAnnotation",
+                "relative_type_name": "examples.annotations.ExtendedAnnotation",
                 "type": "annotation_decl"
             },
             {
@@ -1140,7 +1264,7 @@
                 "name": "NoParams",
                 "namespace_name": "examples.annotations",
                 "qualified_name": "examples.annotations.NoParams",
-                "relative_type_name": "NoParamsAnnotation",
+                "relative_type_name": "examples.annotations.NoParams",
                 "type": "annotation_decl"
             },
             {
@@ -1149,7 +1273,7 @@
                 "name": "ValueAnnotation",
                 "namespace_name": "examples.annotations",
                 "qualified_name": "examples.annotations.ValueAnnotation",
-                "relative_type_name": "ValueAnnotationAnnotation",
+                "relative_type_name": "examples.annotations.ValueAnnotation",
                 "type": "annotation_decl"
             },
             {
@@ -1158,7 +1282,7 @@
                 "name": "ValueOnly",
                 "namespace_name": "examples.annotations",
                 "qualified_name": "examples.annotations.ValueOnly",
-                "relative_type_name": "ValueOnlyAnnotation",
+                "relative_type_name": "examples.annotations.ValueOnly",
                 "type": "annotation_decl"
             },
             {
@@ -1167,7 +1291,7 @@
                 "name": "BlockAnnotation",
                 "namespace_name": "examples.blocks",
                 "qualified_name": "examples.blocks.BlockAnnotation",
-                "relative_type_name": "BlockAnnotationAnnotation",
+                "relative_type_name": "examples.blocks.BlockAnnotation",
                 "type": "annotation_decl"
             },
             {
@@ -1176,7 +1300,7 @@
                 "name": "BlockValueAnnotation",
                 "namespace_name": "examples.blocks",
                 "qualified_name": "examples.blocks.BlockValueAnnotation",
-                "relative_type_name": "BlockValueAnnotationAnnotation",
+                "relative_type_name": "examples.blocks.BlockValueAnnotation",
                 "type": "annotation_decl"
             },
             {
@@ -1185,7 +1309,7 @@
                 "name": "StructAnnotation",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.StructAnnotation",
-                "relative_type_name": "StructAnnotationAnnotation",
+                "relative_type_name": "examples.structs.StructAnnotation",
                 "type": "annotation_decl"
             },
             {
@@ -1194,7 +1318,7 @@
                 "name": "StructConfigAnnotation",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.StructConfigAnnotation",
-                "relative_type_name": "StructConfigAnnotationAnnotation",
+                "relative_type_name": "examples.structs.StructConfigAnnotation",
                 "type": "annotation_decl"
             },
             {
@@ -1203,7 +1327,7 @@
                 "name": "StructValueAnnotation",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.StructValueAnnotation",
-                "relative_type_name": "StructValueAnnotationAnnotation",
+                "relative_type_name": "examples.structs.StructValueAnnotation",
                 "type": "annotation_decl"
             },
             {
@@ -1212,7 +1336,7 @@
                 "name": "IniGroup",
                 "namespace_name": "yima",
                 "qualified_name": "yima.IniGroup",
-                "relative_type_name": "IniGroupAnnotation",
+                "relative_type_name": "yima.IniGroup",
                 "type": "annotation_decl"
             },
             {
@@ -1221,7 +1345,7 @@
                 "name": "Scope",
                 "namespace_name": "yima",
                 "qualified_name": "yima.Scope",
-                "relative_type_name": "ScopeAnnotation",
+                "relative_type_name": "yima.Scope",
                 "type": "annotation_decl"
             },
             {
@@ -1230,7 +1354,7 @@
                 "name": "Storage",
                 "namespace_name": "yima",
                 "qualified_name": "yima.Storage",
-                "relative_type_name": "StorageAnnotation",
+                "relative_type_name": "yima.Storage",
                 "type": "annotation_decl"
             },
             {
@@ -1239,7 +1363,7 @@
                 "name": "Window",
                 "namespace_name": "yima",
                 "qualified_name": "yima.Window",
-                "relative_type_name": "WindowAnnotation",
+                "relative_type_name": "yima.Window",
                 "type": "annotation_decl"
             }
         ],
@@ -1250,7 +1374,7 @@
                 "name": "AllTypesBlock",
                 "namespace_name": "examples.blocks",
                 "qualified_name": "examples.blocks.AllTypesBlock",
-                "relative_type_name": "AllTypesBlockBlock",
+                "relative_type_name": "examples.blocks.AllTypesBlock",
                 "type": "block"
             },
             {
@@ -1259,7 +1383,7 @@
                 "name": "AnnotatedBlock",
                 "namespace_name": "examples.blocks",
                 "qualified_name": "examples.blocks.AnnotatedBlock",
-                "relative_type_name": "AnnotatedBlockBlock",
+                "relative_type_name": "examples.blocks.AnnotatedBlock",
                 "type": "block"
             },
             {
@@ -1268,7 +1392,7 @@
                 "name": "BaseBlock",
                 "namespace_name": "examples.blocks",
                 "qualified_name": "examples.blocks.BaseBlock",
-                "relative_type_name": "BaseBlockBlock",
+                "relative_type_name": "examples.blocks.BaseBlock",
                 "type": "block"
             },
             {
@@ -1277,7 +1401,7 @@
                 "name": "ContainerBlock",
                 "namespace_name": "examples.blocks",
                 "qualified_name": "examples.blocks.ContainerBlock",
-                "relative_type_name": "ContainerBlockBlock",
+                "relative_type_name": "examples.blocks.ContainerBlock",
                 "type": "block"
             },
             {
@@ -1286,7 +1410,7 @@
                 "name": "ExtendedBlock",
                 "namespace_name": "examples.blocks",
                 "qualified_name": "examples.blocks.ExtendedBlock",
-                "relative_type_name": "ExtendedBlockBlock",
+                "relative_type_name": "examples.blocks.ExtendedBlock",
                 "type": "block"
             },
             {
@@ -1295,7 +1419,7 @@
                 "name": "AdvancedCrossBlock",
                 "namespace_name": "examples.cross_references",
                 "qualified_name": "examples.cross_references.AdvancedCrossBlock",
-                "relative_type_name": "AdvancedCrossBlockBlock",
+                "relative_type_name": "AdvancedCrossBlock",
                 "type": "block"
             },
             {
@@ -1304,7 +1428,7 @@
                 "name": "CrossBlock",
                 "namespace_name": "examples.cross_references",
                 "qualified_name": "examples.cross_references.CrossBlock",
-                "relative_type_name": "CrossBlockBlock",
+                "relative_type_name": "CrossBlock",
                 "type": "block"
             },
             {
@@ -1313,7 +1437,7 @@
                 "name": "InheritedCrossBlock",
                 "namespace_name": "examples.cross_references",
                 "qualified_name": "examples.cross_references.InheritedCrossBlock",
-                "relative_type_name": "InheritedCrossBlockBlock",
+                "relative_type_name": "InheritedCrossBlock",
                 "type": "block"
             },
             {
@@ -1322,7 +1446,7 @@
                 "name": "EnumBlock",
                 "namespace_name": "examples.enums",
                 "qualified_name": "examples.enums.EnumBlock",
-                "relative_type_name": "EnumBlockBlock",
+                "relative_type_name": "examples.enums.EnumBlock",
                 "type": "block"
             },
             {
@@ -1331,7 +1455,7 @@
                 "name": "StructBaseBlock",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.StructBaseBlock",
-                "relative_type_name": "StructBaseBlockBlock",
+                "relative_type_name": "examples.structs.StructBaseBlock",
                 "type": "block"
             },
             {
@@ -1340,7 +1464,7 @@
                 "name": "StructExtendedBlock",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.StructExtendedBlock",
-                "relative_type_name": "StructExtendedBlockBlock",
+                "relative_type_name": "examples.structs.StructExtendedBlock",
                 "type": "block"
             }
         ],
@@ -1351,7 +1475,7 @@
                 "name": "BlockStatus",
                 "namespace_name": "examples.blocks",
                 "qualified_name": "examples.blocks.BlockStatus",
-                "relative_type_name": "BlockStatus",
+                "relative_type_name": "examples.blocks.BlockStatus",
                 "type": "enum"
             },
             {
@@ -1360,7 +1484,7 @@
                 "name": "BlockType",
                 "namespace_name": "examples.blocks",
                 "qualified_name": "examples.blocks.BlockType",
-                "relative_type_name": "BlockType",
+                "relative_type_name": "examples.blocks.BlockType",
                 "type": "enum"
             },
             {
@@ -1378,7 +1502,7 @@
                 "name": "SimpleEnum",
                 "namespace_name": "examples.enums",
                 "qualified_name": "examples.enums.SimpleEnum",
-                "relative_type_name": "SimpleEnum",
+                "relative_type_name": "examples.enums.SimpleEnum",
                 "type": "enum"
             },
             {
@@ -1387,7 +1511,7 @@
                 "name": "ValueEnum",
                 "namespace_name": "examples.enums",
                 "qualified_name": "examples.enums.ValueEnum",
-                "relative_type_name": "ValueEnum",
+                "relative_type_name": "examples.enums.ValueEnum",
                 "type": "enum"
             },
             {
@@ -1396,7 +1520,7 @@
                 "name": "StructCategory",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.StructCategory",
-                "relative_type_name": "StructCategory",
+                "relative_type_name": "examples.structs.StructCategory",
                 "type": "enum"
             },
             {
@@ -1405,7 +1529,7 @@
                 "name": "StructStatus",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.StructStatus",
-                "relative_type_name": "StructStatus",
+                "relative_type_name": "examples.structs.StructStatus",
                 "type": "enum"
             }
         ],
@@ -1416,7 +1540,7 @@
                 "name": "CrossStruct",
                 "namespace_name": "examples.cross_references",
                 "qualified_name": "examples.cross_references.CrossStruct",
-                "relative_type_name": "CrossStructModel",
+                "relative_type_name": "CrossStruct",
                 "type": "struct"
             },
             {
@@ -1425,7 +1549,7 @@
                 "name": "InheritedCrossStruct",
                 "namespace_name": "examples.cross_references",
                 "qualified_name": "examples.cross_references.InheritedCrossStruct",
-                "relative_type_name": "InheritedCrossStructModel",
+                "relative_type_name": "InheritedCrossStruct",
                 "type": "struct"
             },
             {
@@ -1434,7 +1558,7 @@
                 "name": "UltimateCrossTest",
                 "namespace_name": "examples.cross_references",
                 "qualified_name": "examples.cross_references.UltimateCrossTest",
-                "relative_type_name": "UltimateCrossTestModel",
+                "relative_type_name": "UltimateCrossTest",
                 "type": "struct"
             },
             {
@@ -1443,7 +1567,7 @@
                 "name": "EnumStruct",
                 "namespace_name": "examples.enums",
                 "qualified_name": "examples.enums.EnumStruct",
-                "relative_type_name": "EnumStructModel",
+                "relative_type_name": "examples.enums.EnumStruct",
                 "type": "struct"
             },
             {
@@ -1452,7 +1576,7 @@
                 "name": "AllTypesStruct",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.AllTypesStruct",
-                "relative_type_name": "AllTypesStructModel",
+                "relative_type_name": "examples.structs.AllTypesStruct",
                 "type": "struct"
             },
             {
@@ -1461,7 +1585,7 @@
                 "name": "AnnotatedStruct",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.AnnotatedStruct",
-                "relative_type_name": "AnnotatedStructModel",
+                "relative_type_name": "examples.structs.AnnotatedStruct",
                 "type": "struct"
             },
             {
@@ -1470,7 +1594,7 @@
                 "name": "BasicStruct",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.BasicStruct",
-                "relative_type_name": "BasicStructModel",
+                "relative_type_name": "examples.structs.BasicStruct",
                 "type": "struct"
             },
             {
@@ -1479,7 +1603,7 @@
                 "name": "ComprehensiveStruct",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.ComprehensiveStruct",
-                "relative_type_name": "ComprehensiveStructModel",
+                "relative_type_name": "examples.structs.ComprehensiveStruct",
                 "type": "struct"
             },
             {
@@ -1488,7 +1612,7 @@
                 "name": "ContainerStruct",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.ContainerStruct",
-                "relative_type_name": "ContainerStructModel",
+                "relative_type_name": "examples.structs.ContainerStruct",
                 "type": "struct"
             },
             {
@@ -1497,10 +1621,11 @@
                 "name": "InheritedStruct",
                 "namespace_name": "examples.structs",
                 "qualified_name": "examples.structs.InheritedStruct",
-                "relative_type_name": "InheritedStructModel",
+                "relative_type_name": "examples.structs.InheritedStruct",
                 "type": "struct"
             }
         ]
     },
     "count": 44
-}}
+}
+}

@@ -13,6 +13,8 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "description",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             }
         ],
@@ -26,6 +28,10 @@
         "parent_full_class_name": "",
         "parent_full_name": "",
         "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "BaseAnnotationAnnotation",
+        "relative_name": "BaseAnnotation",
         "type": "annotation_decl"
     },
     {
@@ -41,6 +47,8 @@
                 "full_type_name": "int32",
                 "mapped_type_name": "int32_t",
                 "name": "min",
+                "relative_mapped_type_name": "int32_t",
+                "relative_type_name": "int32",
                 "type_name": "int32"
             },
             {
@@ -52,6 +60,8 @@
                 "full_type_name": "int32",
                 "mapped_type_name": "int32_t",
                 "name": "max",
+                "relative_mapped_type_name": "int32_t",
+                "relative_type_name": "int32",
                 "type_name": "int32"
             }
         ],
@@ -65,6 +75,10 @@
         "parent_full_class_name": "",
         "parent_full_name": "",
         "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "ValueAnnotationAnnotation",
+        "relative_name": "ValueAnnotation",
         "type": "annotation_decl"
     },
     {
@@ -80,6 +94,8 @@
                 "full_type_name": "bool",
                 "mapped_type_name": "bool",
                 "name": "required",
+                "relative_mapped_type_name": "bool",
+                "relative_type_name": "bool",
                 "type_name": "bool"
             },
             {
@@ -90,6 +106,8 @@
                 "full_type_name": "examples.annotations.ValueAnnotation",
                 "mapped_type_name": "ValueAnnotationAnnotation",
                 "name": "range",
+                "relative_mapped_type_name": "ValueAnnotationAnnotation",
+                "relative_type_name": "ValueAnnotation",
                 "type_name": "ValueAnnotation"
             }
         ],
@@ -103,6 +121,10 @@
         "parent_full_class_name": "examples:annotations::BaseAnnotationAnnotation",
         "parent_full_name": "examples.annotations.BaseAnnotation",
         "parent_name": "BaseAnnotation",
+        "parent_relative_class_name": "BaseAnnotationAnnotation",
+        "parent_relative_name": "BaseAnnotation",
+        "relative_class_name": "ExtendedAnnotationAnnotation",
+        "relative_name": "ExtendedAnnotation",
         "type": "annotation_decl"
     },
     {
@@ -118,6 +140,8 @@
                 "full_type_name": "int8",
                 "mapped_type_name": "int8_t",
                 "name": "int8Field",
+                "relative_mapped_type_name": "int8_t",
+                "relative_type_name": "int8",
                 "type_name": "int8"
             },
             {
@@ -129,6 +153,8 @@
                 "full_type_name": "int16",
                 "mapped_type_name": "int16_t",
                 "name": "int16Field",
+                "relative_mapped_type_name": "int16_t",
+                "relative_type_name": "int16",
                 "type_name": "int16"
             },
             {
@@ -140,6 +166,8 @@
                 "full_type_name": "int32",
                 "mapped_type_name": "int32_t",
                 "name": "int32Field",
+                "relative_mapped_type_name": "int32_t",
+                "relative_type_name": "int32",
                 "type_name": "int32"
             },
             {
@@ -151,6 +179,8 @@
                 "full_type_name": "int64",
                 "mapped_type_name": "int64_t",
                 "name": "int64Field",
+                "relative_mapped_type_name": "int64_t",
+                "relative_type_name": "int64",
                 "type_name": "int64"
             },
             {
@@ -162,6 +192,8 @@
                 "full_type_name": "uint8",
                 "mapped_type_name": "uint8_t",
                 "name": "uint8Field",
+                "relative_mapped_type_name": "uint8_t",
+                "relative_type_name": "uint8",
                 "type_name": "uint8"
             },
             {
@@ -173,6 +205,8 @@
                 "full_type_name": "uint16",
                 "mapped_type_name": "uint16_t",
                 "name": "uint16Field",
+                "relative_mapped_type_name": "uint16_t",
+                "relative_type_name": "uint16",
                 "type_name": "uint16"
             },
             {
@@ -184,6 +218,8 @@
                 "full_type_name": "uint32",
                 "mapped_type_name": "uint32_t",
                 "name": "uint32Field",
+                "relative_mapped_type_name": "uint32_t",
+                "relative_type_name": "uint32",
                 "type_name": "uint32"
             },
             {
@@ -195,6 +231,8 @@
                 "full_type_name": "uint64",
                 "mapped_type_name": "uint64_t",
                 "name": "uint64Field",
+                "relative_mapped_type_name": "uint64_t",
+                "relative_type_name": "uint64",
                 "type_name": "uint64"
             },
             {
@@ -206,6 +244,8 @@
                 "full_type_name": "float32",
                 "mapped_type_name": "float",
                 "name": "float32Field",
+                "relative_mapped_type_name": "float",
+                "relative_type_name": "float32",
                 "type_name": "float32"
             },
             {
@@ -217,6 +257,8 @@
                 "full_type_name": "float64",
                 "mapped_type_name": "double",
                 "name": "float64Field",
+                "relative_mapped_type_name": "double",
+                "relative_type_name": "float64",
                 "type_name": "float64"
             },
             {
@@ -228,6 +270,8 @@
                 "full_type_name": "bool",
                 "mapped_type_name": "bool",
                 "name": "boolField",
+                "relative_mapped_type_name": "bool",
+                "relative_type_name": "bool",
                 "type_name": "bool"
             },
             {
@@ -239,6 +283,8 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "stringField",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             },
             {
@@ -250,6 +296,8 @@
                 "full_type_name": "bytes",
                 "mapped_type_name": "QByteArray",
                 "name": "bytesField",
+                "relative_mapped_type_name": "QByteArray",
+                "relative_type_name": "bytes",
                 "type_name": "bytes"
             },
             {
@@ -260,6 +308,8 @@
                 "full_type_name": "examples.annotations.BaseAnnotation",
                 "mapped_type_name": "BaseAnnotationAnnotation",
                 "name": "baseRef",
+                "relative_mapped_type_name": "BaseAnnotationAnnotation",
+                "relative_type_name": "BaseAnnotation",
                 "type_name": "BaseAnnotation"
             },
             {
@@ -270,6 +320,8 @@
                 "full_type_name": "examples.annotations.ValueAnnotation",
                 "mapped_type_name": "ValueAnnotationAnnotation",
                 "name": "valueRef",
+                "relative_mapped_type_name": "ValueAnnotationAnnotation",
+                "relative_type_name": "ValueAnnotation",
                 "type_name": "ValueAnnotation"
             }
         ],
@@ -283,6 +335,10 @@
         "parent_full_class_name": "",
         "parent_full_name": "",
         "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "AllTypesAnnotationAnnotation",
+        "relative_name": "AllTypesAnnotation",
         "type": "annotation_decl"
     },
     {
@@ -297,6 +353,8 @@
                 "full_type_name": "int32",
                 "mapped_type_name": "int32_t",
                 "name": "intArray",
+                "relative_mapped_type_name": "int32_t",
+                "relative_type_name": "int32",
                 "type_name": "int32"
             },
             {
@@ -307,6 +365,8 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "stringArray",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             },
             {
@@ -317,6 +377,8 @@
                 "full_type_name": "examples.annotations.BaseAnnotation",
                 "mapped_type_name": "BaseAnnotationAnnotation",
                 "name": "annotationArray",
+                "relative_mapped_type_name": "BaseAnnotationAnnotation",
+                "relative_type_name": "BaseAnnotation",
                 "type_name": "BaseAnnotation"
             },
             {
@@ -327,6 +389,8 @@
                 "full_type_name": "int32",
                 "mapped_type_name": "int32_t",
                 "name": "optionalInt",
+                "relative_mapped_type_name": "int32_t",
+                "relative_type_name": "int32",
                 "type_name": "int32"
             },
             {
@@ -337,6 +401,8 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "optionalString",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             },
             {
@@ -347,6 +413,8 @@
                 "full_type_name": "examples.annotations.BaseAnnotation",
                 "mapped_type_name": "BaseAnnotationAnnotation",
                 "name": "optionalAnnotation",
+                "relative_mapped_type_name": "BaseAnnotationAnnotation",
+                "relative_type_name": "BaseAnnotation",
                 "type_name": "BaseAnnotation"
             },
             {
@@ -357,6 +425,8 @@
                 "full_type_name": "int32",
                 "mapped_type_name": "int32_t",
                 "name": "intMap",
+                "relative_mapped_type_name": "int32_t",
+                "relative_type_name": "int32",
                 "type_name": "int32"
             },
             {
@@ -367,6 +437,8 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "stringMap",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             },
             {
@@ -377,6 +449,8 @@
                 "full_type_name": "examples.annotations.BaseAnnotation",
                 "mapped_type_name": "BaseAnnotationAnnotation",
                 "name": "annotationMap",
+                "relative_mapped_type_name": "BaseAnnotationAnnotation",
+                "relative_type_name": "BaseAnnotation",
                 "type_name": "BaseAnnotation"
             }
         ],
@@ -390,6 +464,10 @@
         "parent_full_class_name": "",
         "parent_full_name": "",
         "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "ContainerAnnotationAnnotation",
+        "relative_name": "ContainerAnnotation",
         "type": "annotation_decl"
     },
     {
@@ -404,6 +482,8 @@
                 "full_type_name": "string",
                 "mapped_type_name": "QString",
                 "name": "value",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
                 "type_name": "string"
             }
         ],
@@ -417,6 +497,10 @@
         "parent_full_class_name": "",
         "parent_full_name": "",
         "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "ValueOnlyAnnotation",
+        "relative_name": "ValueOnly",
         "type": "annotation_decl"
     },
     {
@@ -433,6 +517,10 @@
         "parent_full_class_name": "",
         "parent_full_name": "",
         "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "NoParamsAnnotation",
+        "relative_name": "NoParams",
         "type": "annotation_decl"
     }
 ],
@@ -445,8 +533,8 @@
         }
     ]
 },
-    "CURRENT_TIME": "2025-06-12 22:40:39",
-    "SOURCE_FILE": ".\examples\01_annotations.mota",
+    "CURRENT_TIME": "2025-06-13 16:48:20",
+    "SOURCE_FILE": "",
     "NAMESPACE": {
     "as_class_prefix": "examples::annotations::",
     "exists": true,
@@ -476,7 +564,7 @@
             "name": "AllTypesAnnotation",
             "namespace_name": "examples.annotations",
             "qualified_name": "examples.annotations.AllTypesAnnotation",
-            "relative_type_name": "AllTypesAnnotationAnnotation",
+            "relative_type_name": "AllTypesAnnotation",
             "type": "annotation_decl"
         },
         {
@@ -485,7 +573,7 @@
             "name": "BaseAnnotation",
             "namespace_name": "examples.annotations",
             "qualified_name": "examples.annotations.BaseAnnotation",
-            "relative_type_name": "BaseAnnotationAnnotation",
+            "relative_type_name": "BaseAnnotation",
             "type": "annotation_decl"
         },
         {
@@ -494,7 +582,7 @@
             "name": "ContainerAnnotation",
             "namespace_name": "examples.annotations",
             "qualified_name": "examples.annotations.ContainerAnnotation",
-            "relative_type_name": "ContainerAnnotationAnnotation",
+            "relative_type_name": "ContainerAnnotation",
             "type": "annotation_decl"
         },
         {
@@ -503,7 +591,7 @@
             "name": "ExtendedAnnotation",
             "namespace_name": "examples.annotations",
             "qualified_name": "examples.annotations.ExtendedAnnotation",
-            "relative_type_name": "ExtendedAnnotationAnnotation",
+            "relative_type_name": "ExtendedAnnotation",
             "type": "annotation_decl"
         },
         {
@@ -512,7 +600,7 @@
             "name": "NoParams",
             "namespace_name": "examples.annotations",
             "qualified_name": "examples.annotations.NoParams",
-            "relative_type_name": "NoParamsAnnotation",
+            "relative_type_name": "NoParams",
             "type": "annotation_decl"
         },
         {
@@ -521,7 +609,7 @@
             "name": "ValueAnnotation",
             "namespace_name": "examples.annotations",
             "qualified_name": "examples.annotations.ValueAnnotation",
-            "relative_type_name": "ValueAnnotationAnnotation",
+            "relative_type_name": "ValueAnnotation",
             "type": "annotation_decl"
         },
         {
@@ -530,7 +618,7 @@
             "name": "ValueOnly",
             "namespace_name": "examples.annotations",
             "qualified_name": "examples.annotations.ValueOnly",
-            "relative_type_name": "ValueOnlyAnnotation",
+            "relative_type_name": "ValueOnly",
             "type": "annotation_decl"
         },
         {
@@ -539,7 +627,7 @@
             "name": "IniGroup",
             "namespace_name": "yima",
             "qualified_name": "yima.IniGroup",
-            "relative_type_name": "IniGroupAnnotation",
+            "relative_type_name": "yima.IniGroup",
             "type": "annotation_decl"
         },
         {
@@ -548,7 +636,7 @@
             "name": "Scope",
             "namespace_name": "yima",
             "qualified_name": "yima.Scope",
-            "relative_type_name": "ScopeAnnotation",
+            "relative_type_name": "yima.Scope",
             "type": "annotation_decl"
         },
         {
@@ -557,7 +645,7 @@
             "name": "Storage",
             "namespace_name": "yima",
             "qualified_name": "yima.Storage",
-            "relative_type_name": "StorageAnnotation",
+            "relative_type_name": "yima.Storage",
             "type": "annotation_decl"
         },
         {
@@ -566,7 +654,7 @@
             "name": "Window",
             "namespace_name": "yima",
             "qualified_name": "yima.Window",
-            "relative_type_name": "WindowAnnotation",
+            "relative_type_name": "yima.Window",
             "type": "annotation_decl"
         }
     ],
@@ -578,7 +666,7 @@
                 "name": "AllTypesAnnotation",
                 "namespace_name": "examples.annotations",
                 "qualified_name": "examples.annotations.AllTypesAnnotation",
-                "relative_type_name": "AllTypesAnnotationAnnotation",
+                "relative_type_name": "AllTypesAnnotation",
                 "type": "annotation_decl"
             },
             {
@@ -587,7 +675,7 @@
                 "name": "BaseAnnotation",
                 "namespace_name": "examples.annotations",
                 "qualified_name": "examples.annotations.BaseAnnotation",
-                "relative_type_name": "BaseAnnotationAnnotation",
+                "relative_type_name": "BaseAnnotation",
                 "type": "annotation_decl"
             },
             {
@@ -596,7 +684,7 @@
                 "name": "ContainerAnnotation",
                 "namespace_name": "examples.annotations",
                 "qualified_name": "examples.annotations.ContainerAnnotation",
-                "relative_type_name": "ContainerAnnotationAnnotation",
+                "relative_type_name": "ContainerAnnotation",
                 "type": "annotation_decl"
             },
             {
@@ -605,7 +693,7 @@
                 "name": "ExtendedAnnotation",
                 "namespace_name": "examples.annotations",
                 "qualified_name": "examples.annotations.ExtendedAnnotation",
-                "relative_type_name": "ExtendedAnnotationAnnotation",
+                "relative_type_name": "ExtendedAnnotation",
                 "type": "annotation_decl"
             },
             {
@@ -614,7 +702,7 @@
                 "name": "NoParams",
                 "namespace_name": "examples.annotations",
                 "qualified_name": "examples.annotations.NoParams",
-                "relative_type_name": "NoParamsAnnotation",
+                "relative_type_name": "NoParams",
                 "type": "annotation_decl"
             },
             {
@@ -623,7 +711,7 @@
                 "name": "ValueAnnotation",
                 "namespace_name": "examples.annotations",
                 "qualified_name": "examples.annotations.ValueAnnotation",
-                "relative_type_name": "ValueAnnotationAnnotation",
+                "relative_type_name": "ValueAnnotation",
                 "type": "annotation_decl"
             },
             {
@@ -632,7 +720,7 @@
                 "name": "ValueOnly",
                 "namespace_name": "examples.annotations",
                 "qualified_name": "examples.annotations.ValueOnly",
-                "relative_type_name": "ValueOnlyAnnotation",
+                "relative_type_name": "ValueOnly",
                 "type": "annotation_decl"
             },
             {
@@ -641,7 +729,7 @@
                 "name": "IniGroup",
                 "namespace_name": "yima",
                 "qualified_name": "yima.IniGroup",
-                "relative_type_name": "IniGroupAnnotation",
+                "relative_type_name": "yima.IniGroup",
                 "type": "annotation_decl"
             },
             {
@@ -650,7 +738,7 @@
                 "name": "Scope",
                 "namespace_name": "yima",
                 "qualified_name": "yima.Scope",
-                "relative_type_name": "ScopeAnnotation",
+                "relative_type_name": "yima.Scope",
                 "type": "annotation_decl"
             },
             {
@@ -659,7 +747,7 @@
                 "name": "Storage",
                 "namespace_name": "yima",
                 "qualified_name": "yima.Storage",
-                "relative_type_name": "StorageAnnotation",
+                "relative_type_name": "yima.Storage",
                 "type": "annotation_decl"
             },
             {
@@ -668,7 +756,7 @@
                 "name": "Window",
                 "namespace_name": "yima",
                 "qualified_name": "yima.Window",
-                "relative_type_name": "WindowAnnotation",
+                "relative_type_name": "yima.Window",
                 "type": "annotation_decl"
             }
         ],
@@ -677,4 +765,5 @@
         "struct": []
     },
     "count": 11
-}}
+}
+}
