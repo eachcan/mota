@@ -60,7 +60,7 @@ public:
 
 <%foreach declaration.fields as field%>
     <%if (length(field.ui_comment) > 0)%>
-// <%=replace(field.ui_comment, "\n", "\n// ")%>
+    // <%=replace(field.ui_comment, "\n", "\n// ")%>
     <%endif%>
     <%if (field.container_type == "array")%>
     QVector<<%=field.relative_mapped_type_name%>> get<%=pascal_case(field.name)%>() const {
@@ -111,5 +111,5 @@ private:
     <%endif%>
 <%endforeach%>};
 Q_DECLARE_METATYPE(<%=declaration.relative_class_name%>)
-    
+
 <%endmisc%> 

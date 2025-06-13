@@ -3,7 +3,7 @@ namespace examples.annotations;
 
 include "yima.mota";
 
-// === 基础注解 ===
+//@ === 基础注解 ===
 //@ 这是注解的UI注释
 annotation BaseAnnotation {
     string description = "";
@@ -18,15 +18,17 @@ annotation ValueAnnotation {
     int32 max = 100;
 }
 
-// === 注解继承 ===
+//@ === 注解继承 ===
 annotation ExtendedAnnotation : BaseAnnotation {
+    //@ 是否必填
     bool required = false;
-    ValueAnnotation range; // 注解作为字段类型
+    //@ 注解作为字段类型
+    ValueAnnotation range; 
 }
 
-// === 全字段类型测试 ===
+//@ === 全字段类型测试 ===
 annotation AllTypesAnnotation {
-    // 所有基础类型
+    //@ 所有基础类型
     int8 int8Field = 1;
     int16 int16Field = 2;
     int32 int32Field = 3;
@@ -41,32 +43,34 @@ annotation AllTypesAnnotation {
     string stringField = "test";
     bytes bytesField = "data";
     
-    // 注解类型
+    //@ 注解类型
     BaseAnnotation baseRef;
     ValueAnnotation valueRef;
 }
 
-// === 容器类型测试 ===
+//@ === 容器类型测试 ===
 annotation ContainerAnnotation {
-    // repeated容器
+    //@ repeated容器
     repeated int32 intArray;
     repeated string stringArray;
     repeated BaseAnnotation annotationArray;
     
-    // optional容器
+    //@ optional容器
     optional int32 optionalInt;
     optional string optionalString;
     optional BaseAnnotation optionalAnnotation;
     
-    // map容器
+    //@ map容器
     map int32 intMap;
     map string stringMap;
     map BaseAnnotation annotationMap;
 }
 
-// === 特殊注解 ===
+//@ === 特殊注解 ===
 annotation ValueOnly {
-    string value; // 字段名为value，使用时可省略参数名
+    //@ 字段名为value，使用时可省略参数名
+    string value;
 }
 
+//@ 这是一个没有参数的注解
 annotation NoParams; 

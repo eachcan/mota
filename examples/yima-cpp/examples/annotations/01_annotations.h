@@ -2,7 +2,7 @@
 
 // 此文件由 Mota 代码生成器自动生成
 // Mota 版本: 0.2.0
-// 生成时间: 2025-06-13 23:17:56
+// 生成时间: 2025-06-13 23:22:59
 // 源文件: .\examples\01_annotations.mota
 
 #include <QCborMap>
@@ -26,6 +26,7 @@ using namespace ymf;
 namespace examples {
 namespace annotations {
 
+// === 基础注解 ===
 // 这是注解的UI注释
 class MODEL_EXPORT BaseAnnotationAnnotation : public IAnnotation {
 public:
@@ -69,7 +70,7 @@ private:
         QString description_ = "";
 };
 Q_DECLARE_METATYPE(BaseAnnotationAnnotation)
-    
+
 // 这是注解的UI注释
 // 这是第二行 UI 注释
 class MODEL_EXPORT ValueAnnotationAnnotation : public IAnnotation {
@@ -110,7 +111,7 @@ public:
         return QStringList();
     }
 
-// 最小值
+    // 最小值
 // 请你注意，最小值不能小于0
     int32_t getMin() const {
         return min_;
@@ -129,7 +130,8 @@ private:
         int32_t max_ = 100;
 };
 Q_DECLARE_METATYPE(ValueAnnotationAnnotation)
-    
+
+// === 注解继承 ===
 class MODEL_EXPORT ExtendedAnnotationAnnotation : public BaseAnnotationAnnotation {
 public:
     ExtendedAnnotationAnnotation() = default;
@@ -169,12 +171,14 @@ public:
         return BaseAnnotationAnnotation::fieldUiComments(fieldName);
     }
 
+    // 是否必填
     bool getRequired() const {
         return required_;
     }
     void setRequired(const bool& value) {
         required_ = value;
     }
+    // 注解作为字段类型
     ValueAnnotationAnnotation getRange() const {
         return range_;
     }
@@ -186,7 +190,8 @@ private:
         ValueAnnotationAnnotation range_;
 };
 Q_DECLARE_METATYPE(ExtendedAnnotationAnnotation)
-    
+
+// === 全字段类型测试 ===
 class MODEL_EXPORT AllTypesAnnotationAnnotation : public IAnnotation {
 public:
     AllTypesAnnotationAnnotation() = default;
@@ -303,6 +308,7 @@ public:
         return QStringList();
     }
 
+    // 所有基础类型
     int8_t getInt8Field() const {
         return int8Field_;
     }
@@ -381,6 +387,7 @@ public:
     void setBytesField(const QByteArray& value) {
         bytesField_ = value;
     }
+    // 注解类型
     BaseAnnotationAnnotation getBaseRef() const {
         return baseRef_;
     }
@@ -411,7 +418,8 @@ private:
         ValueAnnotationAnnotation valueRef_;
 };
 Q_DECLARE_METATYPE(AllTypesAnnotationAnnotation)
-    
+
+// === 容器类型测试 ===
 class MODEL_EXPORT ContainerAnnotationAnnotation : public IAnnotation {
 public:
     ContainerAnnotationAnnotation() = default;
@@ -504,6 +512,7 @@ public:
         return QStringList();
     }
 
+    // repeated容器
     QVector<int32_t> getIntArray() const {
         return intArray_; 
     }
@@ -522,6 +531,7 @@ public:
     void setAnnotationArray(const QVector<BaseAnnotationAnnotation>& value) {
         annotationArray_ = value;
     }
+    // optional容器
     std::optional<int32_t> getOptionalInt() const {
         return optionalInt_;
     }
@@ -540,6 +550,7 @@ public:
     void setOptionalAnnotation(const std::optional<BaseAnnotationAnnotation>& value) {
         optionalAnnotation_ = value;
     }
+    // map容器
     QMap<QString, int32_t> getIntMap() const {
         return intMap_;
     }
@@ -570,7 +581,8 @@ private:
     QMap<QString, BaseAnnotationAnnotation> annotationMap_;
 };
 Q_DECLARE_METATYPE(ContainerAnnotationAnnotation)
-    
+
+// === 特殊注解 ===
 class MODEL_EXPORT ValueOnlyAnnotation : public IAnnotation {
 public:
     ValueOnlyAnnotation() = default;
@@ -603,6 +615,7 @@ public:
         return QStringList();
     }
 
+    // 字段名为value，使用时可省略参数名
     QString getValue() const {
         return value_;
     }
@@ -613,7 +626,8 @@ private:
         QString value_;
 };
 Q_DECLARE_METATYPE(ValueOnlyAnnotation)
-    
+
+// 这是一个没有参数的注解
 class MODEL_EXPORT NoParamsAnnotation : public IAnnotation {
 public:
     NoParamsAnnotation() = default;
@@ -643,7 +657,7 @@ public:
 private:
 };
 Q_DECLARE_METATYPE(NoParamsAnnotation)
-    
+
 
 } // namespace examples
 } // namespace annotations
