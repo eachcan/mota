@@ -35,9 +35,17 @@ struct DeclarationInfo {
     // 获取相对于指定命名空间的类型名称
     std::string getRelativeTypeName(const std::string& currentNamespace) const {
         if (currentNamespace == namespace_name) {
+            return name; // 同命名空间返回简单名称
+        }
+        return qualified_name; // 不同命名空间返回完全限定名
+    }
+
+    // 获取相对于指定命名空间的类名
+    std::string getRelativeClassName(const std::string& currentNamespace) const {
+        if (currentNamespace == namespace_name) {
             return class_name; // 同命名空间返回简单类名
         }
-        return class_name; // 返回完整类名（已包含前后缀）
+        return qualified_name + class_name; // 不同命名空间返回完全限定类名
     }
 };
 

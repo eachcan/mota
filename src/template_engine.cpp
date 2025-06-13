@@ -146,7 +146,7 @@ std::vector<std::shared_ptr<TemplateToken>> TemplateEngine::buildTokenSequence(c
     std::sregex_iterator iter(content.begin(), content.end(), tagRegex);
     std::sregex_iterator end;
 
-    std::regex spaceRegex("^[\t ]*$");
+    std::regex spaceRegex("^[\t ]*([\r\n$])");
     
     size_t lastPos = 0;
     
@@ -165,8 +165,9 @@ std::vector<std::shared_ptr<TemplateToken>> TemplateEngine::buildTokenSequence(c
                 text = content.substr(lastPos, tagStart - lastPos);
             }
             
+            text = std::regex_replace(text, spaceRegex, "$1");
             // 如果是单行空格，则去掉
-            if (!std::regex_match(text, spaceRegex)) {
+            if (!text.empty()) {
                 textNode->outer_content = text;
                 textNode->start_pos = lastPos;
                 textNode->end_pos = tagStart;
@@ -195,7 +196,9 @@ std::vector<std::shared_ptr<TemplateToken>> TemplateEngine::buildTokenSequence(c
         } else {
             text = content.substr(lastPos);
         }
-        if (!std::regex_match(text, spaceRegex)) {
+        text = std::regex_replace(text, spaceRegex, "$1");
+        // 如果是单行空格，则去掉
+        if (!text.empty()) {
             textNode->outer_content = text;
             textNode->start_pos = lastPos;
             textNode->end_pos = content.length();

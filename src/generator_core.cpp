@@ -309,7 +309,11 @@ nlohmann::json Generator::buildDeclarationData(const std::shared_ptr<ast::Node>&
                 {"namespace_class_prefix", namespaceClassPrefix},
                 {"parent", annotationDecl->baseName},  // 保持向后兼容
                 {"annotations", nlohmann::json::array()},
-                {"fields", nlohmann::json::array()}
+                {"fields", nlohmann::json::array()},
+                {"relative_name", (currentNamespace == currentNamespace ? annotationDecl->name : (currentNamespace.empty() ? annotationDecl->name : currentNamespace + "." + annotationDecl->name))},
+                {"relative_class_name", (currentNamespace == currentNamespace ? classPrefix + annotationDecl->name + classSuffix : namespaceClassPrefix + classPrefix + annotationDecl->name + classSuffix)},
+                {"parent_relative_name", (parentName.empty() ? "" : (currentNamespace == currentNamespace ? parentName : parentFullName))},
+                {"parent_relative_class_name", (parentName.empty() ? "" : (currentNamespace == currentNamespace ? parentClassName : parentFullClassName))}
             };
             
             // 构建字段数据
@@ -371,7 +375,11 @@ nlohmann::json Generator::buildDeclarationData(const std::shared_ptr<ast::Node>&
                 {"namespace_class_prefix", namespaceClassPrefix},
                 {"parent", structDecl->baseName},  // 保持向后兼容
                 {"annotations", nlohmann::json::array()},
-                {"fields", nlohmann::json::array()}
+                {"fields", nlohmann::json::array()},
+                {"relative_name", (currentNamespace == currentNamespace ? structDecl->name : (currentNamespace.empty() ? structDecl->name : currentNamespace + "." + structDecl->name))},
+                {"relative_class_name", (currentNamespace == currentNamespace ? classPrefix + structDecl->name + classSuffix : namespaceClassPrefix + classPrefix + structDecl->name + classSuffix)},
+                {"parent_relative_name", (parentName.empty() ? "" : (currentNamespace == currentNamespace ? parentName : parentFullName))},
+                {"parent_relative_class_name", (parentName.empty() ? "" : (currentNamespace == currentNamespace ? parentClassName : parentFullClassName))}
             };
             
             // 构建注解数据
@@ -438,7 +446,11 @@ nlohmann::json Generator::buildDeclarationData(const std::shared_ptr<ast::Node>&
                 {"namespace_class_prefix", namespaceClassPrefix},
                 {"parent", blockDecl->baseName},  // 保持向后兼容
                 {"annotations", nlohmann::json::array()},
-                {"fields", nlohmann::json::array()}
+                {"fields", nlohmann::json::array()},
+                {"relative_name", (currentNamespace == currentNamespace ? blockDecl->name : (currentNamespace.empty() ? blockDecl->name : currentNamespace + "." + blockDecl->name))},
+                {"relative_class_name", (currentNamespace == currentNamespace ? classPrefix + blockDecl->name + classSuffix : namespaceClassPrefix + classPrefix + blockDecl->name + classSuffix)},
+                {"parent_relative_name", (parentName.empty() ? "" : (currentNamespace == currentNamespace ? parentName : parentFullName))},
+                {"parent_relative_class_name", (parentName.empty() ? "" : (currentNamespace == currentNamespace ? parentClassName : parentFullClassName))}
             };
             
             // 构建注解数据
@@ -483,7 +495,11 @@ nlohmann::json Generator::buildDeclarationData(const std::shared_ptr<ast::Node>&
                 {"namespace_class_prefix", namespaceClassPrefix},
                 {"parent", ""},  // 保持向后兼容
                 {"annotations", nlohmann::json::array()},
-                {"values", nlohmann::json::array()}
+                {"values", nlohmann::json::array()},
+                {"relative_name", (currentNamespace == currentNamespace ? enumDecl->name : (currentNamespace.empty() ? enumDecl->name : currentNamespace + "." + enumDecl->name))},
+                {"relative_class_name", (currentNamespace == currentNamespace ? classPrefix + enumDecl->name + classSuffix : namespaceClassPrefix + classPrefix + enumDecl->name + classSuffix)},
+                {"parent_relative_name", ""},
+                {"parent_relative_class_name", ""}
             };
             
             // 构建注解数据
@@ -522,18 +538,20 @@ nlohmann::json Generator::buildAnnotationData(const std::shared_ptr<ast::Annotat
     std::string fullName = annotationName;
     std::string fullClassName = classPrefix + annotationName + classSuffix;
     
-    // 如果注解名包含命名空间，直接使用
+    std::string annotationNamespaceClassPrefix;
     if (annotationName.find('.') != std::string::npos) {
-        fullName = annotationName;
-        std::string simpleAnnotationName = annotationName.substr(annotationName.find_last_of('.') + 1);
-        fullClassName = annotationName;
-        std::replace(fullClassName.begin(), fullClassName.end(), '.', ':');
-        fullClassName = classPrefix + fullClassName + classSuffix;
-        annotationName = simpleAnnotationName;
+        std::string ns = annotationName.substr(0, annotationName.find_last_of('.'));
+        annotationNamespaceClassPrefix = ns.empty() ? "" : ns + "::";
+        std::replace(annotationNamespaceClassPrefix.begin(), annotationNamespaceClassPrefix.end(), '.', ':');
+        if (!annotationNamespaceClassPrefix.empty() && annotationNamespaceClassPrefix.back() != ':') {
+            annotationNamespaceClassPrefix += "::";
+        }
     } else {
-        // 如果注解名不包含命名空间，假设在当前命名空间中
-        fullName = currentNamespace.empty() ? annotationName : currentNamespace + "." + annotationName;
-        fullClassName = namespaceClassPrefix + classPrefix + annotationName + classSuffix;
+        annotationNamespaceClassPrefix = currentNamespace.empty() ? "" : currentNamespace + "::";
+        std::replace(annotationNamespaceClassPrefix.begin(), annotationNamespaceClassPrefix.end(), '.', ':');
+        if (!annotationNamespaceClassPrefix.empty() && annotationNamespaceClassPrefix.back() != ':') {
+            annotationNamespaceClassPrefix += "::";
+        }
     }
     
     nlohmann::json data = {
@@ -543,8 +561,9 @@ nlohmann::json Generator::buildAnnotationData(const std::shared_ptr<ast::Annotat
         {"full_class_name", fullClassName},
         {"type", "annotation"},
         {"namespace", currentNamespace},
-        {"namespace_class_prefix", namespaceClassPrefix},
-        {"arguments", nlohmann::json::array()}
+        {"arguments", nlohmann::json::array()},
+        {"relative_name", (currentNamespace == currentNamespace ? annotationName : (currentNamespace.empty() ? annotationName : currentNamespace + "." + annotationName))},
+        {"relative_class_name", (currentNamespace == currentNamespace ? classPrefix + annotationName + classSuffix : annotationNamespaceClassPrefix + classPrefix + annotationName + classSuffix)}
     };
     
     // 构建参数数据 - 使用字段信息
@@ -565,30 +584,20 @@ nlohmann::json Generator::buildAnnotationData(const std::shared_ptr<ast::Annotat
                     }
                     
                     if (fieldDef) {
-                        // 使用简化的表达式构建
                         nlohmann::json valueData = buildExprData(argument->value);
-                        
                         std::string argTypeName = fieldDef->type_name;
                         std::string argFullTypeName = argTypeName;
-                        
-                        // 如果全限定类型名不包含命名空间，且不是内置类型，则补充当前命名空间
                         if (!isBuiltinType(argTypeName) && argFullTypeName.find('.') == std::string::npos && !currentNamespace_.empty()) {
                             argFullTypeName = currentNamespace_ + "." + argFullTypeName;
                         }
-                        
                         std::string argContainerType = fieldDef->container_type;
-                        
-                        // 获取映射类型
                         std::string argMappedTypeName = mapType(argTypeName);
                         std::string argFullMappedTypeName = argMappedTypeName;
-                        
-                        // 如果是自定义类型，查找完整的类名信息
-                        if (!isBuiltinType(argTypeName)) {
+                        std::string argNamespaceName;
+                        if (!isBuiltinType(argTypeName) && declarationRegistry_) {
                             auto typeIt = declarationRegistry_->find(argFullTypeName);
                             if (typeIt != declarationRegistry_->end()) {
                                 argMappedTypeName = typeIt->second.class_name;
-                                
-                                // 构建完整的映射类型名，包含命名空间
                                 if (!typeIt->second.namespace_name.empty()) {
                                     std::string namespaceClassPrefix = typeIt->second.namespace_name;
                                     std::replace(namespaceClassPrefix.begin(), namespaceClassPrefix.end(), '.', ':');
@@ -597,9 +606,9 @@ nlohmann::json Generator::buildAnnotationData(const std::shared_ptr<ast::Annotat
                                 } else {
                                     argFullMappedTypeName = typeIt->second.class_name;
                                 }
+                                argNamespaceName = typeIt->second.namespace_name;
                             }
                         }
-                        
                         nlohmann::json argData = {
                             {"name", argument->name},
                             {"field_name", argument->name},
@@ -608,9 +617,10 @@ nlohmann::json Generator::buildAnnotationData(const std::shared_ptr<ast::Annotat
                             {"mapped_type_name", argMappedTypeName},
                             {"full_type_name", argFullTypeName},
                             {"full_mapped_type_name", argFullMappedTypeName},
-                            {"value", valueData}
+                            {"value", valueData},
+                            {"relative_type_name", (currentNamespace_ == argNamespaceName ? argTypeName : argFullTypeName)},
+                            {"relative_mapped_type_name", (currentNamespace_ == argNamespaceName ? argMappedTypeName : argFullMappedTypeName)}
                         };
-                        
                         data["arguments"].push_back(argData);
                     }
                 }
@@ -623,41 +633,29 @@ nlohmann::json Generator::buildAnnotationData(const std::shared_ptr<ast::Annotat
 
 nlohmann::json Generator::buildFieldData(const std::shared_ptr<ast::Field>& field) {
     nlohmann::json typeInfo = buildTypeData(field->type);
-    
-    // 获取类型的完整信息
     std::string typeName = typeInfo["type_name"];
     std::string mappedTypeName = mapType(typeName);
     std::string fullTypeName = typeInfo["qualified_type_name"];
-    
-    // 如果全限定类型名不包含命名空间，且不是内置类型，则补充当前命名空间
     if (!isBuiltinType(typeName) && fullTypeName.find('.') == std::string::npos && !currentNamespace_.empty()) {
         fullTypeName = currentNamespace_ + "." + fullTypeName;
     }
-    
     std::string fullMappedTypeName = mappedTypeName;
-    
-    // 如果是自定义类型，需要添加类名后缀
-    if (!isBuiltinType(typeName)) {
-        // 根据声明注册表查找类型信息
-        if (declarationRegistry_) {
-            auto it = declarationRegistry_->find(fullTypeName);
-            if (it != declarationRegistry_->end()) {
-                const auto& declInfo = it->second;
-                mappedTypeName = declInfo.class_name;
-                
-                // 构建完整的映射类型名，包含命名空间
-                if (!declInfo.namespace_name.empty()) {
-                    std::string namespaceClassPrefix = declInfo.namespace_name;
-                    std::replace(namespaceClassPrefix.begin(), namespaceClassPrefix.end(), '.', ':');
-                    namespaceClassPrefix += "::";
-                    fullMappedTypeName = namespaceClassPrefix + declInfo.class_name;
-                } else {
-                    fullMappedTypeName = declInfo.class_name;
-                }
+    std::string fieldNamespaceName;
+    if (!isBuiltinType(typeName) && declarationRegistry_) {
+        auto it = declarationRegistry_->find(fullTypeName);
+        if (it != declarationRegistry_->end()) {
+            mappedTypeName = it->second.class_name;
+            if (!it->second.namespace_name.empty()) {
+                std::string namespaceClassPrefix = it->second.namespace_name;
+                std::replace(namespaceClassPrefix.begin(), namespaceClassPrefix.end(), '.', ':');
+                namespaceClassPrefix += "::";
+                fullMappedTypeName = namespaceClassPrefix + it->second.class_name;
+            } else {
+                fullMappedTypeName = it->second.class_name;
             }
+            fieldNamespaceName = it->second.namespace_name;
         }
     }
-    
     nlohmann::json data = {
         {"name", field->name},
         {"field_name", field->name},
@@ -666,19 +664,16 @@ nlohmann::json Generator::buildFieldData(const std::shared_ptr<ast::Field>& fiel
         {"mapped_type_name", mappedTypeName},
         {"full_type_name", fullTypeName},
         {"full_mapped_type_name", fullMappedTypeName},
-        {"annotations", nlohmann::json::array()}
+        {"annotations", nlohmann::json::array()},
+        {"relative_type_name", (currentNamespace_ == fieldNamespaceName ? typeName : fullTypeName)},
+        {"relative_mapped_type_name", (currentNamespace_ == fieldNamespaceName ? mappedTypeName : fullMappedTypeName)}
     };
-    
-    // 添加默认值
     if (field->defaultValue) {
         data["default_value"] = buildExprData(field->defaultValue);
     }
-    
-    // 构建注解数据
     for (const auto& annotation : field->annotations) {
         data["annotations"].push_back(buildAnnotationData(annotation));
     }
-    
     return data;
 }
 
@@ -758,6 +753,7 @@ nlohmann::json Generator::buildAnnotationValueData(const ast::Annotation* annota
     std::string fullClassName = className;
     
     // 处理命名空间
+    std::string annotationNamespaceClassPrefix;
     if (annotationName.find('.') != std::string::npos) {
         fullName = annotationName;
         std::string simpleAnnotationName = annotationName.substr(annotationName.find_last_of('.') + 1);
@@ -766,15 +762,21 @@ nlohmann::json Generator::buildAnnotationValueData(const ast::Annotation* annota
         std::replace(fullClassName.begin(), fullClassName.end(), '.', ':');
         fullClassName = classPrefix + fullClassName + classSuffix;
         annotationName = simpleAnnotationName;
+        std::string ns = annotation->name.substr(0, annotation->name.find_last_of('.'));
+        annotationNamespaceClassPrefix = ns.empty() ? "" : ns + "::";
+        std::replace(annotationNamespaceClassPrefix.begin(), annotationNamespaceClassPrefix.end(), '.', ':');
+        if (!annotationNamespaceClassPrefix.empty() && annotationNamespaceClassPrefix.back() != ':') {
+            annotationNamespaceClassPrefix += "::";
+        }
     } else {
         // 如果注解名不包含命名空间，假设在当前命名空间中
         fullName = currentNamespace_.empty() ? annotationName : currentNamespace_ + "." + annotationName;
-        std::string namespaceClassPrefix = currentNamespace_.empty() ? "" : currentNamespace_ + "::";
-        std::replace(namespaceClassPrefix.begin(), namespaceClassPrefix.end(), '.', ':');
-        if (!namespaceClassPrefix.empty() && namespaceClassPrefix.back() != ':') {
-            namespaceClassPrefix += "::";
+        annotationNamespaceClassPrefix = currentNamespace_.empty() ? "" : currentNamespace_ + "::";
+        std::replace(annotationNamespaceClassPrefix.begin(), annotationNamespaceClassPrefix.end(), '.', ':');
+        if (!annotationNamespaceClassPrefix.empty() && annotationNamespaceClassPrefix.back() != ':') {
+            annotationNamespaceClassPrefix += "::";
         }
-        fullClassName = namespaceClassPrefix + className;
+        fullClassName = annotationNamespaceClassPrefix + className;
     }
     
     nlohmann::json data = {
@@ -784,7 +786,9 @@ nlohmann::json Generator::buildAnnotationValueData(const ast::Annotation* annota
         {"full_class_name", fullClassName},
         {"type", "annotation"},
         {"namespace", currentNamespace_},
-        {"arguments", nlohmann::json::array()}
+        {"arguments", nlohmann::json::array()},
+        {"relative_name", (currentNamespace_ == currentNamespace_ ? annotationName : (currentNamespace_.empty() ? annotationName : currentNamespace_ + "." + annotationName))},
+        {"relative_class_name", (currentNamespace_ == currentNamespace_ ? classPrefix + annotationName + classSuffix : annotationNamespaceClassPrefix + classPrefix + annotationName + classSuffix)}
     };
     
     // 构建参数数据 - 使用字段信息
@@ -805,30 +809,20 @@ nlohmann::json Generator::buildAnnotationValueData(const ast::Annotation* annota
                     }
                     
                     if (fieldDef) {
-                        // 使用简化的表达式构建
                         nlohmann::json valueData = buildExprData(argument->value);
-                        
                         std::string argTypeName = fieldDef->type_name;
                         std::string argFullTypeName = argTypeName;
-                        
-                        // 如果全限定类型名不包含命名空间，且不是内置类型，则补充当前命名空间
                         if (!isBuiltinType(argTypeName) && argFullTypeName.find('.') == std::string::npos && !currentNamespace_.empty()) {
                             argFullTypeName = currentNamespace_ + "." + argFullTypeName;
                         }
-                        
                         std::string argContainerType = fieldDef->container_type;
-                        
-                        // 获取映射类型
                         std::string argMappedTypeName = mapType(argTypeName);
                         std::string argFullMappedTypeName = argMappedTypeName;
-                        
-                        // 如果是自定义类型，查找完整的类名信息
-                        if (!isBuiltinType(argTypeName)) {
+                        std::string argNamespaceName;
+                        if (!isBuiltinType(argTypeName) && declarationRegistry_) {
                             auto typeIt = declarationRegistry_->find(argFullTypeName);
                             if (typeIt != declarationRegistry_->end()) {
                                 argMappedTypeName = typeIt->second.class_name;
-                                
-                                // 构建完整的映射类型名，包含命名空间
                                 if (!typeIt->second.namespace_name.empty()) {
                                     std::string namespaceClassPrefix = typeIt->second.namespace_name;
                                     std::replace(namespaceClassPrefix.begin(), namespaceClassPrefix.end(), '.', ':');
@@ -837,9 +831,9 @@ nlohmann::json Generator::buildAnnotationValueData(const ast::Annotation* annota
                                 } else {
                                     argFullMappedTypeName = typeIt->second.class_name;
                                 }
+                                argNamespaceName = typeIt->second.namespace_name;
                             }
                         }
-                        
                         nlohmann::json argData = {
                             {"name", argument->name},
                             {"field_name", argument->name},
@@ -848,9 +842,10 @@ nlohmann::json Generator::buildAnnotationValueData(const ast::Annotation* annota
                             {"mapped_type_name", argMappedTypeName},
                             {"full_type_name", argFullTypeName},
                             {"full_mapped_type_name", argFullMappedTypeName},
-                            {"value", valueData}
+                            {"value", valueData},
+                            {"relative_type_name", (currentNamespace_ == argNamespaceName ? argTypeName : argFullTypeName)},
+                            {"relative_mapped_type_name", (currentNamespace_ == argNamespaceName ? argMappedTypeName : argFullMappedTypeName)}
                         };
-                        
                         data["arguments"].push_back(argData);
                     }
                 }
