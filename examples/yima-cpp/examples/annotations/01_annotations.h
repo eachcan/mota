@@ -2,7 +2,7 @@
 
 // 此文件由 Mota 代码生成器自动生成
 // Mota 版本: 0.2.0
-// 生成时间: 2025-06-13 21:41:40
+// 生成时间: 2025-06-13 23:17:56
 // 源文件: .\examples\01_annotations.mota
 
 #include <QCborMap>
@@ -26,7 +26,7 @@ using namespace ymf;
 namespace examples {
 namespace annotations {
 
-// BaseAnnotation注解
+// 这是注解的UI注释
 class MODEL_EXPORT BaseAnnotationAnnotation : public IAnnotation {
 public:
     BaseAnnotationAnnotation() = default;
@@ -36,19 +36,29 @@ public:
         return QLatin1String("BaseAnnotation");
     }
     
-    virtual QVariant argument(const QString& argumentName) const override {
+    virtual QVariant argumentValue(const QString& argumentName) const override {
         if (argumentName == QLatin1String("description")) {
             return QVariant::fromValue(description_);
         }
         return QVariant();
     }
     
-    virtual QStringList argumentNames() const override {
+    virtual QStringList fieldNames() const override {
         QStringList names = QStringList{QLatin1String("description")};
         return names;
     }
+
+    virtual QStringList uiComments() const override {
+        return QStringList{};
+    }
     
-    // 字段访问器
+    virtual QStringList fieldUiComments(const QString& fieldName) const override {
+        if (fieldName == QLatin1String("description")) {
+            return QStringList{};
+        }
+        return QStringList();
+    }
+
     QString getDescription() const {
         return description_;
     }
@@ -56,11 +66,12 @@ public:
         description_ = value;
     }
 private:
-    QString description_;
+        QString description_ = "";
 };
 Q_DECLARE_METATYPE(BaseAnnotationAnnotation)
     
-// ValueAnnotation注解
+// 这是注解的UI注释
+// 这是第二行 UI 注释
 class MODEL_EXPORT ValueAnnotationAnnotation : public IAnnotation {
 public:
     ValueAnnotationAnnotation() = default;
@@ -70,7 +81,7 @@ public:
         return QLatin1String("ValueAnnotation");
     }
     
-    virtual QVariant argument(const QString& argumentName) const override {
+    virtual QVariant argumentValue(const QString& argumentName) const override {
         if (argumentName == QLatin1String("min")) {
             return QVariant::fromValue(min_);
         }
@@ -80,12 +91,27 @@ public:
         return QVariant();
     }
     
-    virtual QStringList argumentNames() const override {
+    virtual QStringList fieldNames() const override {
         QStringList names = QStringList{QLatin1String("min"), QLatin1String("max")};
         return names;
     }
+
+    virtual QStringList uiComments() const override {
+        return QStringList{};
+    }
     
-    // 字段访问器
+    virtual QStringList fieldUiComments(const QString& fieldName) const override {
+        if (fieldName == QLatin1String("min")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("max")) {
+            return QStringList{};
+        }
+        return QStringList();
+    }
+
+// 最小值
+// 请你注意，最小值不能小于0
     int32_t getMin() const {
         return min_;
     }
@@ -99,12 +125,11 @@ public:
         max_ = value;
     }
 private:
-    int32_t min_;
-    int32_t max_;
+        int32_t min_ = 0;
+        int32_t max_ = 100;
 };
 Q_DECLARE_METATYPE(ValueAnnotationAnnotation)
     
-// ExtendedAnnotation注解
 class MODEL_EXPORT ExtendedAnnotationAnnotation : public BaseAnnotationAnnotation {
 public:
     ExtendedAnnotationAnnotation() = default;
@@ -114,23 +139,36 @@ public:
         return QLatin1String("ExtendedAnnotation");
     }
     
-    virtual QVariant argument(const QString& argumentName) const override {
+    virtual QVariant argumentValue(const QString& argumentName) const override {
         if (argumentName == QLatin1String("required")) {
             return QVariant::fromValue(required_);
         }
         if (argumentName == QLatin1String("range")) {
             return QVariant::fromValue(range_);
         }
-        return BaseAnnotationAnnotation::argument(argumentName);
+        return BaseAnnotationAnnotation::argumentValue(argumentName);
     }
     
-    virtual QStringList argumentNames() const override {
+    virtual QStringList fieldNames() const override {
         QStringList names = QStringList{QLatin1String("required"), QLatin1String("range")};
-        names.append(BaseAnnotationAnnotation::argumentNames());
+        names.append(BaseAnnotationAnnotation::fieldNames());
         return names;
     }
+
+    virtual QStringList uiComments() const override {
+        return QStringList{};
+    }
     
-    // 字段访问器
+    virtual QStringList fieldUiComments(const QString& fieldName) const override {
+        if (fieldName == QLatin1String("required")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("range")) {
+            return QStringList{};
+        }
+        return BaseAnnotationAnnotation::fieldUiComments(fieldName);
+    }
+
     bool getRequired() const {
         return required_;
     }
@@ -144,12 +182,11 @@ public:
         range_ = value;
     }
 private:
-    bool required_;
-    ValueAnnotationAnnotation range_;
+        bool required_ = false;
+        ValueAnnotationAnnotation range_;
 };
 Q_DECLARE_METATYPE(ExtendedAnnotationAnnotation)
     
-// AllTypesAnnotation注解
 class MODEL_EXPORT AllTypesAnnotationAnnotation : public IAnnotation {
 public:
     AllTypesAnnotationAnnotation() = default;
@@ -159,7 +196,7 @@ public:
         return QLatin1String("AllTypesAnnotation");
     }
     
-    virtual QVariant argument(const QString& argumentName) const override {
+    virtual QVariant argumentValue(const QString& argumentName) const override {
         if (argumentName == QLatin1String("int8Field")) {
             return QVariant::fromValue(int8Field_);
         }
@@ -208,12 +245,64 @@ public:
         return QVariant();
     }
     
-    virtual QStringList argumentNames() const override {
+    virtual QStringList fieldNames() const override {
         QStringList names = QStringList{QLatin1String("int8Field"), QLatin1String("int16Field"), QLatin1String("int32Field"), QLatin1String("int64Field"), QLatin1String("uint8Field"), QLatin1String("uint16Field"), QLatin1String("uint32Field"), QLatin1String("uint64Field"), QLatin1String("float32Field"), QLatin1String("float64Field"), QLatin1String("boolField"), QLatin1String("stringField"), QLatin1String("bytesField"), QLatin1String("baseRef"), QLatin1String("valueRef")};
         return names;
     }
+
+    virtual QStringList uiComments() const override {
+        return QStringList{};
+    }
     
-    // 字段访问器
+    virtual QStringList fieldUiComments(const QString& fieldName) const override {
+        if (fieldName == QLatin1String("int8Field")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("int16Field")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("int32Field")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("int64Field")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("uint8Field")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("uint16Field")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("uint32Field")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("uint64Field")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("float32Field")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("float64Field")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("boolField")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("stringField")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("bytesField")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("baseRef")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("valueRef")) {
+            return QStringList{};
+        }
+        return QStringList();
+    }
+
     int8_t getInt8Field() const {
         return int8Field_;
     }
@@ -305,25 +394,24 @@ public:
         valueRef_ = value;
     }
 private:
-    int8_t int8Field_;
-    int16_t int16Field_;
-    int32_t int32Field_;
-    int64_t int64Field_;
-    uint8_t uint8Field_;
-    uint16_t uint16Field_;
-    uint32_t uint32Field_;
-    uint64_t uint64Field_;
-    float float32Field_;
-    double float64Field_;
-    bool boolField_;
-    QString stringField_;
-    QByteArray bytesField_;
-    BaseAnnotationAnnotation baseRef_;
-    ValueAnnotationAnnotation valueRef_;
+        int8_t int8Field_ = 1;
+        int16_t int16Field_ = 2;
+        int32_t int32Field_ = 3;
+        int64_t int64Field_ = 4;
+        uint8_t uint8Field_ = 5;
+        uint16_t uint16Field_ = 6;
+        uint32_t uint32Field_ = 7;
+        uint64_t uint64Field_ = 8;
+        float float32Field_ = 1.000000;
+        double float64Field_ = 2.000000;
+        bool boolField_ = true;
+        QString stringField_ = "test";
+        QByteArray bytesField_ = "data";
+        BaseAnnotationAnnotation baseRef_;
+        ValueAnnotationAnnotation valueRef_;
 };
 Q_DECLARE_METATYPE(AllTypesAnnotationAnnotation)
     
-// ContainerAnnotation注解
 class MODEL_EXPORT ContainerAnnotationAnnotation : public IAnnotation {
 public:
     ContainerAnnotationAnnotation() = default;
@@ -333,7 +421,7 @@ public:
         return QLatin1String("ContainerAnnotation");
     }
     
-    virtual QVariant argument(const QString& argumentName) const override {
+    virtual QVariant argumentValue(const QString& argumentName) const override {
         if (argumentName == QLatin1String("intArray")) {
             QVariantList list;
             for (const auto& item : intArray_) {
@@ -376,12 +464,46 @@ public:
         return QVariant();
     }
     
-    virtual QStringList argumentNames() const override {
+    virtual QStringList fieldNames() const override {
         QStringList names = QStringList{QLatin1String("intArray"), QLatin1String("stringArray"), QLatin1String("annotationArray"), QLatin1String("optionalInt"), QLatin1String("optionalString"), QLatin1String("optionalAnnotation"), QLatin1String("intMap"), QLatin1String("stringMap"), QLatin1String("annotationMap")};
         return names;
     }
+
+    virtual QStringList uiComments() const override {
+        return QStringList{};
+    }
     
-    // 字段访问器
+    virtual QStringList fieldUiComments(const QString& fieldName) const override {
+        if (fieldName == QLatin1String("intArray")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("stringArray")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("annotationArray")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("optionalInt")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("optionalString")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("optionalAnnotation")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("intMap")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("stringMap")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("annotationMap")) {
+            return QStringList{};
+        }
+        return QStringList();
+    }
+
     QVector<int32_t> getIntArray() const {
         return intArray_; 
     }
@@ -449,7 +571,6 @@ private:
 };
 Q_DECLARE_METATYPE(ContainerAnnotationAnnotation)
     
-// ValueOnly注解
 class MODEL_EXPORT ValueOnlyAnnotation : public IAnnotation {
 public:
     ValueOnlyAnnotation() = default;
@@ -459,19 +580,29 @@ public:
         return QLatin1String("ValueOnly");
     }
     
-    virtual QVariant argument(const QString& argumentName) const override {
+    virtual QVariant argumentValue(const QString& argumentName) const override {
         if (argumentName == QLatin1String("value")) {
             return QVariant::fromValue(value_);
         }
         return QVariant();
     }
     
-    virtual QStringList argumentNames() const override {
+    virtual QStringList fieldNames() const override {
         QStringList names = QStringList{QLatin1String("value")};
         return names;
     }
+
+    virtual QStringList uiComments() const override {
+        return QStringList{};
+    }
     
-    // 字段访问器
+    virtual QStringList fieldUiComments(const QString& fieldName) const override {
+        if (fieldName == QLatin1String("value")) {
+            return QStringList{};
+        }
+        return QStringList();
+    }
+
     QString getValue() const {
         return value_;
     }
@@ -479,11 +610,10 @@ public:
         value_ = value;
     }
 private:
-    QString value_;
+        QString value_;
 };
 Q_DECLARE_METATYPE(ValueOnlyAnnotation)
     
-// NoParams注解
 class MODEL_EXPORT NoParamsAnnotation : public IAnnotation {
 public:
     NoParamsAnnotation() = default;
@@ -493,16 +623,23 @@ public:
         return QLatin1String("NoParams");
     }
     
-    virtual QVariant argument(const QString& argumentName) const override {
+    virtual QVariant argumentValue(const QString& argumentName) const override {
         return QVariant();
     }
     
-    virtual QStringList argumentNames() const override {
+    virtual QStringList fieldNames() const override {
         QStringList names = QStringList{};
         return names;
     }
+
+    virtual QStringList uiComments() const override {
+        return QStringList{};
+    }
     
-    // 字段访问器
+    virtual QStringList fieldUiComments(const QString& fieldName) const override {
+        return QStringList();
+    }
+
 private:
 };
 Q_DECLARE_METATYPE(NoParamsAnnotation)

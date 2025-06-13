@@ -4,28 +4,100 @@
 namespace mota {
 namespace parser {
 
+// 解析声明前缀，包括混合的注释、UI注释和注解
+std::pair<std::string, std::vector<std::shared_ptr<ast::Annotation>>> Parser::parseDeclarationPrefix() {
+    std::vector<std::string> uiComments;
+    std::vector<std::shared_ptr<ast::Annotation>> annotations;
+    
+    while (!isAtEnd()) {
+        if (check(lexer::TokenType::LineComment) || check(lexer::TokenType::BlockComment)) {
+            advance(); // 跳过普通注释
+        } else if (check(lexer::TokenType::UIComment)) {
+            // 收集UI注释
+            std::string comment = current_.lexeme;
+            
+            // 去掉//@ 前缀
+            if (comment.length() > 3 && comment.substr(0, 3) == "//@") {
+                comment = comment.substr(3);
+                // 去掉前导空格
+                while (!comment.empty() && (comment[0] == ' ' || comment[0] == '\t')) {
+                    comment = comment.substr(1);
+                }
+            }
+            
+            if (!comment.empty()) {
+                uiComments.push_back(comment);
+            }
+            advance();
+        } else if (check(lexer::TokenType::At)) {
+            // 解析注解
+            auto ann = annotation();
+            annotations.push_back(ann);
+        } else {
+            // 遇到其他token，结束前缀解析
+            break;
+        }
+    }
+    
+    // 合并UI注释
+    std::string mergedComment;
+    for (size_t i = 0; i < uiComments.size(); ++i) {
+        if (i > 0) mergedComment += "\n";
+        mergedComment += uiComments[i];
+    }
+    
+    return {mergedComment, annotations};
+}
+
+// 仅解析UI注释前缀（用于字段和枚举值）
+std::string Parser::parseUICommentsPrefix() {
+    std::vector<std::string> uiComments;
+    
+    while (!isAtEnd()) {
+        if (check(lexer::TokenType::LineComment) || check(lexer::TokenType::BlockComment)) {
+            advance(); // 跳过普通注释
+        } else if (check(lexer::TokenType::UIComment)) {
+            // 收集UI注释
+            std::string comment = current_.lexeme;
+            
+            // 去掉//@ 前缀
+            if (comment.length() > 3 && comment.substr(0, 3) == "//@") {
+                comment = comment.substr(3);
+                // 去掉前导空格
+                while (!comment.empty() && (comment[0] == ' ' || comment[0] == '\t')) {
+                    comment = comment.substr(1);
+                }
+            }
+            
+            if (!comment.empty()) {
+                uiComments.push_back(comment);
+            }
+            advance();
+        } else {
+            // 遇到其他token（包括@），结束UI注释解析
+            break;
+        }
+    }
+    
+    // 合并UI注释
+    std::string result;
+    for (size_t i = 0; i < uiComments.size(); ++i) {
+        if (i > 0) result += "\n";
+        result += uiComments[i];
+    }
+    
+    return result;
+}
+
 // ===== 声明解析 =====
 
 std::shared_ptr<ast::Node> Parser::declaration() {
-    // 跳过注释 token
-    while (check(lexer::TokenType::LineComment) ||
-           check(lexer::TokenType::BlockComment) ||
-           check(lexer::TokenType::UIComment)) {
-        advance();
-    }
+    // 解析声明前缀（包括混合的注释、UI注释和注解）
+    auto [uiComment, annotations] = parseDeclarationPrefix();
     
     std::shared_ptr<ast::Node> node;
     
-    // 处理注解
-    std::vector<std::shared_ptr<ast::Annotation>> annotations;
-    while (check(lexer::TokenType::At)) {
-        // 不捕获异常，让异常传递给测试用例
-        auto ann = annotation();
-        annotations.push_back(ann);
-    }
-    
     // 根据当前词法单元类型选择解析方法
-    // 不捕获异常，让异常传播到测试函数中
     auto nowToken = peek();
     if (consume(lexer::TokenType::Struct)) {
         node = structDeclaration();
@@ -42,6 +114,11 @@ std::shared_ptr<ast::Node> Parser::declaration() {
     } else {
         error(nowToken, "Expected declaration");
         return nullptr;
+    }
+    
+    // 设置UI注释到节点
+    if (node && !uiComment.empty()) {
+        node->ui_comment = uiComment;
     }
     
     // 将注解添加到节点
@@ -63,7 +140,7 @@ std::shared_ptr<ast::Node> Parser::declaration() {
             error(nowToken, "Unexpected annotations");
             return nullptr;
         }
-    } else {
+    } else if (!annotations.empty()) {
         error(nowToken, "Unexpected annotations");
         return nullptr;
     }
@@ -175,14 +252,53 @@ std::shared_ptr<ast::Struct> Parser::structDeclaration() {
     std::vector<std::shared_ptr<ast::Field>> fields;
     
     while (!check(lexer::TokenType::RightBrace) && !isAtEnd()) {
-        // 处理字段前的注解
+        // 解析字段前缀（包括注释、UI注释和注解）
         std::vector<std::shared_ptr<ast::Annotation>> annotations;
-        while (consume(lexer::TokenType::At)) {
-            annotations.push_back(annotation());
+        std::vector<std::string> uiComments;
+        
+        // 处理混合的注释、UI注释和注解
+        while (!isAtEnd()) {
+            if (check(lexer::TokenType::LineComment) || check(lexer::TokenType::BlockComment)) {
+                advance(); // 跳过普通注释
+            } else if (check(lexer::TokenType::UIComment)) {
+                // 收集UI注释
+                std::string comment = current_.lexeme;
+                
+                // 去掉//@ 前缀
+                if (comment.length() > 3 && comment.substr(0, 3) == "//@") {
+                    comment = comment.substr(3);
+                    // 去掉前导空格
+                    while (!comment.empty() && (comment[0] == ' ' || comment[0] == '\t')) {
+                        comment = comment.substr(1);
+                    }
+                }
+                
+                if (!comment.empty()) {
+                    uiComments.push_back(comment);
+                }
+                advance();
+            } else if (check(lexer::TokenType::At)) {
+                // 解析注解
+                auto ann = annotation();
+                annotations.push_back(ann);
+            } else {
+                // 遇到其他token，开始解析字段
+                break;
+            }
         }
         
-        // 解析字段
-        auto field = fieldDeclaration();
+        // 解析字段（不再调用parseUICommentsPrefix，因为已经在这里收集了）
+        auto field = fieldDeclarationWithoutUIComment();
+        
+        // 设置UI注释
+        if (!uiComments.empty()) {
+            std::string mergedComment;
+            for (size_t i = 0; i < uiComments.size(); ++i) {
+                if (i > 0) mergedComment += "\n";
+                mergedComment += uiComments[i];
+            }
+            field->ui_comment = mergedComment;
+        }
         
         // 将注解添加到字段
         for (auto& ann : annotations) {
@@ -223,14 +339,53 @@ std::shared_ptr<ast::Enum> Parser::enumDeclaration() {
     std::vector<std::shared_ptr<ast::EnumValue>> values;
     
     while (!check(lexer::TokenType::RightBrace) && !isAtEnd()) {
-        // 处理枚举值前的注解
+        // 解析枚举值前缀（包括注释、UI注释和注解）
         std::vector<std::shared_ptr<ast::Annotation>> annotations;
-        while (consume(lexer::TokenType::At)) {
-            annotations.push_back(annotation());
+        std::vector<std::string> uiComments;
+        
+        // 处理混合的注释、UI注释和注解
+        while (!isAtEnd()) {
+            if (check(lexer::TokenType::LineComment) || check(lexer::TokenType::BlockComment)) {
+                advance(); // 跳过普通注释
+            } else if (check(lexer::TokenType::UIComment)) {
+                // 收集UI注释
+                std::string comment = current_.lexeme;
+                
+                // 去掉//@ 前缀
+                if (comment.length() > 3 && comment.substr(0, 3) == "//@") {
+                    comment = comment.substr(3);
+                    // 去掉前导空格
+                    while (!comment.empty() && (comment[0] == ' ' || comment[0] == '\t')) {
+                        comment = comment.substr(1);
+                    }
+                }
+                
+                if (!comment.empty()) {
+                    uiComments.push_back(comment);
+                }
+                advance();
+            } else if (check(lexer::TokenType::At)) {
+                // 解析注解
+                auto ann = annotation();
+                annotations.push_back(ann);
+            } else {
+                // 遇到其他token，开始解析枚举值
+                break;
+            }
         }
         
-        // 解析枚举值
-        auto value = enumValueDeclaration();
+        // 解析枚举值（不再调用parseUICommentsPrefix，因为已经在这里收集了）
+        auto value = enumValueDeclarationWithoutUIComment();
+        
+        // 设置UI注释
+        if (!uiComments.empty()) {
+            std::string mergedComment;
+            for (size_t i = 0; i < uiComments.size(); ++i) {
+                if (i > 0) mergedComment += "\n";
+                mergedComment += uiComments[i];
+            }
+            value->ui_comment = mergedComment;
+        }
         
         // 将注解添加到枚举值
         for (auto& ann : annotations) {
@@ -281,14 +436,53 @@ std::shared_ptr<ast::Block> Parser::blockDeclaration() {
     std::vector<std::shared_ptr<ast::Field>> fields;
     
     while (!check(lexer::TokenType::RightBrace) && !isAtEnd()) {
-        // 处理字段前的注解
+        // 解析字段前缀（包括注释、UI注释和注解）
         std::vector<std::shared_ptr<ast::Annotation>> annotations;
-        while (consume(lexer::TokenType::At)) {
-            annotations.push_back(annotation());
+        std::vector<std::string> uiComments;
+        
+        // 处理混合的注释、UI注释和注解
+        while (!isAtEnd()) {
+            if (check(lexer::TokenType::LineComment) || check(lexer::TokenType::BlockComment)) {
+                advance(); // 跳过普通注释
+            } else if (check(lexer::TokenType::UIComment)) {
+                // 收集UI注释
+                std::string comment = current_.lexeme;
+                
+                // 去掉//@ 前缀
+                if (comment.length() > 3 && comment.substr(0, 3) == "//@") {
+                    comment = comment.substr(3);
+                    // 去掉前导空格
+                    while (!comment.empty() && (comment[0] == ' ' || comment[0] == '\t')) {
+                        comment = comment.substr(1);
+                    }
+                }
+                
+                if (!comment.empty()) {
+                    uiComments.push_back(comment);
+                }
+                advance();
+            } else if (check(lexer::TokenType::At)) {
+                // 解析注解
+                auto ann = annotation();
+                annotations.push_back(ann);
+            } else {
+                // 遇到其他token，开始解析字段
+                break;
+            }
         }
         
-        // 解析字段
-        auto field = fieldDeclaration();
+        // 解析字段（不再调用parseUICommentsPrefix，因为已经在这里收集了）
+        auto field = fieldDeclarationWithoutUIComment();
+        
+        // 设置UI注释
+        if (!uiComments.empty()) {
+            std::string mergedComment;
+            for (size_t i = 0; i < uiComments.size(); ++i) {
+                if (i > 0) mergedComment += "\n";
+                mergedComment += uiComments[i];
+            }
+            field->ui_comment = mergedComment;
+        }
         
         // 将注解添加到字段
         for (auto& ann : annotations) {
@@ -341,17 +535,59 @@ std::shared_ptr<ast::AnnotationDecl> Parser::annotationDeclaration() {
     if (consume(lexer::TokenType::LeftBrace)) {
         // 有注解体，解析字段
         while (!check(lexer::TokenType::RightBrace) && !isAtEnd()) {
-            // 处理字段前的注解
+            // 解析字段前缀（包括注释、UI注释和注解）
             std::vector<std::shared_ptr<ast::Annotation>> annotations;
-            while (consume(lexer::TokenType::At)) {
-                annotations.push_back(annotation());
+            std::vector<std::string> uiComments;
+            
+            // 处理混合的注释、UI注释和注解
+            while (!isAtEnd()) {
+                if (check(lexer::TokenType::LineComment) || check(lexer::TokenType::BlockComment)) {
+                    advance(); // 跳过普通注释
+                } else if (check(lexer::TokenType::UIComment)) {
+                    // 收集UI注释
+                    std::string comment = current_.lexeme;
+                    
+                    // 去掉//@ 前缀
+                    if (comment.length() > 3 && comment.substr(0, 3) == "//@") {
+                        comment = comment.substr(3);
+                        // 去掉前导空格
+                        while (!comment.empty() && (comment[0] == ' ' || comment[0] == '\t')) {
+                            comment = comment.substr(1);
+                        }
+                    }
+                    
+                    if (!comment.empty()) {
+                        uiComments.push_back(comment);
+                    }
+                    advance();
+                } else if (check(lexer::TokenType::At)) {
+                    // 解析注解
+                    auto ann = annotation();
+                    annotations.push_back(ann);
+                } else {
+                    // 遇到其他token，开始解析字段
+                    break;
+                }
             }
-            // 解析字段
-            auto field = fieldDeclaration();
+            
+            // 解析字段（不再调用parseUICommentsPrefix，因为已经在这里收集了）
+            auto field = fieldDeclarationWithoutUIComment();
+            
+            // 设置UI注释
+            if (!uiComments.empty()) {
+                std::string mergedComment;
+                for (size_t i = 0; i < uiComments.size(); ++i) {
+                    if (i > 0) mergedComment += "\n";
+                    mergedComment += uiComments[i];
+                }
+                field->ui_comment = mergedComment;
+            }
+            
             // 将注解添加到字段
             for (auto& ann : annotations) {
                 field->annotations.push_back(ann);
             }
+            
             fields.push_back(field);
         }
         // 如果到达文件末尾但没有右大括号，抛出异常
@@ -371,6 +607,9 @@ std::shared_ptr<ast::AnnotationDecl> Parser::annotationDeclaration() {
 }
 
 std::shared_ptr<ast::Field> Parser::fieldDeclaration() {
+    // 收集前置的UI注释（字段的注解在调用方处理）
+    std::string uiComment = parseUICommentsPrefix();
+    
     // 解析类型
     if (!check(lexer::TokenType::Identifier) &&
         !check(lexer::TokenType::Int8) && !check(lexer::TokenType::Int16) && !check(lexer::TokenType::Int32) && !check(lexer::TokenType::Int64) &&
@@ -394,10 +633,48 @@ std::shared_ptr<ast::Field> Parser::fieldDeclaration() {
     consume(lexer::TokenType::Semicolon, "Expected ';' after field declaration");
     
     // 调整参数顺序为 name, type, initializer
-    return makeNode<ast::Field>(name, type, initializer);
+    auto field = makeNode<ast::Field>(name, type, initializer);
+    
+    // 设置UI注释
+    if (!uiComment.empty()) {
+        field->ui_comment = uiComment;
+    }
+    
+    return field;
+}
+
+std::shared_ptr<ast::Field> Parser::fieldDeclarationWithoutUIComment() {
+    // 解析类型
+    if (!check(lexer::TokenType::Identifier) &&
+        !check(lexer::TokenType::Int8) && !check(lexer::TokenType::Int16) && !check(lexer::TokenType::Int32) && !check(lexer::TokenType::Int64) &&
+        !check(lexer::TokenType::Float32) && !check(lexer::TokenType::Float64) &&
+        !check(lexer::TokenType::StringType) && !check(lexer::TokenType::Bytes) && !check(lexer::TokenType::Bool) &&
+        !check(lexer::TokenType::Repeated) && !check(lexer::TokenType::Map) && !check(lexer::TokenType::Optional)) {
+        error(peek(), "Expected type");
+    }
+    
+    auto type = parseType();
+    
+    // 解析字段名
+    std::string name = consume(lexer::TokenType::Identifier, "Expected field name").lexeme;
+    
+    // 解析可选的初始值
+    std::shared_ptr<ast::Expr> initializer = nullptr;
+    if (consume(lexer::TokenType::Equal)) {
+        initializer = expression();
+    }
+    
+    consume(lexer::TokenType::Semicolon, "Expected ';' after field declaration");
+    
+    // 调整参数顺序为 name, type, initializer
+    auto field = makeNode<ast::Field>(name, type, initializer);
+    
+    return field;
 }
 
 std::shared_ptr<ast::EnumValue> Parser::enumValueDeclaration() {
+    // 收集前置的UI注释（枚举值的注解在调用方处理）
+    std::string uiComment = parseUICommentsPrefix();
     
     // 解析枚举值名称
     std::string name = consume(lexer::TokenType::Identifier, "Expected enum value name").lexeme;
@@ -410,7 +687,31 @@ std::shared_ptr<ast::EnumValue> Parser::enumValueDeclaration() {
     
     consume(lexer::TokenType::Semicolon, "Expected ';' after enum value");
     
-    return makeNode<ast::EnumValue>(name, value);
+    auto enumValue = makeNode<ast::EnumValue>(name, value);
+    
+    // 设置UI注释
+    if (!uiComment.empty()) {
+        enumValue->ui_comment = uiComment;
+    }
+    
+    return enumValue;
+}
+
+std::shared_ptr<ast::EnumValue> Parser::enumValueDeclarationWithoutUIComment() {
+    // 解析枚举值名称
+    std::string name = consume(lexer::TokenType::Identifier, "Expected enum value name").lexeme;
+    
+    // 解析枚举值
+    std::shared_ptr<ast::Expr> value = nullptr;
+    if (consume(lexer::TokenType::Equal)) {
+        value = expression();
+    }
+    
+    consume(lexer::TokenType::Semicolon, "Expected ';' after enum value");
+    
+    auto enumValue = makeNode<ast::EnumValue>(name, value);
+    
+    return enumValue;
 }
 
 std::shared_ptr<ast::Include> Parser::includeDeclaration() {

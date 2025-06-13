@@ -73,10 +73,9 @@ lexer::Token Parser::advance() {
     if (!isAtEnd()) {
         current_ = lexer_.nextToken();
         
-        // 自动跳过注释
+        // 只跳过普通注释，保留UIComment给后续处理
         while (!isAtEnd() && (current_.type == lexer::TokenType::LineComment || 
-                              current_.type == lexer::TokenType::BlockComment ||
-                              current_.type == lexer::TokenType::UIComment)) {
+                              current_.type == lexer::TokenType::BlockComment)) {
             current_ = lexer_.nextToken();
         }
     }

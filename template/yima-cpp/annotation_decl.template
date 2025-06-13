@@ -1,6 +1,8 @@
 ﻿
 <%misc annotation_decl%>
-// <%=declaration.name%>注解
+<%if (length(declaration.ui_comment) > 0)%>
+// <%=replace(declaration.ui_comment, "\n", "\n// ")%>
+<%endif%>
 class MODEL_EXPORT <%=declaration.relative_class_name%> : <%if (declaration.parent)%>public <%=declaration.parent_relative_class_name%><%else%>public IAnnotation<%endif%> {
 public:
     <%=declaration.relative_class_name%>() = default;
@@ -10,7 +12,7 @@ public:
         return QLatin1String("<%=declaration.relative_name%>");
     }
     
-    virtual QVariant argument(const QString& argumentName) const override {
+    virtual QVariant argumentValue(const QString& argumentName) const override {
 <%foreach declaration.fields as field%>
         if (argumentName == QLatin1String("<%=field.name%>")) {
             <%if (field.container_type == "array")%>
@@ -25,22 +27,41 @@ public:
         }
 <%endforeach%>
 <%if (declaration.parent)%>
-        return <%=declaration.parent_relative_class_name%>::argument(argumentName);
+        return <%=declaration.parent_relative_class_name%>::argumentValue(argumentName);
 <%else%>
         return QVariant();
 <%endif%>
     }
     
-    virtual QStringList argumentNames() const override {
+    virtual QStringList fieldNames() const override {
         QStringList names = QStringList{<%foreach declaration.fields as field%>QLatin1String("<%=field.name%>")<%if (is_last == false)%>, <%endif%><%endforeach%>};
         <%if (declaration.parent)%>
-        names.append(<%=declaration.parent_relative_class_name%>::argumentNames());
+        names.append(<%=declaration.parent_relative_class_name%>::fieldNames());
         <%endif%>
         return names;
     }
+
+    virtual QStringList uiComments() const override {
+        return QStringList{<%foreach declaration.ui_comment as comment%>QLatin1String("<%=escape_string(comment)%>")<%if (is_last == false)%>, <%endif%><%endforeach%>};
+    }
     
-    // 字段访问器
+    virtual QStringList fieldUiComments(const QString& fieldName) const override {
+        <%foreach declaration.fields as field%>
+        if (fieldName == QLatin1String("<%=field.name%>")) {
+            return QStringList{<%foreach field.ui_comment as comment%>QLatin1String("<%=escape_string(comment)%>")<%if (is_last == false)%>, <%endif%><%endforeach%>};
+        }
+        <%endforeach%>
+        <%if (declaration.parent)%>
+        return <%=declaration.parent_relative_class_name%>::fieldUiComments(fieldName);
+        <%else%>
+        return QStringList();
+        <%endif%>
+    }
+
 <%foreach declaration.fields as field%>
+    <%if (length(field.ui_comment) > 0)%>
+// <%=replace(field.ui_comment, "\n", "\n// ")%>
+    <%endif%>
     <%if (field.container_type == "array")%>
     QVector<<%=field.relative_mapped_type_name%>> get<%=pascal_case(field.name)%>() const {
         return <%=field.name%>_; 
@@ -77,16 +98,16 @@ public:
 private:
 <%foreach declaration.fields as field%>
     <%if (field.container_type == "array")%>
-    QVector<<%=field.relative_mapped_type_name%>> <%=field.name%>_<%if (exists(field.default_value))%> = <%=field.default_value%><%endif%>;
+    QVector<<%=field.relative_mapped_type_name%>> <%=field.name%>_<%if (exists(field, "default_value"))%> = <%=field.default_value%><%endif%>;
     <%endif%>
     <%if (field.container_type == "map")%>
-    QMap<QString, <%=field.relative_mapped_type_name%>> <%=field.name%>_<%if (exists(field.default_value))%> = <%=field.default_value%><%endif%>;
+    QMap<QString, <%=field.relative_mapped_type_name%>> <%=field.name%>_<%if (exists(field, "default_value"))%> = <%=field.default_value%><%endif%>;
     <%endif%>
     <%if (field.container_type == "optional")%>
-    std::optional<<%=field.relative_mapped_type_name%>> <%=field.name%>_<%if (exists(field.default_value))%> = <%=field.default_value%><%endif%>;
+    std::optional<<%=field.relative_mapped_type_name%>> <%=field.name%>_<%if (exists(field, "default_value"))%> = <%=field.default_value%><%endif%>;
     <%endif%>
     <%if (field.container_type == "none")%>
-    <%=field.relative_mapped_type_name%> <%=field.name%>_<%if (exists(field.default_value))%> = <%=field.default_value%><%endif%>;
+        <%=field.relative_mapped_type_name%> <%=field.name%>_<%if (exists(field, "default_value"))%> = <%=field.default_value%><%endif%>;
     <%endif%>
 <%endforeach%>};
 Q_DECLARE_METATYPE(<%=declaration.relative_class_name%>)

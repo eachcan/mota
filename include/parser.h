@@ -51,6 +51,10 @@ private:
     lexer::Token consume(lexer::TokenType type, const std::string& message);
     ParseError error(const lexer::Token& token, const std::string& message);
     
+    // UI注释和注解前缀解析
+    std::pair<std::string, std::vector<std::shared_ptr<ast::Annotation>>> parseDeclarationPrefix();
+    std::string parseUICommentsPrefix();
+    
     // 解析方法
     std::shared_ptr<ast::Node> declaration();
     std::shared_ptr<ast::Annotation> annotation();
@@ -65,7 +69,9 @@ private:
     std::shared_ptr<ast::Type> primaryType();
     std::shared_ptr<ast::Type> containerType();
     std::shared_ptr<ast::Field> fieldDeclaration();
+    std::shared_ptr<ast::Field> fieldDeclarationWithoutUIComment();
     std::shared_ptr<ast::EnumValue> enumValueDeclaration();
+    std::shared_ptr<ast::EnumValue> enumValueDeclarationWithoutUIComment();
     std::shared_ptr<ast::Include> includeDeclaration();
     std::shared_ptr<ast::Namespace> namespaceDeclaration();
     

@@ -15,7 +15,9 @@
                 "name": "description",
                 "relative_mapped_type_name": "QString",
                 "relative_type_name": "string",
-                "type_name": "string"
+                "super_type": "builtin",
+                "type_name": "string",
+                "ui_comment": ""
             }
         ],
         "full_class_name": "examples:annotations::BaseAnnotationAnnotation",
@@ -32,7 +34,8 @@
         "parent_relative_name": "",
         "relative_class_name": "BaseAnnotationAnnotation",
         "relative_name": "BaseAnnotation",
-        "type": "annotation_decl"
+        "super_type": "annotation_decl",
+        "ui_comment": "这是注解的UI注释"
     },
     {
         "annotations": [],
@@ -49,7 +52,9 @@
                 "name": "min",
                 "relative_mapped_type_name": "int32_t",
                 "relative_type_name": "int32",
-                "type_name": "int32"
+                "super_type": "builtin",
+                "type_name": "int32",
+                "ui_comment": "最小值\n请你注意，最小值不能小于0"
             },
             {
                 "annotations": [],
@@ -62,7 +67,9 @@
                 "name": "max",
                 "relative_mapped_type_name": "int32_t",
                 "relative_type_name": "int32",
-                "type_name": "int32"
+                "super_type": "builtin",
+                "type_name": "int32",
+                "ui_comment": ""
             }
         ],
         "full_class_name": "examples:annotations::ValueAnnotationAnnotation",
@@ -79,7 +86,8 @@
         "parent_relative_name": "",
         "relative_class_name": "ValueAnnotationAnnotation",
         "relative_name": "ValueAnnotation",
-        "type": "annotation_decl"
+        "super_type": "annotation_decl",
+        "ui_comment": "这是注解的UI注释\n这是第二行 UI 注释"
     },
     {
         "annotations": [],
@@ -96,7 +104,9 @@
                 "name": "required",
                 "relative_mapped_type_name": "bool",
                 "relative_type_name": "bool",
-                "type_name": "bool"
+                "super_type": "builtin",
+                "type_name": "bool",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -108,7 +118,9 @@
                 "name": "range",
                 "relative_mapped_type_name": "ValueAnnotationAnnotation",
                 "relative_type_name": "ValueAnnotation",
-                "type_name": "ValueAnnotation"
+                "super_type": "annotation_decl",
+                "type_name": "ValueAnnotation",
+                "ui_comment": ""
             }
         ],
         "full_class_name": "examples:annotations::ExtendedAnnotationAnnotation",
@@ -125,7 +137,8 @@
         "parent_relative_name": "BaseAnnotation",
         "relative_class_name": "ExtendedAnnotationAnnotation",
         "relative_name": "ExtendedAnnotation",
-        "type": "annotation_decl"
+        "super_type": "annotation_decl",
+        "ui_comment": ""
     },
     {
         "annotations": [],
@@ -142,7 +155,9 @@
                 "name": "int8Field",
                 "relative_mapped_type_name": "int8_t",
                 "relative_type_name": "int8",
-                "type_name": "int8"
+                "super_type": "builtin",
+                "type_name": "int8",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -155,7 +170,9 @@
                 "name": "int16Field",
                 "relative_mapped_type_name": "int16_t",
                 "relative_type_name": "int16",
-                "type_name": "int16"
+                "super_type": "builtin",
+                "type_name": "int16",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -168,7 +185,9 @@
                 "name": "int32Field",
                 "relative_mapped_type_name": "int32_t",
                 "relative_type_name": "int32",
-                "type_name": "int32"
+                "super_type": "builtin",
+                "type_name": "int32",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -181,7 +200,9 @@
                 "name": "int64Field",
                 "relative_mapped_type_name": "int64_t",
                 "relative_type_name": "int64",
-                "type_name": "int64"
+                "super_type": "builtin",
+                "type_name": "int64",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -194,7 +215,9 @@
                 "name": "uint8Field",
                 "relative_mapped_type_name": "uint8_t",
                 "relative_type_name": "uint8",
-                "type_name": "uint8"
+                "super_type": "builtin",
+                "type_name": "uint8",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -207,7 +230,9 @@
                 "name": "uint16Field",
                 "relative_mapped_type_name": "uint16_t",
                 "relative_type_name": "uint16",
-                "type_name": "uint16"
+                "super_type": "builtin",
+                "type_name": "uint16",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -220,7 +245,9 @@
                 "name": "uint32Field",
                 "relative_mapped_type_name": "uint32_t",
                 "relative_type_name": "uint32",
-                "type_name": "uint32"
+                "super_type": "builtin",
+                "type_name": "uint32",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -233,7 +260,9 @@
                 "name": "uint64Field",
                 "relative_mapped_type_name": "uint64_t",
                 "relative_type_name": "uint64",
-                "type_name": "uint64"
+                "super_type": "builtin",
+                "type_name": "uint64",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -246,7 +275,9 @@
                 "name": "float32Field",
                 "relative_mapped_type_name": "float",
                 "relative_type_name": "float32",
-                "type_name": "float32"
+                "super_type": "builtin",
+                "type_name": "float32",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -259,7 +290,9 @@
                 "name": "float64Field",
                 "relative_mapped_type_name": "double",
                 "relative_type_name": "float64",
-                "type_name": "float64"
+                "super_type": "builtin",
+                "type_name": "float64",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -272,7 +305,9 @@
                 "name": "boolField",
                 "relative_mapped_type_name": "bool",
                 "relative_type_name": "bool",
-                "type_name": "bool"
+                "super_type": "builtin",
+                "type_name": "bool",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -285,7 +320,9 @@
                 "name": "stringField",
                 "relative_mapped_type_name": "QString",
                 "relative_type_name": "string",
-                "type_name": "string"
+                "super_type": "builtin",
+                "type_name": "string",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -298,7 +335,9 @@
                 "name": "bytesField",
                 "relative_mapped_type_name": "QByteArray",
                 "relative_type_name": "bytes",
-                "type_name": "bytes"
+                "super_type": "builtin",
+                "type_name": "bytes",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -310,7 +349,9 @@
                 "name": "baseRef",
                 "relative_mapped_type_name": "BaseAnnotationAnnotation",
                 "relative_type_name": "BaseAnnotation",
-                "type_name": "BaseAnnotation"
+                "super_type": "annotation_decl",
+                "type_name": "BaseAnnotation",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -322,7 +363,9 @@
                 "name": "valueRef",
                 "relative_mapped_type_name": "ValueAnnotationAnnotation",
                 "relative_type_name": "ValueAnnotation",
-                "type_name": "ValueAnnotation"
+                "super_type": "annotation_decl",
+                "type_name": "ValueAnnotation",
+                "ui_comment": ""
             }
         ],
         "full_class_name": "examples:annotations::AllTypesAnnotationAnnotation",
@@ -339,7 +382,8 @@
         "parent_relative_name": "",
         "relative_class_name": "AllTypesAnnotationAnnotation",
         "relative_name": "AllTypesAnnotation",
-        "type": "annotation_decl"
+        "super_type": "annotation_decl",
+        "ui_comment": ""
     },
     {
         "annotations": [],
@@ -355,7 +399,9 @@
                 "name": "intArray",
                 "relative_mapped_type_name": "int32_t",
                 "relative_type_name": "int32",
-                "type_name": "int32"
+                "super_type": "builtin",
+                "type_name": "int32",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -367,7 +413,9 @@
                 "name": "stringArray",
                 "relative_mapped_type_name": "QString",
                 "relative_type_name": "string",
-                "type_name": "string"
+                "super_type": "builtin",
+                "type_name": "string",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -379,7 +427,9 @@
                 "name": "annotationArray",
                 "relative_mapped_type_name": "BaseAnnotationAnnotation",
                 "relative_type_name": "BaseAnnotation",
-                "type_name": "BaseAnnotation"
+                "super_type": "annotation_decl",
+                "type_name": "BaseAnnotation",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -391,7 +441,9 @@
                 "name": "optionalInt",
                 "relative_mapped_type_name": "int32_t",
                 "relative_type_name": "int32",
-                "type_name": "int32"
+                "super_type": "builtin",
+                "type_name": "int32",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -403,7 +455,9 @@
                 "name": "optionalString",
                 "relative_mapped_type_name": "QString",
                 "relative_type_name": "string",
-                "type_name": "string"
+                "super_type": "builtin",
+                "type_name": "string",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -415,7 +469,9 @@
                 "name": "optionalAnnotation",
                 "relative_mapped_type_name": "BaseAnnotationAnnotation",
                 "relative_type_name": "BaseAnnotation",
-                "type_name": "BaseAnnotation"
+                "super_type": "annotation_decl",
+                "type_name": "BaseAnnotation",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -427,7 +483,9 @@
                 "name": "intMap",
                 "relative_mapped_type_name": "int32_t",
                 "relative_type_name": "int32",
-                "type_name": "int32"
+                "super_type": "builtin",
+                "type_name": "int32",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -439,7 +497,9 @@
                 "name": "stringMap",
                 "relative_mapped_type_name": "QString",
                 "relative_type_name": "string",
-                "type_name": "string"
+                "super_type": "builtin",
+                "type_name": "string",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -451,7 +511,9 @@
                 "name": "annotationMap",
                 "relative_mapped_type_name": "BaseAnnotationAnnotation",
                 "relative_type_name": "BaseAnnotation",
-                "type_name": "BaseAnnotation"
+                "super_type": "annotation_decl",
+                "type_name": "BaseAnnotation",
+                "ui_comment": ""
             }
         ],
         "full_class_name": "examples:annotations::ContainerAnnotationAnnotation",
@@ -468,7 +530,8 @@
         "parent_relative_name": "",
         "relative_class_name": "ContainerAnnotationAnnotation",
         "relative_name": "ContainerAnnotation",
-        "type": "annotation_decl"
+        "super_type": "annotation_decl",
+        "ui_comment": ""
     },
     {
         "annotations": [],
@@ -484,7 +547,9 @@
                 "name": "value",
                 "relative_mapped_type_name": "QString",
                 "relative_type_name": "string",
-                "type_name": "string"
+                "super_type": "builtin",
+                "type_name": "string",
+                "ui_comment": ""
             }
         ],
         "full_class_name": "examples:annotations::ValueOnlyAnnotation",
@@ -501,7 +566,8 @@
         "parent_relative_name": "",
         "relative_class_name": "ValueOnlyAnnotation",
         "relative_name": "ValueOnly",
-        "type": "annotation_decl"
+        "super_type": "annotation_decl",
+        "ui_comment": ""
     },
     {
         "annotations": [],
@@ -521,7 +587,8 @@
         "parent_relative_name": "",
         "relative_class_name": "NoParamsAnnotation",
         "relative_name": "NoParams",
-        "type": "annotation_decl"
+        "super_type": "annotation_decl",
+        "ui_comment": ""
     }
 ],
     "INCLUDES": {
@@ -533,7 +600,7 @@
         }
     ]
 },
-    "CURRENT_TIME": "2025-06-13 21:49:10",
+    "CURRENT_TIME": "2025-06-13 23:09:47",
     "SOURCE_FILE": "",
     "MOTA_VERSION": "0.2.0",
     "NAMESPACE": {

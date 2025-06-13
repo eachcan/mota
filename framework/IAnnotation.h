@@ -22,10 +22,16 @@ namespace ymf {
         virtual QString name() const = 0;
 
         // 获取注解的参数
-        virtual QVariant argument(const QString& name) const = 0;
+        virtual QVariant argumentValue(const QString& name) const = 0;
 
         // 获取注解的参数名称
-        virtual QStringList argumentNames() const = 0;
+        virtual QStringList fieldNames() const = 0;
+
+        // 获取注解的UI注释
+        virtual QStringList uiComments() const = 0;
+
+        // 获取字段的UI注释
+        virtual QStringList fieldUiComments(const QString& fieldName) const = 0;
     };
 
 } // namespace ymf

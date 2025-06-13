@@ -326,7 +326,8 @@ nlohmann::json Generator::buildDeclarationData(const std::shared_ptr<ast::Node>&
                 {"relative_name", (currentNamespace == currentNamespace ? annotationDecl->name : (currentNamespace.empty() ? annotationDecl->name : currentNamespace + "." + annotationDecl->name))},
                 {"relative_class_name", (currentNamespace == currentNamespace ? classPrefix + annotationDecl->name + classSuffix : namespaceClassPrefix + classPrefix + annotationDecl->name + classSuffix)},
                 {"parent_relative_name", (parentName.empty() ? "" : (currentNamespace == currentNamespace ? parentName : parentFullName))},
-                {"parent_relative_class_name", (parentName.empty() ? "" : (currentNamespace == currentNamespace ? parentClassName : parentFullClassName))}
+                {"parent_relative_class_name", (parentName.empty() ? "" : (currentNamespace == currentNamespace ? parentClassName : parentFullClassName))},
+                {"ui_comment", annotationDecl->ui_comment}
             };
             
             // 构建字段数据
@@ -386,12 +387,14 @@ nlohmann::json Generator::buildDeclarationData(const std::shared_ptr<ast::Node>&
                 {"parent_full_class_name", parentFullClassName},
                 {"namespace", currentNamespace},
                 {"namespace_class_prefix", namespaceClassPrefix},
-                {"relative_name", structDecl->name},
-                {"relative_class_name", classPrefix + structDecl->name + classSuffix},
-                {"parent_relative_name", (parentName.empty() ? "" : (currentNamespace == currentNamespace ? parentName : parentFullName))},
-                {"parent_relative_class_name", (parentName.empty() ? "" : (currentNamespace == currentNamespace ? parentClassName : parentFullClassName))},
+                {"parent", parentName},  // 保持向后兼容
                 {"annotations", nlohmann::json::array()},
-                {"fields", nlohmann::json::array()}
+                {"fields", nlohmann::json::array()},
+                {"relative_name", (currentNamespace == currentNamespace ? structDecl->name : (currentNamespace.empty() ? structDecl->name : currentNamespace + "." + structDecl->name))},
+                {"relative_class_name", (currentNamespace == currentNamespace ? classPrefix + structDecl->name + classSuffix : namespaceClassPrefix + classPrefix + structDecl->name + classSuffix)},
+                {"parent_relative_name", (parentName.empty() ? "" : (currentNamespace == currentNamespace ? parentName : parentFullName))},
+                {"parent_relative_class_name", (parentName.empty() ? "" : (currentNamespace == currentNamespace ? classPrefix + parentName + classSuffix : namespaceClassPrefix + classPrefix + parentName + classSuffix))},
+                {"ui_comment", structDecl->ui_comment}
             };
             
             // 构建注解数据
@@ -462,7 +465,8 @@ nlohmann::json Generator::buildDeclarationData(const std::shared_ptr<ast::Node>&
                 {"relative_name", (currentNamespace == currentNamespace ? blockDecl->name : (currentNamespace.empty() ? blockDecl->name : currentNamespace + "." + blockDecl->name))},
                 {"relative_class_name", (currentNamespace == currentNamespace ? classPrefix + blockDecl->name + classSuffix : namespaceClassPrefix + classPrefix + blockDecl->name + classSuffix)},
                 {"parent_relative_name", (parentName.empty() ? "" : (currentNamespace == currentNamespace ? parentName : parentFullName))},
-                {"parent_relative_class_name", (parentName.empty() ? "" : (currentNamespace == currentNamespace ? parentClassName : parentFullClassName))}
+                {"parent_relative_class_name", (parentName.empty() ? "" : (currentNamespace == currentNamespace ? parentClassName : parentFullClassName))},
+                {"ui_comment", blockDecl->ui_comment}
             };
             
             // 构建注解数据
@@ -511,7 +515,8 @@ nlohmann::json Generator::buildDeclarationData(const std::shared_ptr<ast::Node>&
                 {"relative_name", (currentNamespace == currentNamespace ? enumDecl->name : (currentNamespace.empty() ? enumDecl->name : currentNamespace + "." + enumDecl->name))},
                 {"relative_class_name", (currentNamespace == currentNamespace ? classPrefix + enumDecl->name + classSuffix : namespaceClassPrefix + classPrefix + enumDecl->name + classSuffix)},
                 {"parent_relative_name", ""},
-                {"parent_relative_class_name", ""}
+                {"parent_relative_class_name", ""},
+                {"ui_comment", enumDecl->ui_comment}
             };
             
             // 构建注解数据
@@ -575,7 +580,8 @@ nlohmann::json Generator::buildAnnotationData(const std::shared_ptr<ast::Annotat
         {"namespace", currentNamespace},
         {"arguments", nlohmann::json::array()},
         {"relative_name", (currentNamespace == currentNamespace ? annotationName : (currentNamespace.empty() ? annotationName : currentNamespace + "." + annotationName))},
-        {"relative_class_name", (currentNamespace == currentNamespace ? classPrefix + annotationName + classSuffix : annotationNamespaceClassPrefix + classPrefix + annotationName + classSuffix)}
+        {"relative_class_name", (currentNamespace == currentNamespace ? classPrefix + annotationName + classSuffix : annotationNamespaceClassPrefix + classPrefix + annotationName + classSuffix)},
+        {"ui_comment", annotation->ui_comment}
     };
     
     // 构建参数数据 - 使用字段信息
@@ -631,7 +637,8 @@ nlohmann::json Generator::buildAnnotationData(const std::shared_ptr<ast::Annotat
                             {"full_mapped_type_name", argFullMappedTypeName},
                             {"value", valueData},
                             {"relative_type_name", (currentNamespace_ == argNamespaceName ? argTypeName : argFullTypeName)},
-                            {"relative_mapped_type_name", (currentNamespace_ == argNamespaceName ? argMappedTypeName : argFullMappedTypeName)}
+                            {"relative_mapped_type_name", (currentNamespace_ == argNamespaceName ? argMappedTypeName : argFullMappedTypeName)},
+                            {"ui_comment", argument->ui_comment}
                         };
                         
                         // 添加super_type字段，表示type_name的超类型
@@ -690,7 +697,8 @@ nlohmann::json Generator::buildFieldData(const std::shared_ptr<ast::Field>& fiel
         {"full_mapped_type_name", fullMappedTypeName},
         {"annotations", nlohmann::json::array()},
         {"relative_type_name", (currentNamespace_ == fieldNamespaceName ? typeName : fullTypeName)},
-        {"relative_mapped_type_name", (currentNamespace_ == fieldNamespaceName ? mappedTypeName : fullMappedTypeName)}
+        {"relative_mapped_type_name", (currentNamespace_ == fieldNamespaceName ? mappedTypeName : fullMappedTypeName)},
+        {"ui_comment", field->ui_comment}
     };
     
     // 添加super_type字段，表示type_name的超类型
@@ -717,7 +725,8 @@ nlohmann::json Generator::buildEnumValueData(const std::shared_ptr<ast::EnumValu
         {"super_type", "enum_value"},
         {"name", enumValue->name},
         {"field_name", enumValue->name},  // 可以通过配置转换
-        {"annotations", nlohmann::json::array()}
+        {"annotations", nlohmann::json::array()},
+        {"ui_comment", enumValue->ui_comment}
     };
     
     // 添加值
@@ -824,7 +833,8 @@ nlohmann::json Generator::buildAnnotationValueData(const ast::Annotation* annota
         {"namespace", currentNamespace_},
         {"arguments", nlohmann::json::array()},
         {"relative_name", (currentNamespace_ == currentNamespace_ ? annotationName : (currentNamespace_.empty() ? annotationName : currentNamespace_ + "." + annotationName))},
-        {"relative_class_name", (currentNamespace_ == currentNamespace_ ? classPrefix + annotationName + classSuffix : annotationNamespaceClassPrefix + classPrefix + annotationName + classSuffix)}
+        {"relative_class_name", (currentNamespace_ == currentNamespace_ ? classPrefix + annotationName + classSuffix : annotationNamespaceClassPrefix + classPrefix + annotationName + classSuffix)},
+        {"ui_comment", annotation->ui_comment}
     };
     
     // 构建参数数据 - 使用字段信息
@@ -880,7 +890,8 @@ nlohmann::json Generator::buildAnnotationValueData(const ast::Annotation* annota
                             {"full_mapped_type_name", argFullMappedTypeName},
                             {"value", valueData},
                             {"relative_type_name", (currentNamespace_ == argNamespaceName ? argTypeName : argFullTypeName)},
-                            {"relative_mapped_type_name", (currentNamespace_ == argNamespaceName ? argMappedTypeName : argFullMappedTypeName)}
+                            {"relative_mapped_type_name", (currentNamespace_ == argNamespaceName ? argMappedTypeName : argFullMappedTypeName)},
+                            {"ui_comment", argument->ui_comment}
                         };
                         
                         // 添加super_type字段，表示type_name的超类型

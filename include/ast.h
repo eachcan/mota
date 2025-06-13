@@ -72,6 +72,9 @@ public:
     };
     
     SourceLocation location;
+    
+    // UI注释内容（去掉//@ 前缀，多个注释用换行符连接）
+    std::string ui_comment;
 };
 
 // 表达式基类

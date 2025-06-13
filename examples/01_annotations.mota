@@ -4,11 +4,16 @@ namespace examples.annotations;
 include "yima.mota";
 
 // === 基础注解 ===
+//@ 这是注解的UI注释
 annotation BaseAnnotation {
     string description = "";
 }
 
+//@ 这是注解的UI注释
+//@ 这是第二行 UI 注释
 annotation ValueAnnotation {
+    //@ 最小值
+    //@ 请你注意，最小值不能小于0
     int32 min = 0;
     int32 max = 100;
 }
