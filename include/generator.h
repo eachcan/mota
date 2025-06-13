@@ -48,7 +48,7 @@ public:
     bool initialize(const std::string& templateDir, const std::string& configPath = "");
     
     // 生成代码
-    std::string generateCode(const std::shared_ptr<ast::Document>& document, const std::string& templateName);
+    std::string generateCode(const std::shared_ptr<ast::Document>& document, const std::string& templateName, bool verbose = false);
     
     // 获取配置
     const config::TemplateConfig& getConfig() const { return templateConfig_; }

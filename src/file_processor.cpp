@@ -11,6 +11,18 @@
 
 namespace fs = std::filesystem;
 
+// ANSI颜色代码
+namespace Colors {
+    const std::string RESET = "\033[0m";
+    const std::string BOLD = "\033[1m";
+    const std::string RED = "\033[31m";
+    const std::string GREEN = "\033[32m";
+    const std::string BLUE = "\033[34m";
+    const std::string BOLD_RED = "\033[1;31m";
+    const std::string BOLD_GREEN = "\033[1;32m";
+    const std::string BOLD_BLUE = "\033[1;34m";
+}
+
 namespace mota {
 namespace processor {
 
@@ -36,8 +48,10 @@ bool FileProcessor::processMotaFile(
     const std::vector<std::string>& includePaths,
     bool verbose) {
     
-    std::cout << "处理文件: " << inputFile << std::endl;
-    if (verbose) {
+    if (!verbose) {
+        std::cout << Colors::BLUE << "Processing: " << Colors::RESET << inputFile << std::endl;
+    } else {
+        std::cout << "处理文件: " << inputFile << std::endl;
         std::cout << "输出目录: " << outputDir << std::endl;
         std::cout << "模板目录: " << templateDir << std::endl;
     }
@@ -46,14 +60,14 @@ bool FileProcessor::processMotaFile(
         // 读取主文件
         std::string source = readFile(inputFile);
         if (source.empty()) {
-            std::cerr << "错误: 无法读取文件 " << inputFile << std::endl;
+            std::cerr << Colors::BOLD_RED << "Error: " << Colors::RESET << "无法读取文件 " << inputFile << std::endl;
             return false;
         }
         
         // 解析主文件
         auto root = parseFile(inputFile);
         if (!root) {
-            std::cerr << "错误: 解析文件失败 " << inputFile << std::endl;
+            std::cerr << Colors::BOLD_RED << "Error: " << Colors::RESET << "解析文件失败 " << inputFile << std::endl;
             return false;
         }
         
@@ -68,7 +82,7 @@ bool FileProcessor::processMotaFile(
         auto diagnostics = syntaxChecker.check(*root, inputFile, includedDeclarations, currentDeclarations);
         
         if (!diagnostics.empty()) {
-            std::cerr << "在文件 " << inputFile << " 中发现语法错误:" << std::endl;
+            std::cerr << Colors::BOLD_RED << "Error: " << Colors::RESET << "在文件 " << inputFile << " 中发现语法错误:" << std::endl;
             for (const auto& diagnostic : diagnostics) {
                 std::cerr << "  [" << diagnostic.line << ":" << diagnostic.column << "] " 
                          << diagnostic.message << std::endl;
@@ -83,7 +97,7 @@ bool FileProcessor::processMotaFile(
         // 模板引擎生成
         generator::Generator generator;
         if (!generator.initialize(templateDir)) {
-            std::cerr << "错误: 生成器初始化失败，模板目录: " << templateDir << std::endl;
+            std::cerr << Colors::BOLD_RED << "Error: " << Colors::RESET << "生成器初始化失败，模板目录: " << templateDir << std::endl;
             return false;
         }
         
@@ -92,15 +106,23 @@ bool FileProcessor::processMotaFile(
         }
         
         // 构建声明注册表
-        std::cout << "[DEBUG] 开始构建声明注册表..." << std::endl;
+        if (verbose) {
+            std::cout << "[DEBUG] 开始构建声明注册表..." << std::endl;
+        }
         DeclarationRegistry declarationRegistry;
         buildDeclarationRegistry(includedDeclarations, currentDeclarations, declarationRegistry, generator.getConfig());
-        std::cout << "[DEBUG] 声明注册表构建完成，包含 " << declarationRegistry.size() << " 个声明" << std::endl;
+        if (verbose) {
+            std::cout << "[DEBUG] 声明注册表构建完成，包含 " << declarationRegistry.size() << " 个声明" << std::endl;
+        }
         
         // 设置声明注册表到生成器
-        std::cout << "[DEBUG] 开始设置声明注册表..." << std::endl;
+        if (verbose) {
+            std::cout << "[DEBUG] 开始设置声明注册表..." << std::endl;
+        }
         generator.setDeclarationRegistry(declarationRegistry);
-        std::cout << "[DEBUG] 声明注册表设置完成" << std::endl;
+        if (verbose) {
+            std::cout << "[DEBUG] 声明注册表设置完成" << std::endl;
+        }
         
         generator.setCurrentNamespace(root->hasNamespace() ? 
             [&]() {
@@ -111,19 +133,29 @@ bool FileProcessor::processMotaFile(
                 }
                 return ns;
             }() : "");
-        std::cout << "[DEBUG] 命名空间设置完成" << std::endl;
+        if (verbose) {
+            std::cout << "[DEBUG] 命名空间设置完成" << std::endl;
+        }
         
-        std::cout << "[DEBUG] 准备获取配置..." << std::endl;
+        if (verbose) {
+            std::cout << "[DEBUG] 准备获取配置..." << std::endl;
+        }
         auto filePaths = generator.getConfig().file_path;
-        std::cout << "[DEBUG] 配置获取成功" << std::endl;
-        std::cout << "[DEBUG] 找到 " << filePaths.size() << " 个文件路径配置" << std::endl;
+        if (verbose) {
+            std::cout << "[DEBUG] 配置获取成功" << std::endl;
+            std::cout << "[DEBUG] 找到 " << filePaths.size() << " 个文件路径配置" << std::endl;
+        }
         
         for (const auto& filePath : filePaths) {
-            std::cout << "[DEBUG] 处理文件路径: " << filePath.entry << std::endl;
-            std::string generatedCode = generator.generateCode(root, filePath.entry);
-            std::cout << "[DEBUG] generateCode 返回，长度: " << generatedCode.length() << std::endl;
+            if (verbose) {
+                std::cout << "[DEBUG] 处理文件路径: " << filePath.entry << std::endl;
+            }
+            std::string generatedCode = generator.generateCode(root, filePath.entry, verbose);
+            if (verbose) {
+                std::cout << "[DEBUG] generateCode 返回，长度: " << generatedCode.length() << std::endl;
+            }
             if (generatedCode.empty()) {
-                std::cerr << "错误: 代码生成失败 " << inputFile << std::endl;
+                std::cerr << Colors::BOLD_RED << "Error: " << Colors::RESET << "代码生成失败 " << inputFile << std::endl;
                 return false;
             }
 
@@ -161,25 +193,29 @@ bool FileProcessor::processMotaFile(
             // 写入生成的代码
             std::ofstream outFile(outputFilePath);
             if (!outFile.is_open()) {
-                std::cerr << "错误: 无法创建输出文件 " << outputFilePath << std::endl;
+                std::cerr << Colors::BOLD_RED << "Error: " << Colors::RESET << "无法创建输出文件 " << outputFilePath << std::endl;
                 return false;
             }
             
             outFile << generatedCode;
             outFile.close();
-            if (verbose) {
+            if (!verbose) {
+                std::cout << Colors::BOLD << "Generated: " << Colors::RESET << outputFilePath << std::endl;
+            } else {
                 std::cout << "已生成到: " << outputFilePath << std::endl;
             }
         }
         
-        std::cout << "生成完成: " << root->location.filename << std::endl;
+        if (verbose) {
+            std::cout << "生成完成: " << root->location.filename << std::endl;
+        }
         return true;
         
     } catch (const std::exception& e) {
-        std::cerr << "错误: " << e.what() << std::endl;
+        std::cerr << Colors::BOLD_RED << "Error: " << Colors::RESET << e.what() << std::endl;
         return false;
     } catch (...) {
-        std::cerr << "错误: 未知异常" << std::endl;
+        std::cerr << Colors::BOLD_RED << "Error: " << Colors::RESET << "未知异常" << std::endl;
         return false;
     }
 }

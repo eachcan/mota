@@ -78,7 +78,7 @@ struct TagNode {
 // 模板引擎类
 class TemplateEngine {
 public:
-    explicit TemplateEngine(const config::TemplateConfig& config, const std::string& templateDir);
+    explicit TemplateEngine(const config::TemplateConfig& config, const std::string& templateDir, bool verbose = false);
     
     // 渲染模板
     std::string renderTemplate(const std::string& templateName, const TemplateVars& vars);
@@ -91,6 +91,9 @@ public:
     
     // 设置Generator引用（用于访问声明注册表）
     void setGenerator(generator::Generator* generator) { generator_ = generator; }
+    
+    // 设置verbose模式
+    void setVerbose(bool verbose) { verbose_ = verbose; }
     
 private:
     // 加载模板文件
@@ -163,6 +166,7 @@ private:
     std::unordered_map<std::string, std::string> miscCache_;
     generator::Generator* generator_ = nullptr; // 用于访问声明注册表
     bool is_loaded_misc_ = false;
+    bool verbose_ = false;
 };
 
 } // namespace template_engine

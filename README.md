@@ -2,36 +2,32 @@
 
 MOTA是一个现代化的数据结构定义语言和代码生成器，旨在简化跨语言数据模型的开发和维护。
 
-## 特性
+## 什么是MOTA？
 
-- **简洁的语法**: 类似于Protocol Buffers但更加简洁直观
-- **强类型系统**: 支持基础类型、自定义类型、枚举、数组等
-- **多语言支持**: 通过模板系统支持生成多种目标语言
-- **注解系统**: 丰富的注解支持，用于验证、文档生成等
-- **代码生成**: 自动生成包含序列化、反序列化、访问器等完整功能的代码
-- **零硬编码**: 完全基于配置的代码生成，易于扩展和自定义
+MOTA提供了一种简洁的语法来定义数据结构，然后自动生成多种编程语言的代码。它类似于Protocol Buffers，但语法更加直观，扩展性更强。
+
+**核心概念：**
+- **Struct（结构体）**: 用于数据传输对象
+- **Block（块）**: 用于业务实体，包含完整的CRUD功能
+- **Enum（枚举）**: 定义常量集合
+- **Annotation（注解）**: 为类型添加元数据和验证规则
 
 ## 快速开始
 
-### 安装
-
-使用xmake构建系统：
+### 1. 安装
 
 ```bash
 # 克隆项目
 git clone https://github.com/your-repo/mota.git
 cd mota
 
-# 构建
+# 构建（需要xmake）
 xmake
-
-# 运行测试
-xmake run test_generator
 ```
 
-### 基本使用
+### 2. 创建第一个MOTA文件
 
-1. **创建MOTA文件** (`user.mota`)：
+创建 `user.mota`：
 
 ```mota
 namespace com.example;
@@ -52,17 +48,20 @@ struct User {
 block UserProfile {
     User user;
     string bio;
-    repeated User friends;
 }
 ```
 
-2. **生成代码**：
+### 3. 生成代码
 
 ```bash
-mota user.mota -o output/ -l cpp
+# 生成C++代码
+./bin/mota.exe user.mota -o output/ -l yima-cpp
+
+# 生成JSON（用于测试）
+./bin/mota.exe user.mota -o output/ -l test
 ```
 
-3. **使用生成的代码**：
+### 4. 使用生成的代码
 
 ```cpp
 #include "com/example/user.h"
@@ -81,348 +80,86 @@ UserModel user2;
 user2.fromCbor(cbor);
 ```
 
-## 语法指南
+## 工作原理
 
-### 基础类型
+MOTA采用三层架构：
 
-- **整数**: `int8`, `int16`, `int32`, `int64`
-- **无符号整数**: `uint8`, `uint16`, `uint32`, `uint64` 
-- **浮点数**: `float32`, `float64`
-- **其他**: `string`, `bool`, `bytes`
+1. **语法解析器**: 将`.mota`文件解析为抽象语法树(AST)
+2. **模板引擎**: 使用模板系统将AST转换为目标语言代码
+3. **代码生成器**: 输出完整的、可直接使用的代码文件
 
-### 自定义类型
-
-#### 结构体 (Struct)
-用于数据传输对象：
-
-```mota
-struct Point {
-    float32 x;
-    float32 y;
-}
+```
+.mota文件 → 语法解析 → AST → 模板渲染 → 目标语言代码
 ```
 
-#### 块 (Block) 
-用于业务实体：
+## 如何新增一种生成语言
 
-```mota
-block User {
-    string name;
-    int32 age;
-    Point location;
-}
+MOTA使用基于模板的代码生成系统，添加新语言支持只需要创建相应的模板文件：
+
+### 1. 创建模板目录
+
+```
+template/
+└── your-lang/
+    ├── config.json          # 语言配置
+    ├── struct.template      # 结构体模板
+    ├── block.template       # 块模板
+    ├── enum.template        # 枚举模板
+    ├── annotation.template  # 注解模板
+    └── misc.template        # 通用代码片段
 ```
 
-#### 枚举 (Enum)
-```mota
-enum Status {
-    PENDING = 0,
-    APPROVED = 1,
-    REJECTED = 2
-}
-```
+### 2. 配置语言参数
 
-### 数组
-使用 `repeated` 关键字：
+在 `config.json` 中定义：
 
-```mota
-struct Container {
-    repeated string items;
-    repeated Point coordinates;
-}
-```
-
-### 注解系统
-
-```mota
-annotation Validator {
-    string pattern;
-    int32 maxLength;
-}
-
-struct User {
-    @Validator(pattern: "^[a-zA-Z0-9]+$", maxLength: 50)
-    string username;
-}
-```
-
-### 包含文件
-
-```mota
-include "common/types.mota";
-
-struct MyType {
-    CommonType field;
-}
-```
-
-## 模板系统
-
-MOTA使用先进的模板系统生成目标语言代码，支持高度自定义和扩展。
-
-### 新模板语法
-
-使用现代化的模板语法：
-
-```template
-<%=variable%>                    # 输出变量
-<%=function(parameter)%>         # 调用函数
-<%if (condition)%>               # 条件语句
-    ...
-<%elseif (other_condition)%>
-    ...
-<%else%>
-    ...
-<%endif%>
-<%foreach item in items%>        # 循环语句
-    ...
-<%endforeach%>
-<%for (key, value) in map%>      # Map遍历
-    ...
-<%endfor%>
-```
-
-### 片段系统
-
-通过片段(Misc)系统实现模板模块化：
-
-```template
-<%misc getter_method%>           # 定义片段
-    <%=FIELD_TYPE%> get<%=pascal_case(FIELD_NAME)%>() const {
-        return <%=FIELD_NAME%>_;
-    }
-<%endmisc%>
-
-<%call getter_method%>           # 调用片段
-```
-
-### 配置简化
-
-新版本模板配置更加简洁，专注于核心设置：
-
-```json5
+```json
 {
-  "version": "2.0",
-  "templates": {
-    "file": "file.template",
-    "block_decl": "block_decl.template",
-    "struct_decl": "struct_decl.template",
-    "enum_decl": "enum_decl.template",
-    "annotation_decl": "annotation_decl.template",
-    "annotation": "annotation.template"
-  },
-  "miscs": ["misc.template"],
-  "type_mapping": {
-    "int32": "int32_t",
-    "string": "QString"
-  }
+    "version": "2.0",
+    "encoding": "utf-8",
+    "templates": {
+        "struct": "struct.template",
+        "block": "block.template",
+        "enum": "enum.template",
+        "annotation_decl": "annotation.template"
+    },
+    "miscs": "misc.template"
 }
 ```
 
-### 格式化通过片段实现
+### 3. 编写模板文件
 
-不再需要复杂的格式化配置，全部通过misc片段实现：
+使用MOTA模板语法编写代码生成模板。详细信息请参考 [模板开发文档](docs/template/README.md)。
 
-- 类型后缀 → `type_suffix` 片段
-- 访问器格式 → `getter_prefix`、`setter_prefix` 片段  
-- 继承格式 → `inheritance_declaration` 片段
-- 接口映射 → `interface_name` 片段
+## 文档
 
-### 创建自定义模板
+### 使用者文档
+- [命令行使用](docs/usage/command-line.md) - 命令行工具的详细使用方法
+- [语法规则](docs/usage/syntax.md) - MOTA语言的完整语法说明
+- [项目配置](docs/usage/config.md) - 项目配置文件的使用方法
 
-1. **创建模板集目录**：
-```bash
-mkdir template/my-language
-```
+### 扩展者文档
+- [模板开发指南](docs/template/README.md) - 如何创建新的语言模板
+- [模板变量和函数](docs/template/template-variables-and-functions.md) - 模板系统的变量结构和可用函数
 
-2. **编写配置文件** (`config.json5`)：
-```json5
-{
-  "version": "2.0",
-  "templates": { /* 必需的模板映射 */ },
-  "miscs": ["misc.template"],
-  "type_mapping": { /* 类型映射 */ }
-}
-```
+## 示例
 
-3. **定义片段** (`misc.template`)：
-```template
-<%misc class_name%><%=TYPE_NAME%><%call type_suffix%><%endmisc%>
-<%misc type_suffix%>
-<%if (TYPE == "struct")%>Model<%endif%>
-<%if (TYPE == "block")%>Block<%endif%>
-<%endmisc%>
-```
-
-4. **创建模板文件**：
-- `file.template` - 文件结构
-- `block_decl.template` - Block声明
-- `struct_decl.template` - Struct声明
-- `enum_decl.template` - Enum声明
-- `annotation_decl.template` - Annotation声明  
-- `annotation.template` - 注解实例
-
-### 模板优势
-
-- **零硬编码**: 所有生成逻辑通过配置和模板定义
-- **高度模块化**: 片段系统提高代码复用
-- **易于维护**: 配置简洁，逻辑清晰
-- **灵活扩展**: 创建新语言支持只需新建模板集
-
-详细的模板开发指南请参考：[模板开发指南](docs/template-development-guide.md)
-
-## 命令行工具
-
-### 基本语法
-```bash
-mota [OPTIONS] [FILE] [...]
-```
-
-### 主要选项
-- `-h, --help`: 显示帮助信息
-- `-V, --version`: 显示版本信息  
-- `-v, --verbose`: 显示详细信息
-- `-i, --include-path PATH`: 添加包含路径
-- `-o, --output-dir PATH`: 设置输出目录 (默认: output)
-- `-s, --source-dir PATH`: 设置源文件目录 (默认: 当前目录)
-- `-l, --lang LANG`: 设置输出语言 (默认: cpp)
-- `-c, --config PATH`: 设置配置文件路径
-
-### 使用示例
-
-```bash
-# 编译单个文件
-mota user.mota -o generated/
-
-# 编译整个目录
-mota src/ -o generated/ -l cpp
-
-# 使用自定义模板
-mota user.mota -l my-template
-
-# 添加包含路径
-mota user.mota -i common/ -i shared/
-```
-
-## 生成的代码特性
-
-### C++ 代码特性
-
-- **完整的CBOR序列化/反序列化支持**
-- **类型安全的访问器方法**
-- **注解系统支持**
-- **反射能力** (字段枚举、类型查询等)
-- **Qt框架集成**
-- **现代C++特性使用**
-
-### 示例生成代码
-
-```cpp
-class MODEL_EXPORT UserModel : public IModel {
-public:
-    UserModel() = default;
-    
-    // 访问器
-    QString getName() const { return name_; }
-    void setName(const QString& value) { name_ = value; }
-    
-    int32_t getAge() const { return age_; }
-    void setAge(int32_t value) { age_ = value; }
-    
-    // 序列化
-    QCborValue toCbor() const override;
-    void fromCbor(const QCborValue& cbor) override;
-    
-    // 反射
-    QStringList fields() const override;
-    QString fieldType(const QString& fieldName) const override;
-    QVariant value(const QString& fieldName) const override;
-    
-private:
-    QString name_;
-    int32_t age_;
-};
-```
-
-## 项目结构
-
-```
-mota/
-├── src/                    # 源代码
-│   ├── generator/         # 代码生成器
-│   ├── parser/           # 语法解析器
-│   ├── ast/              # 抽象语法树
-│   └── main.cpp          # 入口点
-├── template/             # 模板集合
-│   └── yima-cpp/        # C++模板
-│       ├── config.json5 # 配置文件
-│       ├── misc.template # 片段定义
-│       └── *.template   # 模板文件
-├── test/                # 测试文件
-├── docs/               # 文档
-└── examples/           # 示例
-```
-
-## 开发
-
-### 构建系统
-
-项目使用xmake作为构建系统：
-
-```bash
-# 配置项目
-xmake f -c debug
-
-# 构建
-xmake build
-
-# 运行测试
-xmake run test_generator
-
-# 清理
-xmake clean
-```
-
-### 添加新语言支持
-
-1. 在 `template/` 下创建新的模板集目录
-2. 按照模板开发指南创建必需的模板文件
-3. 定义类型映射和生成规则
-4. 通过misc片段实现格式化逻辑
-5. 测试验证生成的代码
-
-### 贡献指南
-
-我们欢迎各种形式的贡献：
-
-- **Bug报告**: 通过Issues报告问题
-- **功能请求**: 提出新功能建议  
-- **代码贡献**: 提交Pull Request
-- **文档改进**: 完善文档和示例
-- **模板贡献**: 为新语言创建模板
-
-请遵循项目的编码规范和开发流程。
+查看 `examples/` 目录获取完整的使用示例：
+- `01_annotations.mota` - 注解系统示例
+- `02_enums.mota` - 枚举定义示例
+- `03_blocks.mota` - 块定义示例
+- `04_structs.mota` - 结构体定义示例
+- `05_cross_references.mota` - 跨文件引用示例
 
 ## 许可证
 
-本项目采用 [MIT许可证](LICENSE)。
+本项目采用 [MIT License](LICENSE) 开源许可证。
 
-## 相关资源
+## 贡献
 
-- [语法参考](docs/syntax-reference.md)
-- [模板开发指南](docs/template-development-guide.md)
-- [API文档](docs/api-reference.md)
-- [示例项目](examples/)
-
-## 支持
-
-如需帮助或有疑问，请：
-
-- 查看[文档](docs/)和[示例](examples/)
-- 在[Issues](https://github.com/your-repo/mota/issues)中搜索或提出问题
-- 参与[讨论区](https://github.com/your-repo/mota/discussions)讨论
+欢迎提交Issue和Pull Request来帮助改进MOTA！
 
 ---
 
-MOTA - 让数据模型定义更简单，让代码生成更智能。
+**注意**: 本项目目前主要支持C++代码生成，其他语言支持正在开发中。
 

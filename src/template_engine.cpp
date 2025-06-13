@@ -8,11 +8,23 @@
 #include <stack>
 #include <stdexcept>
 
+// ANSI颜色代码
+namespace Colors {
+    const std::string RESET = "\033[0m";
+    const std::string BOLD = "\033[1m";
+    const std::string RED = "\033[31m";
+    const std::string GREEN = "\033[32m";
+    const std::string BLUE = "\033[34m";
+    const std::string BOLD_RED = "\033[1;31m";
+    const std::string BOLD_GREEN = "\033[1;32m";
+    const std::string BOLD_BLUE = "\033[1;34m";
+}
+
 namespace mota {
 namespace template_engine {
 
-TemplateEngine::TemplateEngine(const config::TemplateConfig& config, const std::string& templateDir)
-    : config_(config), templateDir_(templateDir) {
+TemplateEngine::TemplateEngine(const config::TemplateConfig& config, const std::string& templateDir, bool verbose)
+    : config_(config), templateDir_(templateDir), verbose_(verbose) {
 }
 
 std::string TemplateEngine::renderTemplate(const std::string& templateName, const TemplateVars& vars) {
@@ -139,10 +151,14 @@ std::string TemplateEngine::loadMisc(const std::string& miscName) {
             ++iter;
         }
         
-        std::cout << "Loaded " << fragmentCount << " misc fragments from " << miscFile << std::endl;
+        if (verbose_) {
+            std::cout << "Loaded " << fragmentCount << " misc fragments from " << miscFile << std::endl;
+        }
     }
     
-    std::cout << "Total misc fragments loaded: " << miscCache_.size() << std::endl;
+    if (verbose_) {
+        std::cout << "Total misc fragments loaded: " << miscCache_.size() << std::endl;
+    }
     
     // Find requested misc fragment
     auto miscIt = miscCache_.find(miscName);
@@ -843,6 +859,31 @@ std::string TemplateEngine::callMisc(const std::string& miscName, const Template
 std::string TemplateEngine::toPascalCase(const std::string& str) {
     if (str.empty()) return str;
     
+    // 检查是否已经是某种形式的驼峰命名或PascalCase
+    bool hasUpperCase = false;
+    bool hasLowerCase = false;
+    bool hasUnderscore = false;
+    
+    for (char c : str) {
+        if (c == '_' || c == '-' || c == ' ') {
+            hasUnderscore = true;
+        } else if (std::isupper(c)) {
+            hasUpperCase = true;
+        } else if (std::islower(c)) {
+            hasLowerCase = true;
+        }
+    }
+    
+    // 如果已经是驼峰命名（有大小写混合，没有下划线），只需要首字母大写
+    if (hasUpperCase && hasLowerCase && !hasUnderscore) {
+        std::string result = str;
+        if (!result.empty()) {
+            result[0] = std::toupper(result[0]);
+        }
+        return result;
+    }
+    
+    // 否则按照传统的转换方式（用于snake_case等）
     std::string result;
     bool capitalizeNext = true;
     
@@ -1191,6 +1232,8 @@ nlohmann::json TemplateEngine::callBuiltinFunction(const std::string& funcName, 
                 result += arg1.get<std::string>();
             }
             return result;
+        } else if (funcName == "exists" && arg2.is_string()) {
+            return arg1.contains(arg2);
         }
     }
     

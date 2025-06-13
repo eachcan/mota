@@ -53,19 +53,26 @@ bool Generator::initialize(const std::string& templateDir, const std::string& co
     return true;
 }
 
-std::string Generator::generateCode(const std::shared_ptr<ast::Document>& document, const std::string& templateName) {
+std::string Generator::generateCode(const std::shared_ptr<ast::Document>& document, const std::string& templateName, bool verbose) {
     if (!initialized_) {
         std::cerr << "Generator not initialized" << std::endl;
         return "";
     }
     
-    std::cout << "[DEBUG] 开始构建模板变量..." << std::endl;
+    // 设置模板引擎的verbose模式
+    templateEngine_->setVerbose(verbose);
+    
+    if (verbose) {
+        std::cout << "[DEBUG] 开始构建模板变量..." << std::endl;
+    }
         
     // 构建模板变量
     TemplateVars vars;
     try {
         vars = buildTemplateVars(document);
-        std::cout << "[DEBUG] 模板变量构建完成" << std::endl;
+        if (verbose) {
+            std::cout << "[DEBUG] 模板变量构建完成" << std::endl;
+        }
     } catch (const std::exception& e) {
         std::cerr << "Generator: Exception in buildTemplateVars: " << e.what() << std::endl;
         return "";
@@ -74,12 +81,16 @@ std::string Generator::generateCode(const std::shared_ptr<ast::Document>& docume
         return "";
     }
     
-    std::cout << "[DEBUG] 开始渲染模板: " << templateName << std::endl;
+    if (verbose) {
+        std::cout << "[DEBUG] 开始渲染模板: " << templateName << std::endl;
+    }
     
     // 使用模板引擎渲染
     try {
         std::string result = templateEngine_->renderTemplate(templateName, vars);
-        std::cout << "[DEBUG] 模板渲染完成，结果长度: " << result.length() << std::endl;
+        if (verbose) {
+            std::cout << "[DEBUG] 模板渲染完成，结果长度: " << result.length() << std::endl;
+        }
         return result;
     } catch (const std::exception& e) {
         std::cerr << "Generator: Exception in renderTemplate: " << e.what() << std::endl;

@@ -12,9 +12,34 @@
 #include "file_processor.h"
 #include <windows.h>
 #include "version.h"
+#include <sstream>
+#include <algorithm>
 
 namespace fs = std::filesystem;
 using json = nlohmann::json;
+
+// ANSI颜色代码
+namespace Colors {
+    const std::string RESET = "\033[0m";
+    const std::string BOLD = "\033[1m";
+    const std::string RED = "\033[31m";
+    const std::string GREEN = "\033[32m";
+    const std::string BLUE = "\033[34m";
+    const std::string BOLD_RED = "\033[1;31m";
+    const std::string BOLD_GREEN = "\033[1;32m";
+    const std::string BOLD_BLUE = "\033[1;34m";
+}
+
+// 启用Windows控制台颜色支持
+void enableConsoleColors() {
+#ifdef _WIN32
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    DWORD dwMode = 0;
+    GetConsoleMode(hOut, &dwMode);
+    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    SetConsoleMode(hOut, dwMode);
+#endif
+}
 
 // 配置文件结构
 struct ProjectConfig {
@@ -135,14 +160,14 @@ Options parseCommandLine(int argc, char* argv[]) {
             if (i + 1 < argc) {
                 options.includePaths.push_back(argv[++i]);
             } else {
-                std::cerr << "Error: " << arg << " requires a path argument" << std::endl;
+                std::cerr << Colors::BOLD_RED << "Error: " << Colors::RESET << arg << " requires a path argument" << std::endl;
                 exit(1);
             }
         } else if (arg == "-o" || arg == "--output-dir") {
             if (i + 1 < argc) {
                 options.outputDir = argv[++i];
             } else {
-                std::cerr << "Error: " << arg << " requires a path argument" << std::endl;
+                std::cerr << Colors::BOLD_RED << "Error: " << Colors::RESET << arg << " requires a path argument" << std::endl;
                 exit(1);
             }
         } else if (arg == "-l" || arg == "--lang") {
@@ -152,21 +177,21 @@ Options parseCommandLine(int argc, char* argv[]) {
                     options.lang = "yima-cpp";
                 }
             } else {
-                std::cerr << "Error: " << arg << " requires a language argument" << std::endl;
+                std::cerr << Colors::BOLD_RED << "Error: " << Colors::RESET << arg << " requires a language argument" << std::endl;
                 exit(1);
             }
         } else if (arg == "-c" || arg == "--config") {
             if (i + 1 < argc) {
                 options.configPath = argv[++i];
             } else {
-                std::cerr << "Error: " << arg << " requires a path argument" << std::endl;
+                std::cerr << Colors::BOLD_RED << "Error: " << Colors::RESET << arg << " requires a path argument" << std::endl;
                 exit(1);
             }
         } else if (arg[0] != '-') {
             // FILE参数
             options.files.push_back(arg);
         } else {
-            std::cerr << "Error: Unknown option: " << arg << std::endl;
+            std::cerr << Colors::BOLD_RED << "Error: " << Colors::RESET << "Unknown option: " << arg << std::endl;
             exit(1);
         }
     }
@@ -184,7 +209,7 @@ std::vector<std::string> findMotaFiles(const std::string& directory) {
             }
         }
     } catch (const fs::filesystem_error& e) {
-        std::cerr << "Error accessing directory " << directory << ": " << e.what() << std::endl;
+        std::cerr << Colors::BOLD_RED << "Error: " << Colors::RESET << "accessing directory " << directory << ": " << e.what() << std::endl;
     }
     
     return motaFiles;
@@ -230,7 +255,7 @@ std::string findTemplateDirectory(const std::string& lang, bool verbose = false)
         }
     }
     
-    std::cerr << "Error: Template directory not found for language: " << lang << std::endl;
+    std::cerr << Colors::BOLD_RED << "Error: " << Colors::RESET << "Template directory not found for language: " << lang << std::endl;
     std::cerr << "Searched paths:" << std::endl;
     for (const auto& path : searchPaths) {
         std::cerr << "  " << path << std::endl;
@@ -241,6 +266,7 @@ std::string findTemplateDirectory(const std::string& lang, bool verbose = false)
 
 int main(int argc, char* argv[]) {
     SetConsoleOutputCP(CP_UTF8);
+    enableConsoleColors();
     
     Options options = parseCommandLine(argc, argv);
     
@@ -271,7 +297,9 @@ int main(int argc, char* argv[]) {
     }
 
     std::string exeDir = getExecutableDirectory();
-    std::cout << "exeDir: " << exeDir << std::endl;
+    if (options.verbose) {
+        std::cout << "exeDir: " << exeDir << std::endl;
+    }
     
     int successCount = 0;
     int totalCount = 0;
@@ -308,6 +336,11 @@ int main(int argc, char* argv[]) {
             return 1;
         }
         
+        // 显示语言信息（非verbose模式）
+        if (!options.verbose) {
+            std::cout << "Language: " << options.lang << std::endl;
+        }
+        
         // 处理每个文件
         totalCount = filesToProcess.size();
         
@@ -337,7 +370,7 @@ int main(int argc, char* argv[]) {
                 }
                 
             } catch (const std::exception& e) {
-                std::cerr << "Error: " << e.what() << std::endl;
+                std::cerr << Colors::BOLD_RED << "Error: " << Colors::RESET << e.what() << std::endl;
                 return 1;
             }
             
@@ -357,6 +390,11 @@ int main(int argc, char* argv[]) {
                 std::string templateDir = findTemplateDirectory(project.lang, options.verbose);
                 if (templateDir.empty()) {
                     return 1;
+                }
+                
+                // 显示语言信息（非verbose模式，只显示一次）
+                if (!options.verbose && totalCount == 0) {
+                    std::cout << "Language: " << project.lang << std::endl;
                 }
                 
                 // 处理项目中的每个文件
@@ -387,6 +425,11 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             
+            // 显示语言信息（非verbose模式）
+            if (!options.verbose) {
+                std::cout << "Language: " << options.lang << std::endl;
+            }
+            
             // 处理每个文件
             totalCount = filesToProcess.size();
             
@@ -398,7 +441,11 @@ int main(int argc, char* argv[]) {
         }
     }
     
-    std::cout << "Completed: " << successCount << "/" << totalCount << " files processed successfully." << std::endl;
+    if (successCount == totalCount) {
+        std::cout << Colors::BOLD_GREEN << "Completed: " << successCount << "/" << totalCount << " files processed successfully." << Colors::RESET << std::endl;
+    } else {
+        std::cout << Colors::BOLD_RED << "Completed: " << successCount << "/" << totalCount << " files processed successfully." << Colors::RESET << std::endl;
+    }
     
     if (successCount == totalCount) {
         return 0;
