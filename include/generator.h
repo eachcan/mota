@@ -68,6 +68,21 @@ public:
     bool isEnumType(const std::string& type);
 
 private:
+    // Type信息结构体
+    struct TypeInfo {
+        std::string name;                           // 简单名
+        std::string namespace_name;                 // using_namespace
+        std::string full_name;                      // using_namespace_prefix + name
+        std::string class_name;                     // prefix + name + suffix
+        std::string namespace_class_prefix;         // using_namespace_prefix.replace(".", separator.code)
+        std::string full_class_name;                // namespace_class_prefix + class_name
+        std::string relative_name;                  // relative_namespace_prefix + name
+        std::string relative_class_name;            // relative_namespace_class_prefix + class_name
+    };
+    
+    // 统一的type信息计算函数
+    TypeInfo calculateTypeInfo(const std::string& originalName, const std::string& prefix, const std::string& suffix);
+    
     // 构建模板变量
     TemplateVars buildTemplateVars(const std::shared_ptr<ast::Document>& document);
     
@@ -86,9 +101,13 @@ private:
     
     // 构建声明注册表数据（用于模板变量）
     nlohmann::json buildDeclarationRegistryData();
-
     
-
+    // 命名空间转换方法
+    std::string convertNamespaceToCode(const std::string& namespaceStr);
+    
+    // relative字段计算方法
+    std::string calculateRelativeName(const std::string& fullName, const std::string& currentNamespace);
+    std::string calculateRelativeClassName(const std::string& fullClassName, const std::string& namespaceClassPrefix);
     
     // 类型相关方法
     bool isRepeatedType(const ast::Type& type);
