@@ -63,51 +63,103 @@ public:
     // <%=replace(field.ui_comment, "\n", "\n// ")%>
     <%endif%>
     <%if (field.container_type == "array")%>
+        <%if (field.super_type == "builtin")%>
     QVector<<%=field.relative_mapped_type_name%>> get<%=pascal_case(field.name)%>() const {
         return <%=field.name%>_; 
     }
     void set<%=pascal_case(field.name)%>(const QVector<<%=field.relative_mapped_type_name%>>& value) {
         <%=field.name%>_ = value;
     }
+        <%else%>
+    QVector<QSharedPointer<<%=field.relative_mapped_type_name%>>> get<%=pascal_case(field.name)%>() const {
+        return <%=field.name%>_;
+    }
+    void set<%=pascal_case(field.name)%>(const QVector<QSharedPointer<<%=field.relative_mapped_type_name%>>>& value) {
+        <%=field.name%>_ = value;
+    }
+        <%endif%>
     <%endif%>
     <%if (field.container_type == "map")%>
+        <%if (field.super_type == "builtin")%>
     QMap<QString, <%=field.relative_mapped_type_name%>> get<%=pascal_case(field.name)%>() const {
         return <%=field.name%>_;
     }
     void set<%=pascal_case(field.name)%>(const QMap<QString, <%=field.relative_mapped_type_name%>>& value) {
         <%=field.name%>_ = value;
     }
+        <%else%>
+    QMap<QString, QSharedPointer<<%=field.relative_mapped_type_name%>>> get<%=pascal_case(field.name)%>() const {
+        return <%=field.name%>_;
+    }
+    void set<%=pascal_case(field.name)%>(const QMap<QString, QSharedPointer<<%=field.relative_mapped_type_name%>>>& value) {
+        <%=field.name%>_ = value;
+    }
+        <%endif%>
     <%endif%>
     <%if (field.container_type == "optional")%>
+        <%if (field.super_type == "builtin")%>
     std::optional<<%=field.relative_mapped_type_name%>> get<%=pascal_case(field.name)%>() const {
         return <%=field.name%>_;
     }
     void set<%=pascal_case(field.name)%>(const std::optional<<%=field.relative_mapped_type_name%>>& value) {
         <%=field.name%>_ = value;
     }
+        <%else%>
+    std::optional<QSharedPointer<<%=field.relative_mapped_type_name%>>> get<%=pascal_case(field.name)%>() const {
+        return <%=field.name%>_;
+    }
+    void set<%=pascal_case(field.name)%>(const std::optional<QSharedPointer<<%=field.relative_mapped_type_name%>>>& value) {
+        <%=field.name%>_ = value;
+    }
+        <%endif%>
     <%endif%>
     <%if (field.container_type == "none")%>
+        <%if (field.super_type == "builtin")%>
     <%=field.relative_mapped_type_name%> get<%=pascal_case(field.name)%>() const {
         return <%=field.name%>_;
     }
     void set<%=pascal_case(field.name)%>(const <%=field.relative_mapped_type_name%>& value) {
         <%=field.name%>_ = value;
     }
+        <%else%>
+    QSharedPointer<<%=field.relative_mapped_type_name%>> get<%=pascal_case(field.name)%>() const {
+        return <%=field.name%>_;
+    }
+    void set<%=pascal_case(field.name)%>(const QSharedPointer<<%=field.relative_mapped_type_name%>>& value) {
+        <%=field.name%>_ = value;
+    }
+        <%endif%>
     <%endif%>
 <%endforeach%>    
 private:
 <%foreach declaration.fields as field%>
     <%if (field.container_type == "array")%>
+        <%if (field.super_type == "builtin")%>
     QVector<<%=field.relative_mapped_type_name%>> <%=field.name%>_<%if (exists(field, "default_value"))%> = <%=field.default_value%><%endif%>;
+        <%else%>
+    QVector<QSharedPointer<<%=field.relative_mapped_type_name%>>> <%=field.name%>_;
+        <%endif%>
     <%endif%>
     <%if (field.container_type == "map")%>
+        <%if (field.super_type == "builtin")%>
     QMap<QString, <%=field.relative_mapped_type_name%>> <%=field.name%>_<%if (exists(field, "default_value"))%> = <%=field.default_value%><%endif%>;
+        <%else%>
+    QMap<QString, QSharedPointer<<%=field.relative_mapped_type_name%>>> <%=field.name%>_;
+        <%endif%>
     <%endif%>
     <%if (field.container_type == "optional")%>
+        <%if (field.super_type == "builtin")%>
     std::optional<<%=field.relative_mapped_type_name%>> <%=field.name%>_<%if (exists(field, "default_value"))%> = <%=field.default_value%><%endif%>;
+        <%else%>
+    std::optional<QSharedPointer<<%=field.relative_mapped_type_name%>>> <%=field.name%>_;
+        <%endif%>
     <%endif%>
     <%if (field.container_type == "none")%>
-        <%=field.relative_mapped_type_name%> <%=field.name%>_<%if (exists(field, "default_value"))%> = <%=field.default_value%><%endif%>;
+        <%if (field.super_type == "builtin")%>
+    <%=field.relative_mapped_type_name%> <%=field.name%>_<%if (exists(field, "default_value"))%> = <%=field.default_value%><%endif%>;
+        <%else%>
+    QSharedPointer<<%=field.relative_mapped_type_name%>> <%=field.name%>_;
+        <%endif%>
     <%endif%>
 <%endforeach%>};
 Q_DECLARE_METATYPE(<%=declaration.relative_class_name%>)

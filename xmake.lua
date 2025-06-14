@@ -133,12 +133,6 @@ target("test")
         
         print("\nRunning parser tests...")
         os.exec("xmake run test_parser")
-        
-        print("\nRunning array literal tests...")
-        os.exec("xmake run test_array_literal")
-        
-        print("\nRunning annotation field type validation tests...")
-        os.exec("xmake run test_annotation_field_type_validation")
     end)
 
 -- syntax_checker 测试

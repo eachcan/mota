@@ -66,6 +66,10 @@ public:
     // 获取完全限定名
     std::string getFullName(const std::string& name, const std::string& ns) const;
     
+    // 查找声明（支持命名空间解析）
+    const KnownDecl* findDeclaration(const std::string& name, const std::string& currentNamespace,
+                                    const std::map<std::string, KnownDecl>& declarations) const;
+    
     // 为了兼容旧代码，保留原有方法
     std::vector<SyntaxDiagnostic> check(const ast::Document& doc, const std::string& entryFile = "");
 };

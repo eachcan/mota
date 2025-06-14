@@ -10,6 +10,7 @@
     "misc-accessors.template",
     "misc-serialization.template",
     "annotation_decl.template",
+    "annotation.template",
     "enum.template",
     "struct.template",
     "block.template"

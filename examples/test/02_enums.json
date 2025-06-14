@@ -15,25 +15,27 @@
                         "relative_type_name": "string",
                         "super_type": "builtin",
                         "type_name": "string",
+                        "ui_comment": "",
                         "value": "\"simple_enum\""
                     }
                 ],
-                "class_name": "examples.annotations.ValueOnlyAnnotation",
-                "full_class_name": "examples.annotations.ValueOnlyAnnotation",
+                "class_name": "ValueOnlyAnnotation",
+                "full_class_name": "examples::annotations::ValueOnlyAnnotation",
                 "full_name": "examples.annotations.ValueOnly",
-                "name": "examples.annotations.ValueOnly",
-                "namespace": "examples.enums",
-                "relative_class_name": "examples.annotations.ValueOnlyAnnotation",
+                "name": "ValueOnly",
+                "namespace": "examples.annotations",
+                "relative_class_name": "examples::annotations::ValueOnlyAnnotation",
                 "relative_name": "examples.annotations.ValueOnly",
-                "super_type": "annotation"
+                "super_type": "annotation",
+                "ui_comment": ""
             }
         ],
         "class_name": "SimpleEnum",
-        "full_class_name": "examples:enums::SimpleEnum",
+        "full_class_name": "examples::enums::SimpleEnum",
         "full_name": "examples.enums.SimpleEnum",
         "name": "SimpleEnum",
         "namespace": "examples.enums",
-        "namespace_class_prefix": "examples:enums::",
+        "namespace_class_prefix": "examples::enums::",
         "parent": "",
         "parent_class_name": "",
         "parent_full_class_name": "",
@@ -44,6 +46,7 @@
         "relative_class_name": "SimpleEnum",
         "relative_name": "SimpleEnum",
         "super_type": "enum",
+        "ui_comment": "=== 枚举定义 ===",
         "values": [
             {
                 "annotations": [
@@ -60,22 +63,24 @@
                                 "relative_type_name": "string",
                                 "super_type": "builtin",
                                 "type_name": "string",
+                                "ui_comment": "",
                                 "value": "\"第一个值\""
                             }
                         ],
-                        "class_name": "examples.annotations.BaseAnnotationAnnotation",
-                        "full_class_name": "examples.annotations.BaseAnnotationAnnotation",
+                        "class_name": "BaseAnnotationAnnotation",
+                        "full_class_name": "examples::annotations::BaseAnnotationAnnotation",
                         "full_name": "examples.annotations.BaseAnnotation",
-                        "name": "examples.annotations.BaseAnnotation",
-                        "namespace": "examples.enums",
-                        "relative_class_name": "examples.annotations.BaseAnnotationAnnotation",
+                        "name": "BaseAnnotation",
+                        "namespace": "examples.annotations",
+                        "relative_class_name": "examples::annotations::BaseAnnotationAnnotation",
                         "relative_name": "examples.annotations.BaseAnnotation",
-                        "super_type": "annotation"
+                        "super_type": "annotation",
+                        "ui_comment": ""
                     }
                 ],
                 "field_name": "VALUE1",
                 "name": "VALUE1",
-                "super_type": "enum_value"
+                "ui_comment": ""
             },
             {
                 "annotations": [
@@ -92,22 +97,24 @@
                                 "relative_type_name": "string",
                                 "super_type": "builtin",
                                 "type_name": "string",
+                                "ui_comment": "",
                                 "value": "\"第二个值\""
                             }
                         ],
-                        "class_name": "examples.annotations.BaseAnnotationAnnotation",
-                        "full_class_name": "examples.annotations.BaseAnnotationAnnotation",
+                        "class_name": "BaseAnnotationAnnotation",
+                        "full_class_name": "examples::annotations::BaseAnnotationAnnotation",
                         "full_name": "examples.annotations.BaseAnnotation",
-                        "name": "examples.annotations.BaseAnnotation",
-                        "namespace": "examples.enums",
-                        "relative_class_name": "examples.annotations.BaseAnnotationAnnotation",
+                        "name": "BaseAnnotation",
+                        "namespace": "examples.annotations",
+                        "relative_class_name": "examples::annotations::BaseAnnotationAnnotation",
                         "relative_name": "examples.annotations.BaseAnnotation",
-                        "super_type": "annotation"
+                        "super_type": "annotation",
+                        "ui_comment": ""
                     }
                 ],
                 "field_name": "VALUE2",
                 "name": "VALUE2",
-                "super_type": "enum_value"
+                "ui_comment": ""
             },
             {
                 "annotations": [
@@ -124,22 +131,260 @@
                                 "relative_type_name": "string",
                                 "super_type": "builtin",
                                 "type_name": "string",
+                                "ui_comment": "",
                                 "value": "\"第三个值\""
                             }
                         ],
-                        "class_name": "examples.annotations.BaseAnnotationAnnotation",
-                        "full_class_name": "examples.annotations.BaseAnnotationAnnotation",
+                        "class_name": "BaseAnnotationAnnotation",
+                        "full_class_name": "examples::annotations::BaseAnnotationAnnotation",
                         "full_name": "examples.annotations.BaseAnnotation",
-                        "name": "examples.annotations.BaseAnnotation",
-                        "namespace": "examples.enums",
-                        "relative_class_name": "examples.annotations.BaseAnnotationAnnotation",
+                        "name": "BaseAnnotation",
+                        "namespace": "examples.annotations",
+                        "relative_class_name": "examples::annotations::BaseAnnotationAnnotation",
                         "relative_name": "examples.annotations.BaseAnnotation",
-                        "super_type": "annotation"
+                        "super_type": "annotation",
+                        "ui_comment": ""
                     }
                 ],
                 "field_name": "VALUE3",
                 "name": "VALUE3",
-                "super_type": "enum_value"
+                "ui_comment": ""
+            }
+        ]
+    },
+    {
+        "annotations": [],
+        "class_name": "ArrayAnnotation",
+        "full_class_name": "examples::enums::ArrayAnnotation",
+        "full_name": "examples.enums.ArrayAnnotation",
+        "name": "ArrayAnnotation",
+        "namespace": "examples.enums",
+        "namespace_class_prefix": "examples::enums::",
+        "parent": "",
+        "parent_class_name": "",
+        "parent_full_class_name": "",
+        "parent_full_name": "",
+        "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "ArrayAnnotation",
+        "relative_name": "ArrayAnnotation",
+        "super_type": "enum",
+        "ui_comment": "",
+        "values": [
+            {
+                "annotations": [
+                    {
+                        "arguments": [
+                            {
+                                "container_type": "array",
+                                "field_name": "baseArray",
+                                "full_mapped_type_name": "examples::annotations::BaseAnnotationAnnotation",
+                                "full_type_name": "examples.annotations.BaseAnnotation",
+                                "mapped_type_name": "BaseAnnotationAnnotation",
+                                "name": "baseArray",
+                                "relative_mapped_type_name": "examples::annotations::BaseAnnotationAnnotation",
+                                "relative_type_name": "examples.annotations.BaseAnnotation",
+                                "super_type": "annotation_decl",
+                                "type_name": "BaseAnnotation",
+                                "ui_comment": "",
+                                "value": [
+                                    {
+                                        "arguments": [
+                                            {
+                                                "container_type": "none",
+                                                "field_name": "description",
+                                                "full_mapped_type_name": "QString",
+                                                "full_type_name": "string",
+                                                "mapped_type_name": "QString",
+                                                "name": "description",
+                                                "relative_mapped_type_name": "QString",
+                                                "relative_type_name": "string",
+                                                "super_type": "builtin",
+                                                "type_name": "string",
+                                                "ui_comment": "",
+                                                "value": "\"第一个值\""
+                                            }
+                                        ],
+                                        "class_name": "BaseAnnotationAnnotation",
+                                        "full_class_name": "examples::annotations::BaseAnnotationAnnotation",
+                                        "full_name": "examples.annotations.BaseAnnotation",
+                                        "name": "BaseAnnotation",
+                                        "namespace": "examples.annotations",
+                                        "relative_class_name": "examples::annotations::BaseAnnotationAnnotation",
+                                        "relative_name": "examples.annotations.BaseAnnotation",
+                                        "super_type": "annotation",
+                                        "ui_comment": ""
+                                    },
+                                    {
+                                        "arguments": [
+                                            {
+                                                "container_type": "none",
+                                                "field_name": "description",
+                                                "full_mapped_type_name": "QString",
+                                                "full_type_name": "string",
+                                                "mapped_type_name": "QString",
+                                                "name": "description",
+                                                "relative_mapped_type_name": "QString",
+                                                "relative_type_name": "string",
+                                                "super_type": "builtin",
+                                                "type_name": "string",
+                                                "ui_comment": "",
+                                                "value": "\"第二个值\""
+                                            }
+                                        ],
+                                        "class_name": "BaseAnnotationAnnotation",
+                                        "full_class_name": "examples::annotations::BaseAnnotationAnnotation",
+                                        "full_name": "examples.annotations.BaseAnnotation",
+                                        "name": "BaseAnnotation",
+                                        "namespace": "examples.annotations",
+                                        "relative_class_name": "examples::annotations::BaseAnnotationAnnotation",
+                                        "relative_name": "examples.annotations.BaseAnnotation",
+                                        "super_type": "annotation",
+                                        "ui_comment": ""
+                                    }
+                                ]
+                            },
+                            {
+                                "container_type": "array",
+                                "field_name": "intArray",
+                                "full_mapped_type_name": "int32_t",
+                                "full_type_name": "int32",
+                                "mapped_type_name": "int32_t",
+                                "name": "intArray",
+                                "relative_mapped_type_name": "int32_t",
+                                "relative_type_name": "int32",
+                                "super_type": "builtin",
+                                "type_name": "int32",
+                                "ui_comment": "",
+                                "value": [
+                                    "1",
+                                    "2",
+                                    "3"
+                                ]
+                            }
+                        ],
+                        "class_name": "ArrayBaseAnnotation",
+                        "full_class_name": "examples::annotations::ArrayBaseAnnotation",
+                        "full_name": "examples.annotations.ArrayBase",
+                        "name": "ArrayBase",
+                        "namespace": "examples.annotations",
+                        "relative_class_name": "examples::annotations::ArrayBaseAnnotation",
+                        "relative_name": "examples.annotations.ArrayBase",
+                        "super_type": "annotation",
+                        "ui_comment": ""
+                    }
+                ],
+                "field_name": "VALUE1",
+                "name": "VALUE1",
+                "ui_comment": ""
+            },
+            {
+                "annotations": [
+                    {
+                        "arguments": [
+                            {
+                                "container_type": "array",
+                                "field_name": "baseArray",
+                                "full_mapped_type_name": "examples::annotations::BaseAnnotationAnnotation",
+                                "full_type_name": "examples.annotations.BaseAnnotation",
+                                "mapped_type_name": "BaseAnnotationAnnotation",
+                                "name": "baseArray",
+                                "relative_mapped_type_name": "examples::annotations::BaseAnnotationAnnotation",
+                                "relative_type_name": "examples.annotations.BaseAnnotation",
+                                "super_type": "annotation_decl",
+                                "type_name": "BaseAnnotation",
+                                "ui_comment": "",
+                                "value": [
+                                    {
+                                        "arguments": [
+                                            {
+                                                "container_type": "none",
+                                                "field_name": "description",
+                                                "full_mapped_type_name": "QString",
+                                                "full_type_name": "string",
+                                                "mapped_type_name": "QString",
+                                                "name": "description",
+                                                "relative_mapped_type_name": "QString",
+                                                "relative_type_name": "string",
+                                                "super_type": "builtin",
+                                                "type_name": "string",
+                                                "ui_comment": "",
+                                                "value": "\"第三个值\""
+                                            }
+                                        ],
+                                        "class_name": "BaseAnnotationAnnotation",
+                                        "full_class_name": "examples::annotations::BaseAnnotationAnnotation",
+                                        "full_name": "examples.annotations.BaseAnnotation",
+                                        "name": "BaseAnnotation",
+                                        "namespace": "examples.annotations",
+                                        "relative_class_name": "examples::annotations::BaseAnnotationAnnotation",
+                                        "relative_name": "examples.annotations.BaseAnnotation",
+                                        "super_type": "annotation",
+                                        "ui_comment": ""
+                                    },
+                                    {
+                                        "arguments": [
+                                            {
+                                                "container_type": "none",
+                                                "field_name": "description",
+                                                "full_mapped_type_name": "QString",
+                                                "full_type_name": "string",
+                                                "mapped_type_name": "QString",
+                                                "name": "description",
+                                                "relative_mapped_type_name": "QString",
+                                                "relative_type_name": "string",
+                                                "super_type": "builtin",
+                                                "type_name": "string",
+                                                "ui_comment": "",
+                                                "value": "\"第四个值\""
+                                            }
+                                        ],
+                                        "class_name": "BaseAnnotationAnnotation",
+                                        "full_class_name": "examples::annotations::BaseAnnotationAnnotation",
+                                        "full_name": "examples.annotations.BaseAnnotation",
+                                        "name": "BaseAnnotation",
+                                        "namespace": "examples.annotations",
+                                        "relative_class_name": "examples::annotations::BaseAnnotationAnnotation",
+                                        "relative_name": "examples.annotations.BaseAnnotation",
+                                        "super_type": "annotation",
+                                        "ui_comment": ""
+                                    }
+                                ]
+                            },
+                            {
+                                "container_type": "array",
+                                "field_name": "intArray",
+                                "full_mapped_type_name": "int32_t",
+                                "full_type_name": "int32",
+                                "mapped_type_name": "int32_t",
+                                "name": "intArray",
+                                "relative_mapped_type_name": "int32_t",
+                                "relative_type_name": "int32",
+                                "super_type": "builtin",
+                                "type_name": "int32",
+                                "ui_comment": "",
+                                "value": [
+                                    "4",
+                                    "5",
+                                    "6"
+                                ]
+                            }
+                        ],
+                        "class_name": "ArrayBaseAnnotation",
+                        "full_class_name": "examples::annotations::ArrayBaseAnnotation",
+                        "full_name": "examples.annotations.ArrayBase",
+                        "name": "ArrayBase",
+                        "namespace": "examples.annotations",
+                        "relative_class_name": "examples::annotations::ArrayBaseAnnotation",
+                        "relative_name": "examples.annotations.ArrayBase",
+                        "super_type": "annotation",
+                        "ui_comment": ""
+                    }
+                ],
+                "field_name": "VALUE2",
+                "name": "VALUE2",
+                "ui_comment": ""
             }
         ]
     },
@@ -158,19 +403,21 @@
                         "relative_type_name": "bool",
                         "super_type": "builtin",
                         "type_name": "bool",
+                        "ui_comment": "",
                         "value": "true"
                     },
                     {
                         "container_type": "none",
                         "field_name": "range",
-                        "full_mapped_type_name": "examples.annotations.ValueAnnotation",
-                        "full_type_name": "examples.enums.ValueAnnotation",
-                        "mapped_type_name": "examples.annotations.ValueAnnotation",
+                        "full_mapped_type_name": "examples::annotations::ValueAnnotationAnnotation",
+                        "full_type_name": "examples.annotations.ValueAnnotation",
+                        "mapped_type_name": "ValueAnnotationAnnotation",
                         "name": "range",
-                        "relative_mapped_type_name": "examples.annotations.ValueAnnotation",
-                        "relative_type_name": "examples.enums.ValueAnnotation",
-                        "super_type": "builtin",
+                        "relative_mapped_type_name": "examples::annotations::ValueAnnotationAnnotation",
+                        "relative_type_name": "examples.annotations.ValueAnnotation",
+                        "super_type": "annotation_decl",
                         "type_name": "ValueAnnotation",
+                        "ui_comment": "",
                         "value": {
                             "arguments": [
                                 {
@@ -184,6 +431,7 @@
                                     "relative_type_name": "int32",
                                     "super_type": "builtin",
                                     "type_name": "int32",
+                                    "ui_comment": "",
                                     "value": "1"
                                 },
                                 {
@@ -197,36 +445,39 @@
                                     "relative_type_name": "int32",
                                     "super_type": "builtin",
                                     "type_name": "int32",
+                                    "ui_comment": "",
                                     "value": "10"
                                 }
                             ],
                             "class_name": "ValueAnnotationAnnotation",
-                            "full_class_name": "examples:annotations:ValueAnnotationAnnotation",
+                            "full_class_name": "examples::annotations::ValueAnnotationAnnotation",
                             "full_name": "examples.annotations.ValueAnnotation",
                             "name": "ValueAnnotation",
-                            "namespace": "examples.enums",
-                            "relative_class_name": "ValueAnnotationAnnotation",
-                            "relative_name": "ValueAnnotation",
-                            "super_type": "annotation"
+                            "namespace": "examples.annotations",
+                            "relative_class_name": "examples::annotations::ValueAnnotationAnnotation",
+                            "relative_name": "examples.annotations.ValueAnnotation",
+                            "super_type": "annotation",
+                            "ui_comment": ""
                         }
                     }
                 ],
-                "class_name": "examples.annotations.ExtendedAnnotationAnnotation",
-                "full_class_name": "examples.annotations.ExtendedAnnotationAnnotation",
+                "class_name": "ExtendedAnnotationAnnotation",
+                "full_class_name": "examples::annotations::ExtendedAnnotationAnnotation",
                 "full_name": "examples.annotations.ExtendedAnnotation",
-                "name": "examples.annotations.ExtendedAnnotation",
-                "namespace": "examples.enums",
-                "relative_class_name": "examples.annotations.ExtendedAnnotationAnnotation",
+                "name": "ExtendedAnnotation",
+                "namespace": "examples.annotations",
+                "relative_class_name": "examples::annotations::ExtendedAnnotationAnnotation",
                 "relative_name": "examples.annotations.ExtendedAnnotation",
-                "super_type": "annotation"
+                "super_type": "annotation",
+                "ui_comment": ""
             }
         ],
         "class_name": "ValueEnum",
-        "full_class_name": "examples:enums::ValueEnum",
+        "full_class_name": "examples::enums::ValueEnum",
         "full_name": "examples.enums.ValueEnum",
         "name": "ValueEnum",
         "namespace": "examples.enums",
-        "namespace_class_prefix": "examples:enums::",
+        "namespace_class_prefix": "examples::enums::",
         "parent": "",
         "parent_class_name": "",
         "parent_full_class_name": "",
@@ -237,6 +488,7 @@
         "relative_class_name": "ValueEnum",
         "relative_name": "ValueEnum",
         "super_type": "enum",
+        "ui_comment": "",
         "values": [
             {
                 "annotations": [
@@ -253,22 +505,24 @@
                                 "relative_type_name": "string",
                                 "super_type": "builtin",
                                 "type_name": "string",
+                                "ui_comment": "",
                                 "value": "\"低优先级\""
                             }
                         ],
-                        "class_name": "examples.annotations.BaseAnnotationAnnotation",
-                        "full_class_name": "examples.annotations.BaseAnnotationAnnotation",
+                        "class_name": "BaseAnnotationAnnotation",
+                        "full_class_name": "examples::annotations::BaseAnnotationAnnotation",
                         "full_name": "examples.annotations.BaseAnnotation",
-                        "name": "examples.annotations.BaseAnnotation",
-                        "namespace": "examples.enums",
-                        "relative_class_name": "examples.annotations.BaseAnnotationAnnotation",
+                        "name": "BaseAnnotation",
+                        "namespace": "examples.annotations",
+                        "relative_class_name": "examples::annotations::BaseAnnotationAnnotation",
                         "relative_name": "examples.annotations.BaseAnnotation",
-                        "super_type": "annotation"
+                        "super_type": "annotation",
+                        "ui_comment": ""
                     }
                 ],
                 "field_name": "LOW",
                 "name": "LOW",
-                "super_type": "enum_value",
+                "ui_comment": "",
                 "value": "1"
             },
             {
@@ -286,22 +540,24 @@
                                 "relative_type_name": "string",
                                 "super_type": "builtin",
                                 "type_name": "string",
+                                "ui_comment": "",
                                 "value": "\"中优先级\""
                             }
                         ],
-                        "class_name": "examples.annotations.BaseAnnotationAnnotation",
-                        "full_class_name": "examples.annotations.BaseAnnotationAnnotation",
+                        "class_name": "BaseAnnotationAnnotation",
+                        "full_class_name": "examples::annotations::BaseAnnotationAnnotation",
                         "full_name": "examples.annotations.BaseAnnotation",
-                        "name": "examples.annotations.BaseAnnotation",
-                        "namespace": "examples.enums",
-                        "relative_class_name": "examples.annotations.BaseAnnotationAnnotation",
+                        "name": "BaseAnnotation",
+                        "namespace": "examples.annotations",
+                        "relative_class_name": "examples::annotations::BaseAnnotationAnnotation",
                         "relative_name": "examples.annotations.BaseAnnotation",
-                        "super_type": "annotation"
+                        "super_type": "annotation",
+                        "ui_comment": ""
                     }
                 ],
                 "field_name": "MEDIUM",
                 "name": "MEDIUM",
-                "super_type": "enum_value",
+                "ui_comment": "",
                 "value": "2"
             },
             {
@@ -319,22 +575,24 @@
                                 "relative_type_name": "string",
                                 "super_type": "builtin",
                                 "type_name": "string",
+                                "ui_comment": "",
                                 "value": "\"高优先级\""
                             }
                         ],
-                        "class_name": "examples.annotations.BaseAnnotationAnnotation",
-                        "full_class_name": "examples.annotations.BaseAnnotationAnnotation",
+                        "class_name": "BaseAnnotationAnnotation",
+                        "full_class_name": "examples::annotations::BaseAnnotationAnnotation",
                         "full_name": "examples.annotations.BaseAnnotation",
-                        "name": "examples.annotations.BaseAnnotation",
-                        "namespace": "examples.enums",
-                        "relative_class_name": "examples.annotations.BaseAnnotationAnnotation",
+                        "name": "BaseAnnotation",
+                        "namespace": "examples.annotations",
+                        "relative_class_name": "examples::annotations::BaseAnnotationAnnotation",
                         "relative_name": "examples.annotations.BaseAnnotation",
-                        "super_type": "annotation"
+                        "super_type": "annotation",
+                        "ui_comment": ""
                     }
                 ],
                 "field_name": "HIGH",
                 "name": "HIGH",
-                "super_type": "enum_value",
+                "ui_comment": "",
                 "value": "3"
             }
         ]
@@ -348,41 +606,44 @@
                 "container_type": "none",
                 "default_value": "/* complex expression */",
                 "field_name": "simpleField",
-                "full_mapped_type_name": "examples:enums::SimpleEnum",
+                "full_mapped_type_name": "examples::enums::SimpleEnum",
                 "full_type_name": "examples.enums.SimpleEnum",
                 "mapped_type_name": "SimpleEnum",
                 "name": "simpleField",
                 "relative_mapped_type_name": "SimpleEnum",
                 "relative_type_name": "SimpleEnum",
                 "super_type": "enum",
-                "type_name": "SimpleEnum"
+                "type_name": "SimpleEnum",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
                 "container_type": "none",
                 "default_value": "/* complex expression */",
                 "field_name": "valueField",
-                "full_mapped_type_name": "examples:enums::ValueEnum",
+                "full_mapped_type_name": "examples::enums::ValueEnum",
                 "full_type_name": "examples.enums.ValueEnum",
                 "mapped_type_name": "ValueEnum",
                 "name": "valueField",
                 "relative_mapped_type_name": "ValueEnum",
                 "relative_type_name": "ValueEnum",
                 "super_type": "enum",
-                "type_name": "ValueEnum"
+                "type_name": "ValueEnum",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
                 "container_type": "array",
                 "field_name": "simpleArray",
-                "full_mapped_type_name": "examples:enums::SimpleEnum",
+                "full_mapped_type_name": "examples::enums::SimpleEnum",
                 "full_type_name": "examples.enums.SimpleEnum",
                 "mapped_type_name": "SimpleEnum",
                 "name": "simpleArray",
                 "relative_mapped_type_name": "SimpleEnum",
                 "relative_type_name": "SimpleEnum",
                 "super_type": "enum",
-                "type_name": "SimpleEnum"
+                "type_name": "SimpleEnum",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -392,74 +653,79 @@
                     "/* complex expression */"
                 ],
                 "field_name": "valueArray",
-                "full_mapped_type_name": "examples:enums::ValueEnum",
+                "full_mapped_type_name": "examples::enums::ValueEnum",
                 "full_type_name": "examples.enums.ValueEnum",
                 "mapped_type_name": "ValueEnum",
                 "name": "valueArray",
                 "relative_mapped_type_name": "ValueEnum",
                 "relative_type_name": "ValueEnum",
                 "super_type": "enum",
-                "type_name": "ValueEnum"
+                "type_name": "ValueEnum",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
                 "container_type": "optional",
                 "field_name": "optionalSimple",
-                "full_mapped_type_name": "examples:enums::SimpleEnum",
+                "full_mapped_type_name": "examples::enums::SimpleEnum",
                 "full_type_name": "examples.enums.SimpleEnum",
                 "mapped_type_name": "SimpleEnum",
                 "name": "optionalSimple",
                 "relative_mapped_type_name": "SimpleEnum",
                 "relative_type_name": "SimpleEnum",
                 "super_type": "enum",
-                "type_name": "SimpleEnum"
+                "type_name": "SimpleEnum",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
                 "container_type": "optional",
                 "default_value": "/* complex expression */",
                 "field_name": "optionalValue",
-                "full_mapped_type_name": "examples:enums::ValueEnum",
+                "full_mapped_type_name": "examples::enums::ValueEnum",
                 "full_type_name": "examples.enums.ValueEnum",
                 "mapped_type_name": "ValueEnum",
                 "name": "optionalValue",
                 "relative_mapped_type_name": "ValueEnum",
                 "relative_type_name": "ValueEnum",
                 "super_type": "enum",
-                "type_name": "ValueEnum"
+                "type_name": "ValueEnum",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
                 "container_type": "map",
                 "field_name": "simpleMap",
-                "full_mapped_type_name": "examples:enums::SimpleEnum",
+                "full_mapped_type_name": "examples::enums::SimpleEnum",
                 "full_type_name": "examples.enums.SimpleEnum",
                 "mapped_type_name": "SimpleEnum",
                 "name": "simpleMap",
                 "relative_mapped_type_name": "SimpleEnum",
                 "relative_type_name": "SimpleEnum",
                 "super_type": "enum",
-                "type_name": "SimpleEnum"
+                "type_name": "SimpleEnum",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
                 "container_type": "map",
                 "field_name": "valueMap",
-                "full_mapped_type_name": "examples:enums::ValueEnum",
+                "full_mapped_type_name": "examples::enums::ValueEnum",
                 "full_type_name": "examples.enums.ValueEnum",
                 "mapped_type_name": "ValueEnum",
                 "name": "valueMap",
                 "relative_mapped_type_name": "ValueEnum",
                 "relative_type_name": "ValueEnum",
                 "super_type": "enum",
-                "type_name": "ValueEnum"
+                "type_name": "ValueEnum",
+                "ui_comment": ""
             }
         ],
-        "full_class_name": "examples:enums::EnumBlockBlock",
+        "full_class_name": "examples::enums::EnumBlockBlock",
         "full_name": "examples.enums.EnumBlock",
         "name": "EnumBlock",
         "namespace": "examples.enums",
-        "namespace_class_prefix": "examples:enums::",
+        "namespace_class_prefix": "examples::enums::",
         "parent": "",
         "parent_class_name": "",
         "parent_full_class_name": "",
@@ -469,7 +735,8 @@
         "parent_relative_name": "",
         "relative_class_name": "EnumBlockBlock",
         "relative_name": "EnumBlock",
-        "super_type": "block"
+        "super_type": "block",
+        "ui_comment": ""
     },
     {
         "annotations": [],
@@ -480,28 +747,30 @@
                 "container_type": "none",
                 "default_value": "/* complex expression */",
                 "field_name": "simpleField",
-                "full_mapped_type_name": "examples:enums::SimpleEnum",
+                "full_mapped_type_name": "examples::enums::SimpleEnum",
                 "full_type_name": "examples.enums.SimpleEnum",
                 "mapped_type_name": "SimpleEnum",
                 "name": "simpleField",
                 "relative_mapped_type_name": "SimpleEnum",
                 "relative_type_name": "SimpleEnum",
                 "super_type": "enum",
-                "type_name": "SimpleEnum"
+                "type_name": "SimpleEnum",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
                 "container_type": "none",
                 "default_value": "/* complex expression */",
                 "field_name": "valueField",
-                "full_mapped_type_name": "examples:enums::ValueEnum",
+                "full_mapped_type_name": "examples::enums::ValueEnum",
                 "full_type_name": "examples.enums.ValueEnum",
                 "mapped_type_name": "ValueEnum",
                 "name": "valueField",
                 "relative_mapped_type_name": "ValueEnum",
                 "relative_type_name": "ValueEnum",
                 "super_type": "enum",
-                "type_name": "ValueEnum"
+                "type_name": "ValueEnum",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
@@ -511,126 +780,136 @@
                     "/* complex expression */"
                 ],
                 "field_name": "simpleArray",
-                "full_mapped_type_name": "examples:enums::SimpleEnum",
+                "full_mapped_type_name": "examples::enums::SimpleEnum",
                 "full_type_name": "examples.enums.SimpleEnum",
                 "mapped_type_name": "SimpleEnum",
                 "name": "simpleArray",
                 "relative_mapped_type_name": "SimpleEnum",
                 "relative_type_name": "SimpleEnum",
                 "super_type": "enum",
-                "type_name": "SimpleEnum"
+                "type_name": "SimpleEnum",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
                 "container_type": "array",
                 "field_name": "valueArray",
-                "full_mapped_type_name": "examples:enums::ValueEnum",
+                "full_mapped_type_name": "examples::enums::ValueEnum",
                 "full_type_name": "examples.enums.ValueEnum",
                 "mapped_type_name": "ValueEnum",
                 "name": "valueArray",
                 "relative_mapped_type_name": "ValueEnum",
                 "relative_type_name": "ValueEnum",
                 "super_type": "enum",
-                "type_name": "ValueEnum"
+                "type_name": "ValueEnum",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
                 "container_type": "optional",
                 "default_value": "/* complex expression */",
                 "field_name": "optionalSimple",
-                "full_mapped_type_name": "examples:enums::SimpleEnum",
+                "full_mapped_type_name": "examples::enums::SimpleEnum",
                 "full_type_name": "examples.enums.SimpleEnum",
                 "mapped_type_name": "SimpleEnum",
                 "name": "optionalSimple",
                 "relative_mapped_type_name": "SimpleEnum",
                 "relative_type_name": "SimpleEnum",
                 "super_type": "enum",
-                "type_name": "SimpleEnum"
+                "type_name": "SimpleEnum",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
                 "container_type": "optional",
                 "field_name": "optionalValue",
-                "full_mapped_type_name": "examples:enums::ValueEnum",
+                "full_mapped_type_name": "examples::enums::ValueEnum",
                 "full_type_name": "examples.enums.ValueEnum",
                 "mapped_type_name": "ValueEnum",
                 "name": "optionalValue",
                 "relative_mapped_type_name": "ValueEnum",
                 "relative_type_name": "ValueEnum",
                 "super_type": "enum",
-                "type_name": "ValueEnum"
+                "type_name": "ValueEnum",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
                 "container_type": "map",
                 "field_name": "simpleMap",
-                "full_mapped_type_name": "examples:enums::SimpleEnum",
+                "full_mapped_type_name": "examples::enums::SimpleEnum",
                 "full_type_name": "examples.enums.SimpleEnum",
                 "mapped_type_name": "SimpleEnum",
                 "name": "simpleMap",
                 "relative_mapped_type_name": "SimpleEnum",
                 "relative_type_name": "SimpleEnum",
                 "super_type": "enum",
-                "type_name": "SimpleEnum"
+                "type_name": "SimpleEnum",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
                 "container_type": "map",
                 "field_name": "valueMap",
-                "full_mapped_type_name": "examples:enums::ValueEnum",
+                "full_mapped_type_name": "examples::enums::ValueEnum",
                 "full_type_name": "examples.enums.ValueEnum",
                 "mapped_type_name": "ValueEnum",
                 "name": "valueMap",
                 "relative_mapped_type_name": "ValueEnum",
                 "relative_type_name": "ValueEnum",
                 "super_type": "enum",
-                "type_name": "ValueEnum"
+                "type_name": "ValueEnum",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
                 "container_type": "none",
                 "field_name": "blockField",
-                "full_mapped_type_name": "examples:enums::EnumBlockBlock",
+                "full_mapped_type_name": "examples::enums::EnumBlockBlock",
                 "full_type_name": "examples.enums.EnumBlock",
                 "mapped_type_name": "EnumBlockBlock",
                 "name": "blockField",
                 "relative_mapped_type_name": "EnumBlockBlock",
                 "relative_type_name": "EnumBlock",
                 "super_type": "block",
-                "type_name": "EnumBlock"
+                "type_name": "EnumBlock",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
                 "container_type": "array",
                 "field_name": "blockArray",
-                "full_mapped_type_name": "examples:enums::EnumBlockBlock",
+                "full_mapped_type_name": "examples::enums::EnumBlockBlock",
                 "full_type_name": "examples.enums.EnumBlock",
                 "mapped_type_name": "EnumBlockBlock",
                 "name": "blockArray",
                 "relative_mapped_type_name": "EnumBlockBlock",
                 "relative_type_name": "EnumBlock",
                 "super_type": "block",
-                "type_name": "EnumBlock"
+                "type_name": "EnumBlock",
+                "ui_comment": ""
             },
             {
                 "annotations": [],
                 "container_type": "optional",
                 "field_name": "optionalBlock",
-                "full_mapped_type_name": "examples:enums::EnumBlockBlock",
+                "full_mapped_type_name": "examples::enums::EnumBlockBlock",
                 "full_type_name": "examples.enums.EnumBlock",
                 "mapped_type_name": "EnumBlockBlock",
                 "name": "optionalBlock",
                 "relative_mapped_type_name": "EnumBlockBlock",
                 "relative_type_name": "EnumBlock",
                 "super_type": "block",
-                "type_name": "EnumBlock"
+                "type_name": "EnumBlock",
+                "ui_comment": ""
             }
         ],
-        "full_class_name": "examples:enums::EnumStructModel",
+        "full_class_name": "examples::enums::EnumStructModel",
         "full_name": "examples.enums.EnumStruct",
         "name": "EnumStruct",
         "namespace": "examples.enums",
-        "namespace_class_prefix": "examples:enums::",
+        "namespace_class_prefix": "examples::enums::",
+        "parent": "",
         "parent_class_name": "",
         "parent_full_class_name": "",
         "parent_full_name": "",
@@ -639,7 +918,8 @@
         "parent_relative_name": "",
         "relative_class_name": "EnumStructModel",
         "relative_name": "EnumStruct",
-        "super_type": "struct"
+        "super_type": "struct",
+        "ui_comment": ""
     }
 ],
     "INCLUDES": {
@@ -647,15 +927,15 @@
     "files": [
         {
             "source": "yima.mota",
-            "translated": "yima.h"
+            "translated": "yima.json"
         },
         {
             "source": "01_annotations.mota",
-            "translated": "01_annotations.h"
+            "translated": "01_annotations.json"
         }
     ]
 },
-    "CURRENT_TIME": "2025-06-13 22:23:13",
+    "CURRENT_TIME": "2025-06-14 23:30:54",
     "SOURCE_FILE": "",
     "MOTA_VERSION": "0.2.0",
     "NAMESPACE": {
@@ -686,8 +966,179 @@
             "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
             "name": "AllTypesAnnotation",
             "namespace_name": "examples.annotations",
+            "qualified_name": "AllTypesAnnotation",
+            "relative_type_name": "AllTypesAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ArrayAnnotation",
+            "file_path": ".\\examples\\02_enums.mota",
+            "name": "ArrayAnnotation",
+            "namespace_name": "examples.enums",
+            "qualified_name": "ArrayAnnotation",
+            "relative_type_name": "ArrayAnnotation",
+            "type": "enum"
+        },
+        {
+            "class_name": "ArrayBaseAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+            "name": "ArrayBase",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "ArrayBase",
+            "relative_type_name": "ArrayBase",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "BaseAnnotationAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+            "name": "BaseAnnotation",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "BaseAnnotation",
+            "relative_type_name": "BaseAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ContainerAnnotationAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+            "name": "ContainerAnnotation",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "ContainerAnnotation",
+            "relative_type_name": "ContainerAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "EnumBlockBlock",
+            "file_path": ".\\examples\\02_enums.mota",
+            "name": "EnumBlock",
+            "namespace_name": "examples.enums",
+            "qualified_name": "EnumBlock",
+            "relative_type_name": "EnumBlock",
+            "type": "block"
+        },
+        {
+            "class_name": "EnumStructModel",
+            "file_path": ".\\examples\\02_enums.mota",
+            "name": "EnumStruct",
+            "namespace_name": "examples.enums",
+            "qualified_name": "EnumStruct",
+            "relative_type_name": "EnumStruct",
+            "type": "struct"
+        },
+        {
+            "class_name": "ExtendedAnnotationAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+            "name": "ExtendedAnnotation",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "ExtendedAnnotation",
+            "relative_type_name": "ExtendedAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "IniGroupAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "IniGroup",
+            "namespace_name": "yima",
+            "qualified_name": "IniGroup",
+            "relative_type_name": "IniGroup",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "IniStorageAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+            "name": "IniStorage",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "IniStorage",
+            "relative_type_name": "IniStorage",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "NoParamsAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+            "name": "NoParams",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "NoParams",
+            "relative_type_name": "NoParams",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ScopeAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "Scope",
+            "namespace_name": "yima",
+            "qualified_name": "Scope",
+            "relative_type_name": "Scope",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "SimpleEnum",
+            "file_path": ".\\examples\\02_enums.mota",
+            "name": "SimpleEnum",
+            "namespace_name": "examples.enums",
+            "qualified_name": "SimpleEnum",
+            "relative_type_name": "SimpleEnum",
+            "type": "enum"
+        },
+        {
+            "class_name": "StorageAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "Storage",
+            "namespace_name": "yima",
+            "qualified_name": "Storage",
+            "relative_type_name": "Storage",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ValueAnnotationAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+            "name": "ValueAnnotation",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "ValueAnnotation",
+            "relative_type_name": "ValueAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ValueEnum",
+            "file_path": ".\\examples\\02_enums.mota",
+            "name": "ValueEnum",
+            "namespace_name": "examples.enums",
+            "qualified_name": "ValueEnum",
+            "relative_type_name": "ValueEnum",
+            "type": "enum"
+        },
+        {
+            "class_name": "ValueOnlyAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+            "name": "ValueOnly",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "ValueOnly",
+            "relative_type_name": "ValueOnly",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "WindowAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "Window",
+            "namespace_name": "yima",
+            "qualified_name": "Window",
+            "relative_type_name": "Window",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "AllTypesAnnotationAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+            "name": "AllTypesAnnotation",
+            "namespace_name": "examples.annotations",
             "qualified_name": "examples.annotations.AllTypesAnnotation",
             "relative_type_name": "examples.annotations.AllTypesAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ArrayBaseAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+            "name": "ArrayBase",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "examples.annotations.ArrayBase",
+            "relative_type_name": "examples.annotations.ArrayBase",
             "type": "annotation_decl"
         },
         {
@@ -718,6 +1169,15 @@
             "type": "annotation_decl"
         },
         {
+            "class_name": "IniStorageAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+            "name": "IniStorage",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "examples.annotations.IniStorage",
+            "relative_type_name": "examples.annotations.IniStorage",
+            "type": "annotation_decl"
+        },
+        {
             "class_name": "NoParamsAnnotation",
             "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
             "name": "NoParams",
@@ -743,6 +1203,15 @@
             "qualified_name": "examples.annotations.ValueOnly",
             "relative_type_name": "examples.annotations.ValueOnly",
             "type": "annotation_decl"
+        },
+        {
+            "class_name": "ArrayAnnotation",
+            "file_path": ".\\examples\\02_enums.mota",
+            "name": "ArrayAnnotation",
+            "namespace_name": "examples.enums",
+            "qualified_name": "examples.enums.ArrayAnnotation",
+            "relative_type_name": "ArrayAnnotation",
+            "type": "enum"
         },
         {
             "class_name": "EnumBlockBlock",
@@ -824,8 +1293,134 @@
                 "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
                 "name": "AllTypesAnnotation",
                 "namespace_name": "examples.annotations",
+                "qualified_name": "AllTypesAnnotation",
+                "relative_type_name": "AllTypesAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ArrayBaseAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+                "name": "ArrayBase",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "ArrayBase",
+                "relative_type_name": "ArrayBase",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "BaseAnnotationAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+                "name": "BaseAnnotation",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "BaseAnnotation",
+                "relative_type_name": "BaseAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ContainerAnnotationAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+                "name": "ContainerAnnotation",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "ContainerAnnotation",
+                "relative_type_name": "ContainerAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ExtendedAnnotationAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+                "name": "ExtendedAnnotation",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "ExtendedAnnotation",
+                "relative_type_name": "ExtendedAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "IniGroupAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "IniGroup",
+                "namespace_name": "yima",
+                "qualified_name": "IniGroup",
+                "relative_type_name": "IniGroup",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "IniStorageAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+                "name": "IniStorage",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "IniStorage",
+                "relative_type_name": "IniStorage",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "NoParamsAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+                "name": "NoParams",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "NoParams",
+                "relative_type_name": "NoParams",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ScopeAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "Scope",
+                "namespace_name": "yima",
+                "qualified_name": "Scope",
+                "relative_type_name": "Scope",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "StorageAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "Storage",
+                "namespace_name": "yima",
+                "qualified_name": "Storage",
+                "relative_type_name": "Storage",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ValueAnnotationAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+                "name": "ValueAnnotation",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "ValueAnnotation",
+                "relative_type_name": "ValueAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ValueOnlyAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+                "name": "ValueOnly",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "ValueOnly",
+                "relative_type_name": "ValueOnly",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "WindowAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "Window",
+                "namespace_name": "yima",
+                "qualified_name": "Window",
+                "relative_type_name": "Window",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "AllTypesAnnotationAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+                "name": "AllTypesAnnotation",
+                "namespace_name": "examples.annotations",
                 "qualified_name": "examples.annotations.AllTypesAnnotation",
                 "relative_type_name": "examples.annotations.AllTypesAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ArrayBaseAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+                "name": "ArrayBase",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "examples.annotations.ArrayBase",
+                "relative_type_name": "examples.annotations.ArrayBase",
                 "type": "annotation_decl"
             },
             {
@@ -853,6 +1448,15 @@
                 "namespace_name": "examples.annotations",
                 "qualified_name": "examples.annotations.ExtendedAnnotation",
                 "relative_type_name": "examples.annotations.ExtendedAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "IniStorageAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\examples\\01_annotations.mota",
+                "name": "IniStorage",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "examples.annotations.IniStorage",
+                "relative_type_name": "examples.annotations.IniStorage",
                 "type": "annotation_decl"
             },
             {
@@ -925,12 +1529,57 @@
                 "file_path": ".\\examples\\02_enums.mota",
                 "name": "EnumBlock",
                 "namespace_name": "examples.enums",
+                "qualified_name": "EnumBlock",
+                "relative_type_name": "EnumBlock",
+                "type": "block"
+            },
+            {
+                "class_name": "EnumBlockBlock",
+                "file_path": ".\\examples\\02_enums.mota",
+                "name": "EnumBlock",
+                "namespace_name": "examples.enums",
                 "qualified_name": "examples.enums.EnumBlock",
                 "relative_type_name": "EnumBlock",
                 "type": "block"
             }
         ],
         "enum": [
+            {
+                "class_name": "ArrayAnnotation",
+                "file_path": ".\\examples\\02_enums.mota",
+                "name": "ArrayAnnotation",
+                "namespace_name": "examples.enums",
+                "qualified_name": "ArrayAnnotation",
+                "relative_type_name": "ArrayAnnotation",
+                "type": "enum"
+            },
+            {
+                "class_name": "SimpleEnum",
+                "file_path": ".\\examples\\02_enums.mota",
+                "name": "SimpleEnum",
+                "namespace_name": "examples.enums",
+                "qualified_name": "SimpleEnum",
+                "relative_type_name": "SimpleEnum",
+                "type": "enum"
+            },
+            {
+                "class_name": "ValueEnum",
+                "file_path": ".\\examples\\02_enums.mota",
+                "name": "ValueEnum",
+                "namespace_name": "examples.enums",
+                "qualified_name": "ValueEnum",
+                "relative_type_name": "ValueEnum",
+                "type": "enum"
+            },
+            {
+                "class_name": "ArrayAnnotation",
+                "file_path": ".\\examples\\02_enums.mota",
+                "name": "ArrayAnnotation",
+                "namespace_name": "examples.enums",
+                "qualified_name": "examples.enums.ArrayAnnotation",
+                "relative_type_name": "ArrayAnnotation",
+                "type": "enum"
+            },
             {
                 "class_name": "SimpleEnum",
                 "file_path": ".\\examples\\02_enums.mota",
@@ -956,12 +1605,21 @@
                 "file_path": ".\\examples\\02_enums.mota",
                 "name": "EnumStruct",
                 "namespace_name": "examples.enums",
+                "qualified_name": "EnumStruct",
+                "relative_type_name": "EnumStruct",
+                "type": "struct"
+            },
+            {
+                "class_name": "EnumStructModel",
+                "file_path": ".\\examples\\02_enums.mota",
+                "name": "EnumStruct",
+                "namespace_name": "examples.enums",
                 "qualified_name": "examples.enums.EnumStruct",
                 "relative_type_name": "EnumStruct",
                 "type": "struct"
             }
         ]
     },
-    "count": 15
+    "count": 36
 }
 }

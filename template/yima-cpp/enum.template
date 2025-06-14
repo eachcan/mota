@@ -1,7 +1,79 @@
 ﻿<%misc enum%>
-    // <%=declaration.name%>枚举
+<%if (length(declaration.ui_comment) > 0)%>
+// <%=replace(declaration.ui_comment, "\n", "\n// ")%>
+<%endif%>
 enum class <%=declaration.relative_class_name%> {
-<%foreach declaration.values as value%>    <%=value.name%><%if (value.value)%> = <%=value.value%><%endif%><%if (is_last == false)%>,<%endif%>
-<%endforeach%>};
+<%foreach declaration.values as value%>
+        <%=value.name%><%if (exists(value, "default_value"))%> = <%=value.default_value%><%endif%><%if (is_last == false)%>,<%endif%>
+<%endforeach%>
+};
+
+class <%=declaration.relative_class_name%>EnumUtil {
+    public:
+        static QStringList uiComments() {
+<%if (length(declaration.ui_comment) > 0)%>
+            return QStringList{QLatin1String("<%=escape_string(declaration.ui_comment)%>")};
+<%else%>
+            return QStringList();
+<%endif%>
+        }
+
+        static QStringList fieldNames() {
+            return QStringList{<%foreach declaration.values as value%>QLatin1String("<%=value.name%>")<%if (is_last == false)%>, <%endif%><%endforeach%>};
+        }
+
+        static <%=declaration.relative_class_name%> fromString(const QString& str) {
+<%foreach declaration.values as value%>
+            if (str == QLatin1String("<%=value.name%>")) return <%=declaration.relative_class_name%>::<%=value.name%>;
+<%endforeach%>
+<%foreach declaration.values as value%><%if (is_first)%>
+            return <%=declaration.relative_class_name%>::<%=value.name%>;
+<%endif%><%endforeach%>
+        }
+
+        static QString toString(<%=declaration.relative_class_name%> value) {
+<%foreach declaration.values as value%>
+            if (value == <%=declaration.relative_class_name%>::<%=value.name%>) return QLatin1String("<%=value.name%>");
+<%endforeach%>
+<%foreach declaration.values as value%><%if (is_first)%>
+            return QLatin1String("<%=value.name%>");
+<%endif%><%endforeach%>
+        }
+
+        static QStringList fieldUiComments(const QString& fieldName) {
+<%foreach declaration.values as value%>
+<%if (length(value.ui_comment) > 0)%>
+            if (fieldName == QLatin1String("<%=value.name%>")) return QStringList{QLatin1String("<%=escape_string(value.ui_comment)%>")};
+<%endif%>
+<%endforeach%>
+            return QStringList();
+        }
+
+        static QVector<QSharedPointer<IAnnotation>> annotations() {
+<%if (length(declaration.annotations) > 0)%>
+            return QVector<QSharedPointer<IAnnotation>>{
+<%foreach declaration.annotations as annotation%>
+<%call annotation%>,
+<%endforeach%>
+            };
+<%else%>
+            return QVector<QSharedPointer<IAnnotation>>();
+<%endif%>
+        }
+
+        static QVector<QSharedPointer<IAnnotation>> fieldAnnotations(const <%=declaration.relative_class_name%>& fieldName) {
+        <%foreach declaration.values as value%>
+<%if (length(value.annotations) > 0)%>
+            if (fieldName == <%=declaration.relative_class_name%>::<%=value.name%>)
+                 return QVector<QSharedPointer<IAnnotation>>{
+<%foreach value.annotations as annotation%>
+                <%call annotation%><%if (is_last == false)%>,<%endif%>
+<%endforeach%>
+                };
+<%endif%>
+<%endforeach%>
+            return {};
+        }
+};
 
 <%endmisc%>

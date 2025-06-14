@@ -76,7 +76,9 @@ bool FileProcessor::processMotaFile(
         std::map<std::string, checker::KnownDecl> includedDeclarations;
         std::map<std::string, checker::KnownDecl> currentDeclarations;
         
-        buildIncludeRegistry(*root, inputFile, includedFiles, includePaths, includedDeclarations, verbose);
+        if (!buildIncludeRegistry(*root, inputFile, includedFiles, includePaths, includedDeclarations, verbose)) {
+            return false;
+        }
         
         checker::SyntaxChecker syntaxChecker;
         auto diagnostics = syntaxChecker.check(*root, inputFile, includedDeclarations, currentDeclarations);
@@ -220,7 +222,7 @@ bool FileProcessor::processMotaFile(
     }
 }
 
-void FileProcessor::buildIncludeRegistry(
+bool FileProcessor::buildIncludeRegistry(
     const ast::Document& root,
     const std::string& rootFile,
     std::set<std::string>& includedFiles,
@@ -257,35 +259,40 @@ void FileProcessor::buildIncludeRegistry(
         // 解析包含的文档
         auto doc = parseFile(absoluteIncludePath);
         if (!doc) {
-            if (verbose) {
-                std::cout << "警告: 解析包含文件失败 " << absoluteIncludePath << std::endl;
-            }
-            continue;
+            std::cerr << Colors::BOLD_RED << "Error: " << Colors::RESET << "解析包含文件失败 " << absoluteIncludePath << std::endl;
+            return false;
         }
         
         // 递归处理下级包含
         std::map<std::string, checker::KnownDecl> nextIncludeDeclarations;
-        buildIncludeRegistry(*doc, absoluteIncludePath, includedFiles, includePaths, nextIncludeDeclarations, verbose);
+        if (!buildIncludeRegistry(*doc, absoluteIncludePath, includedFiles, includePaths, nextIncludeDeclarations, verbose)) {
+            return false; // 递归调用失败，直接返回
+        }
         
         // 对包含的文档进行语法检查
+        // 需要将当前已收集的声明和下级包含的声明合并后传递给语法检查
+        std::map<std::string, checker::KnownDecl> allAvailableDeclarations = includedDeclarations;
+        mergeDeclarations(allAvailableDeclarations, nextIncludeDeclarations);
+        
         checker::SyntaxChecker syntaxChecker;
         std::map<std::string, checker::KnownDecl> docDeclarations;
-        auto diagnostics = syntaxChecker.check(*doc, absoluteIncludePath, nextIncludeDeclarations, docDeclarations);
+        auto diagnostics = syntaxChecker.check(*doc, absoluteIncludePath, allAvailableDeclarations, docDeclarations);
         
         if (!diagnostics.empty()) {
-            if (verbose) {
-                std::cout << "警告: 包含文件中有语法错误 " << absoluteIncludePath << std::endl;
-                for (const auto& diagnostic : diagnostics) {
-                    std::cout << "  [" << diagnostic.line << ":" << diagnostic.column << "] " 
-                             << diagnostic.message << std::endl;
-                }
+            std::cerr << Colors::BOLD_RED << "Error: " << Colors::RESET << "在包含文件 " << absoluteIncludePath << " 中发现语法错误:" << std::endl;
+            for (const auto& diagnostic : diagnostics) {
+                std::cerr << "  [" << diagnostic.line << ":" << diagnostic.column << "] " 
+                         << diagnostic.message << std::endl;
             }
+            return false; // 发现语法错误，返回失败
         }
         
         // 合并声明到上级
         mergeDeclarations(includedDeclarations, nextIncludeDeclarations);
         mergeDeclarations(includedDeclarations, docDeclarations);
     }
+    
+    return true; // 成功处理所有包含文件
 }
 
 std::string FileProcessor::readFile(const std::string& filePath) const {

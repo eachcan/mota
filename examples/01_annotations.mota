@@ -9,6 +9,11 @@ annotation BaseAnnotation {
     string description = "";
 }
 
+annotation ArrayBase {
+    repeated BaseAnnotation baseArray;
+    repeated int32 intArray;
+}
+
 //@ 这是注解的UI注释
 //@ 这是第二行 UI 注释
 annotation ValueAnnotation {
@@ -16,6 +21,10 @@ annotation ValueAnnotation {
     //@ 请你注意，最小值不能小于0
     int32 min = 0;
     int32 max = 100;
+}
+
+annotation IniStorage : yima.Storage {
+    string ini_path = "";
 }
 
 //@ === 注解继承 ===

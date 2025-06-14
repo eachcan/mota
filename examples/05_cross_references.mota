@@ -99,8 +99,6 @@ struct UltimateCrossTest : examples.blocks.AllTypesBlock {
     // 来自structs文件的字段
     examples.structs.StructBaseBlock structBaseBlock;
     examples.structs.StructExtendedBlock structExtendedBlock;
-    examples.structs.BasicStruct basicStruct;
-    examples.structs.InheritedStruct inheritedStruct;
     
     // 本文件的字段
     CrossEnum crossEnum = THIRD;

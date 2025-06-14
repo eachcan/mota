@@ -65,7 +65,7 @@ public:
 
 private:
     // 构建包含注册表 - 收集所有包含文件及其声明
-    void buildIncludeRegistry(
+    bool buildIncludeRegistry(
         const ast::Document& root,
         const std::string& rootFile,
         std::set<std::string>& includedFiles,

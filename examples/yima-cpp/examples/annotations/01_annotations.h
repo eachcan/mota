@@ -2,7 +2,7 @@
 
 // 此文件由 Mota 代码生成器自动生成
 // Mota 版本: 0.2.0
-// 生成时间: 2025-06-13 23:22:59
+// 生成时间: 2025-06-15 01:56:56
 // 源文件: .\examples\01_annotations.mota
 
 #include <QCborMap>
@@ -67,9 +67,73 @@ public:
         description_ = value;
     }
 private:
-        QString description_ = "";
+    QString description_ = "";
 };
 Q_DECLARE_METATYPE(BaseAnnotationAnnotation)
+
+class MODEL_EXPORT ArrayBaseAnnotation : public IAnnotation {
+public:
+    ArrayBaseAnnotation() = default;
+    
+    // 实现IAnnotation接口
+    QString name() const override {
+        return QLatin1String("ArrayBase");
+    }
+    
+    virtual QVariant argumentValue(const QString& argumentName) const override {
+        if (argumentName == QLatin1String("baseArray")) {
+            QVariantList list;
+            for (const auto& item : baseArray_) {
+                list.append(QVariant::fromValue(item));
+            }
+            return list;
+        }
+        if (argumentName == QLatin1String("intArray")) {
+            QVariantList list;
+            for (const auto& item : intArray_) {
+                list.append(QVariant::fromValue(item));
+            }
+            return list;
+        }
+        return QVariant();
+    }
+    
+    virtual QStringList fieldNames() const override {
+        QStringList names = QStringList{QLatin1String("baseArray"), QLatin1String("intArray")};
+        return names;
+    }
+
+    virtual QStringList uiComments() const override {
+        return QStringList{};
+    }
+    
+    virtual QStringList fieldUiComments(const QString& fieldName) const override {
+        if (fieldName == QLatin1String("baseArray")) {
+            return QStringList{};
+        }
+        if (fieldName == QLatin1String("intArray")) {
+            return QStringList{};
+        }
+        return QStringList();
+    }
+
+    QVector<QSharedPointer<BaseAnnotationAnnotation>> getBaseArray() const {
+        return baseArray_;
+    }
+    void setBaseArray(const QVector<QSharedPointer<BaseAnnotationAnnotation>>& value) {
+        baseArray_ = value;
+    }
+    QVector<int32_t> getIntArray() const {
+        return intArray_; 
+    }
+    void setIntArray(const QVector<int32_t>& value) {
+        intArray_ = value;
+    }
+private:
+    QVector<QSharedPointer<BaseAnnotationAnnotation>> baseArray_;
+    QVector<int32_t> intArray_;
+};
+Q_DECLARE_METATYPE(ArrayBaseAnnotation)
 
 // 这是注解的UI注释
 // 这是第二行 UI 注释
@@ -126,10 +190,54 @@ public:
         max_ = value;
     }
 private:
-        int32_t min_ = 0;
-        int32_t max_ = 100;
+    int32_t min_ = 0;
+    int32_t max_ = 100;
 };
 Q_DECLARE_METATYPE(ValueAnnotationAnnotation)
+
+class MODEL_EXPORT IniStorageAnnotation : public yima::StorageAnnotation {
+public:
+    IniStorageAnnotation() = default;
+    
+    // 实现IAnnotation接口
+    QString name() const override {
+        return QLatin1String("IniStorage");
+    }
+    
+    virtual QVariant argumentValue(const QString& argumentName) const override {
+        if (argumentName == QLatin1String("ini_path")) {
+            return QVariant::fromValue(ini_path_);
+        }
+        return yima::StorageAnnotation::argumentValue(argumentName);
+    }
+    
+    virtual QStringList fieldNames() const override {
+        QStringList names = QStringList{QLatin1String("ini_path")};
+        names.append(yima::StorageAnnotation::fieldNames());
+        return names;
+    }
+
+    virtual QStringList uiComments() const override {
+        return QStringList{};
+    }
+    
+    virtual QStringList fieldUiComments(const QString& fieldName) const override {
+        if (fieldName == QLatin1String("ini_path")) {
+            return QStringList{};
+        }
+        return yima::StorageAnnotation::fieldUiComments(fieldName);
+    }
+
+    QString getIniPath() const {
+        return ini_path_;
+    }
+    void setIniPath(const QString& value) {
+        ini_path_ = value;
+    }
+private:
+    QString ini_path_ = "";
+};
+Q_DECLARE_METATYPE(IniStorageAnnotation)
 
 // === 注解继承 ===
 class MODEL_EXPORT ExtendedAnnotationAnnotation : public BaseAnnotationAnnotation {
@@ -179,15 +287,15 @@ public:
         required_ = value;
     }
     // 注解作为字段类型
-    ValueAnnotationAnnotation getRange() const {
+    QSharedPointer<ValueAnnotationAnnotation> getRange() const {
         return range_;
     }
-    void setRange(const ValueAnnotationAnnotation& value) {
+    void setRange(const QSharedPointer<ValueAnnotationAnnotation>& value) {
         range_ = value;
     }
 private:
-        bool required_ = false;
-        ValueAnnotationAnnotation range_;
+    bool required_ = false;
+    QSharedPointer<ValueAnnotationAnnotation> range_;
 };
 Q_DECLARE_METATYPE(ExtendedAnnotationAnnotation)
 
@@ -388,34 +496,34 @@ public:
         bytesField_ = value;
     }
     // 注解类型
-    BaseAnnotationAnnotation getBaseRef() const {
+    QSharedPointer<BaseAnnotationAnnotation> getBaseRef() const {
         return baseRef_;
     }
-    void setBaseRef(const BaseAnnotationAnnotation& value) {
+    void setBaseRef(const QSharedPointer<BaseAnnotationAnnotation>& value) {
         baseRef_ = value;
     }
-    ValueAnnotationAnnotation getValueRef() const {
+    QSharedPointer<ValueAnnotationAnnotation> getValueRef() const {
         return valueRef_;
     }
-    void setValueRef(const ValueAnnotationAnnotation& value) {
+    void setValueRef(const QSharedPointer<ValueAnnotationAnnotation>& value) {
         valueRef_ = value;
     }
 private:
-        int8_t int8Field_ = 1;
-        int16_t int16Field_ = 2;
-        int32_t int32Field_ = 3;
-        int64_t int64Field_ = 4;
-        uint8_t uint8Field_ = 5;
-        uint16_t uint16Field_ = 6;
-        uint32_t uint32Field_ = 7;
-        uint64_t uint64Field_ = 8;
-        float float32Field_ = 1.000000;
-        double float64Field_ = 2.000000;
-        bool boolField_ = true;
-        QString stringField_ = "test";
-        QByteArray bytesField_ = "data";
-        BaseAnnotationAnnotation baseRef_;
-        ValueAnnotationAnnotation valueRef_;
+    int8_t int8Field_ = 1;
+    int16_t int16Field_ = 2;
+    int32_t int32Field_ = 3;
+    int64_t int64Field_ = 4;
+    uint8_t uint8Field_ = 5;
+    uint16_t uint16Field_ = 6;
+    uint32_t uint32Field_ = 7;
+    uint64_t uint64Field_ = 8;
+    float float32Field_ = 1.000000;
+    double float64Field_ = 2.000000;
+    bool boolField_ = true;
+    QString stringField_ = "test";
+    QByteArray bytesField_ = "data";
+    QSharedPointer<BaseAnnotationAnnotation> baseRef_;
+    QSharedPointer<ValueAnnotationAnnotation> valueRef_;
 };
 Q_DECLARE_METATYPE(AllTypesAnnotationAnnotation)
 
@@ -525,10 +633,10 @@ public:
     void setStringArray(const QVector<QString>& value) {
         stringArray_ = value;
     }
-    QVector<BaseAnnotationAnnotation> getAnnotationArray() const {
-        return annotationArray_; 
+    QVector<QSharedPointer<BaseAnnotationAnnotation>> getAnnotationArray() const {
+        return annotationArray_;
     }
-    void setAnnotationArray(const QVector<BaseAnnotationAnnotation>& value) {
+    void setAnnotationArray(const QVector<QSharedPointer<BaseAnnotationAnnotation>>& value) {
         annotationArray_ = value;
     }
     // optional容器
@@ -544,10 +652,10 @@ public:
     void setOptionalString(const std::optional<QString>& value) {
         optionalString_ = value;
     }
-    std::optional<BaseAnnotationAnnotation> getOptionalAnnotation() const {
+    std::optional<QSharedPointer<BaseAnnotationAnnotation>> getOptionalAnnotation() const {
         return optionalAnnotation_;
     }
-    void setOptionalAnnotation(const std::optional<BaseAnnotationAnnotation>& value) {
+    void setOptionalAnnotation(const std::optional<QSharedPointer<BaseAnnotationAnnotation>>& value) {
         optionalAnnotation_ = value;
     }
     // map容器
@@ -563,22 +671,22 @@ public:
     void setStringMap(const QMap<QString, QString>& value) {
         stringMap_ = value;
     }
-    QMap<QString, BaseAnnotationAnnotation> getAnnotationMap() const {
+    QMap<QString, QSharedPointer<BaseAnnotationAnnotation>> getAnnotationMap() const {
         return annotationMap_;
     }
-    void setAnnotationMap(const QMap<QString, BaseAnnotationAnnotation>& value) {
+    void setAnnotationMap(const QMap<QString, QSharedPointer<BaseAnnotationAnnotation>>& value) {
         annotationMap_ = value;
     }
 private:
     QVector<int32_t> intArray_;
     QVector<QString> stringArray_;
-    QVector<BaseAnnotationAnnotation> annotationArray_;
+    QVector<QSharedPointer<BaseAnnotationAnnotation>> annotationArray_;
     std::optional<int32_t> optionalInt_;
     std::optional<QString> optionalString_;
-    std::optional<BaseAnnotationAnnotation> optionalAnnotation_;
+    std::optional<QSharedPointer<BaseAnnotationAnnotation>> optionalAnnotation_;
     QMap<QString, int32_t> intMap_;
     QMap<QString, QString> stringMap_;
-    QMap<QString, BaseAnnotationAnnotation> annotationMap_;
+    QMap<QString, QSharedPointer<BaseAnnotationAnnotation>> annotationMap_;
 };
 Q_DECLARE_METATYPE(ContainerAnnotationAnnotation)
 
@@ -623,7 +731,7 @@ public:
         value_ = value;
     }
 private:
-        QString value_;
+    QString value_;
 };
 Q_DECLARE_METATYPE(ValueOnlyAnnotation)
 

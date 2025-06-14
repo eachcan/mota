@@ -1,0 +1,132 @@
+﻿<%misc annotation%>
+    [&]() {
+        // annotation, set all arguments
+        auto __instance = QSharedPointer<<%=annotation.relative_class_name%>>::create();
+        <%foreach annotation.arguments as argument%>
+            <%if (argument.container_type == "none")%>
+                <%if (argument.super_type == "builtin")%>
+        __instance->set<%=pascal_case(argument.field_name)%>(<%=argument.value%>);
+                <%endif%>
+                <%if (argument.super_type == "annotation_decl")%>
+        __instance->set<%=pascal_case(argument.field_name)%>(<%call argument_value%>);
+                <%endif%>
+            <%endif%>
+            <%if (argument.container_type == "array")%>
+                <%if (argument.super_type == "annotation_decl")%>
+        QVector<QSharedPointer<<%=argument.relative_mapped_type_name%>>> __<%=argument.name%>Array;
+                    <%foreach argument.value as array_item%>
+        __<%=argument.name%>Array.append(<%call argument_array_item_value%>);
+                    <%endforeach%>
+                <%endif%>
+                <%if (argument.super_type == "builtin")%>
+        QVector<<%=argument.relative_mapped_type_name%>> __<%=argument.name%>Array;
+                    <%foreach argument.value as array_item%>
+        __<%=argument.name%>Array.append(<%=array_item%>);   
+                    <%endforeach%>
+                <%endif%>
+        __instance->set<%=pascal_case(argument.field_name)%>(__<%=argument.name%>Array);
+
+            <%endif%>
+            <%if (argument.container_type == "map")%>
+            <%endif%>
+            <%if (argument.container_type == "optional")%>
+                <%if (argument.super_type == "annotation_decl")%>
+        __instance->set<%=pascal_case(argument.field_name)%>(<%call argument_value%>);
+                <%endif%>
+                <%if (argument.super_type == "builtin")%>
+        __instance->set<%=pascal_case(argument.field_name)%>(<%=argument%>);
+                <%endif%>
+            <%endif%>
+        <%endforeach%>
+        return __instance;
+    }()<%endmisc%>
+
+<%misc argument_array_item_value%>
+    // array_item, construct a new instance line misc annotation
+    [&]() {
+        // array_item, set all arguments
+        auto __instance = QSharedPointer<<%=array_item.relative_class_name%>>::create();
+        <%foreach array_item.arguments as argument%>
+            <%if (argument.container_type == "none")%>
+                <%if (argument.super_type == "builtin")%>
+        __instance->set<%=pascal_case(argument.field_name)%>(<%=argument.value%>);
+                <%endif%>
+                <%if (argument.super_type == "annotation_decl")%>
+        __instance->set<%=pascal_case(argument.field_name)%>(<%call argument_value%>);
+                <%endif%>
+            <%endif%>
+            <%if (argument.container_type == "array")%>
+                <%if (argument.super_type == "annotation_decl")%>
+        QVector<QSharedPointer<<%=argument.relative_mapped_type_name%>>> __<%=argument.name%>Array;
+                    <%foreach argument.value as array_item%>
+        __<%=argument.name%>Array.append(<%call argument_array_item_value%>);
+                    <%endforeach%>
+                <%endif%>
+                <%if (argument.super_type == "builtin")%>
+        QVector<<%=argument.relative_mapped_type_name%>> __<%=argument.name%>Array;
+                    <%foreach argument.value as array_item%>
+        __<%=argument.name%>Array.append(<%=array_item%>);   
+                    <%endforeach%>
+                <%endif%>
+        __instance->set<%=pascal_case(argument.field_name)%>(__<%=argument.name%>Array);
+
+            <%endif%>
+            <%if (argument.container_type == "map")%>
+            <%endif%>
+            <%if (argument.container_type == "optional")%>
+                <%if (argument.super_type == "annotation_decl")%>
+        __instance->set<%=pascal_case(argument.field_name)%>(<%call argument_value%>);
+                <%endif%>
+                <%if (argument.super_type == "builtin")%>
+        __instance->set<%=pascal_case(argument.field_name)%>(<%=argument%>);
+                <%endif%>
+            <%endif%>
+        <%endforeach%>
+        return __instance;
+    }()
+<%endmisc%>
+
+<%misc argument_value%>
+    // argument.value, construct a new instance line misc annotation
+    [&]() {
+        // argument.value, set all arguments
+        auto __instance = QSharedPointer<<%=argument.value.relative_class_name%>>::create();
+        <%foreach argument.value.arguments as argument%>
+            <%if (argument.container_type == "none")%>
+                <%if (argument.super_type == "builtin")%>
+        __instance->set<%=pascal_case(argument.field_name)%>(<%=argument.value%>);
+                <%endif%>
+                <%if (argument.super_type == "annotation_decl")%>
+        __instance->set<%=pascal_case(argument.field_name)%>(<%call argument_value%>);
+                <%endif%>
+            <%endif%>
+            <%if (argument.container_type == "array")%>
+                <%if (argument.super_type == "annotation_decl")%>
+        QVector<QSharedPointer<<%=argument.relative_mapped_type_name%>>> __<%=argument.name%>Array;
+                    <%foreach argument.value as array_item%>
+        __<%=argument.name%>Array.append(<%call argument_array_item_value%>);
+                    <%endforeach%>
+                <%endif%>
+                <%if (argument.super_type == "builtin")%>
+        QVector<<%=argument.relative_mapped_type_name%>> __<%=argument.name%>Array;
+                    <%foreach argument.value as array_item%>
+        __<%=argument.name%>Array.append(<%=array_item%>);   
+                    <%endforeach%>
+                <%endif%>
+        __instance->set<%=pascal_case(argument.field_name)%>(__<%=argument.name%>Array);
+
+            <%endif%>
+            <%if (argument.container_type == "map")%>
+            <%endif%>
+            <%if (argument.container_type == "optional")%>
+                <%if (argument.super_type == "annotation_decl")%>
+        __instance->set<%=pascal_case(argument.field_name)%>(<%call argument_value%>);
+                <%endif%>
+                <%if (argument.super_type == "builtin")%>
+        __instance->set<%=pascal_case(argument.field_name)%>(<%=argument%>);
+                <%endif%>
+            <%endif%>
+        <%endforeach%>
+        return __instance;
+    }()
+<%endmisc%>

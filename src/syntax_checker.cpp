@@ -371,9 +371,17 @@ std::vector<SyntaxDiagnostic> SyntaxChecker::check(
         }
     }
     
-    // 检查每个声明
+    // 合并所有可用的声明（包含的声明 + 当前声明）
+    auto getAllDeclarations = [&]() -> std::map<std::string, KnownDecl> {
+        std::map<std::string, KnownDecl> allDecls = includedDeclarations;
+        for (const auto& [name, decl] : currentDeclarations) {
+            allDecls[name] = decl;
+        }
+        return allDecls;
+    };
+    
+    // 第一遍：收集当前文档的所有声明
     for (const auto& decl : doc.declarations) {
-        std::vector<std::string> thisFields;
         std::string declName;
         ast::NodeType declType = decl->nodeType();
         
@@ -426,6 +434,352 @@ std::vector<SyntaxDiagnostic> SyntaxChecker::check(
             entryFile,
             decl
         };
+        
+        // 同时添加简单名称映射（用于同命名空间内的引用）
+        if (!currentNamespace.empty()) {
+            currentDeclarations[declName] = {
+                currentNamespace,
+                declType,
+                declName,
+                entryFile,
+                decl
+            };
+        }
+    }
+    
+    // 第二遍：验证继承关系和字段类型
+    auto allDeclarations = getAllDeclarations();
+    
+    for (const auto& decl : doc.declarations) {
+        ast::NodeType declType = decl->nodeType();
+        
+        if (declType == ast::NodeType::StructDecl) {
+            const auto* structDecl = static_cast<const ast::Struct*>(decl.get());
+            
+            // 检查继承关系
+            if (!structDecl->baseName.empty()) {
+                // 查找父类型
+                auto parentDecl = findDeclaration(structDecl->baseName, currentNamespace, allDeclarations);
+                if (!parentDecl) {
+                    diagnostics.push_back({
+                        SyntaxDiagnostic::Level::Error,
+                        "继承的父类型未定义: " + structDecl->baseName,
+                        entryFile,
+                        structDecl->location.line,
+                        structDecl->location.column
+                    });
+                } else if (parentDecl->type != ast::NodeType::BlockDecl) {
+                    diagnostics.push_back({
+                        SyntaxDiagnostic::Level::Error,
+                        "struct 只能继承 block 类型: " + structDecl->baseName,
+                        entryFile,
+                        structDecl->location.line,
+                        structDecl->location.column
+                    });
+                }
+            }
+            
+            // 检查字段类型
+            std::set<std::string> fieldNames;
+            for (const auto& field : structDecl->fields) {
+                // 检查字段名重复
+                if (!fieldNames.insert(field->name).second) {
+                    diagnostics.push_back({
+                        SyntaxDiagnostic::Level::Error,
+                        "字段名重复: " + field->name,
+                        entryFile,
+                        field->location.line,
+                        field->location.column
+                    });
+                }
+                
+                // 检查字段类型
+                std::string typeName = extractTypeName(field->type.get());
+                if (!typeName.empty() && !isBuiltinType(typeName)) {
+                    auto typeDecl = findDeclaration(typeName, currentNamespace, allDeclarations);
+                    if (!typeDecl) {
+                        diagnostics.push_back({
+                            SyntaxDiagnostic::Level::Error,
+                            "字段类型未定义: " + typeName,
+                            entryFile,
+                            field->location.line,
+                            field->location.column
+                        });
+                    } else if (typeDecl->type == ast::NodeType::AnnotationDecl) {
+                        diagnostics.push_back({
+                            SyntaxDiagnostic::Level::Error,
+                            "不能将注解用作字段类型: " + typeName,
+                            entryFile,
+                            field->location.line,
+                            field->location.column
+                        });
+                    } else if (typeDecl->type == ast::NodeType::StructDecl) {
+                        diagnostics.push_back({
+                            SyntaxDiagnostic::Level::Error,
+                            "不能将struct用作字段类型: " + typeName,
+                            entryFile,
+                            field->location.line,
+                            field->location.column
+                        });
+                    }
+                }
+                
+                // 检查字段注解
+                for (const auto& ann : field->annotations) {
+                    auto annDecl = findDeclaration(ann->name, currentNamespace, allDeclarations);
+                    if (!annDecl) {
+                        diagnostics.push_back({
+                            SyntaxDiagnostic::Level::Error,
+                            "字段注解未定义: " + ann->name,
+                            entryFile,
+                            ann->location.line,
+                            ann->location.column
+                        });
+                    } else if (annDecl->type != ast::NodeType::AnnotationDecl) {
+                        diagnostics.push_back({
+                            SyntaxDiagnostic::Level::Error,
+                            "只能使用注解类型作为注解: " + ann->name,
+                            entryFile,
+                            ann->location.line,
+                            ann->location.column
+                        });
+                    }
+                }
+            }
+            
+            // 检查结构体注解
+            for (const auto& ann : structDecl->annotations) {
+                auto annDecl = findDeclaration(ann->name, currentNamespace, allDeclarations);
+                if (!annDecl) {
+                    diagnostics.push_back({
+                        SyntaxDiagnostic::Level::Error,
+                        "结构体注解未定义: " + ann->name,
+                        entryFile,
+                        ann->location.line,
+                        ann->location.column
+                    });
+                } else if (annDecl->type != ast::NodeType::AnnotationDecl) {
+                    diagnostics.push_back({
+                        SyntaxDiagnostic::Level::Error,
+                        "只能使用注解类型作为注解: " + ann->name,
+                        entryFile,
+                        ann->location.line,
+                        ann->location.column
+                    });
+                }
+            }
+            
+        } else if (declType == ast::NodeType::BlockDecl) {
+            const auto* blockDecl = static_cast<const ast::Block*>(decl.get());
+            
+            // 检查继承关系
+            if (!blockDecl->baseName.empty()) {
+                auto parentDecl = findDeclaration(blockDecl->baseName, currentNamespace, allDeclarations);
+                if (!parentDecl) {
+                    diagnostics.push_back({
+                        SyntaxDiagnostic::Level::Error,
+                        "继承的父类型未定义: " + blockDecl->baseName,
+                        entryFile,
+                        blockDecl->location.line,
+                        blockDecl->location.column
+                    });
+                } else if (parentDecl->type != ast::NodeType::BlockDecl) {
+                    diagnostics.push_back({
+                        SyntaxDiagnostic::Level::Error,
+                        "block 只能继承 block 类型: " + blockDecl->baseName,
+                        entryFile,
+                        blockDecl->location.line,
+                        blockDecl->location.column
+                    });
+                }
+            }
+            
+            // 检查字段类型（与struct相同的逻辑）
+            std::set<std::string> fieldNames;
+            for (const auto& field : blockDecl->fields) {
+                if (!fieldNames.insert(field->name).second) {
+                    diagnostics.push_back({
+                        SyntaxDiagnostic::Level::Error,
+                        "字段名重复: " + field->name,
+                        entryFile,
+                        field->location.line,
+                        field->location.column
+                    });
+                }
+                
+                std::string typeName = extractTypeName(field->type.get());
+                if (!typeName.empty() && !isBuiltinType(typeName)) {
+                    auto typeDecl = findDeclaration(typeName, currentNamespace, allDeclarations);
+                    if (!typeDecl) {
+                        diagnostics.push_back({
+                            SyntaxDiagnostic::Level::Error,
+                            "字段类型未定义: " + typeName,
+                            entryFile,
+                            field->location.line,
+                            field->location.column
+                        });
+                    } else if (typeDecl->type == ast::NodeType::AnnotationDecl) {
+                        diagnostics.push_back({
+                            SyntaxDiagnostic::Level::Error,
+                            "不能将注解用作字段类型: " + typeName,
+                            entryFile,
+                            field->location.line,
+                            field->location.column
+                        });
+                    } else if (typeDecl->type == ast::NodeType::StructDecl) {
+                        diagnostics.push_back({
+                            SyntaxDiagnostic::Level::Error,
+                            "不能将struct用作字段类型: " + typeName,
+                            entryFile,
+                            field->location.line,
+                            field->location.column
+                        });
+                    }
+                }
+                
+                for (const auto& ann : field->annotations) {
+                    auto annDecl = findDeclaration(ann->name, currentNamespace, allDeclarations);
+                    if (!annDecl) {
+                        diagnostics.push_back({
+                            SyntaxDiagnostic::Level::Error,
+                            "字段注解未定义: " + ann->name,
+                            entryFile,
+                            ann->location.line,
+                            ann->location.column
+                        });
+                    } else if (annDecl->type != ast::NodeType::AnnotationDecl) {
+                        diagnostics.push_back({
+                            SyntaxDiagnostic::Level::Error,
+                            "只能使用注解类型作为注解: " + ann->name,
+                            entryFile,
+                            ann->location.line,
+                            ann->location.column
+                        });
+                    }
+                }
+            }
+            
+            for (const auto& ann : blockDecl->annotations) {
+                auto annDecl = findDeclaration(ann->name, currentNamespace, allDeclarations);
+                if (!annDecl) {
+                    diagnostics.push_back({
+                        SyntaxDiagnostic::Level::Error,
+                        "块注解未定义: " + ann->name,
+                        entryFile,
+                        ann->location.line,
+                        ann->location.column
+                    });
+                } else if (annDecl->type != ast::NodeType::AnnotationDecl) {
+                    diagnostics.push_back({
+                        SyntaxDiagnostic::Level::Error,
+                        "只能使用注解类型作为注解: " + ann->name,
+                        entryFile,
+                        ann->location.line,
+                        ann->location.column
+                    });
+                }
+            }
+            
+        } else if (declType == ast::NodeType::EnumDecl) {
+            const auto* enumDecl = static_cast<const ast::Enum*>(decl.get());
+            
+            // 检查枚举值名称重复
+            std::set<std::string> enumValueNames;
+            for (const auto& value : enumDecl->values) {
+                if (!enumValueNames.insert(value->name).second) {
+                    diagnostics.push_back({
+                        SyntaxDiagnostic::Level::Error,
+                        "枚举值名称重复: " + value->name,
+                        entryFile,
+                        value->location.line,
+                        value->location.column
+                    });
+                }
+            }
+            
+            // 检查枚举注解
+            for (const auto& ann : enumDecl->annotations) {
+                auto annDecl = findDeclaration(ann->name, currentNamespace, allDeclarations);
+                if (!annDecl) {
+                    diagnostics.push_back({
+                        SyntaxDiagnostic::Level::Error,
+                        "枚举注解未定义: " + ann->name,
+                        entryFile,
+                        ann->location.line,
+                        ann->location.column
+                    });
+                } else if (annDecl->type != ast::NodeType::AnnotationDecl) {
+                    diagnostics.push_back({
+                        SyntaxDiagnostic::Level::Error,
+                        "只能使用注解类型作为注解: " + ann->name,
+                        entryFile,
+                        ann->location.line,
+                        ann->location.column
+                    });
+                }
+            }
+            
+        } else if (declType == ast::NodeType::AnnotationDecl) {
+            const auto* annotationDecl = static_cast<const ast::AnnotationDecl*>(decl.get());
+            
+            // 检查注解继承关系
+            if (!annotationDecl->baseName.empty()) {
+                auto parentDecl = findDeclaration(annotationDecl->baseName, currentNamespace, allDeclarations);
+                if (!parentDecl) {
+                    diagnostics.push_back({
+                        SyntaxDiagnostic::Level::Error,
+                        "继承的父注解未定义: " + annotationDecl->baseName,
+                        entryFile,
+                        annotationDecl->location.line,
+                        annotationDecl->location.column
+                    });
+                } else if (parentDecl->type != ast::NodeType::AnnotationDecl) {
+                    diagnostics.push_back({
+                        SyntaxDiagnostic::Level::Error,
+                        "注解只能继承注解类型: " + annotationDecl->baseName,
+                        entryFile,
+                        annotationDecl->location.line,
+                        annotationDecl->location.column
+                    });
+                }
+            }
+            
+            // 检查注解字段类型
+            std::set<std::string> fieldNames;
+            for (const auto& field : annotationDecl->fields) {
+                if (!fieldNames.insert(field->name).second) {
+                    diagnostics.push_back({
+                        SyntaxDiagnostic::Level::Error,
+                        "注解字段名重复: " + field->name,
+                        entryFile,
+                        field->location.line,
+                        field->location.column
+                    });
+                }
+                
+                std::string typeName = extractTypeName(field->type.get());
+                if (!typeName.empty() && !isBuiltinType(typeName)) {
+                    auto typeDecl = findDeclaration(typeName, currentNamespace, allDeclarations);
+                    if (!typeDecl) {
+                        diagnostics.push_back({
+                            SyntaxDiagnostic::Level::Error,
+                            "注解字段类型未定义: " + typeName,
+                            entryFile,
+                            field->location.line,
+                            field->location.column
+                        });
+                    } else if (typeDecl->type != ast::NodeType::AnnotationDecl) {
+                        diagnostics.push_back({
+                            SyntaxDiagnostic::Level::Error,
+                            "注解字段只能使用内置类型或其他注解类型: " + typeName,
+                            entryFile,
+                            field->location.line,
+                            field->location.column
+                        });
+                    }
+                }
+            }
+        }
     }
     
     return diagnostics;
@@ -476,6 +830,44 @@ std::string SyntaxChecker::getFullName(const std::string& name, const std::strin
         return name;
     }
     return ns + "." + name;
+}
+
+const checker::KnownDecl* SyntaxChecker::findDeclaration(const std::string& name, const std::string& currentNamespace,
+                                                        const std::map<std::string, KnownDecl>& declarations) const {
+    // 1. 首先尝试完全限定名查找
+    auto it = declarations.find(name);
+    if (it != declarations.end()) {
+        return &it->second;
+    }
+    
+    // 2. 如果有当前命名空间，尝试在当前命名空间中查找
+    if (!currentNamespace.empty()) {
+        std::string qualifiedName = getFullName(name, currentNamespace);
+        it = declarations.find(qualifiedName);
+        if (it != declarations.end()) {
+            return &it->second;
+        }
+    }
+    
+    // 3. 如果名称包含点号，可能是跨命名空间引用，直接查找
+    if (name.find('.') != std::string::npos) {
+        it = declarations.find(name);
+        if (it != declarations.end()) {
+            return &it->second;
+        }
+    }
+    
+    // 4. 最后尝试简单名称查找（用于同命名空间内的引用）
+    for (const auto& [declName, decl] : declarations) {
+        // 提取简单名称进行比较
+        size_t lastDot = declName.find_last_of('.');
+        std::string simpleName = (lastDot != std::string::npos) ? declName.substr(lastDot + 1) : declName;
+        if (simpleName == name) {
+            return &decl;
+        }
+    }
+    
+    return nullptr;
 }
 
 

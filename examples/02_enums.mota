@@ -4,7 +4,7 @@ namespace examples.enums;
 include "yima.mota";
 include "01_annotations.mota";
 
-// === 枚举定义 ===
+//@ === 枚举定义 ===
 @examples.annotations.ValueOnly("simple_enum")
 enum SimpleEnum {
     @examples.annotations.BaseAnnotation(description = "第一个值")
@@ -13,6 +13,19 @@ enum SimpleEnum {
     VALUE2;
     @examples.annotations.BaseAnnotation(description = "第三个值")
     VALUE3;
+}
+
+enum ArrayAnnotation {
+    @examples.annotations.ArrayBase(
+        baseArray = [@examples.annotations.BaseAnnotation(description = "第一个值"), @examples.annotations.BaseAnnotation(description = "第二个值")],
+        intArray = [1, 2, 3]
+    )
+    VALUE1;
+    @examples.annotations.ArrayBase(
+        baseArray = [@examples.annotations.BaseAnnotation(description = "第三个值"), @examples.annotations.BaseAnnotation(description = "第四个值")],
+        intArray = [4, 5, 6]
+    )
+    VALUE2;
 }
 
 @examples.annotations.ExtendedAnnotation(

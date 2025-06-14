@@ -597,7 +597,6 @@ nlohmann::json Generator::buildFieldData(const std::shared_ptr<ast::Field>& fiel
     }
     
     nlohmann::json data = {
-        {"super_type", "field"},
         {"name", field->name},
         {"field_name", field->name},
         {"container_type", typeInfo["container_type"]},
@@ -623,7 +622,6 @@ nlohmann::json Generator::buildFieldData(const std::shared_ptr<ast::Field>& fiel
 
 nlohmann::json Generator::buildEnumValueData(const std::shared_ptr<ast::EnumValue>& enumValue) {
     nlohmann::json data = {
-        {"super_type", "enum_value"},
         {"name", enumValue->name},
         {"field_name", enumValue->name},  // 可以通过配置转换
         {"annotations", nlohmann::json::array()},

@@ -20,11 +20,11 @@
                 "ui_comment": ""
             }
         ],
-        "full_class_name": "examples:annotations::BaseAnnotationAnnotation",
+        "full_class_name": "examples::annotations::BaseAnnotationAnnotation",
         "full_name": "examples.annotations.BaseAnnotation",
         "name": "BaseAnnotation",
         "namespace": "examples.annotations",
-        "namespace_class_prefix": "examples:annotations::",
+        "namespace_class_prefix": "examples::annotations::",
         "parent": "",
         "parent_class_name": "",
         "parent_full_class_name": "",
@@ -35,7 +35,57 @@
         "relative_class_name": "BaseAnnotationAnnotation",
         "relative_name": "BaseAnnotation",
         "super_type": "annotation_decl",
-        "ui_comment": "这是注解的UI注释"
+        "ui_comment": "=== 基础注解 ===\n这是注解的UI注释"
+    },
+    {
+        "annotations": [],
+        "class_name": "ArrayBaseAnnotation",
+        "fields": [
+            {
+                "annotations": [],
+                "container_type": "array",
+                "field_name": "baseArray",
+                "full_mapped_type_name": "examples::annotations::BaseAnnotationAnnotation",
+                "full_type_name": "examples.annotations.BaseAnnotation",
+                "mapped_type_name": "BaseAnnotationAnnotation",
+                "name": "baseArray",
+                "relative_mapped_type_name": "BaseAnnotationAnnotation",
+                "relative_type_name": "BaseAnnotation",
+                "super_type": "annotation_decl",
+                "type_name": "BaseAnnotation",
+                "ui_comment": ""
+            },
+            {
+                "annotations": [],
+                "container_type": "array",
+                "field_name": "intArray",
+                "full_mapped_type_name": "int32_t",
+                "full_type_name": "int32",
+                "mapped_type_name": "int32_t",
+                "name": "intArray",
+                "relative_mapped_type_name": "int32_t",
+                "relative_type_name": "int32",
+                "super_type": "builtin",
+                "type_name": "int32",
+                "ui_comment": ""
+            }
+        ],
+        "full_class_name": "examples::annotations::ArrayBaseAnnotation",
+        "full_name": "examples.annotations.ArrayBase",
+        "name": "ArrayBase",
+        "namespace": "examples.annotations",
+        "namespace_class_prefix": "examples::annotations::",
+        "parent": "",
+        "parent_class_name": "",
+        "parent_full_class_name": "",
+        "parent_full_name": "",
+        "parent_name": "",
+        "parent_relative_class_name": "",
+        "parent_relative_name": "",
+        "relative_class_name": "ArrayBaseAnnotation",
+        "relative_name": "ArrayBase",
+        "super_type": "annotation_decl",
+        "ui_comment": ""
     },
     {
         "annotations": [],
@@ -72,11 +122,11 @@
                 "ui_comment": ""
             }
         ],
-        "full_class_name": "examples:annotations::ValueAnnotationAnnotation",
+        "full_class_name": "examples::annotations::ValueAnnotationAnnotation",
         "full_name": "examples.annotations.ValueAnnotation",
         "name": "ValueAnnotation",
         "namespace": "examples.annotations",
-        "namespace_class_prefix": "examples:annotations::",
+        "namespace_class_prefix": "examples::annotations::",
         "parent": "",
         "parent_class_name": "",
         "parent_full_class_name": "",
@@ -88,6 +138,43 @@
         "relative_name": "ValueAnnotation",
         "super_type": "annotation_decl",
         "ui_comment": "这是注解的UI注释\n这是第二行 UI 注释"
+    },
+    {
+        "annotations": [],
+        "class_name": "IniStorageAnnotation",
+        "fields": [
+            {
+                "annotations": [],
+                "container_type": "none",
+                "default_value": "\"\"",
+                "field_name": "ini_path",
+                "full_mapped_type_name": "QString",
+                "full_type_name": "string",
+                "mapped_type_name": "QString",
+                "name": "ini_path",
+                "relative_mapped_type_name": "QString",
+                "relative_type_name": "string",
+                "super_type": "builtin",
+                "type_name": "string",
+                "ui_comment": ""
+            }
+        ],
+        "full_class_name": "examples::annotations::IniStorageAnnotation",
+        "full_name": "examples.annotations.IniStorage",
+        "name": "IniStorage",
+        "namespace": "examples.annotations",
+        "namespace_class_prefix": "examples::annotations::",
+        "parent": "yima.Storage",
+        "parent_class_name": "StorageAnnotation",
+        "parent_full_class_name": "yima::StorageAnnotation",
+        "parent_full_name": "yima.Storage",
+        "parent_name": "Storage",
+        "parent_relative_class_name": "yima::StorageAnnotation",
+        "parent_relative_name": "yima.Storage",
+        "relative_class_name": "IniStorageAnnotation",
+        "relative_name": "IniStorage",
+        "super_type": "annotation_decl",
+        "ui_comment": ""
     },
     {
         "annotations": [],
@@ -106,13 +193,13 @@
                 "relative_type_name": "bool",
                 "super_type": "builtin",
                 "type_name": "bool",
-                "ui_comment": ""
+                "ui_comment": "是否必填"
             },
             {
                 "annotations": [],
                 "container_type": "none",
                 "field_name": "range",
-                "full_mapped_type_name": "examples:annotations::ValueAnnotationAnnotation",
+                "full_mapped_type_name": "examples::annotations::ValueAnnotationAnnotation",
                 "full_type_name": "examples.annotations.ValueAnnotation",
                 "mapped_type_name": "ValueAnnotationAnnotation",
                 "name": "range",
@@ -120,17 +207,17 @@
                 "relative_type_name": "ValueAnnotation",
                 "super_type": "annotation_decl",
                 "type_name": "ValueAnnotation",
-                "ui_comment": ""
+                "ui_comment": "注解作为字段类型"
             }
         ],
-        "full_class_name": "examples:annotations::ExtendedAnnotationAnnotation",
+        "full_class_name": "examples::annotations::ExtendedAnnotationAnnotation",
         "full_name": "examples.annotations.ExtendedAnnotation",
         "name": "ExtendedAnnotation",
         "namespace": "examples.annotations",
-        "namespace_class_prefix": "examples:annotations::",
+        "namespace_class_prefix": "examples::annotations::",
         "parent": "BaseAnnotation",
         "parent_class_name": "BaseAnnotationAnnotation",
-        "parent_full_class_name": "examples:annotations::BaseAnnotationAnnotation",
+        "parent_full_class_name": "examples::annotations::BaseAnnotationAnnotation",
         "parent_full_name": "examples.annotations.BaseAnnotation",
         "parent_name": "BaseAnnotation",
         "parent_relative_class_name": "BaseAnnotationAnnotation",
@@ -138,7 +225,7 @@
         "relative_class_name": "ExtendedAnnotationAnnotation",
         "relative_name": "ExtendedAnnotation",
         "super_type": "annotation_decl",
-        "ui_comment": ""
+        "ui_comment": "=== 注解继承 ==="
     },
     {
         "annotations": [],
@@ -157,7 +244,7 @@
                 "relative_type_name": "int8",
                 "super_type": "builtin",
                 "type_name": "int8",
-                "ui_comment": ""
+                "ui_comment": "所有基础类型"
             },
             {
                 "annotations": [],
@@ -343,7 +430,7 @@
                 "annotations": [],
                 "container_type": "none",
                 "field_name": "baseRef",
-                "full_mapped_type_name": "examples:annotations::BaseAnnotationAnnotation",
+                "full_mapped_type_name": "examples::annotations::BaseAnnotationAnnotation",
                 "full_type_name": "examples.annotations.BaseAnnotation",
                 "mapped_type_name": "BaseAnnotationAnnotation",
                 "name": "baseRef",
@@ -351,13 +438,13 @@
                 "relative_type_name": "BaseAnnotation",
                 "super_type": "annotation_decl",
                 "type_name": "BaseAnnotation",
-                "ui_comment": ""
+                "ui_comment": "注解类型"
             },
             {
                 "annotations": [],
                 "container_type": "none",
                 "field_name": "valueRef",
-                "full_mapped_type_name": "examples:annotations::ValueAnnotationAnnotation",
+                "full_mapped_type_name": "examples::annotations::ValueAnnotationAnnotation",
                 "full_type_name": "examples.annotations.ValueAnnotation",
                 "mapped_type_name": "ValueAnnotationAnnotation",
                 "name": "valueRef",
@@ -368,11 +455,11 @@
                 "ui_comment": ""
             }
         ],
-        "full_class_name": "examples:annotations::AllTypesAnnotationAnnotation",
+        "full_class_name": "examples::annotations::AllTypesAnnotationAnnotation",
         "full_name": "examples.annotations.AllTypesAnnotation",
         "name": "AllTypesAnnotation",
         "namespace": "examples.annotations",
-        "namespace_class_prefix": "examples:annotations::",
+        "namespace_class_prefix": "examples::annotations::",
         "parent": "",
         "parent_class_name": "",
         "parent_full_class_name": "",
@@ -383,7 +470,7 @@
         "relative_class_name": "AllTypesAnnotationAnnotation",
         "relative_name": "AllTypesAnnotation",
         "super_type": "annotation_decl",
-        "ui_comment": ""
+        "ui_comment": "=== 全字段类型测试 ==="
     },
     {
         "annotations": [],
@@ -401,7 +488,7 @@
                 "relative_type_name": "int32",
                 "super_type": "builtin",
                 "type_name": "int32",
-                "ui_comment": ""
+                "ui_comment": "repeated容器"
             },
             {
                 "annotations": [],
@@ -421,7 +508,7 @@
                 "annotations": [],
                 "container_type": "array",
                 "field_name": "annotationArray",
-                "full_mapped_type_name": "examples:annotations::BaseAnnotationAnnotation",
+                "full_mapped_type_name": "examples::annotations::BaseAnnotationAnnotation",
                 "full_type_name": "examples.annotations.BaseAnnotation",
                 "mapped_type_name": "BaseAnnotationAnnotation",
                 "name": "annotationArray",
@@ -443,7 +530,7 @@
                 "relative_type_name": "int32",
                 "super_type": "builtin",
                 "type_name": "int32",
-                "ui_comment": ""
+                "ui_comment": "optional容器"
             },
             {
                 "annotations": [],
@@ -463,7 +550,7 @@
                 "annotations": [],
                 "container_type": "optional",
                 "field_name": "optionalAnnotation",
-                "full_mapped_type_name": "examples:annotations::BaseAnnotationAnnotation",
+                "full_mapped_type_name": "examples::annotations::BaseAnnotationAnnotation",
                 "full_type_name": "examples.annotations.BaseAnnotation",
                 "mapped_type_name": "BaseAnnotationAnnotation",
                 "name": "optionalAnnotation",
@@ -485,7 +572,7 @@
                 "relative_type_name": "int32",
                 "super_type": "builtin",
                 "type_name": "int32",
-                "ui_comment": ""
+                "ui_comment": "map容器"
             },
             {
                 "annotations": [],
@@ -505,7 +592,7 @@
                 "annotations": [],
                 "container_type": "map",
                 "field_name": "annotationMap",
-                "full_mapped_type_name": "examples:annotations::BaseAnnotationAnnotation",
+                "full_mapped_type_name": "examples::annotations::BaseAnnotationAnnotation",
                 "full_type_name": "examples.annotations.BaseAnnotation",
                 "mapped_type_name": "BaseAnnotationAnnotation",
                 "name": "annotationMap",
@@ -516,11 +603,11 @@
                 "ui_comment": ""
             }
         ],
-        "full_class_name": "examples:annotations::ContainerAnnotationAnnotation",
+        "full_class_name": "examples::annotations::ContainerAnnotationAnnotation",
         "full_name": "examples.annotations.ContainerAnnotation",
         "name": "ContainerAnnotation",
         "namespace": "examples.annotations",
-        "namespace_class_prefix": "examples:annotations::",
+        "namespace_class_prefix": "examples::annotations::",
         "parent": "",
         "parent_class_name": "",
         "parent_full_class_name": "",
@@ -531,7 +618,7 @@
         "relative_class_name": "ContainerAnnotationAnnotation",
         "relative_name": "ContainerAnnotation",
         "super_type": "annotation_decl",
-        "ui_comment": ""
+        "ui_comment": "=== 容器类型测试 ==="
     },
     {
         "annotations": [],
@@ -549,14 +636,14 @@
                 "relative_type_name": "string",
                 "super_type": "builtin",
                 "type_name": "string",
-                "ui_comment": ""
+                "ui_comment": "字段名为value，使用时可省略参数名"
             }
         ],
-        "full_class_name": "examples:annotations::ValueOnlyAnnotation",
+        "full_class_name": "examples::annotations::ValueOnlyAnnotation",
         "full_name": "examples.annotations.ValueOnly",
         "name": "ValueOnly",
         "namespace": "examples.annotations",
-        "namespace_class_prefix": "examples:annotations::",
+        "namespace_class_prefix": "examples::annotations::",
         "parent": "",
         "parent_class_name": "",
         "parent_full_class_name": "",
@@ -567,17 +654,17 @@
         "relative_class_name": "ValueOnlyAnnotation",
         "relative_name": "ValueOnly",
         "super_type": "annotation_decl",
-        "ui_comment": ""
+        "ui_comment": "=== 特殊注解 ==="
     },
     {
         "annotations": [],
         "class_name": "NoParamsAnnotation",
         "fields": [],
-        "full_class_name": "examples:annotations::NoParamsAnnotation",
+        "full_class_name": "examples::annotations::NoParamsAnnotation",
         "full_name": "examples.annotations.NoParams",
         "name": "NoParams",
         "namespace": "examples.annotations",
-        "namespace_class_prefix": "examples:annotations::",
+        "namespace_class_prefix": "examples::annotations::",
         "parent": "",
         "parent_class_name": "",
         "parent_full_class_name": "",
@@ -588,7 +675,7 @@
         "relative_class_name": "NoParamsAnnotation",
         "relative_name": "NoParams",
         "super_type": "annotation_decl",
-        "ui_comment": ""
+        "ui_comment": "这是一个没有参数的注解"
     }
 ],
     "INCLUDES": {
@@ -596,11 +683,11 @@
     "files": [
         {
             "source": "yima.mota",
-            "translated": "yima.h"
+            "translated": "yima.json"
         }
     ]
 },
-    "CURRENT_TIME": "2025-06-13 23:09:47",
+    "CURRENT_TIME": "2025-06-14 23:30:54",
     "SOURCE_FILE": "",
     "MOTA_VERSION": "0.2.0",
     "NAMESPACE": {
@@ -631,8 +718,134 @@
             "file_path": ".\\examples\\01_annotations.mota",
             "name": "AllTypesAnnotation",
             "namespace_name": "examples.annotations",
+            "qualified_name": "AllTypesAnnotation",
+            "relative_type_name": "AllTypesAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ArrayBaseAnnotation",
+            "file_path": ".\\examples\\01_annotations.mota",
+            "name": "ArrayBase",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "ArrayBase",
+            "relative_type_name": "ArrayBase",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "BaseAnnotationAnnotation",
+            "file_path": ".\\examples\\01_annotations.mota",
+            "name": "BaseAnnotation",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "BaseAnnotation",
+            "relative_type_name": "BaseAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ContainerAnnotationAnnotation",
+            "file_path": ".\\examples\\01_annotations.mota",
+            "name": "ContainerAnnotation",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "ContainerAnnotation",
+            "relative_type_name": "ContainerAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ExtendedAnnotationAnnotation",
+            "file_path": ".\\examples\\01_annotations.mota",
+            "name": "ExtendedAnnotation",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "ExtendedAnnotation",
+            "relative_type_name": "ExtendedAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "IniGroupAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "IniGroup",
+            "namespace_name": "yima",
+            "qualified_name": "IniGroup",
+            "relative_type_name": "IniGroup",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "IniStorageAnnotation",
+            "file_path": ".\\examples\\01_annotations.mota",
+            "name": "IniStorage",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "IniStorage",
+            "relative_type_name": "IniStorage",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "NoParamsAnnotation",
+            "file_path": ".\\examples\\01_annotations.mota",
+            "name": "NoParams",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "NoParams",
+            "relative_type_name": "NoParams",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ScopeAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "Scope",
+            "namespace_name": "yima",
+            "qualified_name": "Scope",
+            "relative_type_name": "Scope",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "StorageAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "Storage",
+            "namespace_name": "yima",
+            "qualified_name": "Storage",
+            "relative_type_name": "Storage",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ValueAnnotationAnnotation",
+            "file_path": ".\\examples\\01_annotations.mota",
+            "name": "ValueAnnotation",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "ValueAnnotation",
+            "relative_type_name": "ValueAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ValueOnlyAnnotation",
+            "file_path": ".\\examples\\01_annotations.mota",
+            "name": "ValueOnly",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "ValueOnly",
+            "relative_type_name": "ValueOnly",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "WindowAnnotation",
+            "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+            "name": "Window",
+            "namespace_name": "yima",
+            "qualified_name": "Window",
+            "relative_type_name": "Window",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "AllTypesAnnotationAnnotation",
+            "file_path": ".\\examples\\01_annotations.mota",
+            "name": "AllTypesAnnotation",
+            "namespace_name": "examples.annotations",
             "qualified_name": "examples.annotations.AllTypesAnnotation",
             "relative_type_name": "AllTypesAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "ArrayBaseAnnotation",
+            "file_path": ".\\examples\\01_annotations.mota",
+            "name": "ArrayBase",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "examples.annotations.ArrayBase",
+            "relative_type_name": "ArrayBase",
             "type": "annotation_decl"
         },
         {
@@ -660,6 +873,15 @@
             "namespace_name": "examples.annotations",
             "qualified_name": "examples.annotations.ExtendedAnnotation",
             "relative_type_name": "ExtendedAnnotation",
+            "type": "annotation_decl"
+        },
+        {
+            "class_name": "IniStorageAnnotation",
+            "file_path": ".\\examples\\01_annotations.mota",
+            "name": "IniStorage",
+            "namespace_name": "examples.annotations",
+            "qualified_name": "examples.annotations.IniStorage",
+            "relative_type_name": "IniStorage",
             "type": "annotation_decl"
         },
         {
@@ -733,8 +955,134 @@
                 "file_path": ".\\examples\\01_annotations.mota",
                 "name": "AllTypesAnnotation",
                 "namespace_name": "examples.annotations",
+                "qualified_name": "AllTypesAnnotation",
+                "relative_type_name": "AllTypesAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ArrayBaseAnnotation",
+                "file_path": ".\\examples\\01_annotations.mota",
+                "name": "ArrayBase",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "ArrayBase",
+                "relative_type_name": "ArrayBase",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "BaseAnnotationAnnotation",
+                "file_path": ".\\examples\\01_annotations.mota",
+                "name": "BaseAnnotation",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "BaseAnnotation",
+                "relative_type_name": "BaseAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ContainerAnnotationAnnotation",
+                "file_path": ".\\examples\\01_annotations.mota",
+                "name": "ContainerAnnotation",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "ContainerAnnotation",
+                "relative_type_name": "ContainerAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ExtendedAnnotationAnnotation",
+                "file_path": ".\\examples\\01_annotations.mota",
+                "name": "ExtendedAnnotation",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "ExtendedAnnotation",
+                "relative_type_name": "ExtendedAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "IniGroupAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "IniGroup",
+                "namespace_name": "yima",
+                "qualified_name": "IniGroup",
+                "relative_type_name": "IniGroup",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "IniStorageAnnotation",
+                "file_path": ".\\examples\\01_annotations.mota",
+                "name": "IniStorage",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "IniStorage",
+                "relative_type_name": "IniStorage",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "NoParamsAnnotation",
+                "file_path": ".\\examples\\01_annotations.mota",
+                "name": "NoParams",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "NoParams",
+                "relative_type_name": "NoParams",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ScopeAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "Scope",
+                "namespace_name": "yima",
+                "qualified_name": "Scope",
+                "relative_type_name": "Scope",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "StorageAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "Storage",
+                "namespace_name": "yima",
+                "qualified_name": "Storage",
+                "relative_type_name": "Storage",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ValueAnnotationAnnotation",
+                "file_path": ".\\examples\\01_annotations.mota",
+                "name": "ValueAnnotation",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "ValueAnnotation",
+                "relative_type_name": "ValueAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ValueOnlyAnnotation",
+                "file_path": ".\\examples\\01_annotations.mota",
+                "name": "ValueOnly",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "ValueOnly",
+                "relative_type_name": "ValueOnly",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "WindowAnnotation",
+                "file_path": "D:\\project\\eachcan\\mota\\mota-include\\yima.mota",
+                "name": "Window",
+                "namespace_name": "yima",
+                "qualified_name": "Window",
+                "relative_type_name": "Window",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "AllTypesAnnotationAnnotation",
+                "file_path": ".\\examples\\01_annotations.mota",
+                "name": "AllTypesAnnotation",
+                "namespace_name": "examples.annotations",
                 "qualified_name": "examples.annotations.AllTypesAnnotation",
                 "relative_type_name": "AllTypesAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "ArrayBaseAnnotation",
+                "file_path": ".\\examples\\01_annotations.mota",
+                "name": "ArrayBase",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "examples.annotations.ArrayBase",
+                "relative_type_name": "ArrayBase",
                 "type": "annotation_decl"
             },
             {
@@ -762,6 +1110,15 @@
                 "namespace_name": "examples.annotations",
                 "qualified_name": "examples.annotations.ExtendedAnnotation",
                 "relative_type_name": "ExtendedAnnotation",
+                "type": "annotation_decl"
+            },
+            {
+                "class_name": "IniStorageAnnotation",
+                "file_path": ".\\examples\\01_annotations.mota",
+                "name": "IniStorage",
+                "namespace_name": "examples.annotations",
+                "qualified_name": "examples.annotations.IniStorage",
+                "relative_type_name": "IniStorage",
                 "type": "annotation_decl"
             },
             {
@@ -832,6 +1189,6 @@
         "enum": [],
         "struct": []
     },
-    "count": 11
+    "count": 26
 }
 }
