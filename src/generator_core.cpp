@@ -612,7 +612,7 @@ nlohmann::json Generator::buildFieldData(const std::shared_ptr<ast::Field>& fiel
     };
     
     if (field->defaultValue) {
-        data["default_value"] = buildExprData(field->defaultValue);
+        data["default_value"] = buildTypedDefaultValueData(field->defaultValue, field->type, typeSuperType);
     }
     for (const auto& annotation : field->annotations) {
         data["annotations"].push_back(buildAnnotationData(annotation));
@@ -834,6 +834,119 @@ nlohmann::json Generator::buildTypedExprData(const std::shared_ptr<ast::Expr>& e
         default:
             // 对于其他类型的表达式，回退到普通处理
             return buildExprData(expr);
+    }
+    
+    return nlohmann::json();
+}
+
+nlohmann::json Generator::buildTypedDefaultValueData(const std::shared_ptr<ast::Expr>& expr, const std::shared_ptr<ast::Type>& fieldType, const std::string& typeSuperType) {
+    if (!expr) {
+        return nlohmann::json();
+    }
+    
+    // 处理容器类型（Array、Optional、Map）
+    if (fieldType && fieldType->nodeType() == ast::NodeType::ContainerType) {
+        const auto* containerType = static_cast<const ast::ContainerType*>(fieldType.get());
+        
+        // 计算元素类型的super_type
+        std::string elementTypeSuperType = "builtin";
+        if (containerType->elementType && containerType->elementType->nodeType() == ast::NodeType::NamedType) {
+            auto namedElementType = static_cast<const ast::NamedType*>(containerType->elementType.get());
+            std::string elementTypeName = namedElementType->name;
+            
+            if (!isBuiltinType(elementTypeName) && declarationRegistry_) {
+                TypeInfo elementTypeInfo = calculateTypeInfo(elementTypeName, "", "");
+                auto it = declarationRegistry_->find(elementTypeInfo.full_name);
+                if (it != declarationRegistry_->end()) {
+                    elementTypeSuperType = it->second.type;
+                }
+            }
+        }
+        
+        switch (expr->nodeType()) {
+            case ast::NodeType::ArrayLiteral: {
+                auto arrayLiteral = static_cast<const ast::ArrayLiteral*>(expr.get());
+                nlohmann::json arrayData = nlohmann::json::array();
+                
+                for (const auto& element : arrayLiteral->elements) {
+                    arrayData.push_back(buildTypedDefaultValueData(element, containerType->elementType, elementTypeSuperType));
+                }
+                return arrayData;
+            }
+            
+            case ast::NodeType::Identifier: {
+                // 对于容器类型中的标识符（如optional enum = ENUM_VALUE），使用元素类型的super_type
+                auto identifier = static_cast<const ast::Identifier*>(expr.get());
+                
+                if (elementTypeSuperType == "enum") {
+                    return identifier->name;
+                } else if (elementTypeSuperType == "builtin") {
+                    return identifier->name;
+                } else {
+                    throw std::runtime_error("不支持的容器元素默认值类型: " + elementTypeSuperType + " (标识符: " + identifier->name + ")");
+                }
+            }
+            
+            case ast::NodeType::Literal: {
+                // 对于容器类型中的字面量，直接使用现有处理
+                return buildExprData(expr);
+            }
+            
+            default:
+                // 对于其他表达式类型，回退到普通处理
+                return buildExprData(expr);
+        }
+    }
+    
+    // 处理基本表达式类型
+    switch (expr->nodeType()) {
+        case ast::NodeType::Literal: {
+            // 对于字面量，直接使用现有的处理方式（builtin类型）
+            return buildExprData(expr);
+        }
+        
+        case ast::NodeType::Identifier: {
+            // 对于标识符，根据字段类型的super_type决定处理方式
+            auto identifier = static_cast<const ast::Identifier*>(expr.get());
+            
+            if (typeSuperType == "enum") {
+                // 枚举类型：直接输出identifier名称
+                return identifier->name;
+            } else if (typeSuperType == "builtin") {
+                // builtin类型：直接输出identifier名称
+                return identifier->name;
+            } else {
+                // 其他类型：返回异常
+                throw std::runtime_error("不支持的默认值类型: " + typeSuperType + " (标识符: " + identifier->name + ")");
+            }
+        }
+        
+        case ast::NodeType::ArrayLiteral: {
+            // 数组字面量：递归处理元素
+            auto arrayLiteral = static_cast<const ast::ArrayLiteral*>(expr.get());
+            nlohmann::json arrayData = nlohmann::json::array();
+            
+            for (const auto& element : arrayLiteral->elements) {
+                arrayData.push_back(buildTypedDefaultValueData(element, nullptr, typeSuperType));
+            }
+            return arrayData;
+        }
+        
+        case ast::NodeType::Annotation: {
+            // 注解：只有在字段类型为注解时才允许
+            if (typeSuperType == "annotation_decl") {
+                auto annotation = static_cast<const ast::Annotation*>(expr.get());
+                return buildAnnotationValueData(annotation);
+            } else {
+                throw std::runtime_error("字段类型不是注解，不能使用注解作为默认值");
+            }
+        }
+        
+        default: {
+            // 其他表达式类型：返回异常
+            auto nodeType = expr->nodeType();
+            throw std::runtime_error("不支持的默认值表达式类型: " + std::to_string(static_cast<int>(nodeType)));
+        }
     }
     
     return nlohmann::json();

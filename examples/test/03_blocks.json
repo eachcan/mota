@@ -230,7 +230,7 @@
             {
                 "annotations": [],
                 "container_type": "none",
-                "default_value": "/* complex expression */",
+                "default_value": "ACTIVE",
                 "field_name": "status",
                 "full_mapped_type_name": "examples::blocks::BlockStatus",
                 "full_type_name": "examples.blocks.BlockStatus",
@@ -245,7 +245,7 @@
             {
                 "annotations": [],
                 "container_type": "none",
-                "default_value": "/* complex expression */",
+                "default_value": "PRIMARY",
                 "field_name": "type",
                 "full_mapped_type_name": "examples::blocks::BlockType",
                 "full_type_name": "examples.blocks.BlockType",
@@ -640,7 +640,7 @@
             {
                 "annotations": [],
                 "container_type": "none",
-                "default_value": "/* complex expression */",
+                "default_value": "PENDING",
                 "field_name": "status",
                 "full_mapped_type_name": "examples::blocks::BlockStatus",
                 "full_type_name": "examples.blocks.BlockStatus",
@@ -655,7 +655,7 @@
             {
                 "annotations": [],
                 "container_type": "none",
-                "default_value": "/* complex expression */",
+                "default_value": "SECONDARY",
                 "field_name": "type",
                 "full_mapped_type_name": "examples::blocks::BlockType",
                 "full_type_name": "examples.blocks.BlockType",
@@ -810,8 +810,8 @@
                 "annotations": [],
                 "container_type": "array",
                 "default_value": [
-                    "/* complex expression */",
-                    "/* complex expression */"
+                    "ACTIVE",
+                    "PENDING"
                 ],
                 "field_name": "statusArray",
                 "full_mapped_type_name": "examples::blocks::BlockStatus",
@@ -1091,7 +1091,7 @@
         }
     ]
 },
-    "CURRENT_TIME": "2025-06-14 23:30:54",
+    "CURRENT_TIME": "2025-06-15 21:06:36",
     "SOURCE_FILE": "",
     "MOTA_VERSION": "0.2.0",
     "NAMESPACE": {

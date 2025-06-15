@@ -97,6 +97,7 @@ private:
     nlohmann::json buildExprData(const std::shared_ptr<ast::Expr>& expr);
     nlohmann::json buildAnnotationValueData(const ast::Annotation* annotation);
     nlohmann::json buildTypedExprData(const std::shared_ptr<ast::Expr>& expr, const std::shared_ptr<ast::Type>& expectedType);
+    nlohmann::json buildTypedDefaultValueData(const std::shared_ptr<ast::Expr>& expr, const std::shared_ptr<ast::Type>& fieldType, const std::string& typeSuperType);
     nlohmann::json buildTypeData(const std::shared_ptr<ast::Type>& type);
     
     // 构建声明注册表数据（用于模板变量）

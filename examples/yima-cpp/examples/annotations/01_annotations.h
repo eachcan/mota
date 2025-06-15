@@ -2,7 +2,7 @@
 
 // 此文件由 Mota 代码生成器自动生成
 // Mota 版本: 0.2.0
-// 生成时间: 2025-06-15 01:56:56
+// 生成时间: 2025-06-15 19:04:27
 // 源文件: .\examples\01_annotations.mota
 
 #include <QCborMap>

@@ -282,7 +282,7 @@
             {
                 "annotations": [],
                 "container_type": "none",
-                "default_value": "/* complex expression */",
+                "default_value": "DRAFT",
                 "field_name": "status",
                 "full_mapped_type_name": "examples::structs::StructStatus",
                 "full_type_name": "examples.structs.StructStatus",
@@ -442,7 +442,7 @@
                     }
                 ],
                 "container_type": "none",
-                "default_value": "/* complex expression */",
+                "default_value": "BASIC",
                 "field_name": "category",
                 "full_mapped_type_name": "examples::structs::StructCategory",
                 "full_type_name": "examples.structs.StructCategory",
@@ -1061,7 +1061,7 @@
                     }
                 ],
                 "container_type": "none",
-                "default_value": "/* complex expression */",
+                "default_value": "PUBLISHED",
                 "field_name": "status",
                 "full_mapped_type_name": "examples::structs::StructStatus",
                 "full_type_name": "examples.structs.StructStatus",
@@ -1118,7 +1118,7 @@
                     }
                 ],
                 "container_type": "none",
-                "default_value": "/* complex expression */",
+                "default_value": "ADVANCED",
                 "field_name": "category",
                 "full_mapped_type_name": "examples::structs::StructCategory",
                 "full_type_name": "examples.structs.StructCategory",
@@ -1343,8 +1343,8 @@
                 ],
                 "container_type": "array",
                 "default_value": [
-                    "/* complex expression */",
-                    "/* complex expression */"
+                    "DRAFT",
+                    "PUBLISHED"
                 ],
                 "field_name": "statusArray",
                 "full_mapped_type_name": "examples::structs::StructStatus",
@@ -1515,7 +1515,7 @@
             {
                 "annotations": [],
                 "container_type": "optional",
-                "default_value": "/* complex expression */",
+                "default_value": "PREMIUM",
                 "field_name": "optionalCategory",
                 "full_mapped_type_name": "examples::structs::StructCategory",
                 "full_type_name": "examples.structs.StructCategory",
@@ -1833,7 +1833,7 @@
                     }
                 ],
                 "container_type": "none",
-                "default_value": "/* complex expression */",
+                "default_value": "DRAFT",
                 "field_name": "status",
                 "full_mapped_type_name": "examples::structs::StructStatus",
                 "full_type_name": "examples.structs.StructStatus",
@@ -2097,7 +2097,7 @@
         }
     ]
 },
-    "CURRENT_TIME": "2025-06-14 23:30:54",
+    "CURRENT_TIME": "2025-06-15 21:06:36",
     "SOURCE_FILE": "",
     "MOTA_VERSION": "0.2.0",
     "NAMESPACE": {

@@ -2,7 +2,7 @@
 
 // 此文件由 Mota 代码生成器自动生成
 // Mota 版本: 0.2.0
-// 生成时间: 2025-06-14 19:05:02
+// 生成时间: 2025-06-15 19:04:33
 // 源文件: .\examples\05_cross_references.mota
 
 #include <QCborMap>
@@ -31,9 +31,9 @@ namespace examples {
 namespace cross_references {
 
 enum class CrossEnum {
-    FIRST,
-    SECOND,
-    THIRD
+        FIRST,
+        SECOND,
+        THIRD
 };
 
 class CrossEnumEnumUtil {
@@ -70,44 +70,22 @@ class CrossEnumEnumUtil {
             return QVector<QSharedPointer<IAnnotation>>();
         }
 
-        static QVector<QSharedPointer<IAnnotation>> fieldAnnotations(const QString& fieldName) {
-            return QVector<QSharedPointer<IAnnotation>>();
+        static QVector<QSharedPointer<IAnnotation>> fieldAnnotations(const CrossEnum& fieldName) {
+            return {};
         }
 };
 
 // CrossBlock块定义
-class MODEL_EXPORT CrossBlockBlock : public IBlock {
+class MODEL_EXPORT CrossBlockBlock :  public IBlock {
 public:
     CrossBlockBlock() = default;
     
     // 实现 IBlock 接口
     QCborMap toCbor() const override {
-        QCborMap map;
-                map.insert(QLatin1String("id"), id_.toCbor());
-                map.insert(QLatin1String("name"), name_.toCbor());
-                map.insert(QLatin1String("simpleStatus"), simpleStatus_.toCbor());
-                map.insert(QLatin1String("valueStatus"), valueStatus_.toCbor());
-        return map;
+
     }
     
     void fromCbor(const QCborMap& map) override {
-        QCborValue tmpValue;
-        tmpValue = map.value(QLatin1String("id"));
-        if (!tmpValue.isNull()) {
-            id_.fromCbor(tmpValue.toMap());
-        }
-        tmpValue = map.value(QLatin1String("name"));
-        if (!tmpValue.isNull()) {
-            name_ = tmpValue.toString();name_.fromCbor(tmpValue.toMap());
-        }
-        tmpValue = map.value(QLatin1String("simpleStatus"));
-        if (!tmpValue.isNull()) {
-            simpleStatus_.fromCbor(tmpValue.toMap());
-        }
-        tmpValue = map.value(QLatin1String("valueStatus"));
-        if (!tmpValue.isNull()) {
-            valueStatus_.fromCbor(tmpValue.toMap());
-        }
     }
     
     QString name() const override {
@@ -208,42 +186,17 @@ public:
     examples::enums::ValueEnum getValueStatus() const { return valueStatus_; }
     void setValueStatus(const examples::enums::ValueEnum& value) { valueStatus_ = value; }
 private:
-    int32_t id_ = 0;
-    QString name_ = "";
-    examples::enums::SimpleEnum simpleStatus_ = /* complex expression */;
-    examples::enums::ValueEnum valueStatus_ = /* complex expression */;
-};
-Q_DECLARE_METATYPE(CrossBlockBlock)
-
 // InheritedCrossBlock块定义
-class MODEL_EXPORT InheritedCrossBlockBlock : public examples::blocks::BaseBlockBlock, public IBlock {
+class MODEL_EXPORT InheritedCrossBlockBlock : public examples::blocks::BaseBlockBlock {
 public:
     InheritedCrossBlockBlock() = default;
     
     // 实现 IBlock 接口
     QCborMap toCbor() const override {
-        QCborMap map = examples::blocks::BaseBlockBlock::toCbor();
-                map.insert(QLatin1String("score"), score_.toCbor());
-                map.insert(QLatin1String("category"), category_.toCbor());
-                map.insert(QLatin1String("blockStatus"), blockStatus_.toCbor());
-        return map;
+
     }
     
     void fromCbor(const QCborMap& map) override {
-        examples::blocks::BaseBlockBlock::fromCbor(map);
-        QCborValue tmpValue;
-        tmpValue = map.value(QLatin1String("score"));
-        if (!tmpValue.isNull()) {
-            score_.fromCbor(tmpValue.toMap());
-        }
-        tmpValue = map.value(QLatin1String("category"));
-        if (!tmpValue.isNull()) {
-            category_.fromCbor(tmpValue.toMap());
-        }
-        tmpValue = map.value(QLatin1String("blockStatus"));
-        if (!tmpValue.isNull()) {
-            blockStatus_.fromCbor(tmpValue.toMap());
-        }
     }
     
     QString name() const override {
@@ -265,7 +218,7 @@ public:
         if (fieldName == QLatin1String("score")) return QLatin1String("none");
         if (fieldName == QLatin1String("category")) return QLatin1String("none");
         if (fieldName == QLatin1String("blockStatus")) return QLatin1String("none");
-        return QLatin1String("none");
+        return examples::blocks::BaseBlockBlock::fieldContainerType(fieldName);
     }
     
     QList<QSharedPointer<IAnnotation>> annotations() const override {
@@ -330,72 +283,17 @@ public:
     examples::blocks::BlockStatus getBlockStatus() const { return blockStatus_; }
     void setBlockStatus(const examples::blocks::BlockStatus& value) { blockStatus_ = value; }
 private:
-    double score_ = 0.000000;
-    examples::enums::SimpleEnum category_ = /* complex expression */;
-    examples::blocks::BlockStatus blockStatus_ = /* complex expression */;
-};
-Q_DECLARE_METATYPE(InheritedCrossBlockBlock)
-
 // AdvancedCrossBlock块定义
-class MODEL_EXPORT AdvancedCrossBlockBlock : public examples::blocks::ExtendedBlockBlock, public IBlock {
+class MODEL_EXPORT AdvancedCrossBlockBlock : public examples::blocks::ExtendedBlockBlock {
 public:
     AdvancedCrossBlockBlock() = default;
     
     // 实现 IBlock 接口
     QCborMap toCbor() const override {
-        QCborMap map = examples::blocks::ExtendedBlockBlock::toCbor();
-                map.insert(QLatin1String("advancedField"), advancedField_.toCbor());
-        QCborArray valueEnumArrayArray;
-        for (const auto& item : valueEnumArray_) {
-            valueEnumArrayArray.append(item.toCbor());
-        }
-        map.insert(QLatin1String("valueEnumArray"), valueEnumArrayArray);
-                if (optionalAnnotatedBlock_) {
-            map.insert(QLatin1String("optionalAnnotatedBlock"), optionalAnnotatedBlock_->toCbor());
-        }
-        QCborMap enumMapMap;
-        for (auto it = enumMap_.cbegin(); it != enumMap_.cend(); ++it) {
-            enumMapMap.insert(it.key(), it.value().toCbor());
-        }
-        map.insert(QLatin1String("enumMap"), enumMapMap);
-        return map;
+
     }
     
     void fromCbor(const QCborMap& map) override {
-        examples::blocks::ExtendedBlockBlock::fromCbor(map);
-        QCborValue tmpValue;
-        tmpValue = map.value(QLatin1String("advancedField"));
-        if (!tmpValue.isNull()) {
-            advancedField_ = tmpValue.toString();advancedField_.fromCbor(tmpValue.toMap());
-        }
-        tmpValue = map.value(QLatin1String("valueEnumArray"));
-        if (tmpValue.isArray()) {
-            QCborArray valueEnumArrayArray = tmpValue.toArray();
-            QVector<examples::enums::ValueEnum> valueEnumArrayList;
-            for (const auto& item : valueEnumArrayArray) {
-                examples::enums::ValueEnum itemValue;
-                itemValue.fromCbor(item.toMap());
-                valueEnumArrayList.append(itemValue);
-            }
-            valueEnumArray_ = valueEnumArrayList;
-        }
-        tmpValue = map.value(QLatin1String("optionalAnnotatedBlock"));
-        if (!tmpValue.isNull()) {
-            examples::blocks::AnnotatedBlockBlock itemValue;
-            itemValue.fromCbor(tmpValue.toMap());
-            optionalAnnotatedBlock_ = itemValue;
-        }
-        tmpValue = map.value(QLatin1String("enumMap"));
-        if (tmpValue.isMap()) {
-            QCborMap enumMapMap = tmpValue.toMap();
-            QMap<QString, examples::enums::SimpleEnum> enumMapResult;
-            for (auto it = enumMapMap.cbegin(); it != enumMapMap.cend(); ++it) {
-                examples::enums::SimpleEnum itemValue;
-                itemValue.fromCbor(it.value().toMap());
-                enumMapResult.insert(it.key().toString(), itemValue);
-            }
-            enumMap_ = enumMapResult;
-        }
     }
     
     QString name() const override {
@@ -419,7 +317,7 @@ public:
         if (fieldName == QLatin1String("valueEnumArray")) return QLatin1String("array");
         if (fieldName == QLatin1String("optionalAnnotatedBlock")) return QLatin1String("optional");
         if (fieldName == QLatin1String("enumMap")) return QLatin1String("map");
-        return QLatin1String("none");
+        return examples::blocks::ExtendedBlockBlock::fieldContainerType(fieldName);
     }
     
     QList<QSharedPointer<IAnnotation>> annotations() const override {
@@ -496,13 +394,6 @@ public:
     QMap<QString, examples::enums::SimpleEnum> getEnumMap() const { return enumMap_; }
     void setEnumMap(const QMap<QString, examples::enums::SimpleEnum>& value) { enumMap_ = value; }
 private:
-    QString advancedField_ = "";
-    QVector<examples::enums::ValueEnum> valueEnumArray_;
-    std::optional<examples::blocks::AnnotatedBlockBlock> optionalAnnotatedBlock_;
-    QMap<QString, examples::enums::SimpleEnum> enumMap_;
-};
-Q_DECLARE_METATYPE(AdvancedCrossBlockBlock)
-
     // CrossStruct结构体
     class MODEL_EXPORT CrossStructModel : public IModel {
     public:
@@ -510,52 +401,10 @@ Q_DECLARE_METATYPE(AdvancedCrossBlockBlock)
         
         // 实现 IModel 接口
         QCborMap toCbor() const override {
-            QCborMap map;
-                    map.insert(QLatin1String("name"), name_.toCbor());
-                    map.insert(QLatin1String("enumField"), enumField_.toCbor());
-                    map.insert(QLatin1String("valueEnumField"), valueEnumField_.toCbor());
-                    map.insert(QLatin1String("baseBlock"), baseBlock_.toCbor());
-                    map.insert(QLatin1String("extendedBlock"), extendedBlock_.toCbor());
-                    map.insert(QLatin1String("annotatedBlock"), annotatedBlock_.toCbor());
-                    map.insert(QLatin1String("crossEnum"), crossEnum_.toCbor());
-                    map.insert(QLatin1String("crossBlock"), crossBlock_.toCbor());
             return map;
         }
         
         void fromCbor(const QCborMap& map) override {
-            QCborValue tmpValue;
-            tmpValue = map.value(QLatin1String("name"));
-            if (!tmpValue.isNull()) {
-                name_ = tmpValue.toString();name_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("enumField"));
-            if (!tmpValue.isNull()) {
-                enumField_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("valueEnumField"));
-            if (!tmpValue.isNull()) {
-                valueEnumField_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("baseBlock"));
-            if (!tmpValue.isNull()) {
-                baseBlock_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("extendedBlock"));
-            if (!tmpValue.isNull()) {
-                extendedBlock_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("annotatedBlock"));
-            if (!tmpValue.isNull()) {
-                annotatedBlock_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("crossEnum"));
-            if (!tmpValue.isNull()) {
-                crossEnum_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("crossBlock"));
-            if (!tmpValue.isNull()) {
-                crossBlock_.fromCbor(tmpValue.toMap());
-            }
         }
         
         QString name() const override {
@@ -608,17 +457,6 @@ Q_DECLARE_METATYPE(AdvancedCrossBlockBlock)
     CrossBlockBlock getCrossBlock() const { return crossBlock_; }
         void setCrossBlock(const CrossBlockBlock& value) { crossBlock_ = value; }
     private:
-        QString name_ = "";
-        examples::enums::SimpleEnum enumField_ = /* complex expression */;
-        examples::enums::ValueEnum valueEnumField_ = /* complex expression */;
-        examples::blocks::BaseBlockBlock baseBlock_;
-        examples::blocks::ExtendedBlockBlock extendedBlock_;
-        examples::blocks::AnnotatedBlockBlock annotatedBlock_;
-        CrossEnum crossEnum_ = /* complex expression */;
-        CrossBlockBlock crossBlock_;
-    };
-    Q_DECLARE_METATYPE(CrossStructModel)
-    
         // InheritedCrossStruct结构体
     class MODEL_EXPORT InheritedCrossStructModel : public examples::structs::StructBaseBlockModel, public IModel {
     public:
@@ -626,74 +464,10 @@ Q_DECLARE_METATYPE(AdvancedCrossBlockBlock)
         
         // 实现 IModel 接口
         QCborMap toCbor() const override {
-            QCborMap map = examples::structs::StructBaseBlockModel::toCbor();
-                    map.insert(QLatin1String("description"), description_.toCbor());
-                    map.insert(QLatin1String("enumField"), enumField_.toCbor());
-                    map.insert(QLatin1String("blockField"), blockField_.toCbor());
-                    map.insert(QLatin1String("structStatus"), structStatus_.toCbor());
-            QCborArray valueEnumArrayArray;
-            for (const auto& item : valueEnumArray_) {
-                valueEnumArrayArray.append(item.toCbor());
-            }
-            map.insert(QLatin1String("valueEnumArray"), valueEnumArrayArray);
-                    if (optionalBlock_) {
-                map.insert(QLatin1String("optionalBlock"), optionalBlock_->toCbor());
-            }
-            QCborMap categoryMapMap;
-            for (auto it = categoryMap_.cbegin(); it != categoryMap_.cend(); ++it) {
-                categoryMapMap.insert(it.key(), it.value().toCbor());
-            }
-            map.insert(QLatin1String("categoryMap"), categoryMapMap);
             return map;
         }
         
         void fromCbor(const QCborMap& map) override {
-            examples::structs::StructBaseBlockModel::fromCbor(map);
-            QCborValue tmpValue;
-            tmpValue = map.value(QLatin1String("description"));
-            if (!tmpValue.isNull()) {
-                description_ = tmpValue.toString();description_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("enumField"));
-            if (!tmpValue.isNull()) {
-                enumField_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("blockField"));
-            if (!tmpValue.isNull()) {
-                blockField_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("structStatus"));
-            if (!tmpValue.isNull()) {
-                structStatus_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("valueEnumArray"));
-            if (tmpValue.isArray()) {
-                QCborArray valueEnumArrayArray = tmpValue.toArray();
-                QVector<examples::enums::ValueEnum> valueEnumArrayList;
-                for (const auto& item : valueEnumArrayArray) {
-                    examples::enums::ValueEnum itemValue;
-                    itemValue.fromCbor(item.toMap());
-                    valueEnumArrayList.append(itemValue);
-                }
-                valueEnumArray_ = valueEnumArrayList;
-            }
-            tmpValue = map.value(QLatin1String("optionalBlock"));
-            if (!tmpValue.isNull()) {
-                            examples::blocks::ExtendedBlockBlock itemValue;
-            itemValue.fromCbor(tmpValue.toMap());
-            optionalBlock_ = itemValue;
-            }
-            tmpValue = map.value(QLatin1String("categoryMap"));
-            if (tmpValue.isMap()) {
-                QCborMap categoryMapMap = tmpValue.toMap();
-                QMap<QString, examples::structs::StructCategory> categoryMapResult;
-                for (auto it = categoryMapMap.cbegin(); it != categoryMapMap.cend(); ++it) {
-                    examples::structs::StructCategory itemValue;
-                    itemValue.fromCbor(it.value().toMap());
-                    categoryMapResult.insert(it.key().toString(), itemValue);
-                }
-                categoryMap_ = categoryMapResult;
-            }
         }
         
         QString name() const override {
@@ -742,19 +516,6 @@ Q_DECLARE_METATYPE(AdvancedCrossBlockBlock)
     QMap<QString, examples::structs::StructCategory> getCategoryMap() const { return categoryMap_; }
         void setCategoryMap(const QMap<QString, examples::structs::StructCategory>& value) { categoryMap_ = value; }
     private:
-        QString description_ = "";
-        examples::enums::SimpleEnum enumField_ = /* complex expression */;
-        examples::blocks::BaseBlockBlock blockField_;
-        examples::structs::StructStatus structStatus_ = /* complex expression */;
-        QVector<examples::enums::ValueEnum> valueEnumArray_ = [
-    "/* complex expression */",
-    "/* complex expression */"
-];
-        std::optional<examples::blocks::ExtendedBlockBlock> optionalBlock_;
-        QMap<QString, examples::structs::StructCategory> categoryMap_;
-    };
-    Q_DECLARE_METATYPE(InheritedCrossStructModel)
-    
         // UltimateCrossTest结构体
     class MODEL_EXPORT UltimateCrossTestModel : public examples::blocks::AllTypesBlockModel, public IModel {
     public:
@@ -762,191 +523,10 @@ Q_DECLARE_METATYPE(AdvancedCrossBlockBlock)
         
         // 实现 IModel 接口
         QCborMap toCbor() const override {
-            QCborMap map = examples::blocks::AllTypesBlockModel::toCbor();
-                    map.insert(QLatin1String("simpleEnum"), simpleEnum_.toCbor());
-                    map.insert(QLatin1String("valueEnum"), valueEnum_.toCbor());
-                    map.insert(QLatin1String("baseBlock"), baseBlock_.toCbor());
-                    map.insert(QLatin1String("extendedBlock"), extendedBlock_.toCbor());
-                    map.insert(QLatin1String("annotatedBlock"), annotatedBlock_.toCbor());
-                    map.insert(QLatin1String("containerBlock"), containerBlock_.toCbor());
-                    map.insert(QLatin1String("structBaseBlock"), structBaseBlock_.toCbor());
-                    map.insert(QLatin1String("structExtendedBlock"), structExtendedBlock_.toCbor());
-                    map.insert(QLatin1String("crossEnum"), crossEnum_.toCbor());
-                    map.insert(QLatin1String("crossBlock"), crossBlock_.toCbor());
-                    map.insert(QLatin1String("inheritedCrossBlock"), inheritedCrossBlock_.toCbor());
-            QCborArray enumArrayArray;
-            for (const auto& item : enumArray_) {
-                enumArrayArray.append(item.toCbor());
-            }
-            map.insert(QLatin1String("enumArray"), enumArrayArray);
-            QCborArray blockArrayArray;
-            for (const auto& item : blockArray_) {
-                blockArrayArray.append(item.toCbor());
-            }
-            map.insert(QLatin1String("blockArray"), blockArrayArray);
-            QCborArray statusArrayArray;
-            for (const auto& item : statusArray_) {
-                statusArrayArray.append(item.toCbor());
-            }
-            map.insert(QLatin1String("statusArray"), statusArrayArray);
-                    if (optionalEnum_) {
-                map.insert(QLatin1String("optionalEnum"), optionalEnum_->toCbor());
-            }
-                    if (optionalBlock_) {
-                map.insert(QLatin1String("optionalBlock"), optionalBlock_->toCbor());
-            }
-                    if (optionalCategory_) {
-                map.insert(QLatin1String("optionalCategory"), optionalCategory_->toCbor());
-            }
-            QCborMap enumMapMap;
-            for (auto it = enumMap_.cbegin(); it != enumMap_.cend(); ++it) {
-                enumMapMap.insert(it.key(), it.value().toCbor());
-            }
-            map.insert(QLatin1String("enumMap"), enumMapMap);
-            QCborMap blockMapMap;
-            for (auto it = blockMap_.cbegin(); it != blockMap_.cend(); ++it) {
-                blockMapMap.insert(it.key(), it.value().toCbor());
-            }
-            map.insert(QLatin1String("blockMap"), blockMapMap);
-            QCborMap structBlockMapMap;
-            for (auto it = structBlockMap_.cbegin(); it != structBlockMap_.cend(); ++it) {
-                structBlockMapMap.insert(it.key(), it.value().toCbor());
-            }
-            map.insert(QLatin1String("structBlockMap"), structBlockMapMap);
             return map;
         }
         
         void fromCbor(const QCborMap& map) override {
-            examples::blocks::AllTypesBlockModel::fromCbor(map);
-            QCborValue tmpValue;
-            tmpValue = map.value(QLatin1String("simpleEnum"));
-            if (!tmpValue.isNull()) {
-                simpleEnum_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("valueEnum"));
-            if (!tmpValue.isNull()) {
-                valueEnum_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("baseBlock"));
-            if (!tmpValue.isNull()) {
-                baseBlock_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("extendedBlock"));
-            if (!tmpValue.isNull()) {
-                extendedBlock_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("annotatedBlock"));
-            if (!tmpValue.isNull()) {
-                annotatedBlock_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("containerBlock"));
-            if (!tmpValue.isNull()) {
-                containerBlock_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("structBaseBlock"));
-            if (!tmpValue.isNull()) {
-                structBaseBlock_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("structExtendedBlock"));
-            if (!tmpValue.isNull()) {
-                structExtendedBlock_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("crossEnum"));
-            if (!tmpValue.isNull()) {
-                crossEnum_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("crossBlock"));
-            if (!tmpValue.isNull()) {
-                crossBlock_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("inheritedCrossBlock"));
-            if (!tmpValue.isNull()) {
-                inheritedCrossBlock_.fromCbor(tmpValue.toMap());
-            }
-            tmpValue = map.value(QLatin1String("enumArray"));
-            if (tmpValue.isArray()) {
-                QCborArray enumArrayArray = tmpValue.toArray();
-                QVector<examples::enums::SimpleEnum> enumArrayList;
-                for (const auto& item : enumArrayArray) {
-                    examples::enums::SimpleEnum itemValue;
-                    itemValue.fromCbor(item.toMap());
-                    enumArrayList.append(itemValue);
-                }
-                enumArray_ = enumArrayList;
-            }
-            tmpValue = map.value(QLatin1String("blockArray"));
-            if (tmpValue.isArray()) {
-                QCborArray blockArrayArray = tmpValue.toArray();
-                QVector<examples::blocks::BaseBlockBlock> blockArrayList;
-                for (const auto& item : blockArrayArray) {
-                    examples::blocks::BaseBlockBlock itemValue;
-                    itemValue.fromCbor(item.toMap());
-                    blockArrayList.append(itemValue);
-                }
-                blockArray_ = blockArrayList;
-            }
-            tmpValue = map.value(QLatin1String("statusArray"));
-            if (tmpValue.isArray()) {
-                QCborArray statusArrayArray = tmpValue.toArray();
-                QVector<examples::structs::StructStatus> statusArrayList;
-                for (const auto& item : statusArrayArray) {
-                    examples::structs::StructStatus itemValue;
-                    itemValue.fromCbor(item.toMap());
-                    statusArrayList.append(itemValue);
-                }
-                statusArray_ = statusArrayList;
-            }
-            tmpValue = map.value(QLatin1String("optionalEnum"));
-            if (!tmpValue.isNull()) {
-                            examples::enums::ValueEnum itemValue;
-            itemValue.fromCbor(tmpValue.toMap());
-            optionalEnum_ = itemValue;
-            }
-            tmpValue = map.value(QLatin1String("optionalBlock"));
-            if (!tmpValue.isNull()) {
-                            examples::blocks::AnnotatedBlockBlock itemValue;
-            itemValue.fromCbor(tmpValue.toMap());
-            optionalBlock_ = itemValue;
-            }
-            tmpValue = map.value(QLatin1String("optionalCategory"));
-            if (!tmpValue.isNull()) {
-                            examples::structs::StructCategory itemValue;
-            itemValue.fromCbor(tmpValue.toMap());
-            optionalCategory_ = itemValue;
-            }
-            tmpValue = map.value(QLatin1String("enumMap"));
-            if (tmpValue.isMap()) {
-                QCborMap enumMapMap = tmpValue.toMap();
-                QMap<QString, examples::enums::SimpleEnum> enumMapResult;
-                for (auto it = enumMapMap.cbegin(); it != enumMapMap.cend(); ++it) {
-                    examples::enums::SimpleEnum itemValue;
-                    itemValue.fromCbor(it.value().toMap());
-                    enumMapResult.insert(it.key().toString(), itemValue);
-                }
-                enumMap_ = enumMapResult;
-            }
-            tmpValue = map.value(QLatin1String("blockMap"));
-            if (tmpValue.isMap()) {
-                QCborMap blockMapMap = tmpValue.toMap();
-                QMap<QString, examples::blocks::BaseBlockBlock> blockMapResult;
-                for (auto it = blockMapMap.cbegin(); it != blockMapMap.cend(); ++it) {
-                    examples::blocks::BaseBlockBlock itemValue;
-                    itemValue.fromCbor(it.value().toMap());
-                    blockMapResult.insert(it.key().toString(), itemValue);
-                }
-                blockMap_ = blockMapResult;
-            }
-            tmpValue = map.value(QLatin1String("structBlockMap"));
-            if (tmpValue.isMap()) {
-                QCborMap structBlockMapMap = tmpValue.toMap();
-                QMap<QString, examples::structs::StructBaseBlockBlock> structBlockMapResult;
-                for (auto it = structBlockMapMap.cbegin(); it != structBlockMapMap.cend(); ++it) {
-                    examples::structs::StructBaseBlockBlock itemValue;
-                    itemValue.fromCbor(it.value().toMap());
-                    structBlockMapResult.insert(it.key().toString(), itemValue);
-                }
-                structBlockMap_ = structBlockMapResult;
-            }
         }
         
         QString name() const override {
@@ -1047,35 +627,6 @@ Q_DECLARE_METATYPE(AdvancedCrossBlockBlock)
     QMap<QString, examples::structs::StructBaseBlockBlock> getStructBlockMap() const { return structBlockMap_; }
         void setStructBlockMap(const QMap<QString, examples::structs::StructBaseBlockBlock>& value) { structBlockMap_ = value; }
     private:
-        examples::enums::SimpleEnum simpleEnum_ = /* complex expression */;
-        examples::enums::ValueEnum valueEnum_ = /* complex expression */;
-        examples::blocks::BaseBlockBlock baseBlock_;
-        examples::blocks::ExtendedBlockBlock extendedBlock_;
-        examples::blocks::AnnotatedBlockBlock annotatedBlock_;
-        examples::blocks::ContainerBlockBlock containerBlock_;
-        examples::structs::StructBaseBlockBlock structBaseBlock_;
-        examples::structs::StructExtendedBlockBlock structExtendedBlock_;
-        CrossEnum crossEnum_ = /* complex expression */;
-        CrossBlockBlock crossBlock_;
-        InheritedCrossBlockBlock inheritedCrossBlock_;
-        QVector<examples::enums::SimpleEnum> enumArray_ = [
-    "/* complex expression */",
-    "/* complex expression */"
-];
-        QVector<examples::blocks::BaseBlockBlock> blockArray_;
-        QVector<examples::structs::StructStatus> statusArray_ = [
-    "/* complex expression */",
-    "/* complex expression */"
-];
-        std::optional<examples::enums::ValueEnum> optionalEnum_ = /* complex expression */;
-        std::optional<examples::blocks::AnnotatedBlockBlock> optionalBlock_;
-        std::optional<examples::structs::StructCategory> optionalCategory_;
-        QMap<QString, examples::enums::SimpleEnum> enumMap_;
-        QMap<QString, examples::blocks::BaseBlockBlock> blockMap_;
-        QMap<QString, examples::structs::StructBaseBlockBlock> structBlockMap_;
-    };
-    Q_DECLARE_METATYPE(UltimateCrossTestModel)
-    
     
 } // namespace examples
 } // namespace cross_references

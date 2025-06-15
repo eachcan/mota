@@ -7,6 +7,7 @@ enum class <%=declaration.relative_class_name%> {
         <%=value.name%><%if (exists(value, "default_value"))%> = <%=value.default_value%><%endif%><%if (is_last == false)%>,<%endif%>
 <%endforeach%>
 };
+Q_DECLARE_METATYPE(<%=declaration.relative_class_name%>)
 
 class <%=declaration.relative_class_name%>EnumUtil {
     public:
@@ -62,7 +63,7 @@ class <%=declaration.relative_class_name%>EnumUtil {
         }
 
         static QVector<QSharedPointer<IAnnotation>> fieldAnnotations(const <%=declaration.relative_class_name%>& fieldName) {
-        <%foreach declaration.values as value%>
+<%foreach declaration.values as value%>
 <%if (length(value.annotations) > 0)%>
             if (fieldName == <%=declaration.relative_class_name%>::<%=value.name%>)
                  return QVector<QSharedPointer<IAnnotation>>{

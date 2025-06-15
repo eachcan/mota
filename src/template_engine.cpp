@@ -28,6 +28,7 @@ TemplateEngine::TemplateEngine(const config::TemplateConfig& config, const std::
 }
 
 std::string TemplateEngine::renderTemplate(const std::string& templateName, const TemplateVars& vars) {
+    currentTemplateName_ = templateName;
     std::string templateContent = loadTemplate(templateName);
     if (templateContent.empty()) {
         return "";
@@ -62,7 +63,7 @@ std::string TemplateEngine::renderContent(const std::string& templateContent, co
                 size_t tagContentStart = errorMsg.find("] ") + 2;
                 std::string tagContent = errorMsg.substr(tagContentStart);
                 
-                std::cerr << Colors::BOLD_RED << "Error" << Colors::RESET << " at line " << lineInfo.line << ", column " << lineInfo.column << ": 无效的模板标签" << std::endl;
+                std::cerr << Colors::BOLD_RED << "Error" << Colors::RESET << " in " << (!currentMiscFileName_.empty() ? "misc file '" + currentMiscFileName_ + "'" : "template '" + currentTemplateName_ + "'") << " at line " << lineInfo.line << ", column " << lineInfo.column << ": 无效的模板标签" << std::endl;
                 std::cerr << "  " << lineInfo.line_content << std::endl;
                 std::cerr << "  " << std::string(lineInfo.column - 1, ' ') << "^" << std::endl;
                 std::cerr << "  标签内容: " << tagContent << std::endl;
@@ -177,6 +178,7 @@ std::string TemplateEngine::loadMisc(const std::string& miscName) {
             // 不去掉结尾的换行符，因为那是misc内容自己带的
             
             miscCache_[name] = miscContent;
+            miscToFileMap_[name] = miscFile; // 记录misc名称到文件名的映射
             fragmentCount++;
             ++iter;
         }
@@ -484,7 +486,7 @@ std::vector<std::shared_ptr<TagNode>> TemplateEngine::buildTagTree(const std::st
                 } else if (tokens[j]->type == TokenType::ELSE && level == 1) {
                     if (elseIndex != SIZE_MAX) {
                         auto lineInfo = calculateLineAndColumn(templateContent, tokens[j]->start_pos);
-                        std::cerr << Colors::BOLD_RED << "Error" << Colors::RESET << " at line " << lineInfo.line << ", column " << lineInfo.column << ": 重复的else标签" << std::endl;
+                        std::cerr << Colors::BOLD_RED << "Error" << Colors::RESET << " in " << (!currentMiscFileName_.empty() ? "misc file '" + currentMiscFileName_ + "'" : "template '" + currentTemplateName_ + "'") << " at line " << lineInfo.line << ", column " << lineInfo.column << ": 重复的else标签" << std::endl;
                         std::cerr << "  " << lineInfo.line_content << std::endl;
                         std::cerr << "  " << std::string(lineInfo.column - 1, ' ') << "^" << std::endl;
                         return result;
@@ -495,7 +497,7 @@ std::vector<std::shared_ptr<TagNode>> TemplateEngine::buildTagTree(const std::st
             
             if (endIndex == SIZE_MAX) {
                 auto lineInfo = calculateLineAndColumn(templateContent, token->start_pos);
-                std::cerr << Colors::BOLD_RED << "Error" << Colors::RESET << " at line " << lineInfo.line << ", column " << lineInfo.column << ": 未匹配的if标签" << std::endl;
+                std::cerr << Colors::BOLD_RED << "Error" << Colors::RESET << " in " << (!currentMiscFileName_.empty() ? "misc file '" + currentMiscFileName_ + "'" : "template '" + currentTemplateName_ + "'") << " at line " << lineInfo.line << ", column " << lineInfo.column << ": 未匹配的if标签" << std::endl;
                 std::cerr << "  " << lineInfo.line_content << std::endl;
                 std::cerr << "  " << std::string(lineInfo.column - 1, ' ') << "^" << std::endl;
                 return result;
@@ -560,7 +562,7 @@ std::vector<std::shared_ptr<TagNode>> TemplateEngine::buildTagTree(const std::st
             
             if (endIndex == SIZE_MAX) {
                 auto lineInfo = calculateLineAndColumn(templateContent, token->start_pos);
-                std::cerr << Colors::BOLD_RED << "Error" << Colors::RESET << " at line " << lineInfo.line << ", column " << lineInfo.column << ": 未匹配的foreach标签" << std::endl;
+                std::cerr << Colors::BOLD_RED << "Error" << Colors::RESET << " in " << (!currentMiscFileName_.empty() ? "misc file '" + currentMiscFileName_ + "'" : "template '" + currentTemplateName_ + "'") << " at line " << lineInfo.line << ", column " << lineInfo.column << ": 未匹配的foreach标签" << std::endl;
                 std::cerr << "  " << lineInfo.line_content << std::endl;
                 std::cerr << "  " << std::string(lineInfo.column - 1, ' ') << "^" << std::endl;
                 return result;
@@ -592,7 +594,7 @@ std::vector<std::shared_ptr<TagNode>> TemplateEngine::buildTagTree(const std::st
             auto lineInfo = calculateLineAndColumn(templateContent, token->start_pos);
             std::string tagName = (token->type == TokenType::ELSE) ? "else" : 
                                  (token->type == TokenType::END_IF) ? "endif" : "endforeach";
-            std::cerr << Colors::BOLD_RED << "Error" << Colors::RESET << " at line " << lineInfo.line << ", column " << lineInfo.column << ": 意外的" << tagName << "标签" << std::endl;
+            std::cerr << Colors::BOLD_RED << "Error" << Colors::RESET << " in " << (!currentMiscFileName_.empty() ? "misc file '" + currentMiscFileName_ + "'" : "template '" + currentTemplateName_ + "'") << " at line " << lineInfo.line << ", column " << lineInfo.column << ": 意外的" << tagName << "标签" << std::endl;
             std::cerr << "  " << lineInfo.line_content << std::endl;
             std::cerr << "  " << std::string(lineInfo.column - 1, ' ') << "^" << std::endl;
             i++;
@@ -894,8 +896,19 @@ std::string TemplateEngine::callMisc(const std::string& miscName, const Template
         return "[MISSING_MISC:" + miscName + "]";
     }
     
+    // 保存当前misc文件名
+    std::string previousMiscFileName = currentMiscFileName_;
+    auto miscFileIt = miscToFileMap_.find(miscName);
+    if (miscFileIt != miscToFileMap_.end()) {
+        currentMiscFileName_ = miscFileIt->second;
+    }
+    
     // 递归渲染misc内容
     std::string result = renderContent(miscContent, vars);
+    
+    // 恢复之前的misc文件名
+    currentMiscFileName_ = previousMiscFileName;
+    
     return result;
 }
 

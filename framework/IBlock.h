@@ -19,7 +19,6 @@ namespace ymf {
         // BaseBlock 保持独立
         class MODEL_EXPORT IBlock {
             public:
-                virtual ~IBlock() = default;
                 virtual QCborMap toCbor() const = 0;
                 virtual void fromCbor(const QCborMap& cbor) = 0;
         

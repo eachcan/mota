@@ -56,6 +56,13 @@ struct TemplateToken {
     TemplateToken(TokenType t = TokenType::TEXT) : type(t), start_pos(0), end_pos(0), is_on_own_line(false) {}
 };
 
+// 行列信息结构
+struct LineColumnInfo {
+    size_t line;        // 行号（从1开始）
+    size_t column;      // 列号（从1开始）
+    std::string line_content;  // 该行的内容
+};
+
 struct TagNode {
     TokenType type;
 
@@ -159,14 +166,20 @@ private:
     std::string trimWhitespace(const std::string& str);
     std::vector<std::string> splitString(const std::string& str, char delimiter);
     
+    // 行号计算
+    LineColumnInfo calculateLineAndColumn(const std::string& content, size_t pos);
+    
 private:
     const config::TemplateConfig& config_;
     std::string templateDir_;
     std::unordered_map<std::string, std::string> templateCache_;
     std::unordered_map<std::string, std::string> miscCache_;
+    std::unordered_map<std::string, std::string> miscToFileMap_; // misc名称到文件名的映射
     generator::Generator* generator_ = nullptr; // 用于访问声明注册表
     bool is_loaded_misc_ = false;
     bool verbose_ = false;
+    std::string currentTemplateName_; // 当前正在处理的模板名称
+    std::string currentMiscFileName_; // 当前正在处理的misc文件名
 };
 
 } // namespace template_engine

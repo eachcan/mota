@@ -31,11 +31,11 @@
         }
     
         // 字段访问器
-    <%foreach declaration.fields as field%>    <%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "optional")%>std::optional<<%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%><%endif%> get<%=pascal_case(field.name)%>() const { return <%=field.name%>_; }
-        void set<%=pascal_case(field.name)%>(const <%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "optional")%>std::optional<<%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%><%endif%>& value) { <%=field.name%>_ = value; }
+    <%foreach declaration.fields as field%>    <%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%> get<%=pascal_case(field.name)%>() const { return <%=field.name%>_; }
+        void set<%=pascal_case(field.name)%>(const <%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%>& value) { <%=field.name%>_ = value; }
     <%endforeach%>    
     private:
-    <%foreach declaration.fields as field%>    <%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "optional")%>std::optional<<%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%><%endif%> <%=field.name%>_<%if (exists(field, "default_value") && field.default_value != "/* complex expression */")%> = <%call render_default_value%><%endmisc%><%endif%>;
+    <%foreach declaration.fields as field%>    <%if (field.container_type == "array")%>QVector<<%=field.relative_mapped_type_name%>><%else%><%if (field.container_type == "map")%>QMap<QString, <%=field.relative_mapped_type_name%>><%else%><%=field.relative_mapped_type_name%><%endif%><%endif%> <%=field.name%>_<%if (exists(field, "default_value") && field.default_value != "/* complex expression */")%> = <%call render_default_value%><%endmisc%><%endif%>;
     <%endforeach%>};
     Q_DECLARE_METATYPE(<%=declaration.relative_class_name%>)
     

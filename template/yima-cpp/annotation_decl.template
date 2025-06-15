@@ -98,17 +98,17 @@ public:
     <%endif%>
     <%if (field.container_type == "optional")%>
         <%if (field.super_type == "builtin")%>
-    std::optional<<%=field.relative_mapped_type_name%>> get<%=pascal_case(field.name)%>() const {
+    <%=field.relative_mapped_type_name%> get<%=pascal_case(field.name)%>() const {
         return <%=field.name%>_;
     }
-    void set<%=pascal_case(field.name)%>(const std::optional<<%=field.relative_mapped_type_name%>>& value) {
+    void set<%=pascal_case(field.name)%>(const <%=field.relative_mapped_type_name%>& value) {
         <%=field.name%>_ = value;
     }
         <%else%>
-    std::optional<QSharedPointer<<%=field.relative_mapped_type_name%>>> get<%=pascal_case(field.name)%>() const {
+    QSharedPointer<<%=field.relative_mapped_type_name%>> get<%=pascal_case(field.name)%>() const {
         return <%=field.name%>_;
     }
-    void set<%=pascal_case(field.name)%>(const std::optional<QSharedPointer<<%=field.relative_mapped_type_name%>>>& value) {
+    void set<%=pascal_case(field.name)%>(const QSharedPointer<<%=field.relative_mapped_type_name%>>& value) {
         <%=field.name%>_ = value;
     }
         <%endif%>
@@ -149,9 +149,9 @@ private:
     <%endif%>
     <%if (field.container_type == "optional")%>
         <%if (field.super_type == "builtin")%>
-    std::optional<<%=field.relative_mapped_type_name%>> <%=field.name%>_<%if (exists(field, "default_value"))%> = <%=field.default_value%><%endif%>;
+    <%=field.relative_mapped_type_name%> <%=field.name%>_<%if (exists(field, "default_value"))%> = <%=field.default_value%><%endif%>;
         <%else%>
-    std::optional<QSharedPointer<<%=field.relative_mapped_type_name%>>> <%=field.name%>_;
+    QSharedPointer<<%=field.relative_mapped_type_name%>> <%=field.name%>_;
         <%endif%>
     <%endif%>
     <%if (field.container_type == "none")%>
@@ -161,7 +161,8 @@ private:
     QSharedPointer<<%=field.relative_mapped_type_name%>> <%=field.name%>_;
         <%endif%>
     <%endif%>
-<%endforeach%>};
+<%endforeach%>
+};
 Q_DECLARE_METATYPE(<%=declaration.relative_class_name%>)
 
 <%endmisc%> 

@@ -604,7 +604,7 @@
             {
                 "annotations": [],
                 "container_type": "none",
-                "default_value": "/* complex expression */",
+                "default_value": "VALUE1",
                 "field_name": "simpleField",
                 "full_mapped_type_name": "examples::enums::SimpleEnum",
                 "full_type_name": "examples.enums.SimpleEnum",
@@ -619,7 +619,7 @@
             {
                 "annotations": [],
                 "container_type": "none",
-                "default_value": "/* complex expression */",
+                "default_value": "MEDIUM",
                 "field_name": "valueField",
                 "full_mapped_type_name": "examples::enums::ValueEnum",
                 "full_type_name": "examples.enums.ValueEnum",
@@ -649,8 +649,8 @@
                 "annotations": [],
                 "container_type": "array",
                 "default_value": [
-                    "/* complex expression */",
-                    "/* complex expression */"
+                    "LOW",
+                    "HIGH"
                 ],
                 "field_name": "valueArray",
                 "full_mapped_type_name": "examples::enums::ValueEnum",
@@ -680,7 +680,7 @@
             {
                 "annotations": [],
                 "container_type": "optional",
-                "default_value": "/* complex expression */",
+                "default_value": "HIGH",
                 "field_name": "optionalValue",
                 "full_mapped_type_name": "examples::enums::ValueEnum",
                 "full_type_name": "examples.enums.ValueEnum",
@@ -745,7 +745,7 @@
             {
                 "annotations": [],
                 "container_type": "none",
-                "default_value": "/* complex expression */",
+                "default_value": "VALUE2",
                 "field_name": "simpleField",
                 "full_mapped_type_name": "examples::enums::SimpleEnum",
                 "full_type_name": "examples.enums.SimpleEnum",
@@ -760,7 +760,7 @@
             {
                 "annotations": [],
                 "container_type": "none",
-                "default_value": "/* complex expression */",
+                "default_value": "LOW",
                 "field_name": "valueField",
                 "full_mapped_type_name": "examples::enums::ValueEnum",
                 "full_type_name": "examples.enums.ValueEnum",
@@ -776,8 +776,8 @@
                 "annotations": [],
                 "container_type": "array",
                 "default_value": [
-                    "/* complex expression */",
-                    "/* complex expression */"
+                    "VALUE1",
+                    "VALUE3"
                 ],
                 "field_name": "simpleArray",
                 "full_mapped_type_name": "examples::enums::SimpleEnum",
@@ -807,7 +807,7 @@
             {
                 "annotations": [],
                 "container_type": "optional",
-                "default_value": "/* complex expression */",
+                "default_value": "VALUE1",
                 "field_name": "optionalSimple",
                 "full_mapped_type_name": "examples::enums::SimpleEnum",
                 "full_type_name": "examples.enums.SimpleEnum",
@@ -935,7 +935,7 @@
         }
     ]
 },
-    "CURRENT_TIME": "2025-06-14 23:30:54",
+    "CURRENT_TIME": "2025-06-15 21:06:36",
     "SOURCE_FILE": "",
     "MOTA_VERSION": "0.2.0",
     "NAMESPACE": {

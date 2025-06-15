@@ -1,98 +1,23 @@
 <%misc private_fields%>
-<%foreach declaration.fields as field%>
-    <%if (field.container_type == "array")%>
-QVector<<%=field.relative_mapped_type_name%>>
-<%else%>
-<%if (field.container_type == "map")%>
-QMap<QString, <%=field.relative_mapped_type_name%>>
-<%else%>
-<%if (field.container_type == "optional")%>
-std::optional<<%=field.relative_mapped_type_name%>>
-<%else%>
-<%=field.relative_mapped_type_name%>
-<%endif%>
-<%endif%>
-<%endif%> <%=field.name%>_
-<%if (field.default_value)%>
- = <%=field.default_value%>
-<%endif%>
-;
-<%endforeach%>
-<%endmisc%>
 
-<%misc field_names%>
-<%foreach declaration.fields as field%>
-QLatin1String("<%=field.name%>")
-<%if (field.is_last == false)%>
-, 
-<%endif%>
-<%endforeach%>
 <%endmisc%>
 
 <%misc getter_method%>
-    <%if (field.container_type == "array")%>
-QVector<<%=field.relative_mapped_type_name%>>
-<%else%>
-<%if (field.container_type == "map")%>
-QMap<QString, <%=field.relative_mapped_type_name%>>
-<%else%>
-<%if (field.container_type == "optional")%>
-std::optional<<%=field.relative_mapped_type_name%>>
-<%else%>
-<%=field.relative_mapped_type_name%>
-<%endif%>
-<%endif%>
-<%endif%> get<%=pascal_case(field.name)%>() const {
-        return <%=field.name%>_;
-    }
 <%endmisc%>
 
 <%misc setter_method%>
-    void set<%=pascal_case(field.name)%>(const <%if (field.container_type == "array")%>
-QVector<<%=field.relative_mapped_type_name%>>
-<%else%>
-<%if (field.container_type == "map")%>
-QMap<QString, <%=field.relative_mapped_type_name%>>
-<%else%>
-<%if (field.container_type == "optional")%>
-std::optional<<%=field.relative_mapped_type_name%>>
-<%else%>
-<%=field.relative_mapped_type_name%>
-<%endif%>
-<%endif%>
-<%endif%>& value) {
-        <%=field.name%>_ = value;
-    }
 <%endmisc%>
 
 <%misc accessors%>
-<%foreach declaration.fields as field%>
-<%call getter_method%>
-
-<%call setter_method%>
-<%endforeach%>
 <%endmisc%>
 
 <%misc field_type_logic%>
-<%foreach declaration.fields as field%>
-        if (fieldName == QLatin1String("<%=field.name%>")) return QLatin1String("<%=field.type_name%>");
-<%endforeach%>
-        return QString();
 <%endmisc%>
 
 <%misc field_container_type_logic%>
-<%foreach declaration.fields as field%>
-        if (fieldName == QLatin1String("<%=field.name%>")) return QLatin1String("<%=field.container_type%>");
-<%endforeach%>
-        return QLatin1String("none");
 <%endmisc%>
 
 <%misc model_annotation_logic%>
-        QList<QSharedPointer<IAnnotation>> result;
-<%foreach declaration.annotations as annotation%>
-        result.append(QSharedPointer<IAnnotation>(new <%=annotation.relative_class_name%>()));
-<%endforeach%>
-        return result;
 <%endmisc%>
 
 <%misc field_annotation_logic%>
@@ -125,24 +50,6 @@ std::optional<<%=field.relative_mapped_type_name%>>
 <%endmisc%>
 
 <%misc value_setter_logic%>
-<%foreach declaration.fields as field%>
-        if (fieldName == QLatin1String("<%=field.name%>")) {
-            set<%=pascal_case(field.name)%>(value.value<<%if (field.container_type == "array")%>
-QVector<<%=field.relative_mapped_type_name%>>
-<%else%>
-<%if (field.container_type == "map")%>
-QMap<QString, <%=field.relative_mapped_type_name%>>
-<%else%>
-<%if (field.container_type == "optional")%>
-std::optional<<%=field.relative_mapped_type_name%>>
-<%else%>
-<%=field.relative_mapped_type_name%>
-<%endif%>
-<%endif%>
-<%endif%>>());
-            return;
-        }
-<%endforeach%>
 <%endmisc%>
 
 <%misc pascal_case%>

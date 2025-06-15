@@ -2,7 +2,7 @@
 
 // 此文件由 Mota 代码生成器自动生成
 // Mota 版本: 0.2.0
-// 生成时间: 2025-06-15 01:57:09
+// 生成时间: 2025-06-15 21:13:54
 // 源文件: .\examples\02_enums.mota
 
 #include <QCborMap>
@@ -33,6 +33,7 @@ enum class SimpleEnum {
         VALUE2,
         VALUE3
 };
+Q_DECLARE_METATYPE(SimpleEnum)
 
 class SimpleEnumEnumUtil {
     public:
@@ -111,6 +112,7 @@ enum class ArrayAnnotation {
         VALUE1,
         VALUE2
 };
+Q_DECLARE_METATYPE(ArrayAnnotation)
 
 class ArrayAnnotationEnumUtil {
     public:
@@ -220,6 +222,7 @@ enum class ValueEnum {
         MEDIUM,
         HIGH
 };
+Q_DECLARE_METATYPE(ValueEnum)
 
 class ValueEnumEnumUtil {
     public:
@@ -304,7 +307,7 @@ class ValueEnumEnumUtil {
 };
 
 // EnumBlock块定义
-class MODEL_EXPORT EnumBlockBlock : public IBlock {
+class MODEL_EXPORT EnumBlockBlock :  public IBlock {
 public:
     EnumBlockBlock() = default;
     
@@ -349,71 +352,54 @@ public:
     }
     
     QList<QSharedPointer<IAnnotation>> annotations() const override {
-        QList<QSharedPointer<IAnnotation>> result;
-        return result;
+            return QVector<QSharedPointer<IAnnotation>>();
     }
     
     QList<QSharedPointer<IAnnotation>> fieldAnnotation(const QString& fieldName) const override {
-        if (fieldName == QLatin1String("simpleField")) {
-            QList<QSharedPointer<IAnnotation>> result;
-            return result;
-        }
-        if (fieldName == QLatin1String("valueField")) {
-            QList<QSharedPointer<IAnnotation>> result;
-            return result;
-        }
-        if (fieldName == QLatin1String("simpleArray")) {
-            QList<QSharedPointer<IAnnotation>> result;
-            return result;
-        }
-        if (fieldName == QLatin1String("valueArray")) {
-            QList<QSharedPointer<IAnnotation>> result;
-            return result;
-        }
-        if (fieldName == QLatin1String("optionalSimple")) {
-            QList<QSharedPointer<IAnnotation>> result;
-            return result;
-        }
-        if (fieldName == QLatin1String("optionalValue")) {
-            QList<QSharedPointer<IAnnotation>> result;
-            return result;
-        }
-        if (fieldName == QLatin1String("simpleMap")) {
-            QList<QSharedPointer<IAnnotation>> result;
-            return result;
-        }
-        if (fieldName == QLatin1String("valueMap")) {
-            QList<QSharedPointer<IAnnotation>> result;
-            return result;
-        }
-        return QList<QSharedPointer<IAnnotation>>();
+        return {};
     }
     
     QString description() const override {
-        return QLatin1String("EnumBlock");
+        return QLatin1String("");
     }
     
     QString fieldDescription(const QString& fieldName) const override {
-        if (fieldName == QLatin1String("simpleField")) return QLatin1String("simpleField");
-        if (fieldName == QLatin1String("valueField")) return QLatin1String("valueField");
-        if (fieldName == QLatin1String("simpleArray")) return QLatin1String("simpleArray");
-        if (fieldName == QLatin1String("valueArray")) return QLatin1String("valueArray");
-        if (fieldName == QLatin1String("optionalSimple")) return QLatin1String("optionalSimple");
-        if (fieldName == QLatin1String("optionalValue")) return QLatin1String("optionalValue");
-        if (fieldName == QLatin1String("simpleMap")) return QLatin1String("simpleMap");
-        if (fieldName == QLatin1String("valueMap")) return QLatin1String("valueMap");
+        if (fieldName == QLatin1String("simpleField")) return QLatin1String("");
+        if (fieldName == QLatin1String("valueField")) return QLatin1String("");
+        if (fieldName == QLatin1String("simpleArray")) return QLatin1String("");
+        if (fieldName == QLatin1String("valueArray")) return QLatin1String("");
+        if (fieldName == QLatin1String("optionalSimple")) return QLatin1String("");
+        if (fieldName == QLatin1String("optionalValue")) return QLatin1String("");
+        if (fieldName == QLatin1String("simpleMap")) return QLatin1String("");
+        if (fieldName == QLatin1String("valueMap")) return QLatin1String("");
         return QString();
     }
     
     QVariant value(const QString& fieldName) const override {
-        if (fieldName == QLatin1String("simpleField")) return QVariant::fromValue(simpleField_);
-        if (fieldName == QLatin1String("valueField")) return QVariant::fromValue(valueField_);
-        if (fieldName == QLatin1String("simpleArray")) return QVariant::fromValue(simpleArray_);
-        if (fieldName == QLatin1String("valueArray")) return QVariant::fromValue(valueArray_);
-        if (fieldName == QLatin1String("optionalSimple")) return QVariant::fromValue(optionalSimple_);
-        if (fieldName == QLatin1String("optionalValue")) return QVariant::fromValue(optionalValue_);
-        if (fieldName == QLatin1String("simpleMap")) return QVariant::fromValue(simpleMap_);
-        if (fieldName == QLatin1String("valueMap")) return QVariant::fromValue(valueMap_);
+        if (fieldName == QLatin1String("simpleField")) {
+            return QVariant::fromValue(simpleField_);
+        }
+        if (fieldName == QLatin1String("valueField")) {
+            return QVariant::fromValue(valueField_);
+        }
+        if (fieldName == QLatin1String("simpleArray")) {
+            return QVariant::fromValue(simpleArray_);
+        }
+        if (fieldName == QLatin1String("valueArray")) {
+            return QVariant::fromValue(valueArray_);
+        }
+        if (fieldName == QLatin1String("optionalSimple")) {
+            return QVariant::fromValue(optionalSimple_);
+        }
+        if (fieldName == QLatin1String("optionalValue")) {
+            return QVariant::fromValue(optionalValue_);
+        }
+        if (fieldName == QLatin1String("simpleMap")) {
+            return QVariant::fromValue(simpleMap_);
+        }
+        if (fieldName == QLatin1String("valueMap")) {
+            return QVariant::fromValue(valueMap_);
+        }
         return QVariant();
     }
     
@@ -453,23 +439,66 @@ public:
     }
     
     // 字段访问器
-    SimpleEnum getSimpleField() const { return simpleField_; }
-    void setSimpleField(const SimpleEnum& value) { simpleField_ = value; }
-    ValueEnum getValueField() const { return valueField_; }
-    void setValueField(const ValueEnum& value) { valueField_ = value; }
-    QVector<SimpleEnum> getSimpleArray() const { return simpleArray_; }
-    void setSimpleArray(const QVector<SimpleEnum>& value) { simpleArray_ = value; }
-    QVector<ValueEnum> getValueArray() const { return valueArray_; }
-    void setValueArray(const QVector<ValueEnum>& value) { valueArray_ = value; }
-    std::optional<SimpleEnum> getOptionalSimple() const { return optionalSimple_; }
-    void setOptionalSimple(const std::optional<SimpleEnum>& value) { optionalSimple_ = value; }
-    std::optional<ValueEnum> getOptionalValue() const { return optionalValue_; }
-    void setOptionalValue(const std::optional<ValueEnum>& value) { optionalValue_ = value; }
-    QMap<QString, SimpleEnum> getSimpleMap() const { return simpleMap_; }
-    void setSimpleMap(const QMap<QString, SimpleEnum>& value) { simpleMap_ = value; }
-    QMap<QString, ValueEnum> getValueMap() const { return valueMap_; }
-    void setValueMap(const QMap<QString, ValueEnum>& value) { valueMap_ = value; }
+    SimpleEnum getSimpleField() const {
+        return simpleField_;
+    }
+    void setSimpleField(const SimpleEnum& value) {
+        simpleField_ = value;
+    }
+    ValueEnum getValueField() const {
+        return valueField_;
+    }
+    void setValueField(const ValueEnum& value) {
+        valueField_ = value;
+    }
+    QVector<SimpleEnum> getSimpleArray() const {
+        return simpleArray_; 
+    }
+    void setSimpleArray(const QVector<SimpleEnum>& value) {
+        simpleArray_ = value;
+    }
+    QVector<ValueEnum> getValueArray() const {
+        return valueArray_; 
+    }
+    void setValueArray(const QVector<ValueEnum>& value) {
+        valueArray_ = value;
+    }
+    std::optional<SimpleEnum> getOptionalSimple() const {
+        return optionalSimple_;
+    }
+    void setOptionalSimple(const std::optional<SimpleEnum>& value) {
+        optionalSimple_ = value;
+    }
+    std::optional<ValueEnum> getOptionalValue() const {
+        return optionalValue_;
+    }
+    void setOptionalValue(const std::optional<ValueEnum>& value) {
+        optionalValue_ = value;
+    }
+    QMap<QString, SimpleEnum> getSimpleMap() const {
+        return simpleMap_;
+    }
+    void setSimpleMap(const QMap<QString, SimpleEnum>& value) {
+        simpleMap_ = value;
+    }
+    QMap<QString, ValueEnum> getValueMap() const {
+        return valueMap_;
+    }
+    void setValueMap(const QMap<QString, ValueEnum>& value) {
+        valueMap_ = value;
+    }
 private:
+    SimpleEnum simpleField_ = SimpleEnum::VALUE1;
+    ValueEnum valueField_ = ValueEnum::MEDIUM;
+    QVector<SimpleEnum> simpleArray_;
+    QVector<ValueEnum> valueArray_ = { ValueEnum::LOW, ValueEnum::HIGH };
+    std::optional<SimpleEnum> optionalSimple_;
+    std::optional<ValueEnum> optionalValue_ = ValueEnum::HIGH;
+    QMap<QString, SimpleEnum> simpleMap_;
+    QMap<QString, ValueEnum> valueMap_;
+};
+Q_DECLARE_METATYPE(EnumBlockBlock)
+
     // EnumStruct结构体
     class MODEL_EXPORT EnumStructModel : public IModel {
     public:
