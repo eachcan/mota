@@ -36,15 +36,45 @@ std::string TemplateEngine::renderTemplate(const std::string& templateName, cons
 }
 
 std::string TemplateEngine::renderContent(const std::string& templateContent, const TemplateVars& vars) {
-    // 按照新的流程进行渲染
-    // 1. 构建Token序列（文本和Tag的序列）
-    auto tokens = buildTokenSequence(templateContent);
-    
-    // 2. 构建Tag树并检查成对标签
-    auto tree = buildTagTree(templateContent, tokens);
+    try {
+        // 按照新的流程进行渲染
+        // 1. 构建Token序列（文本和Tag的序列）
+        auto tokens = buildTokenSequence(templateContent);
+        
+        // 2. 构建Tag树并检查成对标签
+        auto tree = buildTagTree(templateContent, tokens);
 
-    // 3. 遍历渲染Tag树
-    return renderTagTree(tree, vars);
+        // 3. 遍历渲染Tag树
+        return renderTagTree(tree, vars);
+    } catch (const std::runtime_error& e) {
+        // 解析错误信息中的位置信息
+        std::string errorMsg = e.what();
+        size_t startPos = errorMsg.find("[");
+        size_t commaPos = errorMsg.find(",", startPos);
+        size_t endPos = errorMsg.find("]", commaPos);
+        
+        if (startPos != std::string::npos && commaPos != std::string::npos && endPos != std::string::npos) {
+            try {
+                size_t pos = std::stoul(errorMsg.substr(startPos + 1, commaPos - startPos - 1));
+                auto lineInfo = calculateLineAndColumn(templateContent, pos);
+                
+                // 提取标签内容
+                size_t tagContentStart = errorMsg.find("] ") + 2;
+                std::string tagContent = errorMsg.substr(tagContentStart);
+                
+                std::cerr << Colors::BOLD_RED << "Error" << Colors::RESET << " at line " << lineInfo.line << ", column " << lineInfo.column << ": 无效的模板标签" << std::endl;
+                std::cerr << "  " << lineInfo.line_content << std::endl;
+                std::cerr << "  " << std::string(lineInfo.column - 1, ' ') << "^" << std::endl;
+                std::cerr << "  标签内容: " << tagContent << std::endl;
+            } catch (...) {
+                // 如果解析位置失败，显示原始错误信息
+                std::cerr << Colors::BOLD_RED << "Error" << Colors::RESET << ": " << errorMsg << std::endl;
+            }
+        } else {
+            std::cerr << Colors::BOLD_RED << "Error" << Colors::RESET << ": " << errorMsg << std::endl;
+        }
+        return "";
+    }
 }
 
 
@@ -453,8 +483,10 @@ std::vector<std::shared_ptr<TagNode>> TemplateEngine::buildTagTree(const std::st
                     }
                 } else if (tokens[j]->type == TokenType::ELSE && level == 1) {
                     if (elseIndex != SIZE_MAX) {
-                        std::cerr << "Error: " << tokens[j]->tag_content << std::endl;
-                        std::cerr << "Duplicate else tag" << std::endl;
+                        auto lineInfo = calculateLineAndColumn(templateContent, tokens[j]->start_pos);
+                        std::cerr << Colors::BOLD_RED << "Error" << Colors::RESET << " at line " << lineInfo.line << ", column " << lineInfo.column << ": 重复的else标签" << std::endl;
+                        std::cerr << "  " << lineInfo.line_content << std::endl;
+                        std::cerr << "  " << std::string(lineInfo.column - 1, ' ') << "^" << std::endl;
                         return result;
                     }
                     elseIndex = j;
@@ -462,7 +494,10 @@ std::vector<std::shared_ptr<TagNode>> TemplateEngine::buildTagTree(const std::st
             }
             
             if (endIndex == SIZE_MAX) {
-                std::cerr << "Unmatched if tag" << std::endl;
+                auto lineInfo = calculateLineAndColumn(templateContent, token->start_pos);
+                std::cerr << Colors::BOLD_RED << "Error" << Colors::RESET << " at line " << lineInfo.line << ", column " << lineInfo.column << ": 未匹配的if标签" << std::endl;
+                std::cerr << "  " << lineInfo.line_content << std::endl;
+                std::cerr << "  " << std::string(lineInfo.column - 1, ' ') << "^" << std::endl;
                 return result;
             }
             
@@ -524,7 +559,10 @@ std::vector<std::shared_ptr<TagNode>> TemplateEngine::buildTagTree(const std::st
             }
             
             if (endIndex == SIZE_MAX) {
-                std::cerr << "Unmatched foreach tag" << std::endl;
+                auto lineInfo = calculateLineAndColumn(templateContent, token->start_pos);
+                std::cerr << Colors::BOLD_RED << "Error" << Colors::RESET << " at line " << lineInfo.line << ", column " << lineInfo.column << ": 未匹配的foreach标签" << std::endl;
+                std::cerr << "  " << lineInfo.line_content << std::endl;
+                std::cerr << "  " << std::string(lineInfo.column - 1, ' ') << "^" << std::endl;
                 return result;
             }
             
@@ -551,7 +589,12 @@ std::vector<std::shared_ptr<TagNode>> TemplateEngine::buildTagTree(const std::st
             
         } else if (token->type == TokenType::ELSE || token->type == TokenType::END_IF || token->type == TokenType::END_FOREACH) {
             // 这些标签应该在上面的逻辑中处理，如果到这里说明有语法错误
-            std::cerr << "Unexpected tag: " << static_cast<int>(token->type) << std::endl;
+            auto lineInfo = calculateLineAndColumn(templateContent, token->start_pos);
+            std::string tagName = (token->type == TokenType::ELSE) ? "else" : 
+                                 (token->type == TokenType::END_IF) ? "endif" : "endforeach";
+            std::cerr << Colors::BOLD_RED << "Error" << Colors::RESET << " at line " << lineInfo.line << ", column " << lineInfo.column << ": 意外的" << tagName << "标签" << std::endl;
+            std::cerr << "  " << lineInfo.line_content << std::endl;
+            std::cerr << "  " << std::string(lineInfo.column - 1, ' ') << "^" << std::endl;
             i++;
         } else if (token->type == TokenType::VARIABLE) {
             auto node = std::make_shared<TagNode>(TokenType::VARIABLE);
@@ -1267,6 +1310,54 @@ nlohmann::json TemplateEngine::callBuiltinFunction(const std::string& funcName, 
     
     // 未知函数或参数数量不匹配
     return "";
+}
+
+LineColumnInfo TemplateEngine::calculateLineAndColumn(const std::string& content, size_t pos) {
+    LineColumnInfo info;
+    info.line = 1;
+    info.column = 1;
+    
+    // 如果位置超出内容长度，返回最后位置
+    if (pos >= content.length()) {
+        pos = content.length() > 0 ? content.length() - 1 : 0;
+    }
+    
+    // 计算行号和列号
+    size_t lineStart = 0;
+    for (size_t i = 0; i < pos; ++i) {
+        if (content[i] == '\n') {
+            info.line++;
+            info.column = 1;
+            lineStart = i + 1;
+        } else if (content[i] == '\r') {
+            // 处理 \r\n 和单独的 \r
+            if (i + 1 < content.length() && content[i + 1] == '\n') {
+                // \r\n 情况，跳过 \r，让 \n 处理换行
+                continue;
+            } else {
+                // 单独的 \r
+                info.line++;
+                info.column = 1;
+                lineStart = i + 1;
+            }
+        } else {
+            info.column++;
+        }
+    }
+    
+    // 提取当前行的内容
+    size_t lineEnd = lineStart;
+    while (lineEnd < content.length() && content[lineEnd] != '\n' && content[lineEnd] != '\r') {
+        lineEnd++;
+    }
+    
+    if (lineEnd > lineStart) {
+        info.line_content = content.substr(lineStart, lineEnd - lineStart);
+    } else {
+        info.line_content = "";
+    }
+    
+    return info;
 }
 
 } // namespace template_engine
